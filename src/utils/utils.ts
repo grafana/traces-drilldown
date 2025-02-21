@@ -23,6 +23,7 @@ import {
   VAR_LATENCY_PARTIAL_THRESHOLD,
   VAR_LATENCY_THRESHOLD,
   VAR_METRIC,
+  VAR_SPAN_LIST_COLUMNS,
 } from './shared';
 import { primarySignalOptions } from '../pages/Explore/primary-signals';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
@@ -126,6 +127,14 @@ export function getGroupByVariable(scene: SceneObject): CustomVariable {
   const variable = sceneGraph.lookupVariable(VAR_GROUPBY, scene);
   if (!(variable instanceof CustomVariable)) {
     throw new Error('Group by variable not found');
+  }
+  return variable;
+}
+
+export function getSpanListColumnsVariable(scene: SceneObject): CustomVariable {
+  const variable = sceneGraph.lookupVariable(VAR_SPAN_LIST_COLUMNS, scene);
+  if (!(variable instanceof CustomVariable)) {
+    throw new Error('Span list columns variable not found');
   }
   return variable;
 }

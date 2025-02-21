@@ -10,7 +10,7 @@ import {
   SceneObjectBase,
   SceneObjectState,
 } from '@grafana/scenes';
-import { DataFrame, GrafanaTheme2, LoadingState, PanelData, toURLRange, urlUtil } from '@grafana/data';
+import { DataFrame, GrafanaTheme2, LoadingState, PanelData, toURLRange, urlUtil, toOption } from '@grafana/data';
 import { config } from '@grafana/runtime';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
@@ -18,8 +18,10 @@ import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
 import { Icon, Link, TableCellDisplayMode, TableCustomCellOptions, useStyles2, useTheme2 } from '@grafana/ui';
 import { map, Observable } from 'rxjs';
-import { getDataSource, getTraceExplorationScene } from '../../../../../utils/utils';
+import { getDataSource, getSpanListColumnsVariable, getTraceByServiceScene, getTraceExplorationScene } from '../../../../../utils/utils';
 import { EMPTY_STATE_ERROR_MESSAGE, EMPTY_STATE_ERROR_REMEDY_MESSAGE } from '../../../../../utils/shared';
+import { SpanListColumnsSelector } from './SpanListColumnsSelector';
+import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 
 export interface SpanListSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -198,10 +200,27 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
       }
     }
   }
+  
+  public onChange = (columns: string[]) => {
+    const variable = getSpanListColumnsVariable(this);
+    if (variable.getValue() !== columns) {
+      variable.changeValueTo(columns);
+
+      reportAppInteraction(
+        USER_EVENTS_PAGES.analyse_traces,
+        USER_EVENTS_ACTIONS.analyse_traces.span_list_columns_changed,
+        {
+          columns
+        }
+      );
+    }
+  };
 
   public static Component = ({ model }: SceneComponentProps<SpanListScene>) => {
     const { panel } = model.useState();
     const styles = getStyles(useTheme2());
+    const variable = getSpanListColumnsVariable(model);
+    const { attributes } = getTraceByServiceScene(model).useState();
 
     if (!panel) {
       return;
@@ -210,6 +229,11 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
     return (
       <div className={styles.container}>
         <div className={styles.description}>View a list of spans for the current set of filters.</div>
+        <SpanListColumnsSelector
+          options={attributes?.map(x => toOption(x)) ?? []}
+          value={variable.getValue()}
+          onChange={model.onChange}
+        />
         <panel.Component model={panel} />
       </div>
     );

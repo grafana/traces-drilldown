@@ -1,0 +1,102 @@
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { SpanListColumnsSelector } from './SpanListColumnsSelector';
+import { SelectableValue } from '@grafana/data';
+
+describe('SpanListColumnsSelector', () => {
+  const mockOptions: Array<SelectableValue<string>> = [
+    { label: 'Duration', value: 'duration' },
+    { label: 'Start Time', value: 'startTime' },
+    { label: 'Tags', value: 'tags' },
+  ];
+
+  const mockOnChange = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should display "Show these extra columns" label', () => {
+    render(
+      <SpanListColumnsSelector
+        options={mockOptions}
+        onChange={mockOnChange} 
+      />
+    );
+
+    expect(screen.getByText('Show these extra columns')).toBeInTheDocument();
+  });
+
+  it('should show placeholder text when no value is selected', () => {
+    render(
+      <SpanListColumnsSelector
+        options={mockOptions}
+        onChange={mockOnChange}
+      />
+    );
+
+    expect(screen.getByText('Please select')).toBeInTheDocument();
+  });
+
+  it('should display pre-selected values', async () => {
+    render(
+      <SpanListColumnsSelector
+        options={mockOptions}
+        onChange={mockOnChange}
+        value="Duration,Tags"
+      />
+    );
+
+    expect(screen.getByText('Duration')).toBeInTheDocument();
+    expect(screen.getByText('Tags')).toBeInTheDocument();
+  });
+
+  it('should allow selecting multiple options', async () => {
+    const user = userEvent.setup();
+    
+    render(
+      <SpanListColumnsSelector
+        options={mockOptions}
+        onChange={mockOnChange}
+      />
+    );
+
+    // Open the combobox
+    const combobox = screen.getByRole('combobox');
+    await user.click(combobox);
+
+    // Select first option
+    const durationOption = screen.getByText('Duration');
+    await user.click(durationOption);
+    
+    expect(mockOnChange).toHaveBeenCalledWith('Duration');
+
+    // Select second option
+    await user.click(combobox);
+    const tagsOption = screen.getByText('Tags');
+    await user.click(tagsOption);
+
+    expect(mockOnChange).toHaveBeenCalledWith('Duration,Tags');
+  });
+
+  it('should display all available options when clicking the combobox', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <SpanListColumnsSelector
+        options={mockOptions}
+        onChange={mockOnChange}
+      />
+    );
+
+    const combobox = screen.getByRole('combobox');
+    await user.click(combobox);
+
+    mockOptions.forEach((option) => {
+      if (option.label) {
+        expect(screen.getByText(option.label)).toBeInTheDocument();
+      }
+    });
+  });
+}); 
