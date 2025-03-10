@@ -1,6 +1,6 @@
 # Grafana Traces Drilldown
 
-The Grafana Traces Drilldown app lets users navigate and visualize trace data stored in Tempo without complex queries.
+Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate and understand errors and latency issues within complex distributed systems.
 
 We love accepting contributions!
 If your change is minor, please feel free submit
