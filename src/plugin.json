@@ -7,7 +7,7 @@
   "autoEnabled": true,
   "info": {
     "keywords": ["app", "tempo", "traces", "explore"],
-    "description": "Grafana app plugin that allows users for a query-less way to navigate and visualize trace data stored in Tempo.",
+    "description": "Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate and understand errors and latency issues within complex distributed systems.",
     "author": {
       "name": "Grafana"
     },
