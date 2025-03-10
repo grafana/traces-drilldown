@@ -7,7 +7,7 @@
   "autoEnabled": true,
   "info": {
     "keywords": ["app", "tempo", "traces", "explore"],
-    "description": "Navigate and visualize trace data stored in Tempo without complex queries.",
+    "description": "Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate and understand errors and latency issues within complex distributed systems.",
     "author": {
       "name": "Grafana"
     },
