@@ -40,6 +40,7 @@ export const USER_EVENTS_ACTIONS = {
     open_trace: 'open_trace',
     open_in_explore_clicked: 'open_in_explore_clicked',
     add_to_investigation_clicked: 'add_to_investigation_clicked',
+    span_list_columns_changed: 'span_list_columns_changed',
   },
   [USER_EVENTS_PAGES.home]: {
     homepage_initialized: 'homepage_initialized',

@@ -29,6 +29,7 @@ import {
   VAR_LATENCY_PARTIAL_THRESHOLD,
   VAR_LATENCY_THRESHOLD,
   VAR_METRIC,
+  VAR_SPAN_LIST_COLUMNS,
 } from '../../utils/shared';
 import { getTraceExplorationScene, getFilterSignature, getFiltersVariable } from '../../utils/utils';
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
@@ -295,6 +296,10 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
       }),
       new CustomVariable({
         name: VAR_GROUPBY,
+        defaultToAll: false,
+      }),
+      new CustomVariable({
+        name: VAR_SPAN_LIST_COLUMNS,
         defaultToAll: false,
       }),
       new CustomVariable({

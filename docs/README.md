@@ -1,18 +1,20 @@
-# Explore Traces documentation
+# Traces Drilldown documentation
 
-This directory contains the source code for the Explore Traces documentation.
+This directory contains the source code for the Grafana Traces Drilldown documentation.
 
-Some key things to know about the Explore Traces documentation source:
+Some key things to know about the Traces Drilldown documentation source:
 
 - The docs are written in markdown, specifically the CommonMark flavor of markdown.
 - The Grafana docs team uses [Hugo](https://gohugo.io/) to generate the documentation.
 - While you can view the documentation in GitHub, GitHub does not render the images or links correctly and cannot render the Hugo specific shortcodes.
 
-The Docs team has created a [Writers' Toolkit](https://grafana.com/docs/writers-toolkit/) that documents how we write documentation at Grafana Labs. Writers' Toolkit contains information about how we structure documentation at Grafana, including [templates](https://github.com/grafana/writers-toolkit/tree/main/docs/static/templates) for different types of topics, information about Hugo shortcodes that extend markdown to add additional features, and information about linters and other tools that we use to write documentation. Writers' Toolkit also includes our [Style Guide](https://grafana.com/docs/writers-toolkit/write/style-guide/).
+The Docs team has created a [Writers' Toolkit](https://grafana.com/docs/writers-toolkit/) that documents how we write documentation at Grafana Labs.
+The Writers' Toolkit contains information about how we structure documentation at Grafana, including [templates](https://github.com/grafana/writers-toolkit/tree/main/docs/static/templates) for different types of topics, information about Hugo shortcodes that extend markdown to add additional features, and information about linters and other tools that we use to write documentation. Writers' Toolkit also includes our [Style Guide](https://grafana.com/docs/writers-toolkit/write/style-guide/).
 
 ## Contributing
 
-The Explore Traces documentation is written using the CommonMark flavor of markdown, including some extended features. For more information about markdown, you can see the [CommonMark specification](https://spec.commonmark.org/), and a [quick reference guide](https://commonmark.org/help/) for CommonMark.
+The Traces Drilldown documentation is written using the CommonMark flavor of markdown, including some extended features.
+For more information about markdown, you can see the [CommonMark specification](https://spec.commonmark.org/), and a [quick reference guide](https://commonmark.org/help/) for CommonMark.
 
 If you have a GitHub account and you're just making a small fix, for example fixing a typo or updating an example, you can edit the topic in GitHub.
 
