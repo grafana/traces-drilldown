@@ -1,15 +1,16 @@
 import { css } from '@emotion/css';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, SceneObject, sceneGraph } from '@grafana/scenes';
 import { GrafanaTheme2 } from '@grafana/data';
-import { useStyles2, Box, Stack, TabsBar, Tab } from '@grafana/ui';
-import React from 'react';
-import { getTraceExplorationScene, getTraceByServiceScene } from 'utils/utils';
+import { useStyles2, Box, Stack, TabsBar, Tab, ToolbarButton, Icon } from '@grafana/ui';
+import React, { useEffect } from 'react';
+import { getTraceExplorationScene, getTraceByServiceScene, getGroupByVariable, getFiltersVariable, getDatasourceVariable } from 'utils/utils';
 import { ShareExplorationAction } from '../../actions/ShareExplorationAction';
 import { buildSpansScene } from './Spans/SpansScene';
 import { buildStructureScene } from './Structure/StructureScene';
 import { buildBreakdownScene } from './Breakdown/BreakdownScene';
 import { MetricFunction } from 'utils/shared';
 import { buildComparisonScene } from './Comparison/ComparisonScene';
+import { bookmarkExists, getBookmarkFromURL, toggleBookmark } from 'pages/Home/bookmarks/utils';
 
 interface ActionViewDefinition {
   displayName: (metric: MetricFunction) => string;
@@ -37,15 +38,40 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
     const styles = useStyles2(getStyles);
     const exploration = getTraceExplorationScene(model);
     const { actionView } = metricScene.useState();
+    const { primarySignal } = exploration.useState();
     const { value: metric } = exploration.getMetricVariable().useState();
+    const { value: groupBy } = getGroupByVariable(model).useState();
+    const { value: datasource } = getDatasourceVariable(model).useState();
+    const { filters } = getFiltersVariable(model).useState();
     const dataState = sceneGraph.getData(model).useState();
     const tracesCount = dataState.data?.series?.[0]?.length;
+
+    const [isBookmarked, setIsBookmarked] = React.useState(bookmarkExists(getBookmarkFromURL()));
+
+    useEffect(() => {
+      setIsBookmarked(bookmarkExists(getBookmarkFromURL()));
+    }, [actionView, primarySignal, datasource, filters, groupBy, metric]);
 
     return (
       <Box>
         <div className={styles.actions}>
-          <Stack gap={2}>
+          <Stack gap={1}>
             <ShareExplorationAction exploration={exploration} />
+            <ToolbarButton
+              variant={'canvas'}
+              icon={
+                isBookmarked ? (
+                  <Icon name={'favorite'} type={'mono'} size={'lg'} />
+                ) : (
+                  <Icon name={'star'} type={'default'} size={'lg'} />
+                )
+              }
+              tooltip={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
+              onClick={() => {
+                toggleBookmark();
+                setIsBookmarked(bookmarkExists(getBookmarkFromURL()));
+              }}
+            />
           </Stack>
         </div>
 

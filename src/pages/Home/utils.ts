@@ -1,7 +1,7 @@
 import { AdHocVariableFilter, MetricFindValue } from "@grafana/data";
 import { getDataSourceSrv, DataSourceWithBackend } from "@grafana/runtime";
 import { AdHocFiltersVariable, sceneGraph } from "@grafana/scenes";
-import { EVENT_ATTR, EVENT_INTRINSIC, ignoredAttributes, ignoredAttributesHomeFilter, RESOURCE_ATTR, SPAN_ATTR, VAR_DATASOURCE_EXPR } from "utils/shared";
+import { EVENT_ATTR, EVENT_INTRINSIC, FILTER_SEPARATOR, ignoredAttributes, ignoredAttributesHomeFilter, RESOURCE_ATTR, SPAN_ATTR, VAR_DATASOURCE_EXPR } from "utils/shared";
 import { isNumber } from "utils/utils";
 
 export async function getTagKeysProvider(variable: AdHocFiltersVariable): Promise<{replace?: boolean, values: MetricFindValue[]}> {
@@ -44,7 +44,7 @@ export function renderTraceQLLabelFilters(filters: AdHocVariableFilter[]) {
   const expr = filters
     .filter((f) => f.key && f.operator && f.value)
     .map((filter) => renderFilter(filter))
-    .join(' && ');
+    .join(FILTER_SEPARATOR);
   return expr.length ? `&& ${expr}` : '';
 }
 

@@ -37,6 +37,7 @@ import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '..
 import { computeHighestDifference } from '../../../../../utils/comparison';
 import { AttributesDescription } from '../Breakdown/AttributesDescription';
 import { isEqual } from 'lodash';
+import { bookmarkExists, getBookmarkFromURL } from 'pages/Home/bookmarks/utils';
 
 export interface AttributesComparisonSceneState extends SceneObjectState {
   body?: SceneObject;
@@ -59,7 +60,12 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
   private _onActivate() {
     const variable = getGroupByVariable(this);
 
-    variable.changeValueTo(ALL);
+    // Set group by to All when scene is activated
+    // if we're not coming from a bookmark
+    const bookmark = bookmarkExists(getBookmarkFromURL());
+    if (!bookmark) {
+      variable.changeValueTo(ALL);
+    }
 
     this.updateData();
 

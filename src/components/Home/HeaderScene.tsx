@@ -16,6 +16,7 @@ import { DarkModeRocket, LightModeRocket } from '../../utils/rockets';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { Home } from 'pages/Home/Home';
 import { useNavigate } from 'react-router-dom';
+import { Bookmarks } from 'pages/Home/bookmarks/Bookmarks';
 
 export class HeaderScene extends SceneObjectBase {
   public static Component = ({ model }: SceneComponentProps<Home>) => {
@@ -62,8 +63,10 @@ export class HeaderScene extends SceneObjectBase {
           </div>
         </div>
 
+        <Bookmarks />
+
         <div className={styles.subHeader}>
-          <h4>Or quick-start into your tracing data.</h4>
+          <h4>Or quick-start into your tracing data</h4>
         </div>
 
         <Stack gap={2}>
@@ -138,7 +141,7 @@ function getStyles(theme: GrafanaTheme2) {
     subHeader: css({
       textAlign: 'center',
       'h4': {
-        margin: 0,
+        margin: `0 0 -${theme.spacing(2)} 0`,
       }
     }),
 

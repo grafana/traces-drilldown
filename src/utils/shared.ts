@@ -14,11 +14,14 @@ export const EXPLORATIONS_ROUTE = `${PLUGIN_BASE_URL}/${ROUTES.Explore}`;
 
 export const DATASOURCE_LS_KEY = 'grafana.explore.traces.datasource';
 export const HOMEPAGE_FILTERS_LS_KEY = 'grafana.explore.traces.homepage.filters';
+export const BOOKMARKS_LS_KEY = 'grafana.explore.traces.bookmarks';
 
 export const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 
 export const EMPTY_STATE_ERROR_MESSAGE = 'No data for selected query';
 export const EMPTY_STATE_ERROR_REMEDY_MESSAGE = 'Please try removing some filters or changing your query.';
+
+export const FILTER_SEPARATOR = ' && ';
 
 export const VAR_DATASOURCE = 'ds';
 export const VAR_DATASOURCE_EXPR = '${ds}';
@@ -33,6 +36,14 @@ export const VAR_LATENCY_THRESHOLD_EXPR = '${latencyThreshold}';
 export const VAR_LATENCY_PARTIAL_THRESHOLD = 'partialLatencyThreshold';
 export const VAR_LATENCY_PARTIAL_THRESHOLD_EXPR = '${partialLatencyThreshold}';
 export const explorationDS = { uid: VAR_DATASOURCE_EXPR };
+export const ACTION_VIEW = 'actionView';
+export const PRIMARY_SIGNAL = 'primarySignal';
+
+export const BOOKMARK_DATA_SOURCE = `var-${VAR_DATASOURCE}`;
+export const BOOKMARK_FILTERS = `var-${VAR_FILTERS}`;
+export const BOOKMARK_GROUPBY = `var-${VAR_GROUPBY}`;
+export const BOOKMARK_METRIC = `var-${VAR_METRIC}`;
+export const BOOKMARK_KEYS = [ACTION_VIEW, PRIMARY_SIGNAL, BOOKMARK_DATA_SOURCE, BOOKMARK_FILTERS, BOOKMARK_GROUPBY, BOOKMARK_METRIC];
 
 export const ALL = 'All';
 export const RESOURCE = 'Resource';
