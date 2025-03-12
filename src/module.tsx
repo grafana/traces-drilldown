@@ -16,12 +16,12 @@ export const plugin = new AppPlugin<{}>().setRootPage(App).addConfigPage({
   id: 'configuration',
 })
 .addLink({
-  title: 'traces',
-  description: 'Open traces',
+  title: 'traces drilldown',
+  description: 'Open in Traces Drilldown',
   icon: 'align-left',
   targets: 'grafana-lokiexplore-app/toolbar-open-related/v1',
-  onClick: (e, helpers) => {
-    sidecarServiceSingleton_EXPERIMENTAL?.openAppV3({ pluginId: pluginJson.id, path: '/explore' }, helpers.context);
+  onClick: () => {
+    sidecarServiceSingleton_EXPERIMENTAL?.openAppV3({ pluginId: pluginJson.id, path: '/explore' });
   },
 });
 
