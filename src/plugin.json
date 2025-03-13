@@ -7,7 +7,7 @@
   "autoEnabled": true,
   "info": {
     "keywords": ["app", "tempo", "traces", "explore"],
-    "description": "Grafana app plugin that allows users for a query-less way to navigate and visualize trace data stored in Tempo.",
+    "description": "Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate errors within complex distributed systems.",
     "author": {
       "name": "Grafana"
     },
@@ -67,8 +67,8 @@
     "addedLinks": [
       {
         "targets": ["grafana-lokiexplore-app/toolbar-open-related/v1"],
-        "title": "traces",
-        "description": "Open traces"
+        "title": "traces drilldown",
+        "description": "Open in Traces Drilldown"
       }
     ],
     "extensionPoints": [
