@@ -67,7 +67,8 @@ export const histogramPanelConfig = () => {
       axisLabel: 'Duration',
     })
     .setOption('color', {
-      scheme: 'YlGnBu',
+      scheme: 'Blues',
+      steps: 16,
     })
     .setOption('rowsFrame', { value: 'Spans' });
 };
