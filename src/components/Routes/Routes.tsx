@@ -10,7 +10,7 @@ export const AppRoutes = () => {
     <Routes>
       <Route path={ROUTES.Explore} element={<TraceExplorationPage />} />
       <Route path={ROUTES.Home} element={<HomePage />} />
-      <Route path={'/'} element={<Navigate replace to={ROUTES.Explore} />} />
+      <Route path={'/'} element={<Navigate replace to={ROUTES.Home} />} />
     </Routes>
   );
 };
