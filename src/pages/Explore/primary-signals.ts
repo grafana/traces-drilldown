@@ -4,34 +4,16 @@ export const DATABASE_CALLS_KEY = 'span.db.name';
 
 export const primarySignalOptions: Array<SelectableValue<string>> = [
   {
-    label: 'Full traces',
-    value: 'full_traces',
+    label: 'Root spans',
+    value: 'nestedSetParent<0',
     filter: { key: 'nestedSetParent', operator: '<', value: '0' },
-    description: 'Inspect full journeys of requests across services',
-  },
-  {
-    label: 'Server spans',
-    value: 'server_spans',
-    filter: { key: 'kind', operator: '=', value: 'server' },
-    description: 'Explore server-specific segments of traces',
-  },
-  {
-    label: 'Consumer spans',
-    value: 'consumer_spans',
-    filter: { key: 'kind', operator: '=', value: 'consumer' },
-    description: 'Analyze interactions initiated by consumer services',
-  },
-  {
-    label: 'Database calls',
-    value: 'database_calls',
-    filter: { key: DATABASE_CALLS_KEY, operator: '!=', value: '""' },
-    description: 'Evaluate the performance issues in database interactions',
+    description: 'Focus your analysis on the root span of each trace',
   },
   {
     label: 'All spans',
-    value: 'all_spans',
+    value: 'true',
     filter: { key: '', operator: '', value: true },
-    description: 'View and analyze raw span data',
+    description: 'View and analyse raw span data. This option may result in long query times.',
   },
 ];
 

@@ -22,8 +22,9 @@ export const EMPTY_STATE_ERROR_REMEDY_MESSAGE = 'Please try removing some filter
 
 export const VAR_DATASOURCE = 'ds';
 export const VAR_DATASOURCE_EXPR = '${ds}';
+export const VAR_PRIMARY_SIGNAL = 'primarySignal';
 export const VAR_FILTERS = 'filters';
-export const VAR_FILTERS_EXPR = '${filters}';
+export const VAR_FILTERS_EXPR = '${primarySignal} && ${filters}';
 export const VAR_HOME_FILTER = 'homeFilter';
 export const VAR_GROUPBY = 'groupBy';
 export const VAR_SPAN_LIST_COLUMNS = 'spanListColumns';
@@ -83,12 +84,12 @@ export const ignoredAttributes = [
 export const ignoredAttributesHomeFilter = [
   'status',
   'span:status',
-  'rootName', 
+  'rootName',
   'rootService',
-  'rootServiceName', 
-  'trace:rootName', 
+  'rootServiceName',
+  'trace:rootName',
   'trace:rootService',
-  'trace:rootServiceName'
+  'trace:rootServiceName',
 ];
 // Limit maximum options in select dropdowns for performance reasons
 export const maxOptions = 1000;
