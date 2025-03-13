@@ -17,7 +17,7 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { LocationService } from '@grafana/runtime';
+import { config, LocationService } from '@grafana/runtime';
 import { Badge, Button, Drawer, Dropdown, Icon, Menu, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 
 import { TracesByServiceScene } from '../../components/Explore/TracesByService/TracesByServiceScene';
@@ -195,16 +195,18 @@ export class TraceExplorationScene extends SceneObjectBase {
     const menu = (
       <Menu>
         <div className={styles.menu}>
-          <Menu.Item
-            label="Give feedback"
-            ariaLabel="Give feedback"
-            icon={'comment-alt-message'}
-            url="https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS"
-            target="_blank"
-            onClick={() =>
-              reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.global_docs_link_clicked)
-            }
-          />
+          {config.feedbackLinksEnabled && (
+            <Menu.Item
+              label="Give feedback"
+              ariaLabel="Give feedback"
+              icon={'comment-alt-message'}
+              url="https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS"
+              target="_blank"
+              onClick={() =>
+                reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.global_docs_link_clicked)
+              }
+            />
+          )}
           <Menu.Item
             label="Documentation"
             ariaLabel="Documentation"
