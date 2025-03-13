@@ -35,7 +35,12 @@ export const Bookmarks = () => {
       ) : (
         <div className={styles.bookmarks}>
           {bookmarks.map((bookmark: Bookmark, i: number) => (
-            <div className={styles.bookmark} key={i} onClick={() => goToBookmark(bookmark)}>
+            <div 
+              className={styles.bookmark} 
+              key={i} 
+              onClick={() => goToBookmark(bookmark)}
+              data-testid="bookmark-item"
+            >
               <div className={styles.bookmarkItem}>
                 <BookmarkItem bookmark={bookmark} />
               </div>
