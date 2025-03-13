@@ -119,7 +119,7 @@ export class Home extends SceneObjectBase<HomeState> {
               new SceneCSSGridItem({
                 body: new AttributePanel({
                   query: {
-                    query: '{nestedSetParent < 0} | quantile_over_time(duration, 0.9) by (resource.service.name)',
+                    query: `{nestedSetParent < 0 ${renderedFilters}} | quantile_over_time(duration, 0.9) by (resource.service.name)`,
                     step: durString,
                   },
                   title: 'Slow services',
