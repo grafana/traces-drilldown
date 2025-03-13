@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
 import {
@@ -18,7 +18,7 @@ import {
   SceneVariableSet,
 } from '@grafana/scenes';
 import { LocationService } from '@grafana/runtime';
-import { Badge, Button, Drawer, Dropdown, Icon, Menu, Stack, Tooltip, useStyles2 } from '@grafana/ui';
+import { Badge, Button, Drawer, Dropdown, Icon, Menu, Stack, ToolbarButton, Tooltip, useStyles2 } from '@grafana/ui';
 
 import { TracesByServiceScene } from '../../components/Explore/TracesByService/TracesByServiceScene';
 import {
@@ -31,12 +31,13 @@ import {
   VAR_METRIC,
   VAR_SPAN_LIST_COLUMNS,
 } from '../../utils/shared';
-import { getTraceExplorationScene, getFilterSignature, getFiltersVariable } from '../../utils/utils';
+import { getTraceExplorationScene, getFilterSignature, getFiltersVariable, getGroupByVariable, getMetricVariable, getDatasourceVariable } from '../../utils/utils';
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
 import { FilterByVariable } from 'components/Explore/filters/FilterByVariable';
 import { getSignalForKey, primarySignalOptions } from './primary-signals';
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
+import { bookmarkExists, getBookmarkFromURL, toggleBookmark } from 'pages/Home/bookmarks/utils';
 
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
@@ -185,12 +186,23 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const { controls, topScene, drawerScene, traceId } = traceExploration.useState();
+    const { controls, topScene, drawerScene, traceId, primarySignal } = traceExploration.useState();
     const styles = useStyles2(getStyles);
     const [menuVisible, setMenuVisible] = React.useState(false);
 
     const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
     const filtersVariable = getFiltersVariable(traceExploration);
+    const { value: actionView } = getMetricVariable(model).useState();
+    const { value: metric } = traceExploration.getMetricVariable().useState();
+    const { value: groupBy } = getGroupByVariable(model).useState();
+    const { value: datasource } = getDatasourceVariable(model).useState();
+    const { filters } = getFiltersVariable(model).useState();
+
+    const [isBookmarked, setIsBookmarked] = React.useState(bookmarkExists(getBookmarkFromURL()));
+
+    useEffect(() => {
+      setIsBookmarked(bookmarkExists(getBookmarkFromURL()));
+    }, [actionView, primarySignal, datasource, filters, groupBy, metric]);
 
     const menu = (
       <Menu>
@@ -231,6 +243,22 @@ export class TraceExplorationScene extends SceneObjectBase {
                 </Stack>
               )}
               <div className={styles.controls}>
+                <ToolbarButton
+                  variant={'canvas'}
+                  icon={
+                    isBookmarked ? (
+                      <Icon name={'favorite'} type={'mono'} size={'lg'} />
+                    ) : (
+                      <Icon name={'star'} type={'default'} size={'lg'} />
+                    )
+                  }
+                  tooltip={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
+                  onClick={() => {
+                    toggleBookmark();
+                    setIsBookmarked(bookmarkExists(getBookmarkFromURL()));
+                  }}
+                />
+
                 <Tooltip content={<PreviewTooltip text={compositeVersion} />} interactive>
                   <span className={styles.preview}>
                     <Badge text="&nbsp;Preview" color="blue" icon="rocket" />

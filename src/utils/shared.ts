@@ -12,9 +12,9 @@ export const PLUGIN_ID = pluginJson.id;
 export const PLUGIN_BASE_URL = `/a/${PLUGIN_ID}`;
 export const EXPLORATIONS_ROUTE = `${PLUGIN_BASE_URL}/${ROUTES.Explore}`;
 
-export const DATASOURCE_LS_KEY = 'grafana.explore.traces.datasource';
-export const HOMEPAGE_FILTERS_LS_KEY = 'grafana.explore.traces.homepage.filters';
-export const BOOKMARKS_LS_KEY = 'grafana.explore.traces.bookmarks';
+export const DATASOURCE_LS_KEY = 'grafana.drilldown.traces.datasource';
+export const HOMEPAGE_FILTERS_LS_KEY = 'grafana.drilldown.traces.homepage.filters';
+export const BOOKMARKS_LS_KEY = 'grafana.drilldown.traces.bookmarks';
 
 export const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 
