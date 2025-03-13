@@ -39,7 +39,6 @@ export const Bookmarks = () => {
               className={styles.bookmark} 
               key={i} 
               onClick={() => goToBookmark(bookmark)}
-              data-testid="bookmark-item"
             >
               <div className={styles.bookmarkItem}>
                 <BookmarkItem bookmark={bookmark} />
