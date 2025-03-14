@@ -4,14 +4,10 @@ import React, { useEffect } from "react";
 import { getGroupByVariable, getDatasourceVariable, getFiltersVariable, getTraceExplorationScene, getSpanListColumnsVariable, getMetricVariable } from "utils/utils";
 import { bookmarkExists, getBookmarkFromURL, toggleBookmark } from "./utils";
 import { TraceExplorationScene } from "pages/Explore/TraceExploration";
-import { sceneGraph } from "@grafana/scenes";
+import { SceneComponentProps, sceneGraph } from "@grafana/scenes";
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from "utils/analytics";
 
-type Props = {
-  model: TraceExplorationScene;
-}
-
-export const BookmarkIcon = React.memo(({ model }: Props) => {
+export const BookmarkIcon = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
   const traceExploration = getTraceExplorationScene(model);
   const { topScene, primarySignal } = traceExploration.useState();
   
@@ -64,4 +60,4 @@ export const BookmarkIcon = React.memo(({ model }: Props) => {
       }}
     />
   )
-});
+}
