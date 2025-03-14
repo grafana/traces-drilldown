@@ -5,6 +5,7 @@ import { Button, useStyles2 } from "@grafana/ui";
 import React, { useState } from "react";
 import { BookmarkItem } from "./BookmarkItem";
 import { getBookmarkForUrl, getBookmarks, removeBookmark } from "./utils";
+import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from "utils/analytics";
 
 export type Bookmark = {
   params: string;
@@ -15,6 +16,8 @@ export const Bookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>(getBookmarks());
 
   const goToBookmark = (bookmark: Bookmark) => {
+    reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.go_to_bookmark_clicked);
+
     const url = getBookmarkForUrl(bookmark);
     locationService.push(url);
   }

@@ -5,6 +5,7 @@ import { getGroupByVariable, getDatasourceVariable, getFiltersVariable, getTrace
 import { bookmarkExists, getBookmarkFromURL, toggleBookmark } from "./utils";
 import { TraceExplorationScene } from "pages/Explore/TraceExploration";
 import { sceneGraph } from "@grafana/scenes";
+import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from "utils/analytics";
 
 type Props = {
   model: TraceExplorationScene;
@@ -57,6 +58,9 @@ export const BookmarkIcon = React.memo(({ model }: Props) => {
       onClick={() => {
         const isNowBookmarked = toggleBookmark();
         setIsBookmarked(isNowBookmarked);
+        reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.toggle_bookmark_clicked, {
+          isBookmarked: isNowBookmarked,
+        });
       }}
     />
   )
