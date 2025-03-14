@@ -36,14 +36,10 @@ export const VAR_LATENCY_THRESHOLD_EXPR = '${latencyThreshold}';
 export const VAR_LATENCY_PARTIAL_THRESHOLD = 'partialLatencyThreshold';
 export const VAR_LATENCY_PARTIAL_THRESHOLD_EXPR = '${partialLatencyThreshold}';
 export const explorationDS = { uid: VAR_DATASOURCE_EXPR };
+
 export const ACTION_VIEW = 'actionView';
 export const PRIMARY_SIGNAL = 'primarySignal';
-
-export const BOOKMARK_DATA_SOURCE = `var-${VAR_DATASOURCE}`;
-export const BOOKMARK_FILTERS = `var-${VAR_FILTERS}`;
-export const BOOKMARK_GROUPBY = `var-${VAR_GROUPBY}`;
-export const BOOKMARK_METRIC = `var-${VAR_METRIC}`;
-export const BOOKMARK_KEYS = [ACTION_VIEW, PRIMARY_SIGNAL, BOOKMARK_DATA_SOURCE, BOOKMARK_FILTERS, BOOKMARK_GROUPBY, BOOKMARK_METRIC];
+export const SELECTION = 'selection';
 
 export const ALL = 'All';
 export const RESOURCE = 'Resource';

@@ -3,17 +3,11 @@ import { GrafanaTheme2 } from "@grafana/data";
 import { locationService } from "@grafana/runtime";
 import { Button, useStyles2 } from "@grafana/ui";
 import React, { useState } from "react";
-import { BOOKMARK_DATA_SOURCE, BOOKMARK_FILTERS, BOOKMARK_GROUPBY, BOOKMARK_METRIC } from "utils/shared";
 import { BookmarkItem } from "./BookmarkItem";
 import { getBookmarkForUrl, getBookmarks, removeBookmark } from "./utils";
 
 export type Bookmark = {
-  actionView: string;
-  primarySignal: string;
-  [BOOKMARK_DATA_SOURCE]: string;
-  [BOOKMARK_FILTERS]: string;
-  [BOOKMARK_GROUPBY]: string;
-  [BOOKMARK_METRIC]: string;
+  params: string;
 }
 
 export const Bookmarks = () => {

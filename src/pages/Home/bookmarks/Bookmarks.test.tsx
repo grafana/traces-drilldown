@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Bookmarks, Bookmark } from './Bookmarks';
 import { getBookmarks, getBookmarkForUrl } from './utils';
 import { locationService } from '@grafana/runtime';
-import { ACTION_VIEW, BOOKMARK_DATA_SOURCE, BOOKMARK_FILTERS, BOOKMARK_GROUPBY, BOOKMARK_METRIC, PRIMARY_SIGNAL } from "utils/shared";
 
 jest.mock('./utils', () => ({
   ...jest.requireActual('./utils'),
@@ -21,21 +20,11 @@ jest.mock('@grafana/runtime', () => ({
 describe('Bookmarks', () => {
   const mockBookmarks: Bookmark[] = [
     {
-      [ACTION_VIEW]: 'breakdown',
-      [PRIMARY_SIGNAL]: 'full_traces',
-      [BOOKMARK_DATA_SOURCE]: 'EBorgLFZ',
-      [BOOKMARK_FILTERS]: 'filter1|=|value1',
-      [BOOKMARK_GROUPBY]: 'name',
-      [BOOKMARK_METRIC]: 'rate',
+      params: 'actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-filters=filter1|=|value1&var-groupBy=name&var-metric=rate'
     },
     {
-      [ACTION_VIEW]: 'comparison',
-      [PRIMARY_SIGNAL]: 'server_spans',
-      [BOOKMARK_DATA_SOURCE]: 'loki',
-      [BOOKMARK_FILTERS]: 'filter2=value2',
-      [BOOKMARK_GROUPBY]: 'service',
-      [BOOKMARK_METRIC]: 'errors',
-    },
+      params: 'actionView=comparison&primarySignal=server_spans&var-ds=loki&var-filters=filter2=value2&var-groupBy=service&var-metric=errors'
+    }
   ];
 
   beforeEach(() => {

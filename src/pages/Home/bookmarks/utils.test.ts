@@ -5,18 +5,14 @@ import {
   getBookmarkFromURL, 
   toggleBookmark,
   removeBookmark,
-  getBookmarkForUrl
+  getBookmarkForUrl,
+  areBookmarksEqual
 } from './utils';
-import { ACTION_VIEW, PRIMARY_SIGNAL, BOOKMARK_DATA_SOURCE, BOOKMARK_FILTERS, BOOKMARK_GROUPBY, BOOKMARK_METRIC, BOOKMARKS_LS_KEY, EXPLORATIONS_ROUTE, FILTER_SEPARATOR } from 'utils/shared';
+import { ACTION_VIEW, PRIMARY_SIGNAL, BOOKMARKS_LS_KEY, EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_GROUPBY, VAR_METRIC, SELECTION, VAR_LATENCY_THRESHOLD, VAR_LATENCY_PARTIAL_THRESHOLD } from 'utils/shared';
 
 describe('Bookmark Utils', () => {
   const sampleBookmark = {
-    [ACTION_VIEW]: 'breakdown',
-    [PRIMARY_SIGNAL]: 'full_traces',
-    [BOOKMARK_DATA_SOURCE]: 'EBorgLFZ',
-    [BOOKMARK_FILTERS]: 'filter1|=|value1',
-    [BOOKMARK_GROUPBY]: 'name',
-    [BOOKMARK_METRIC]: 'rate'
+    params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
   };
 
   let localStorageMock: { [key: string]: string } = {};
@@ -50,30 +46,21 @@ describe('Bookmark Utils', () => {
       expect(params).toEqual({
         actionView: 'breakdown',
         primarySignal: 'full_traces',
-        datasource: 'EBorgLFZ',
         filters: 'filter1|=|value1',
-        groupBy: 'name',
         metric: 'rate'
       });
     });
 
     it('should handle empty bookmark values', () => {
       const emptyBookmark = {
-        [ACTION_VIEW]: '',
-        [PRIMARY_SIGNAL]: '',
-        [BOOKMARK_DATA_SOURCE]: '',
-        [BOOKMARK_FILTERS]: '',
-        [BOOKMARK_GROUPBY]: '',
-        [BOOKMARK_METRIC]: ''
+        params: `${ACTION_VIEW}=&${PRIMARY_SIGNAL}=&$var-${VAR_DATASOURCE}=&var-${VAR_FILTERS}=&var-${VAR_GROUPBY}=&var-${VAR_METRIC}=`
       };
       
       const params = getBookmarkParams(emptyBookmark);
       expect(params).toEqual({
         actionView: '',
         primarySignal: '',
-        datasource: '',
         filters: '',
-        groupBy: '',
         metric: ''
       });
     });
@@ -98,18 +85,12 @@ describe('Bookmark Utils', () => {
         value: originalLocation
       });
     });
-
     it('should create a bookmark from URL parameters', () => {
-      window.location.search = `?${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&${BOOKMARK_DATA_SOURCE}=EBorgLFZ&${BOOKMARK_FILTERS}=filter1|=|value1&${BOOKMARK_GROUPBY}=name&${BOOKMARK_METRIC}=rate`;
+      window.location.search = `?${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`;
       
       const bookmark = getBookmarkFromURL();
       expect(bookmark).toEqual({
-        [ACTION_VIEW]: 'breakdown',
-        [PRIMARY_SIGNAL]: 'full_traces',
-        [BOOKMARK_DATA_SOURCE]: 'EBorgLFZ',
-        [BOOKMARK_FILTERS]: 'filter1|=|value1',
-        [BOOKMARK_GROUPBY]: 'name',
-        [BOOKMARK_METRIC]: 'rate'
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1%7C%3D%7Cvalue1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
       });
     });
 
@@ -118,12 +99,7 @@ describe('Bookmark Utils', () => {
       
       const bookmark = getBookmarkFromURL();
       expect(bookmark).toEqual({
-        [ACTION_VIEW]: '',
-        [PRIMARY_SIGNAL]: '',
-        [BOOKMARK_DATA_SOURCE]: '',
-        [BOOKMARK_FILTERS]: '',
-        [BOOKMARK_GROUPBY]: '',
-        [BOOKMARK_METRIC]: ''
+        params: ''
       });
     });
   });
@@ -131,58 +107,38 @@ describe('Bookmark Utils', () => {
   describe('getBookmarkForUrl', () => {
     it('should generate a URL with all parameters', () => {
       const bookmark = {
-        actionView: 'breakdown',
-        primarySignal: 'full_traces',
-        [BOOKMARK_DATA_SOURCE]: 'EBorgLFZ',
-        [BOOKMARK_FILTERS]: 'filter1|=|value1',
-        [BOOKMARK_GROUPBY]: 'name',
-        [BOOKMARK_METRIC]: 'rate'
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
       };
 
       const url = getBookmarkForUrl(bookmark);
-      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-metric=rate&var-groupBy=name&${BOOKMARK_FILTERS}=filter1%7C%3D%7Cvalue1`);
+      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-${VAR_FILTERS}=filter1%7C%3D%7Cvalue1&var-groupBy=name&var-metric=rate`);
     });
 
     it('should handle multiple filters correctly', () => {
       const bookmark = {
-        actionView: 'breakdown',
-        primarySignal: 'full_traces',
-        [BOOKMARK_DATA_SOURCE]: 'EBorgLFZ',
-        [BOOKMARK_FILTERS]: `filter1|=|value1${FILTER_SEPARATOR}filter2|=|value2`,
-        [BOOKMARK_GROUPBY]: 'name',
-        [BOOKMARK_METRIC]: 'rate'
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_FILTERS}=filter2|=|value2&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
       };
 
       const url = getBookmarkForUrl(bookmark);
-      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-metric=rate&var-groupBy=name&${BOOKMARK_FILTERS}=filter1%7C%3D%7Cvalue1&${BOOKMARK_FILTERS}=filter2%7C%3D%7Cvalue2`);
+      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-${VAR_FILTERS}=filter1%7C%3D%7Cvalue1&var-${VAR_FILTERS}=filter2%7C%3D%7Cvalue2&var-groupBy=name&var-metric=rate`);
     });
 
     it('should handle a bookmark with no filters', () => {
       const bookmark = {
-        actionView: 'breakdown',
-        primarySignal: 'full_traces',
-        [BOOKMARK_DATA_SOURCE]: 'EBorgLFZ',
-        [BOOKMARK_FILTERS]: '',
-        [BOOKMARK_GROUPBY]: 'name',
-        [BOOKMARK_METRIC]: 'rate'
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
       };
 
       const url = getBookmarkForUrl(bookmark);
-      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-metric=rate&var-groupBy=name&var-filters=`);
+      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-groupBy=name&var-metric=rate`);
     });
 
     it('should handle empty parameters', () => {
       const bookmark = {
-        actionView: '',
-        primarySignal: '',
-        [BOOKMARK_DATA_SOURCE]: 'EBorgLFZ',
-        [BOOKMARK_FILTERS]: '',
-        [BOOKMARK_GROUPBY]: '',
-        [BOOKMARK_METRIC]: ''
+        params: `${ACTION_VIEW}=&${PRIMARY_SIGNAL}=&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_GROUPBY}=&var-${VAR_METRIC}=`
       };
 
       const url = getBookmarkForUrl(bookmark);
-      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=&primarySignal=&var-ds=EBorgLFZ&var-metric=&var-groupBy=&var-filters=`);
+      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=&primarySignal=&var-ds=EBorgLFZ&var-groupBy=&var-metric=`);
     });
   });
 
@@ -194,7 +150,7 @@ describe('Bookmark Utils', () => {
         configurable: true,
         value: {
           ...originalLocation,
-          search: `?${ACTION_VIEW}=search&${PRIMARY_SIGNAL}=full_traces`
+          search: `?${ACTION_VIEW}=structure&${PRIMARY_SIGNAL}=full_traces`
         }
       });
       
@@ -213,30 +169,21 @@ describe('Bookmark Utils', () => {
       
       const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
       expect(storedData.length).toBe(1);
-      expect(storedData[0][ACTION_VIEW]).toBe('search');
-      expect(storedData[0][PRIMARY_SIGNAL]).toBe('full_traces');
+      expect(storedData[0].params).toBe('actionView=structure&primarySignal=full_traces');
     });
     
     it('should add a bookmark to an existing list in localStorage', () => {
       // Add an initial bookmark
-      localStorageMock[BOOKMARKS_LS_KEY] = JSON.stringify([{
-        [ACTION_VIEW]: 'breakdown',
-        [PRIMARY_SIGNAL]: 'full_traces',
-        [BOOKMARK_DATA_SOURCE]: 'source1',
-        [BOOKMARK_FILTERS]: 'filter1|=|value1',
-        [BOOKMARK_GROUPBY]: 'name',
-        [BOOKMARK_METRIC]: 'rate'
-      }]);
+      localStorageMock[BOOKMARKS_LS_KEY] = JSON.stringify([{ params: 'actionView=breakdown&primarySignal=full_traces' }]);
       
       // Add a new bookmark with different parameters
-      window.location.search = `?${ACTION_VIEW}=search&${PRIMARY_SIGNAL}=full_traces`;
+      window.location.search = `?${ACTION_VIEW}=structure&${PRIMARY_SIGNAL}=full_traces`;
       toggleBookmark();
       
       const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
       expect(storedData.length).toBe(2);
-      expect(storedData[0][ACTION_VIEW]).toBe('breakdown');
-      expect(storedData[1][ACTION_VIEW]).toBe('search');
-      expect(storedData[1][PRIMARY_SIGNAL]).toBe('full_traces');
+      expect(storedData[0].params).toBe('actionView=breakdown&primarySignal=full_traces');
+      expect(storedData[1].params).toBe('actionView=structure&primarySignal=full_traces');
     });
     
     it('should not add duplicate bookmarks', () => {
@@ -278,8 +225,7 @@ describe('Bookmark Utils', () => {
       
       const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
       expect(storedData.length).toBe(1);
-      expect(storedData[0][ACTION_VIEW]).toBe('breakdown');
-      expect(storedData[0][PRIMARY_SIGNAL]).toBe('full_traces');
+      expect(storedData[0].params).toBe('actionView=breakdown&primarySignal=full_traces');
     });
 
     it('should remove bookmark when it exists', () => {
@@ -305,8 +251,7 @@ describe('Bookmark Utils', () => {
 
     it('should not change localStorage when bookmark does not exist', () => {
       const differentBookmark = {
-        ...sampleBookmark,
-        [ACTION_VIEW]: 'differentView'
+        params: `${ACTION_VIEW}=differentView&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
       };
       
       // Add a bookmark to localStorage
@@ -333,6 +278,104 @@ describe('Bookmark Utils', () => {
       
       const result = bookmarkExists(sampleBookmark);
       expect(result).toEqual(sampleBookmark);
+    });
+  });
+
+  describe('areBookmarksEqual', () => {
+    it('should return true for identical bookmarks', () => {
+      const bookmark1 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
+      };
+      
+      const bookmark2 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
+      };
+      
+      expect(areBookmarksEqual(bookmark1, bookmark2)).toBe(true);
+    });
+
+    it('should return false for bookmarks with different action views', () => {
+      const bookmark1 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      const bookmark2 = {
+        params: `${ACTION_VIEW}=structure&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      expect(areBookmarksEqual(bookmark1, bookmark2)).toBe(false);
+    });
+
+    it('should return false for bookmarks with different primary signals', () => {
+      const bookmark1 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      const bookmark2 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=partial_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      expect(areBookmarksEqual(bookmark1, bookmark2)).toBe(false);
+    });
+
+    it('should return false for bookmarks with different filters', () => {
+      const bookmark1 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      const bookmark2 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter2|=|value2`
+      };
+      
+      expect(areBookmarksEqual(bookmark1, bookmark2)).toBe(false);
+    });
+
+    it('should return true for bookmarks with the same filters in different order', () => {
+      const bookmark1 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_FILTERS}=filter2|=|value2`
+      };
+      
+      const bookmark2 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter2|=|value2&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      expect(areBookmarksEqual(bookmark1, bookmark2)).toBe(true);
+    });
+
+    it('should return false for bookmarks with different numbers of filters', () => {
+      const bookmark1 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_FILTERS}=filter2|=|value2`
+      };
+      
+      const bookmark2 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      expect(areBookmarksEqual(bookmark1, bookmark2)).toBe(false);
+    });
+
+    it('should handle bookmarks with selection, latency threshold, and latency partial threshold parameters', () => {
+      const bookmark1 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&${SELECTION}=someValue&var-${VAR_LATENCY_THRESHOLD}=100&var-${VAR_LATENCY_PARTIAL_THRESHOLD}=50&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      const bookmark2 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&${SELECTION}=differentValue&var-${VAR_LATENCY_THRESHOLD}=200&var-${VAR_LATENCY_PARTIAL_THRESHOLD}=75&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      expect(areBookmarksEqual(bookmark1, bookmark2)).toBe(true);
+    });
+
+    it('should return false when one bookmark has more parameters than the other', () => {
+      const bookmark1 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
+      };
+      
+      const bookmark2 = {
+        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1`
+      };
+      
+      expect(areBookmarksEqual(bookmark1, bookmark2)).toBe(false);
     });
   });
 }); 

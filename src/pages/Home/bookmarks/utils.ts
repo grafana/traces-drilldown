@@ -1,71 +1,42 @@
-import { ACTION_VIEW, PRIMARY_SIGNAL, BOOKMARK_DATA_SOURCE, BOOKMARK_FILTERS, BOOKMARK_GROUPBY, BOOKMARK_METRIC, BOOKMARK_KEYS, FILTER_SEPARATOR, BOOKMARKS_LS_KEY, EXPLORATIONS_ROUTE } from "utils/shared";
+import { ACTION_VIEW, PRIMARY_SIGNAL, VAR_FILTERS, FILTER_SEPARATOR, BOOKMARKS_LS_KEY, EXPLORATIONS_ROUTE, VAR_LATENCY_PARTIAL_THRESHOLD, VAR_LATENCY_THRESHOLD, SELECTION, VAR_METRIC } from "utils/shared";
 import { Bookmark } from "./Bookmarks";
 import { urlUtil } from "@grafana/data";
+
+const cleanupParams = (params: URLSearchParams) => {
+  // Remove selection, latency threshold, and latency partial threshold because
+  // selection keeps changing as time moves on, so it's not a good match for bookmarking
+  params.delete(SELECTION);
+  params.delete(`var-${VAR_LATENCY_THRESHOLD}`);
+  params.delete(`var-${VAR_LATENCY_PARTIAL_THRESHOLD}`);
+  return params;
+}
 
 export const getBookmarks = () => {
   return JSON.parse(localStorage.getItem(BOOKMARKS_LS_KEY) || "[]");
 }
 
 export const getBookmarkParams = (bookmark: Bookmark) => {
-  const actionView = bookmark[ACTION_VIEW] ?? '';
-  const primarySignal = bookmark[PRIMARY_SIGNAL] ?? '';
-  const datasource = bookmark[BOOKMARK_DATA_SOURCE] ?? '';
-  const filters = bookmark[BOOKMARK_FILTERS] ?? '';
-  const groupBy = bookmark[BOOKMARK_GROUPBY] ?? '';
-  const metric = bookmark[BOOKMARK_METRIC] ?? '';
-  return { actionView, primarySignal, datasource, filters, groupBy, metric };
+  const params = new URLSearchParams(bookmark.params);
+  const actionView = params.get(ACTION_VIEW) ?? '';
+  const primarySignal = params.get(PRIMARY_SIGNAL) ?? '';
+  const filters = params.getAll(`var-${VAR_FILTERS}`).join(FILTER_SEPARATOR) ?? '';
+  const metric = params.get(`var-${VAR_METRIC}`) ?? '';
+  return { actionView, primarySignal, filters, metric };
 }
 
 export const getBookmarkFromURL = () => {
-  const bookmark: Bookmark = {
-    [ACTION_VIEW]: '',
-    [PRIMARY_SIGNAL]: '',
-    [BOOKMARK_DATA_SOURCE]: '',
-    [BOOKMARK_FILTERS]: '',
-    [BOOKMARK_GROUPBY]: '',
-    [BOOKMARK_METRIC]: ''
-  };
-
-  const params = new URLSearchParams(window.location.search);
-  const filters: string[] = [];
-
-  params.forEach((value, key) => {
-    if (BOOKMARK_KEYS.includes(key) && value && value !== '') {
-      if (key === BOOKMARK_FILTERS) {
-        filters.push(value);
-      } else {
-        bookmark[key as keyof Bookmark] = value;
-      }
-    }
-  });
-
-  bookmark[BOOKMARK_FILTERS] = filters.join(FILTER_SEPARATOR);
-  return bookmark;
+  const params = cleanupParams(new URLSearchParams(window.location.search));
+  return { params: params.toString() };
 }
 
 export const getBookmarkForUrl = (bookmark: Bookmark) => {
-  let { actionView, primarySignal, datasource, metric, filters, groupBy } = getBookmarkParams(bookmark);
-
-  const params = {
-    [ACTION_VIEW]: actionView,
-    [PRIMARY_SIGNAL]: primarySignal,
-    [BOOKMARK_DATA_SOURCE]: datasource,
-    [BOOKMARK_METRIC]: metric,
-    [BOOKMARK_GROUPBY]: groupBy,
-  }
-
-  let url = urlUtil.renderUrl(EXPLORATIONS_ROUTE, params);
-  
-  // filters need to be added as separate params in the url
-  // otherwise they would be overridden by each other
-  filters.split(FILTER_SEPARATOR).forEach(f => {
-    const params = {
-      [BOOKMARK_FILTERS]: f,
-    }
-    const filterForUrl = urlUtil.renderUrl('', params).replace('?', '&');
-    url += `${filterForUrl}`;
+  const params = new URLSearchParams(bookmark.params);
+  const urlQueryMap = Object.fromEntries(params.entries());
+  const filters = params.getAll(`var-${VAR_FILTERS}`); 
+  const url = urlUtil.renderUrl(EXPLORATIONS_ROUTE, {
+    ...urlQueryMap,
+    [`var-${VAR_FILTERS}`]: filters // Filters need to be added as separate params in the url as there are multiple filters with the same key
   });
-  
   return url;
 }
 
@@ -81,8 +52,8 @@ const addBookmark = (bookmark: Bookmark) => {
 }
 
 export const removeBookmark = (bookmark: Bookmark) => {
-  const bookmarks = getBookmarks();
-  const filteredBookmarks = bookmarks.filter((b: Bookmark) => !areBookmarksEqual(b, bookmark));  
+  const storedBookmarks = getBookmarks();
+  const filteredBookmarks = storedBookmarks.filter((storedBookmark: Bookmark) => !areBookmarksEqual(bookmark, storedBookmark));  
   localStorage.setItem(BOOKMARKS_LS_KEY, JSON.stringify(filteredBookmarks));
 }
 
@@ -93,8 +64,39 @@ export const bookmarkExists = (bookmark: Bookmark) => {
   });
 }
 
-const areBookmarksEqual = (b: Bookmark, bookmark: Bookmark) => {
-  return BOOKMARK_KEYS.every(key => {
-    return b[key as keyof Bookmark] === bookmark[key as keyof Bookmark];
-  });
+export const areBookmarksEqual = (bookmark: Bookmark, storedBookmark: Bookmark) => {
+  const bookmarkParams = cleanupParams(new URLSearchParams(bookmark.params));
+  const storedBookmarkParams = cleanupParams(new URLSearchParams(storedBookmark.params));
+
+  // Check if both bookmarks have the same number of parameters
+  let paramCount1 = 0;
+  let paramCount2 = 0;
+  for (const _ of bookmarkParams.keys()) paramCount1++;
+  for (const _ of storedBookmarkParams.keys()) paramCount2++;
+  
+  if (paramCount1 !== paramCount2) {
+    return false;
+  }
+
+  // Check if all key-value pairs match
+  for (const [key, value] of storedBookmarkParams.entries()) {
+    if (key === `var-${VAR_FILTERS}`) {
+      const storedFilters = storedBookmarkParams.getAll(`var-${VAR_FILTERS}`);
+      const bookmarkFilters = bookmarkParams.getAll(`var-${VAR_FILTERS}`);
+      
+      // Check if all filters match (regardless of order)
+      if (storedFilters.length !== bookmarkFilters.length) {
+        return false;
+      }
+      for (const filter of bookmarkFilters) {
+        if (!storedFilters.includes(filter)) {
+          return false;
+        }
+      }
+    } else if (bookmarkParams.get(key) !== value) { // For regular parameters, compare values directly
+      return false;
+    }
+  }
+
+  return true;
 }
