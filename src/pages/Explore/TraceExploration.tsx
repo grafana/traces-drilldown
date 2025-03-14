@@ -31,7 +31,7 @@ import {
   VAR_METRIC,
   VAR_SPAN_LIST_COLUMNS,
 } from '../../utils/shared';
-import { getTraceExplorationScene, getFilterSignature, getFiltersVariable, getGroupByVariable, getMetricVariable, getDatasourceVariable } from '../../utils/utils';
+import { getTraceExplorationScene, getFilterSignature, getFiltersVariable, getGroupByVariable, getDatasourceVariable } from '../../utils/utils';
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
 import { FilterByVariable } from 'components/Explore/filters/FilterByVariable';
 import { getSignalForKey, primarySignalOptions } from './primary-signals';
@@ -192,11 +192,25 @@ export class TraceExplorationScene extends SceneObjectBase {
 
     const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
     const filtersVariable = getFiltersVariable(traceExploration);
-    const { value: actionView } = getMetricVariable(model).useState();
     const { value: metric } = traceExploration.getMetricVariable().useState();
     const { value: groupBy } = getGroupByVariable(model).useState();
     const { value: datasource } = getDatasourceVariable(model).useState();
     const { filters } = getFiltersVariable(model).useState();
+    const [actionView, setActionView] = React.useState<string | undefined>(
+      topScene instanceof TracesByServiceScene ? topScene.state.actionView : undefined
+    );
+
+    useEffect(() => {
+      if (topScene instanceof TracesByServiceScene) {
+        const subscription = topScene.subscribeToState((newState, oldState) => {
+          if (newState.actionView !== oldState.actionView) {
+            setActionView(newState.actionView);
+          }
+        });
+        return () => subscription.unsubscribe();
+      }
+      return () => {};
+    }, [topScene]);
 
     const [isBookmarked, setIsBookmarked] = React.useState(bookmarkExists(getBookmarkFromURL()));
 
