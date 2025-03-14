@@ -11,6 +11,7 @@ jest.mock('./utils', () => ({
 }));
 
 jest.mock('@grafana/runtime', () => ({
+  reportInteraction: jest.fn(),
   locationService: {
     push: jest.fn(),
   },
