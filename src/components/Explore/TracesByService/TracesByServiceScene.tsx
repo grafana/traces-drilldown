@@ -47,6 +47,7 @@ import { Icon, LinkButton, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { getDefaultSelectionForMetric } from '../../../utils/comparison';
 import { map, Observable } from 'rxjs';
+import { bookmarkExists, getBookmarkFromURL } from 'pages/Home/bookmarks/utils';
 
 export interface TraceSceneState extends SceneObjectState {
   body: SceneFlexLayout;
@@ -69,6 +70,13 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   }
 
   private _onActivate() {
+    // Get the initial actionView from URL if it exists i.e. coming from a bookmark
+    const params = new URLSearchParams(window.location.search);
+    const urlActionView = params.get('actionView');
+    if (urlActionView && actionViewsDefinitions.find(v => v.value === urlActionView)) {
+      this.setState({ actionView: urlActionView as ActionViewType });
+    }
+    
     this.updateBody();
 
     const exploration = getTraceExplorationScene(this);
@@ -96,10 +104,14 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
         }
 
         // Set group by to All when starting a comparison
+        // if we're not coming from a bookmark
         if (!isEqual(newState.selection, prevState.selection)) {
-          const groupByVar = getGroupByVariable(this);
-          groupByVar.changeValueTo(ALL);
-          this.updateQueryRunner(metricVariable.getValue() as MetricFunction);
+          const bookmark = bookmarkExists(getBookmarkFromURL());
+          if (!bookmark) {
+            const groupByVar = getGroupByVariable(this);
+            groupByVar.changeValueTo(ALL);
+            this.updateQueryRunner(metricVariable.getValue() as MetricFunction);
+          }
         }
       })
     );

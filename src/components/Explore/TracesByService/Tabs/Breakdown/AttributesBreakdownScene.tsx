@@ -107,9 +107,10 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
   };
 
   public static Component = ({ model }: SceneComponentProps<AttributesBreakdownScene>) => {
-    const [scope, setScope] = useState(RESOURCE);
+    const groupBy = getGroupByVariable(model).getValueText();
+    const defaultScope = groupBy.includes(SPAN_ATTR) || radioAttributesSpan.includes(groupBy) ? SPAN : RESOURCE;
+    const [scope, setScope] = useState(defaultScope);
     const { body } = model.useState();
-    const variable = getGroupByVariable(model);
     const styles = useStyles2(getStyles);
 
     const { attributes } = getTraceByServiceScene(model).useState();
@@ -166,7 +167,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
                 <GroupBySelector
                   options={getAttributesAsOptions(filteredAttributes!)}
                   radioAttributes={scope === RESOURCE ? radioAttributesResource : radioAttributesSpan}
-                  value={variable.getValueText()}
+                  value={groupBy}
                   onChange={model.onChange}
                   model={model}
                 />
