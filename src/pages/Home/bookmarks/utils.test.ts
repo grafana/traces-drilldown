@@ -267,17 +267,17 @@ describe('Bookmark Utils', () => {
   });
 
   describe('bookmarkExists', () => {
-    it('should return undefined when bookmark does not exist', () => {
+    it('should return false when bookmark does not exist', () => {
       const result = bookmarkExists(sampleBookmark);
-      expect(result).toBeUndefined();
+      expect(result).toBe(false);
     });
 
-    it('should return the bookmark when it exists', () => {
+    it('should return true when the bookmark exists', () => {
       const bookmarksData = [sampleBookmark];
       localStorageMock[BOOKMARKS_LS_KEY] = JSON.stringify(bookmarksData);
       
       const result = bookmarkExists(sampleBookmark);
-      expect(result).toEqual(sampleBookmark);
+      expect(result).toBe(true);
     });
   });
 

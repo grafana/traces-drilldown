@@ -11,13 +11,21 @@ export const BookmarkItem = ({ bookmark }: { bookmark: Bookmark }) => {
   let { actionView, primarySignal, metric, filters } = getBookmarkParams(bookmark);
   const styles = useStyles2(getStyles);
 
-  const getPrimarySignalFilter = (primarySignal: string) => {
-    let filter = getSignalForKey(primarySignal)?.filter ?? '';
-    return filter ? `${filter.key}|${filter.operator}|${filter.value}` : '';
+  const getPrimarySignalFilter = (primarySignal: string): string => {
+    const signalData = getSignalForKey(primarySignal);
+    if (!signalData || !signalData.filter) {
+      return '';
+    }
+    const filter = signalData.filter;
+
+    if (filter.key && filter.operator && filter.value !== undefined) {
+      return `${filter.key}|${filter.operator}|${filter.value}`;
+    }
+    return '';
   }
   
   // Don't render the primary signal filter as the primary signal already represents this information
-  const getFiltersWithoutPrimarySignal = (filters: string, primarySignal: string) => {
+  const getFiltersWithoutPrimarySignal = (filters: string, primarySignal: string): string => {
     const primarySignalFilter = getPrimarySignalFilter(primarySignal);
     let filtersArray = filters.split(FILTER_SEPARATOR);
     filtersArray = filtersArray.filter(f => f !== primarySignalFilter);

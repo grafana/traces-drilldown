@@ -12,7 +12,7 @@ export type Bookmark = {
 
 export const Bookmarks = () => {
   const styles = useStyles2(getStyles);
-  const [bookmarks, setBookmarks] = useState<Bookmark | any>(getBookmarks());
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>(getBookmarks());
 
   const goToBookmark = (bookmark: Bookmark) => {
     const url = getBookmarkForUrl(bookmark);

@@ -11,38 +11,62 @@ const cleanupParams = (params: URLSearchParams) => {
   return params;
 }
 
-export const getBookmarks = () => {
-  return JSON.parse(localStorage.getItem(BOOKMARKS_LS_KEY) || "[]");
+export const getBookmarks = (): Bookmark[] => {
+  try {
+    return JSON.parse(localStorage.getItem(BOOKMARKS_LS_KEY) || "[]");
+  } catch (e) {
+    console.error("Failed to get bookmarks from localStorage:", e);
+    return [];
+  }
 }
 
 export const getBookmarkParams = (bookmark: Bookmark) => {
+  if (!bookmark || !bookmark.params) {
+    return { actionView: '', primarySignal: '', filters: '', metric: '' };
+  }
+  
   const params = new URLSearchParams(bookmark.params);
   const actionView = params.get(ACTION_VIEW) ?? '';
   const primarySignal = params.get(PRIMARY_SIGNAL) ?? '';
-  const filters = params.getAll(`var-${VAR_FILTERS}`).join(FILTER_SEPARATOR) ?? '';
+  const filters = params.getAll(`var-${VAR_FILTERS}`).join(FILTER_SEPARATOR);
   const metric = params.get(`var-${VAR_METRIC}`) ?? '';
   return { actionView, primarySignal, filters, metric };
 }
 
-export const getBookmarkFromURL = () => {
+export const getBookmarkFromURL = (): Bookmark => {
   const params = cleanupParams(new URLSearchParams(window.location.search));
   return { params: params.toString() };
 }
 
-export const getBookmarkForUrl = (bookmark: Bookmark) => {
+export const getBookmarkForUrl = (bookmark: Bookmark): string => {
+  if (!bookmark || !bookmark.params) {
+    return EXPLORATIONS_ROUTE;
+  }
+  
   const params = new URLSearchParams(bookmark.params);
   const urlQueryMap = Object.fromEntries(params.entries());
+  
   const filters = params.getAll(`var-${VAR_FILTERS}`); 
+  
   const url = urlUtil.renderUrl(EXPLORATIONS_ROUTE, {
     ...urlQueryMap,
     [`var-${VAR_FILTERS}`]: filters // Filters need to be added as separate params in the url as there are multiple filters with the same key
   });
+  
   return url;
 }
 
-export const toggleBookmark = () => {
+export const toggleBookmark = (): boolean => {
   const bookmark = getBookmarkFromURL();
-  bookmarkExists(bookmark) ? removeBookmark(bookmark) : addBookmark(bookmark);
+  const exists = bookmarkExists(bookmark);
+  
+  if (exists) {
+    removeBookmark(bookmark);
+    return false; 
+  } else {
+    addBookmark(bookmark);
+    return true; 
+  }
 }
 
 const addBookmark = (bookmark: Bookmark) => {
@@ -57,46 +81,40 @@ export const removeBookmark = (bookmark: Bookmark) => {
   localStorage.setItem(BOOKMARKS_LS_KEY, JSON.stringify(filteredBookmarks));
 }
 
-export const bookmarkExists = (bookmark: Bookmark) => {
+export const bookmarkExists = (bookmark: Bookmark): boolean => {
   const bookmarks = getBookmarks();
-  return bookmarks.find((b: Bookmark) => {
-    return areBookmarksEqual(b, bookmark);
-  });
+  return bookmarks.some((b: Bookmark) => areBookmarksEqual(b, bookmark));
 }
 
 export const areBookmarksEqual = (bookmark: Bookmark, storedBookmark: Bookmark) => {
   const bookmarkParams = cleanupParams(new URLSearchParams(bookmark.params));
   const storedBookmarkParams = cleanupParams(new URLSearchParams(storedBookmark.params));
 
-  // Check if both bookmarks have the same number of parameters
-  let paramCount1 = 0;
-  let paramCount2 = 0;
-  for (const _ of bookmarkParams.keys()) paramCount1++;
-  for (const _ of storedBookmarkParams.keys()) paramCount2++;
-  
-  if (paramCount1 !== paramCount2) {
+  const filterKey = `var-${VAR_FILTERS}`;
+  const bookmarkKeys = Array.from(bookmarkParams.keys()).filter(k => k !== filterKey);
+  const storedKeys = Array.from(storedBookmarkParams.keys()).filter(k => k !== filterKey);
+
+  // If they have different number of keys (excluding filters), they can't be equal
+  if (bookmarkKeys.length !== storedKeys.length) {
     return false;
   }
-
-  // Check if all key-value pairs match
-  for (const [key, value] of storedBookmarkParams.entries()) {
-    if (key === `var-${VAR_FILTERS}`) {
-      const storedFilters = storedBookmarkParams.getAll(`var-${VAR_FILTERS}`);
-      const bookmarkFilters = bookmarkParams.getAll(`var-${VAR_FILTERS}`);
-      
-      // Check if all filters match (regardless of order)
-      if (storedFilters.length !== bookmarkFilters.length) {
-        return false;
-      }
-      for (const filter of bookmarkFilters) {
-        if (!storedFilters.includes(filter)) {
-          return false;
-        }
-      }
-    } else if (bookmarkParams.get(key) !== value) { // For regular parameters, compare values directly
-      return false;
-    }
+  
+  // Check if every key in bookmarkParams exists in storedBookmarkParams with the same value
+  const allKeysMatch = bookmarkKeys.every(key => 
+    storedBookmarkParams.has(key) && bookmarkParams.get(key) === storedBookmarkParams.get(key)
+  );  
+  if (!allKeysMatch) {
+    return false;
   }
-
-  return true;
+  
+  // Compare filters (which can have multiple values with the same key)
+  const bookmarkFilters = bookmarkParams.getAll(filterKey);
+  const storedFilters = storedBookmarkParams.getAll(filterKey);  
+  if (bookmarkFilters.length !== storedFilters.length) {
+    return false;
+  }
+  
+  // Check if every filter in bookmarkFilters exists in storedFilters
+  // This handles cases where order might be different
+  return bookmarkFilters.every(filter => storedFilters.includes(filter));
 }

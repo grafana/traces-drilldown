@@ -1,7 +1,7 @@
 import { ToolbarButton, Icon } from "@grafana/ui";
 import { TracesByServiceScene } from "components/Explore/TracesByService/TracesByServiceScene";
 import React, { useEffect } from "react";
-import { getGroupByVariable, getDatasourceVariable, getFiltersVariable, getTraceExplorationScene, getSpanListColumnsVariable } from "utils/utils";
+import { getGroupByVariable, getDatasourceVariable, getFiltersVariable, getTraceExplorationScene, getSpanListColumnsVariable, getMetricVariable } from "utils/utils";
 import { bookmarkExists, getBookmarkFromURL, toggleBookmark } from "./utils";
 import { TraceExplorationScene } from "pages/Explore/TraceExploration";
 import { sceneGraph } from "@grafana/scenes";
@@ -15,7 +15,7 @@ export const BookmarkIcon = React.memo(({ model }: Props) => {
   const { topScene, primarySignal } = traceExploration.useState();
   
   const { value: datasource } = getDatasourceVariable(model).useState();
-  const { value: metric } = traceExploration.getMetricVariable().useState();
+  const { value: metric } = getMetricVariable(model).useState();
   const { value: groupBy } = getGroupByVariable(model).useState();
   const { value: spanListColumns } = getSpanListColumnsVariable(model).useState();
   const { filters } = getFiltersVariable(model).useState();
@@ -55,8 +55,8 @@ export const BookmarkIcon = React.memo(({ model }: Props) => {
       }
       tooltip={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
       onClick={() => {
-        toggleBookmark();
-        setIsBookmarked(bookmarkExists(getBookmarkFromURL()));
+        const isNowBookmarked = toggleBookmark();
+        setIsBookmarked(isNowBookmarked);
       }}
     />
   )
