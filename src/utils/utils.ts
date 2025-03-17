@@ -213,3 +213,22 @@ export const formatLabelValue = (value: string) => {
   }
   return value;
 };
+
+interface SceneType<T> extends Function {
+  new (...args: never[]): T;
+}
+
+export function findObjectOfType<T extends SceneObject>(
+  scene: SceneObject,
+  check: (obj: SceneObject) => boolean,
+  returnType: SceneType<T>
+) {
+  const obj = sceneGraph.findObject(scene, check);
+  if (obj instanceof returnType) {
+    return obj;
+  } else if (obj !== null) {
+    console.warn(`invalid return type: ${returnType.toString()}`);
+  }
+
+  return null;
+}
