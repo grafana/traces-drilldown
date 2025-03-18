@@ -199,12 +199,6 @@ export class TraceExplorationScene extends SceneObjectBase {
                     <dsVariable.Component model={dsVariable} />
                   </Stack>
                 )}
-                {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
-                {filtersVariable && (
-                  <div>
-                    <filtersVariable.Component model={filtersVariable} />
-                  </div>
-                )}
               </Stack>
 
               <div className={styles.controls}>
@@ -213,16 +207,27 @@ export class TraceExplorationScene extends SceneObjectBase {
                     <Badge text="&nbsp;Preview" color="blue" icon="rocket" />
                   </span>
                 </Tooltip>
-
-                {controls.map((control) => (
-                  <control.Component key={control.state.key} model={control} />
-                ))}
                 <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
                   <Button variant="secondary" icon="info-circle">
+                    Need help
                     <Icon className={styles.helpIcon} name={menuVisible ? 'angle-up' : 'angle-down'} size="lg" />
                   </Button>
                 </Dropdown>
+                {controls.map((control) => (
+                  <control.Component key={control.state.key} model={control} />
+                ))}
               </div>
+            </Stack>
+            <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
+              <Stack gap={0} alignItems={'center'}>
+                <div className={styles.datasourceLabel}>Filters</div>
+                {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
+              </Stack>
+              {filtersVariable && (
+                <div>
+                  <filtersVariable.Component model={filtersVariable} />
+                </div>
+              )}
             </Stack>
           </div>
           <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
@@ -336,21 +341,20 @@ function getStyles(theme: GrafanaTheme2) {
       top: 0,
       zIndex: 3,
       padding: `${theme.spacing(1.5)} 0`,
+      gap: theme.spacing(1),
     }),
     datasourceLabel: css({
       label: 'datasourceLabel',
       fontSize: '12px',
-      backgroundColor: theme.colors.background.primary,
-      border: `1px solid ${theme.colors.border.weak}`,
-      borderRadius: theme.shape.radius.default,
       padding: `0 ${theme.spacing(1)}`,
       height: '32px',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       fontWeight: theme.typography.fontWeightMedium,
       position: 'relative',
       right: -1,
+      width: '90px',
     }),
     controls: css({
       label: 'controls',
