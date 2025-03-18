@@ -39,7 +39,7 @@ describe('buildHistogramQuery', () => {
     expect(query).toEqual({
       filters: [],
       limit: 1000,
-      query: '{${filters}} | histogram_over_time(duration)',
+      query: '{${primarySignal} && ${filters}} | histogram_over_time(duration)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -54,7 +54,7 @@ describe('metricByWithStatus', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${filters} && status=error} | rate() by(status)',
+      query: '{${primarySignal} && ${filters} && status=error} | rate() by(status)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -67,7 +67,7 @@ describe('metricByWithStatus', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${filters} && status=error && service != nil} | rate() by(service, status)',
+      query: '{${primarySignal} && ${filters} && status=error && service != nil} | rate() by(service, status)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -80,7 +80,7 @@ describe('metricByWithStatus', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${filters} && service != nil} | quantile_over_time(duration, 0.9) by(service)',
+      query: '{${primarySignal} && ${filters} && service != nil} | quantile_over_time(duration, 0.9) by(service)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
