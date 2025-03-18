@@ -111,6 +111,13 @@ export interface EventTimeseriesDataReceivedPayload {
 export class EventTimeseriesDataReceived extends BusEventWithPayload<EventTimeseriesDataReceivedPayload> {
   public static type = 'timeseries-data-received';
 }
+export interface EventTraceOpenedPayload {
+  traceId: string;
+  spanId?: string;
+}
+export class EventTraceOpened extends BusEventWithPayload<EventTraceOpenedPayload> {
+  public static type = 'trace-opened';
+}
 
 export const filterStreamingProgressTransformations = [
   {

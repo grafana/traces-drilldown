@@ -18,12 +18,13 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { config, LocationService } from '@grafana/runtime';
+import { config } from '@grafana/runtime';
 import { Badge, Button, Drawer, Dropdown, Icon, Menu, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 
 import { TracesByServiceScene } from '../../components/Explore/TracesByService/TracesByServiceScene';
 import {
   DATASOURCE_LS_KEY,
+  EventTraceOpened,
   explorationDS,
   MetricFunction,
   VAR_DATASOURCE,
@@ -59,8 +60,6 @@ export interface TraceExplorationState extends SceneObjectState {
   // just for the starting data source
   initialDS?: string;
   initialFilters?: AdHocVariableFilter[];
-
-  locationService: LocationService;
 }
 
 const version = process.env.VERSION;
@@ -71,7 +70,7 @@ const compositeVersion = `v${version} - ${buildTime?.split('T')[0]} (${commitSha
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['primarySignal', 'traceId', 'spanId', 'metric'] });
 
-  public constructor(state: { locationService: LocationService } & Partial<TraceExplorationState>) {
+  public constructor(state: Partial<TraceExplorationState>) {
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
       $variables: state.$variables ?? getVariableSet(state.initialDS, state.initialFilters, state.embedded),
@@ -88,6 +87,12 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     if (!this.state.topScene) {
       this.setState({ topScene: getTopScene() });
     }
+
+    this._subs.add(
+      this.subscribeToEvent(EventTraceOpened, (event) => {
+        this.setState({ traceId: event.payload.traceId, spanId: event.payload.spanId });
+      })
+    );
 
     const datasourceVar = sceneGraph.lookupVariable(VAR_DATASOURCE, this) as DataSourceVariable;
     datasourceVar.subscribeToState((newState) => {

@@ -10,7 +10,7 @@ import {
   SceneObjectState,
 } from '@grafana/scenes';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
-import { explorationDS, MetricFunction } from 'utils/shared';
+import { EventTraceOpened, explorationDS, MetricFunction } from 'utils/shared';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';
@@ -81,7 +81,10 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
   }
 
   private _onActivate() {
-    const traceExploration = getTraceExplorationScene(this);
+    const openTrace = (traceId: string, spanId?: string) => {
+      this.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
+    };
+
     this.setState({
       $data: new SceneDataTransformer({
         $data: new StepQueryRunner({
@@ -89,7 +92,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
           datasource: explorationDS,
           queries: [this.state.metric === 'duration' ? buildHistogramQuery() : metricByWithStatus(this.state.metric)],
         }),
-        transformations: [...exemplarsTransformations(traceExploration.state.locationService)],
+        transformations: [...exemplarsTransformations(openTrace)],
       }),
       panel: this.getVizPanel(this.state.metric),
     });

@@ -24,7 +24,11 @@ import {
   getTraceByServiceScene,
   getTraceExplorationScene,
 } from '../../../../../utils/utils';
-import { EMPTY_STATE_ERROR_MESSAGE, EMPTY_STATE_ERROR_REMEDY_MESSAGE } from '../../../../../utils/shared';
+import {
+  EMPTY_STATE_ERROR_MESSAGE,
+  EMPTY_STATE_ERROR_REMEDY_MESSAGE,
+  EventTraceOpened,
+} from '../../../../../utils/shared';
 import { SpanListColumnsSelector } from './SpanListColumnsSelector';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 
@@ -74,7 +78,6 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
                   const spanIdField = data?.fields.find((f) => f.name === 'spanID');
                   const traceId = traceIdField?.values[props.rowIndex];
                   const spanId = spanIdField?.values[props.rowIndex];
-                  const traceExplorationScene = getTraceExplorationScene(this);
 
                   if (!traceId) {
                     return props.value as string;
@@ -87,10 +90,7 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
                         className={'cell-link'}
                         title={name}
                         onClick={() => {
-                          traceExplorationScene.state.locationService.partial({
-                            traceId,
-                            spanId,
-                          });
+                          this.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
                         }}
                       >
                         {name}
