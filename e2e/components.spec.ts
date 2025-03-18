@@ -3,7 +3,7 @@ import { ExplorePage } from './fixtures/explore';
 
 test.describe('components', () => {
   let explorePage: ExplorePage;
-  
+
   test.beforeEach(async ({ page }) => {
     explorePage = new ExplorePage(page);
     await explorePage.gotoExplorePage();
@@ -24,9 +24,19 @@ test.describe('components', () => {
   });
 
   test('in filters bar are visible', async ({ page }) => {
-    await expect(page.locator('div').filter({ hasText: /^Rate$/ }).nth(1)).toBeVisible();
-    await expect(page.locator('div').filter({ hasText: /^Full traces$/ }).nth(1)).toBeVisible();
-    await expect(page.getByText('Filter by attribute...')).toBeVisible();
+    await expect(
+      page
+        .locator('label')
+        .filter({ hasText: /^Root spans$/ })
+        .nth(1)
+    ).toBeVisible();
+    await expect(
+      page
+        .locator('label')
+        .filter({ hasText: /^All spans$/ })
+        .nth(1)
+    ).toBeVisible();
+    await expect(page.getByText('Filter by label values')).toBeVisible();
   });
 
   test('for RED metrics are visible', async ({ page }) => {
@@ -49,8 +59,13 @@ test.describe('components', () => {
     await expect(page.getByLabel('Resource')).toBeVisible();
     await expect(page.getByLabel('Span')).toBeVisible();
     await expect(page.getByText('Group by')).toBeVisible();
-    await expect(page.getByLabel('service.name')).toBeVisible();  
-    await expect(page.locator('div').filter({ hasText: /^Other attributes$/ }).nth(1)).toBeVisible();
+    await expect(page.getByLabel('service.name')).toBeVisible();
+    await expect(
+      page
+        .locator('div')
+        .filter({ hasText: /^Other attributes$/ })
+        .nth(1)
+    ).toBeVisible();
     await expect(page.getByText('View', { exact: true })).toBeVisible();
     await expect(page.getByLabel('Single')).toBeVisible();
     await expect(page.getByLabel('Grid')).toBeVisible();
