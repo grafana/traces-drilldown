@@ -14,6 +14,7 @@ import {
 } from '@grafana/scenes';
 import {
   EMPTY_STATE_ERROR_MESSAGE,
+  EventTraceOpened,
   explorationDS,
   filterStreamingProgressTransformations,
   MetricFunction,
@@ -97,9 +98,12 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
 
   private getPanel(tree: TreeNode) {
     const timeRange = sceneGraph.getTimeRange(this);
-    const traceExplorationScene = getTraceExplorationScene(this);
     const from = timeRange.state.value.from;
     const to = timeRange.state.value.to;
+
+    const openTrace = (traceId: string, spanId?: string) => {
+      this.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
+    };
 
     return PanelBuilders.traces()
       .setTitle(`Structure for ${tree.serviceName} [${countSpans(tree)} spans used]`)
@@ -107,9 +111,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         return {
           title: 'Open trace',
           href: '#',
-          onClick: () => {
-            traceExplorationScene.state.locationService.partial({ traceId, spanId });
-          },
+          onClick: () => openTrace(traceId, spanId),
           origin: {} as Field,
           target: '_self',
         };
@@ -403,7 +405,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       'div[data-testid="TimelineRowCell"]': {
         'button[role="switch"]': {
           cursor: 'text',
-        }
+        },
       },
       'div[data-testid="span-view"]': {
         cursor: 'text !important',
