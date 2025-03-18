@@ -26,7 +26,7 @@ test.describe('components', () => {
   test('in filters bar are visible', async ({ page }) => {
     await expect(page.getByRole('radio', { name: 'Root spans' })).toBeVisible();
     await expect(page.getByRole('radio', { name: 'All spans' })).toBeVisible();
-    await expect(page.getByText('Filter by label values')).toBeVisible();
+    await expect(page.getByRole('combobox', { name: 'Filter by label values' })).toBeVisible();
   });
 
   test('for RED metrics are visible', async ({ page }) => {
