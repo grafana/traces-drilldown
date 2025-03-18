@@ -24,18 +24,8 @@ test.describe('components', () => {
   });
 
   test('in filters bar are visible', async ({ page }) => {
-    await expect(
-      page
-        .locator('label')
-        .filter({ hasText: /^Root spans$/ })
-        .nth(1)
-    ).toBeVisible();
-    await expect(
-      page
-        .locator('label')
-        .filter({ hasText: /^All spans$/ })
-        .nth(1)
-    ).toBeVisible();
+    await expect(page.getByRole('radio', { name: 'Root spans' })).toBeVisible();
+    await expect(page.getByRole('radio', { name: 'All spans' })).toBeVisible();
     await expect(page.getByText('Filter by label values')).toBeVisible();
   });
 
@@ -56,8 +46,8 @@ test.describe('components', () => {
   test('for breakdown tab are visible', async ({ page }) => {
     await expect(page.getByText('Attributes are ordered by')).toBeVisible();
     await expect(page.getByText('Scope')).toBeVisible();
-    await expect(page.getByLabel('Resource')).toBeVisible();
-    await expect(page.getByLabel('Span')).toBeVisible();
+    await expect(page.getByRole('radio', { name: 'Resource', exact: true })).toBeVisible();
+    await expect(page.getByRole('radio', { name: 'Span', exact: true })).toBeVisible();
     await expect(page.getByText('Group by')).toBeVisible();
     await expect(page.getByLabel('service.name')).toBeVisible();
     await expect(
