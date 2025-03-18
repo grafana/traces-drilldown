@@ -46,6 +46,7 @@ import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
   controls: SceneObject[];
+  embedded?: boolean;
 
   body: SceneObject;
 
@@ -73,7 +74,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   public constructor(state: { locationService: LocationService } & Partial<TraceExplorationState>) {
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
-      $variables: state.$variables ?? getVariableSet(state.initialDS, state.initialFilters),
+      $variables: state.$variables ?? getVariableSet(state.initialDS, state.initialFilters, state.embedded),
       controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
@@ -258,7 +259,7 @@ function getTopScene() {
   return new TracesByServiceScene({});
 }
 
-function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter[]) {
+function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter[], embedded?: boolean) {
   return new SceneVariableSet({
     variables: [
       new DataSourceVariable({
@@ -266,6 +267,7 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
         label: 'Data source',
         value: initialDS,
         pluginId: 'tempo',
+        isReadOnly: embedded,
       }),
       new PrimarySignalVariable({
         name: VAR_PRIMARY_SIGNAL,
@@ -280,6 +282,7 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
         filters: initialFilters ?? [],
         allowCustomValue: true,
         expressionBuilder: renderTraceQLLabelFilters,
+        readOnly: embedded,
       }),
       new CustomVariable({
         name: VAR_METRIC,

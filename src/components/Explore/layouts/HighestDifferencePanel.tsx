@@ -3,7 +3,7 @@ import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { Button, Stack, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import React from 'react';
-import { getFiltersVariable } from '../../../utils/utils';
+import { getFiltersVariable, getTraceExplorationScene } from '../../../utils/utils';
 import { addToFilters, filterExistsForKey } from '../actions/AddToFiltersAction';
 import { computeHighestDifference } from '../../../utils/comparison';
 
@@ -47,6 +47,9 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
   }
 
   public static Component = ({ model }: SceneComponentProps<HighestDifferencePanel>) => {
+    const traceExploration = getTraceExplorationScene(model);
+    const { embedded } = traceExploration.useState();
+
     const { maxDifference, maxDifferenceIndex, panel } = model.useState();
     const styles = useStyles2(getStyles);
     const value = model.getValue();
@@ -67,6 +70,7 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
                   icon={'search-plus'}
                   fill="text"
                   onClick={() => model.onAddToFilters()}
+                  disabled={embedded}
                 >
                   Add to filters
                 </Button>
