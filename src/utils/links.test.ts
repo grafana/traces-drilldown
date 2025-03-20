@@ -36,8 +36,8 @@ describe('contextToLink', () => {
     const result = getLink(mockContext);
     expect(result).toBeDefined();
     expect(result?.path).toContain('var-ds=test-uid');
-    expect(result?.path).toContain('var-filters=resource.service.name%7C%3D%7Cgrafana');
-    expect(result?.path).toContain('var-filters=span.http.status_code%7C%3D%7C200');
+    expect(result?.path).toContain('var-filters=' + encodeURIComponent('resource.service.name|=|grafana'));
+    expect(result?.path).toContain('var-filters=' + encodeURIComponent('span.http.status_code|=|200'));
   });
 
   it('should set var-metric to errors if status filter has value error', () => {
