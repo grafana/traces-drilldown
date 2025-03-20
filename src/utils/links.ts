@@ -1,4 +1,9 @@
-import { PluginExtensionAddedLinkConfig, PluginExtensionPanelContext, PluginExtensionPoints } from '@grafana/data';
+import {
+  PluginExtensionAddedLinkConfig,
+  PluginExtensionPanelContext,
+  PluginExtensionPoints,
+  toURLRange
+} from '@grafana/data';
 
 import { DataSourceRef } from '@grafana/schema';
 import { EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC } from './shared';
@@ -43,13 +48,19 @@ export function contextToLink<T extends PluginExtensionPanelContext>(context?: T
     return undefined;
   }
 
-  const params = new URLSearchParams(location.search);
+  const params = new URLSearchParams();
   params.append(`var-${VAR_DATASOURCE}`, tempoQuery.datasource?.uid || '');
+
+  const timeRangeParams = toURLRange(context.timeRange);
+  params.append(`from`, String(timeRangeParams.from));
+  params.append(`to`, String(timeRangeParams.to));
 
   const statusFilter = filters.find((filter) => filter.tag === 'status');
   if (statusFilter) {
     params.append(`var-${VAR_METRIC}`, statusFilter.value === 'error' ? 'errors' : 'rate');
   }
+
+  params.append('var-primarySignal', 'true');
 
   const getFilters = (filters: TraceqlFilter[]) => {
     return filters
@@ -60,7 +71,7 @@ export function contextToLink<T extends PluginExtensionPanelContext>(context?: T
     
   const url = createAppUrl(params);
   return {
-    path: `${url}&var-${VAR_FILTERS}=nestedSetParent|<|0`,
+    path: `${url}`,
   };
 }
 

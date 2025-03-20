@@ -1,4 +1,4 @@
-import { PluginExtensionPanelContext } from '@grafana/data';
+import {dateTime, PluginExtensionPanelContext} from '@grafana/data';
 import { contextToLink, TraceqlFilter } from './links';
 import { RESOURCE, SPAN } from './shared';
 
@@ -35,9 +35,12 @@ describe('contextToLink', () => {
 
     const result = getLink(mockContext);
     expect(result).toBeDefined();
+    expect(result?.path).toContain('var-primarySignal=true');
     expect(result?.path).toContain('var-ds=test-uid');
     expect(result?.path).toContain('var-filters=' + encodeURIComponent('resource.service.name|=|grafana'));
     expect(result?.path).toContain('var-filters=' + encodeURIComponent('span.http.status_code|=|200'));
+    expect(result?.path).toContain('from=' + encodeURIComponent('30m'));
+    expect(result?.path).toContain('to=' + encodeURIComponent('1'));
   });
 
   it('should set var-metric to errors if status filter has value error', () => {
@@ -72,7 +75,7 @@ const createMockContext = (
     pluginId: 'test-plugin',
     id: 1,
     title: 'Test Title',
-    timeRange: { from: '30m', to: 'now-30m' },
+    timeRange: { from: '30m', to: dateTime(new Date(1)) },
     targets: targets as any,
   } as PluginExtensionPanelContext;
 };
