@@ -1,20 +1,29 @@
-import { ToolbarButton, Icon } from "@grafana/ui";
-import { TracesByServiceScene } from "components/Explore/TracesByService/TracesByServiceScene";
-import React, { useEffect } from "react";
-import { getGroupByVariable, getDatasourceVariable, getFiltersVariable, getTraceExplorationScene, getSpanListColumnsVariable, getMetricVariable } from "utils/utils";
-import { bookmarkExists, getBookmarkFromURL, toggleBookmark } from "./utils";
-import { TraceExplorationScene } from "pages/Explore/TraceExploration";
-import { SceneComponentProps, sceneGraph } from "@grafana/scenes";
-import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from "utils/analytics";
+import { ToolbarButton, Icon } from '@grafana/ui';
+import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
+import React, { useEffect } from 'react';
+import {
+  getGroupByVariable,
+  getDatasourceVariable,
+  getFiltersVariable,
+  getTraceExplorationScene,
+  getSpanListColumnsVariable,
+  getMetricVariable,
+  getPrimarySignalVariable,
+} from 'utils/utils';
+import { bookmarkExists, getBookmarkFromURL, toggleBookmark } from './utils';
+import { TraceExplorationScene } from 'pages/Explore/TraceExploration';
+import { SceneComponentProps, sceneGraph } from '@grafana/scenes';
+import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 
 export const BookmarkIcon = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
   const traceExploration = getTraceExplorationScene(model);
-  const { topScene, primarySignal } = traceExploration.useState();
-  
+  const { topScene } = traceExploration.useState();
+
   const { value: datasource } = getDatasourceVariable(model).useState();
   const { value: metric } = getMetricVariable(model).useState();
   const { value: groupBy } = getGroupByVariable(model).useState();
   const { value: spanListColumns } = getSpanListColumnsVariable(model).useState();
+  const { value: primarySignal } = getPrimarySignalVariable(model).useState();
   const { filters } = getFiltersVariable(model).useState();
   const timeRange = sceneGraph.getTimeRange(model).useState().value;
 
@@ -54,10 +63,14 @@ export const BookmarkIcon = ({ model }: SceneComponentProps<TraceExplorationScen
       onClick={() => {
         const isNowBookmarked = toggleBookmark();
         setIsBookmarked(isNowBookmarked);
-        reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.toggle_bookmark_clicked, {
-          isBookmarked: isNowBookmarked,
-        });
+        reportAppInteraction(
+          USER_EVENTS_PAGES.analyse_traces,
+          USER_EVENTS_ACTIONS.analyse_traces.toggle_bookmark_clicked,
+          {
+            isBookmarked: isNowBookmarked,
+          }
+        );
       }}
     />
-  )
-}
+  );
+};
