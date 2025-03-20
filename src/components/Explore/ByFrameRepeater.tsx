@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { DataFrame, FieldType, GrafanaTheme2, LoadingState, PanelData } from '@grafana/data';
+import { DataFrame, FieldType, GrafanaTheme2, LoadingState, PanelData, sortDataFrame } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneCSSGridLayout,
@@ -19,7 +19,13 @@ import { ErrorStateScene } from 'components/states/ErrorState/ErrorStateScene';
 import { debounce } from 'lodash';
 import { Search } from './Search';
 import { getGroupByVariable } from 'utils/utils';
-import { EMPTY_STATE_ERROR_MESSAGE, EMPTY_STATE_ERROR_REMEDY_MESSAGE, EventTimeseriesDataReceived, GRID_TEMPLATE_COLUMNS } from '../../utils/shared';
+import {
+  EMPTY_STATE_ERROR_MESSAGE,
+  EMPTY_STATE_ERROR_REMEDY_MESSAGE,
+  EventTimeseriesDataReceived,
+  GRID_TEMPLATE_COLUMNS,
+} from '../../utils/shared';
+import { cloneDataFrame } from '../../utils/frames';
 
 interface ByFrameRepeaterState extends SceneObjectState {
   body: SceneLayout;
@@ -39,8 +45,8 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
 
       this._subs.add(
         data.subscribeToState((data) => {
-          if (data.data?.state === LoadingState.Done) {
-            if (data.data.series.length === 0) {
+          if (data.data?.state === LoadingState.Done || data.data?.state === LoadingState.Streaming) {
+            if (data.data.series.length === 0 && data.data?.state !== LoadingState.Streaming) {
               this.state.body.setState({
                 children: [
                   new SceneFlexItem({
@@ -66,13 +72,13 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
                 new SceneCSSGridLayout({
                   children: [
                     new ErrorStateScene({
-                      message: data.data.error?.message ?? 'An error occurred in the query',
+                      message: data.data.errors?.[0]?.message ?? 'An error occurred in the query',
                     }),
                   ],
                 }),
               ],
             });
-          } else if (data.data?.state === LoadingState.Loading) {
+          } else {
             this.state.body.setState({
               children: [
                 new SceneCSSGridLayout({
@@ -131,24 +137,27 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
   }
 
   private groupSeriesBy(data: PanelData, groupBy: string) {
-    const groupedData = data.series.reduce((acc, series) => {
-      const key = series.fields.find((f) => f.type === FieldType.number)?.labels?.[groupBy];
-      if (!key) {
+    const groupedData = data.series.reduce(
+      (acc, series) => {
+        const key = series.fields.find((f) => f.type === FieldType.number)?.labels?.[groupBy];
+        if (!key) {
+          return acc;
+        }
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(series);
         return acc;
-      }
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(series);
-      return acc;
-    }, {} as Record<string, DataFrame[]>);
+      },
+      {} as Record<string, DataFrame[]>
+    );
 
     const newSeries = [];
     for (const key in groupedData) {
       const frames = groupedData[key].sort((a, b) => a.name?.localeCompare(b.name!) || 0);
-      const mainFrame = frames[0];
+      const mainFrame = cloneDataFrame(frames[0]);
       frames.slice(1, frames.length).forEach((frame) => mainFrame.fields.push(frame.fields[1]));
-      newSeries.push(mainFrame);
+      newSeries.push(sortDataFrame(mainFrame, 0));
     }
     return newSeries;
   }

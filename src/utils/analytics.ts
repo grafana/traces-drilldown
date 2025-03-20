@@ -38,12 +38,16 @@ export const USER_EVENTS_ACTIONS = {
     start_investigation: 'start_investigation',
     stop_investigation: 'stop_investigation',
     open_trace: 'open_trace',
+    open_in_explore_clicked: 'open_in_explore_clicked',
+    add_to_investigation_clicked: 'add_to_investigation_clicked',
+    span_list_columns_changed: 'span_list_columns_changed',
   },
   [USER_EVENTS_PAGES.home]: {
     homepage_initialized: 'homepage_initialized',
     panel_row_clicked: 'panel_row_clicked',
     explore_traces_clicked: 'explore_traces_clicked',
     read_documentation_clicked: 'read_documentation_clicked',
+    filter_changed: 'filter_changed',
   },
   [USER_EVENTS_PAGES.common]: {
     metric_changed: 'metric_changed',

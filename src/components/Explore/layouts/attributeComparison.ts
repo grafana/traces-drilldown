@@ -29,6 +29,8 @@ export function buildAttributeComparison(
   const baselineField = attributeSeries?.fields.find((f) => f.name === 'Baseline');
   const selectionField = attributeSeries?.fields.find((f) => f.name === 'Selection');
 
+  const panels: Record<string, SceneCSSGridItem> = {};
+
   if (nameField && baselineField && selectionField) {
     for (let i = 0; i < nameField.values.length; i++) {
       if (!nameField.values[i] || (!baselineField.values[i] && !selectionField.values[i])) {
@@ -92,7 +94,7 @@ export function buildAttributeComparison(
       isLazy: true,
       children: [],
     }),
-    getLayoutChild: getLayoutChild(getLabel, actionsFn, metric),
+    getLayoutChild: getLayoutChild(panels, getLabel, actionsFn, metric),
   });
 }
 
@@ -101,31 +103,44 @@ const getLabel = (df: DataFrame) => {
 };
 
 function getLayoutChild(
+  panels: Record<string, SceneCSSGridItem>,
   getTitle: (df: DataFrame) => string,
   actionsFn: (df: DataFrame) => VizPanelState['headerActions'],
   metric: MetricFunction
 ) {
   return (data: PanelData, frame: DataFrame) => {
-    const panel = getPanelConfig(metric)
-      .setTitle(getTitle(frame))
-      .setData(
-        new SceneDataNode({
-          data: {
-            ...data,
-            series: [
-              {
-                ...frame,
-              },
-            ],
+    const existingGridItem = frame.name ? panels[frame.name] : undefined;
+
+    const dataNode = new SceneDataNode({
+      data: {
+        ...data,
+        series: [
+          {
+            ...frame,
           },
-        })
-      );
+        ],
+      },
+    });
+
+    if (existingGridItem) {
+      existingGridItem.state.body?.setState({ $data: dataNode });
+      return existingGridItem;
+    }
+
+    const panel = getPanelConfig(metric).setTitle(getTitle(frame)).setData(dataNode);
+
     const actions = actionsFn(frame);
     if (actions) {
       panel.setHeaderActions(actions);
     }
-    return new SceneCSSGridItem({
+
+    const gridItem = new SceneCSSGridItem({
       body: panel.build(),
     });
+    if (frame.name) {
+      panels[frame.name] = gridItem;
+    }
+
+    return gridItem;
   };
 }

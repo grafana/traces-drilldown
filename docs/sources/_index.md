@@ -1,15 +1,15 @@
 ---
 cascade:
-  FULL_PRODUCT_NAME: Grafana Explore Traces
-  PRODUCT_NAME: Explore Traces
-description: Learn about traces and how you can use them to understand and troubleshoot
+  FULL_PRODUCT_NAME: Grafana Traces Drilldown
+  PRODUCT_NAME: Traces Drilldown
+description: Learn about traces and how you can investigate tracing data with Grafana Traces Drilldown to understand and troubleshoot
   your application and services.
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/
 keywords:
   - Explore Traces
-  - Traces
-title: Explore Traces
-menuTitle: Explore Traces
+  - Traces Drilldown
+title: Traces Drilldown
+menuTitle: Traces Drilldown
 weight: 100
 refs:
   tempo-data-source:
@@ -18,11 +18,11 @@ refs:
     - pattern: /docs/grafana-cloud/
       destination: /docs/grafana-cloud/connect-externally-hosted/data-sources/tempo/
 hero:
-  title: Explore Traces
+  title: Traces Drilldown
   level: 1
   width: 100
   height: 100
-  description: Use Explore Traces to investigate and identify issues using tracing data.
+  description: Use Traces Drilldown to investigate and identify issues using tracing data.
 cards:
   title_class: pt-0 lh-1
   items:
@@ -36,7 +36,7 @@ cards:
       height: 24
     - title: Access or install
       href: ./access/
-      description: Access or install Explore Traces.
+      description: Access or install Traces Drilldown.
       height: 24
     - title: Investigate trends and spikes
       href: ./investigate/
@@ -48,21 +48,23 @@ cards:
       height: 24
 ---
 
-# Explore Traces
+# Traces Drilldown
 <!-- Use this for the product name {{< param "PRODUCT_NAME" >}} -->
 
-{{< docs/public-preview product="Explore Traces" >}}
+{{< docs/public-preview product="Traces Drilldown" >}}
 
 Distributed traces provide a way to monitor applications by tracking requests across services.
 Traces record the details of a request to help understand why an issue is or was happening.
 
-Explore Traces helps you visualize insights from your Tempo traces data.
+Grafana Traces Drilldown helps you visualize insights from your Tempo traces data.
 Using the app, you can:
 
 * Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate issues
 * Uncover related issues and monitor changes over time
 * Browse automatic visualizations of your data based on its characteristics
 * Do all of this without writing TraceQL queries
+
+{{< docs/shared source="grafana" lookup="plugins/rename-note.md" version="<GRAFANA_VERSION>" >}}
 
 To learn more, read:
 * [From multi-line queries to no-code investigations: meeting Grafana users where they are](https://grafana.com/blog/2024/10/22/from-multi-line-queries-to-no-code-investigations-meeting-grafana-users-where-they-are/)

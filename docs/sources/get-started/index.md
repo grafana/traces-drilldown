@@ -1,41 +1,43 @@
 ---
-description: Learn how to get started with Explore Traces
+description: Learn how to get started with Traces Drilldown
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/get-started/
 keywords:
-  - Explore Traces
+  - Traces Drilldown
   - Get started
-title: Get started with Explore Traces
+title: Get started with Traces Drilldown
 menuTitle: Get started
 weight: 300
 ---
 
-# Get started with Explore Traces
+# Get started with Traces Drilldown
 
-{{< docs/public-preview product="Explore Traces" >}}
+{{< docs/public-preview product="Traces Drilldown" >}}
 
 You can use traces to identify errors in your apps and services and then to optimize and streamline them.
 
-When working with traces, start with the big picture. Then drill down using primary signals, RED metrics, filters, and structural or trace list tabs to explore your data. To learn more, refer to [Concepts](../concepts/).
+When working with traces, start with the big picture.
+Investigate using primary signals, RED metrics, filters, and structural or trace list tabs to explore your data.
+To learn more, refer to [Concepts](../concepts/).
 
 {{< admonition type="note" >}}
-Expand your observability journey and learn about [the Explore apps suite](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/).
+Expand your observability journey and learn about [the Drilldown apps suite](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/).
 {{< /admonition >}}
 
 {{< youtube id="a3uB1C2oHA4" >}}
 
 ## Before you begin
 
-To use Explore Traces with Grafana Cloud, you need:
+To use Grafana Traces Drilldown with Grafana Cloud, you need:
 
 - A Grafana Cloud account
 - A Grafana stack in Grafana Cloud with a configured Tempo data source
 
-To use Explore Traces with self-managed Grafana, you need:
+To use Traces Drilldown with self-managed Grafana, you need:
 
 - Your own Grafana v11.2 or later instance with a configured Tempo data source
-- Installed Explore Traces plugin
+- Installed Traces Drilldown plugin
 
-For more details, refer to [Access Explore Traces](../access/).
+For more details, refer to [Access Traces Drilldown](../access/).
 
 ## Explore your tracing data
 

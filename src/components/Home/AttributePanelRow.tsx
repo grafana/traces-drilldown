@@ -1,20 +1,20 @@
-import { css } from "@emotion/css";
-import { GrafanaTheme2 } from "@grafana/data";
-import { locationService } from "@grafana/runtime";
-import { Icon, useStyles2 } from "@grafana/ui";
-import React from "react";
-import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from "utils/analytics";
-import { MetricFunction } from "utils/shared";
+import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
+import { locationService } from '@grafana/runtime';
+import { Icon, useStyles2 } from '@grafana/ui';
+import React from 'react';
+import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
+import { HomepagePanelType } from './AttributePanel';
 
 type Props = {
   index: number;
-  type: MetricFunction;
+  type: HomepagePanelType;
   label: string;
   labelTitle: string;
   value: string;
   valueTitle: string;
   url: string;
-}
+};
 
 export const AttributePanelRow = (props: Props) => {
   const { index, type, label, labelTitle, value, valueTitle, url } = props;
@@ -29,34 +29,28 @@ export const AttributePanelRow = (props: Props) => {
         </div>
       )}
 
-      <div 
-        className={styles.row} 
-        key={index} 
+      <div
+        className={styles.row}
+        key={index}
         onClick={() => {
           reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.panel_row_clicked, {
             type,
             index,
-            value
+            value,
           });
           locationService.push(url);
         }}
       >
         <div className={'rowLabel'}>{label}</div>
-        
+
         <div className={styles.action}>
-          <span className={styles.actionText}>
-            {value} 
-          </span>
-          <Icon 
-            className={styles.actionIcon}
-            name='arrow-right'
-            size='xl'
-          />
+          <span className={styles.actionText}>{value}</span>
+          <Icon className={styles.actionIcon} name="arrow-right" size="xl" />
         </div>
       </div>
     </div>
   );
-}
+};
 
 function getStyles(theme: GrafanaTheme2) {
   return {
@@ -82,7 +76,7 @@ function getStyles(theme: GrafanaTheme2) {
         cursor: 'pointer',
         '.rowLabel': {
           textDecoration: 'underline',
-        }
+        },
       },
     }),
     action: css({

@@ -3,6 +3,7 @@ import React from 'react';
 
 import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
 import {
+  AdHocFiltersVariable,
   CustomVariable,
   DataSourceVariable,
   SceneComponentProps,
@@ -17,25 +18,30 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { LocationService } from '@grafana/runtime';
+import { config, LocationService } from '@grafana/runtime';
 import { Badge, Button, Drawer, Dropdown, Icon, Menu, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 
 import { TracesByServiceScene } from '../../components/Explore/TracesByService/TracesByServiceScene';
 import {
   DATASOURCE_LS_KEY,
+  explorationDS,
   MetricFunction,
   VAR_DATASOURCE,
+  VAR_FILTERS,
   VAR_GROUPBY,
   VAR_LATENCY_PARTIAL_THRESHOLD,
   VAR_LATENCY_THRESHOLD,
   VAR_METRIC,
+  VAR_PRIMARY_SIGNAL,
+  VAR_SPAN_LIST_COLUMNS,
 } from '../../utils/shared';
-import { getTraceExplorationScene, getFilterSignature, getFiltersVariable } from '../../utils/utils';
+import { getTraceExplorationScene, getFiltersVariable, getPrimarySignalVariable } from '../../utils/utils';
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
-import { FilterByVariable } from 'components/Explore/filters/FilterByVariable';
-import { getSignalForKey, primarySignalOptions } from './primary-signals';
+import { primarySignalOptions } from './primary-signals';
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
+import { PrimarySignalVariable } from './PrimarySignalVariable';
+import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
@@ -44,7 +50,6 @@ export interface TraceExplorationState extends SceneObjectState {
   body: SceneObject;
 
   drawerScene?: TraceDrawerScene;
-  primarySignal?: string;
 
   // details scene
   traceId?: string;
@@ -63,7 +68,7 @@ const commitSha = process.env.COMMIT_SHA;
 const compositeVersion = `v${version} - ${buildTime?.split('T')[0]} (${commitSha})`;
 
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
-  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['primarySignal', 'traceId', 'spanId'] });
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['primarySignal', 'traceId', 'spanId', 'metric'] });
 
   public constructor(state: { locationService: LocationService } & Partial<TraceExplorationState>) {
     super({
@@ -72,7 +77,6 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
-      primarySignal: state.primarySignal ?? primarySignalOptions[0].value,
       ...state,
     });
 
@@ -81,7 +85,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
   public _onActivate() {
     if (!this.state.topScene) {
-      this.setState({ topScene: getTopScene(this.getMetricVariable().getValue() as MetricFunction) });
+      this.setState({ topScene: getTopScene() });
     }
 
     const datasourceVar = sceneGraph.lookupVariable(VAR_DATASOURCE, this) as DataSourceVariable;
@@ -90,32 +94,10 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
         localStorage.setItem(DATASOURCE_LS_KEY, newState.value.toString());
       }
     });
-    this.subscribeToState((newState, oldState) => {
-      if (newState.primarySignal && newState.primarySignal !== oldState.primarySignal) {
-        this.updateFiltersWithPrimarySignal(newState.primarySignal, oldState.primarySignal);
-      }
-    });
-  }
-
-  public updateFiltersWithPrimarySignal(newSignal?: string, oldSignal?: string) {
-    let signal = newSignal ?? this.state.primarySignal;
-
-    const filtersVar = getFiltersVariable(this);
-    let filters = filtersVar.state.filters;
-    // Remove previous filter for primary signal
-    if (oldSignal) {
-      filters = filters.filter((f) => getFilterSignature(f) !== getFilterSignature(getSignalForKey(oldSignal)?.filter));
-    }
-    // Add new filter
-    const newFilter = getSignalForKey(signal)?.filter;
-    if (newFilter) {
-      filters.unshift(newFilter);
-    }
-    filtersVar.setState({ filters });
   }
 
   getUrlState() {
-    return { primarySignal: this.state.primarySignal, traceId: this.state.traceId, spanId: this.state.spanId };
+    return { traceId: this.state.traceId, spanId: this.state.spanId };
   }
 
   updateFromUrl(values: SceneObjectUrlValues) {
@@ -124,10 +106,6 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     if (values.traceId || values.spanId) {
       stateUpdate.traceId = values.traceId ? (values.traceId as string) : undefined;
       stateUpdate.spanId = values.spanId ? (values.spanId as string) : undefined;
-    }
-
-    if (values.primarySignal && values.primarySignal !== this.state.primarySignal) {
-      stateUpdate.primarySignal = values.primarySignal as string;
     }
 
     this.setState(stateUpdate);
@@ -146,19 +124,13 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     return variable;
   }
 
-  public onChangePrimarySignal = (signal: string) => {
-    if (!signal || this.state.primarySignal === signal) {
-      return;
-    }
-    this.setState({ primarySignal: signal });
-  };
-
   public onChangeMetricFunction = (metric: string) => {
     const variable = this.getMetricVariable();
     if (!metric || variable.getValue() === metric) {
       return;
     }
-    variable.changeValueTo(metric);
+
+    variable.changeValueTo(metric, undefined, true);
   };
 
   public getMetricFunction() {
@@ -186,20 +158,23 @@ export class TraceExplorationScene extends SceneObjectBase {
 
     const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
     const filtersVariable = getFiltersVariable(traceExploration);
+    const primarySignalVariable = getPrimarySignalVariable(traceExploration);
 
     const menu = (
       <Menu>
         <div className={styles.menu}>
-          <Menu.Item
-            label="Give feedback"
-            ariaLabel="Give feedback"
-            icon={'comment-alt-message'}
-            url="https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS"
-            target="_blank"
-            onClick={() =>
-              reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.global_docs_link_clicked)
-            }
-          />
+          {config.feedbackLinksEnabled && (
+            <Menu.Item
+              label="Give feedback"
+              ariaLabel="Give feedback"
+              icon={'comment-alt-message'}
+              url="https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS"
+              target="_blank"
+              onClick={() =>
+                reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.global_docs_link_clicked)
+              }
+            />
+          )}
           <Menu.Item
             label="Documentation"
             ariaLabel="Documentation"
@@ -218,20 +193,22 @@ export class TraceExplorationScene extends SceneObjectBase {
       <>
         <div className={styles.container}>
           <div className={styles.headerContainer}>
-            <Stack gap={2} justifyContent={'space-between'} wrap={'wrap'}>
-              {dsVariable && (
-                <Stack gap={1} alignItems={'center'}>
-                  <div className={styles.datasourceLabel}>Data source</div>
-                  <dsVariable.Component model={dsVariable} />
-                </Stack>
-              )}
+            <Stack gap={1} justifyContent={'space-between'} wrap={'wrap'}>
+              <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
+                {dsVariable && (
+                  <Stack gap={0} alignItems={'center'}>
+                    <div className={styles.datasourceLabel}>Data source</div>
+                    <dsVariable.Component model={dsVariable} />
+                  </Stack>
+                )}
+              </Stack>
+
               <div className={styles.controls}>
                 <Tooltip content={<PreviewTooltip text={compositeVersion} />} interactive>
                   <span className={styles.preview}>
                     <Badge text="&nbsp;Preview" color="blue" icon="rocket" />
                   </span>
                 </Tooltip>
-
                 <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
                   <Button variant="secondary" icon="info-circle">
                     Need help
@@ -243,9 +220,17 @@ export class TraceExplorationScene extends SceneObjectBase {
                 ))}
               </div>
             </Stack>
-            <div className={styles.filters}>
-              {filtersVariable && <filtersVariable.Component model={filtersVariable} />}
-            </div>
+            <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
+              <Stack gap={0} alignItems={'center'}>
+                <div className={styles.datasourceLabel}>Filters</div>
+                {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
+              </Stack>
+              {filtersVariable && (
+                <div>
+                  <filtersVariable.Component model={filtersVariable} />
+                </div>
+              )}
+            </Stack>
           </div>
           <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
         </div>
@@ -269,8 +254,8 @@ const PreviewTooltip = ({ text }: { text: string }) => {
   );
 };
 
-function getTopScene(metric?: MetricFunction) {
-  return new TracesByServiceScene({ metric });
+function getTopScene() {
+  return new TracesByServiceScene({});
 }
 
 function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter[]) {
@@ -282,8 +267,19 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
         value: initialDS,
         pluginId: 'tempo',
       }),
-      new FilterByVariable({
-        initialFilters,
+      new PrimarySignalVariable({
+        name: VAR_PRIMARY_SIGNAL,
+        value: primarySignalOptions[0].value,
+      }),
+      new AdHocFiltersVariable({
+        addFilterButtonText: 'Add filter',
+        hide: VariableHide.hideLabel,
+        name: VAR_FILTERS,
+        datasource: explorationDS,
+        layout: 'combobox',
+        filters: initialFilters ?? [],
+        allowCustomValue: true,
+        expressionBuilder: renderTraceQLLabelFilters,
       }),
       new CustomVariable({
         name: VAR_METRIC,
@@ -291,6 +287,10 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
       }),
       new CustomVariable({
         name: VAR_GROUPBY,
+        defaultToAll: false,
+      }),
+      new CustomVariable({
+        name: VAR_SPAN_LIST_COLUMNS,
         defaultToAll: false,
       }),
       new CustomVariable({
@@ -320,7 +320,7 @@ function getStyles(theme: GrafanaTheme2) {
       label: 'container',
       flexGrow: 1,
       display: 'flex',
-      gap: theme.spacing(2),
+      gap: theme.spacing(1),
       minHeight: '100%',
       flexDirection: 'column',
       padding: `0 ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
@@ -343,10 +343,20 @@ function getStyles(theme: GrafanaTheme2) {
       top: 0,
       zIndex: 3,
       padding: `${theme.spacing(1.5)} 0`,
+      gap: theme.spacing(1),
     }),
     datasourceLabel: css({
       label: 'datasourceLabel',
       fontSize: '12px',
+      padding: `0 ${theme.spacing(1)}`,
+      height: '32px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      fontWeight: theme.typography.fontWeightMedium,
+      position: 'relative',
+      right: -1,
+      width: '90px',
     }),
     controls: css({
       label: 'controls',
@@ -382,8 +392,9 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     filters: css({
       label: 'filters',
-      backgroundColor: theme.colors.background.primary,
       marginTop: theme.spacing(1),
+      display: 'flex',
+      gap: theme.spacing(1),
     }),
   };
 }

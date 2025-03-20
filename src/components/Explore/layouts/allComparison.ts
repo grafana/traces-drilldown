@@ -13,13 +13,15 @@ export function buildAllComparisonLayout(
   actionsFn: (df: DataFrame) => VizPanelState['headerActions'],
   metric: MetricFunction
 ) {
+  const panels: Record<string, SceneCSSGridItem> = {};
+
   return new ByFrameRepeater({
     body: new SceneCSSGridLayout({
       templateColumns: GRID_TEMPLATE_COLUMNS,
       autoRows: '320px',
       children: [],
     }),
-    getLayoutChild: getLayoutChild(getFrameName, actionsFn, metric),
+    getLayoutChild: getLayoutChild(panels, getFrameName, actionsFn, metric),
   });
 }
 
@@ -28,33 +30,45 @@ const getFrameName = (df: DataFrame) => {
 };
 
 function getLayoutChild(
+  panels: Record<string, SceneCSSGridItem>,
   getTitle: (df: DataFrame) => string,
   actionsFn: (df: DataFrame) => VizPanelState['headerActions'],
   metric: MetricFunction
 ) {
   return (data: PanelData, frame: DataFrame) => {
-    const panel = getPanelConfig(metric)
-      .setTitle(getTitle(frame))
-      .setData(
-        new SceneDataNode({
-          data: {
-            ...data,
-            series: [
-              {
-                ...frame,
-              },
-            ],
+    const existingGridItem = frame.name ? panels[frame.name] : undefined;
+
+    const dataNode = new SceneDataNode({
+      data: {
+        ...data,
+        series: [
+          {
+            ...frame,
           },
-        })
-      );
+        ],
+      },
+    });
+
+    if (existingGridItem) {
+      existingGridItem.state.body?.setState({ $data: dataNode });
+      return existingGridItem;
+    }
+
+    const panel = getPanelConfig(metric).setTitle(getTitle(frame)).setData(dataNode);
 
     const actions = actionsFn(frame);
     if (actions) {
       panel.setHeaderActions(actions);
     }
-    return new SceneCSSGridItem({
+
+    const gridItem = new SceneCSSGridItem({
       body: new HighestDifferencePanel({ frame, panel: panel.build() }),
     });
+    if (frame.name) {
+      panels[frame.name] = gridItem;
+    }
+
+    return gridItem;
   };
 }
 

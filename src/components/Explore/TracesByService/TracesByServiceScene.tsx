@@ -22,6 +22,7 @@ import {
   SceneObjectUrlValues,
   SceneQueryRunner,
   SceneTimeRange,
+  VariableValue,
 } from '@grafana/scenes';
 
 import { REDPanel } from './REDPanel';
@@ -39,7 +40,7 @@ import {
 import { getDataSourceSrv } from '@grafana/runtime';
 import { ActionViewType, TabsBarScene, actionViewsDefinitions } from './Tabs/TabsBarScene';
 import { isEqual } from 'lodash';
-import { getDatasourceVariable, getGroupByVariable, getTraceExplorationScene } from 'utils/utils';
+import { getDatasourceVariable, getGroupByVariable, getSpanListColumnsVariable, getTraceExplorationScene } from 'utils/utils';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../utils/analytics';
 import { MiniREDPanel } from './MiniREDPanel';
 import { Icon, LinkButton, Stack, Tooltip, useStyles2 } from '@grafana/ui';
@@ -49,7 +50,6 @@ import { map, Observable } from 'rxjs';
 
 export interface TraceSceneState extends SceneObjectState {
   body: SceneFlexLayout;
-  metric?: MetricFunction;
   actionView?: ActionViewType;
 
   attributes?: string[];
@@ -107,6 +107,12 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     this._subs.add(
       getDatasourceVariable(this).subscribeToState(() => {
         this.updateAttributes();
+      })
+    );
+
+    this._subs.add(
+      getSpanListColumnsVariable(this).subscribeToState(() => {
+        this.updateQueryRunner(metricVariable.getValue() as MetricFunction);
       })
     );
 
@@ -179,6 +185,12 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     }
   }
 
+  onUserUpdateSelection(newSelection: ComparisonSelection) {
+    this._urlSync.performBrowserHistoryAction(() => {
+      this.setState({ selection: newSelection });
+    });
+  }
+
   public setActionView(actionView?: ActionViewType) {
     const { body } = this.state;
     const actionViewDef = actionViewsDefinitions.find((v) => v.value === actionView);
@@ -201,12 +213,13 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
 
   private updateQueryRunner(metric: MetricFunction) {
     const selection = this.state.selection;
+    const select = getSpanListColumnsVariable(this).getValue();
 
     this.setState({
       $data: new SceneDataTransformer({
         $data: new SceneQueryRunner({
           datasource: explorationDS,
-          queries: [buildQuery(metric, selection)],
+          queries: [buildQuery(metric, select, selection)],
           $timeRange: timeRangeFromSelection(selection),
         }),
         transformations: [...filterStreamingProgressTransformations, ...spanListTransformations],
@@ -239,7 +252,9 @@ const MetricTypeTooltip = () => {
   return (
     <Stack direction={'column'} gap={1}>
       <div className={styles.tooltip.title}>RED metrics for traces</div>
-      <span className={styles.tooltip.subtitle}>Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.</span>
+      <span className={styles.tooltip.subtitle}>
+        Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.
+      </span>
       <div className={styles.tooltip.text}>
         <div>
           <span className={styles.tooltip.emphasize}>Rate</span> - Spans per second that match your filter, useful to
@@ -302,9 +317,9 @@ function getStyles(theme: GrafanaTheme2) {
         label: 'text',
         color: theme.colors.text.secondary,
 
-        'div': {
+        div: {
           marginBottom: theme.spacing.x0_5,
-        }
+        },
       }),
       emphasize: css({
         label: 'emphasize',
@@ -320,7 +335,9 @@ function getStyles(theme: GrafanaTheme2) {
 const MAIN_PANEL_HEIGHT = 240;
 export const MINI_PANEL_HEIGHT = (MAIN_PANEL_HEIGHT - 8) / 2;
 
-export function buildQuery(type: MetricFunction, selection?: ComparisonSelection) {
+export function buildQuery(type: MetricFunction, select: VariableValue, selection?: ComparisonSelection) {
+  const columns = select?.toString();
+  const selectQuery = columns !== '' ? ` | select(${columns})` : '';
   let typeQuery = '';
   switch (type) {
     case 'errors':
@@ -346,7 +363,7 @@ export function buildQuery(type: MetricFunction, selection?: ComparisonSelection
   }
   return {
     refId: 'A',
-    query: `{${VAR_FILTERS_EXPR}${typeQuery}} | select(status)`,
+    query: `{${VAR_FILTERS_EXPR}${typeQuery}}${selectQuery}`,
     queryType: 'traceql',
     tableType: 'spans',
     limit: 200,

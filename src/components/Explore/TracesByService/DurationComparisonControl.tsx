@@ -4,7 +4,7 @@ import { SceneObjectBase, SceneComponentProps, SceneObjectState } from '@grafana
 import { GrafanaTheme2 } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
-import { getTraceByServiceScene, shouldShowSelection } from 'utils/utils';
+import { getMetricValue, getTraceByServiceScene, shouldShowSelection } from 'utils/utils';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../utils/analytics';
 import { ComparisonSelection } from '../../../utils/shared';
 
@@ -26,7 +26,7 @@ export class DurationComparisonControl extends SceneObjectBase<ComparisonControl
 
     reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.start_investigation, {
       selection: this.state.selection,
-      metric: byServiceScene.state.metric,
+      metric: getMetricValue(this),
     });
   };
 

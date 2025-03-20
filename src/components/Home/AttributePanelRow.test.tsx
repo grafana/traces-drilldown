@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AttributePanelRow } from './AttributePanelRow';
 import { locationService } from '@grafana/runtime';
-import { MetricFunction } from 'utils/shared';
+import { HomepagePanelType } from './AttributePanel';
 
 jest.mock('@grafana/runtime', () => ({
   locationService: {
@@ -25,7 +25,7 @@ jest.mock('utils/analytics', () => ({
 describe('AttributePanelRow', () => {
   const mockProps = {
     index: 0,
-    type: 'errors' as MetricFunction,
+    type: 'errored-services' as HomepagePanelType,
     label: 'Test Label',
     labelTitle: 'Label Title',
     value: 'Test Text',

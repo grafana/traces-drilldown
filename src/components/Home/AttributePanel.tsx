@@ -9,7 +9,7 @@ import {
   SceneQueryRunner,
 } from '@grafana/scenes';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
-import { explorationDS, MetricFunction } from 'utils/shared';
+import { explorationDS } from 'utils/shared';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
@@ -19,6 +19,8 @@ import Skeleton from 'react-loading-skeleton';
 import { getErrorMessage, getNoDataMessage } from 'utils/utils';
 import { getMinimumsForDuration, getYBuckets } from 'components/Explore/TracesByService/REDPanel';
 
+export type HomepagePanelType = 'errored-services' | 'slowest-services' | 'slowest-traces';
+
 export interface AttributePanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
   query: {
@@ -26,8 +28,9 @@ export interface AttributePanelState extends SceneObjectState {
     step?: string;
   };
   title: string;
-  type: MetricFunction;
+  type: HomepagePanelType;
   renderDurationPanel?: boolean;
+  filter?: string;
 }
 
 export class AttributePanel extends SceneObjectBase<AttributePanelState> {
@@ -35,19 +38,21 @@ export class AttributePanel extends SceneObjectBase<AttributePanelState> {
     super({
       $data: new SceneQueryRunner({
         datasource: explorationDS,
-        queries: [{ refId: 'A', queryType: 'traceql', tableType: 'spans', limit: 10, ...state.query }],
+        queries: [{ refId: 'A', queryType: 'traceql', tableType: 'spans', limit: 10, ...state.query, exemplars: 0 }],
       }),
       ...state,
     });
-    
 
     this.addActivationHandler(() => {
       const data = sceneGraph.getData(this);
 
       this._subs.add(
         data.subscribeToState((data) => {
-          if (data.data?.state === LoadingState.Done) {
-            if (data.data.series.length === 0 || data.data.series[0].length === 0) {
+          if (data.data?.state === LoadingState.Done || data.data?.state === LoadingState.Streaming) {
+            if (
+              data.data?.state === LoadingState.Done &&
+              (data.data.series.length === 0 || data.data.series[0].length === 0)
+            ) {
               this.setState({
                 panel: new SceneFlexLayout({
                   children: [
@@ -60,37 +65,37 @@ export class AttributePanel extends SceneObjectBase<AttributePanelState> {
                 }),
               });
             } else if (data.data.series.length > 0) {
-              if (state.type === 'errors' || state.renderDurationPanel) {
+              if (state.type !== 'slowest-traces' || state.renderDurationPanel) {
                 this.setState({
                   panel: new SceneFlexLayout({
                     children: [
                       new AttributePanelScene({
                         series: data.data.series,
                         title: state.title,
-                        type: state.type
+                        type: state.type,
                       }),
                     ],
-                  })
+                  }),
                 });
-              } else {
+              } else if (data.data?.state === LoadingState.Done) {
                 let yBuckets = getYBuckets(data.data?.series ?? []);
                 if (yBuckets?.length) {
                   const { minDuration } = getMinimumsForDuration(yBuckets);
-                  
+
                   this.setState({
                     panel: new SceneFlexLayout({
                       children: [
-                        new AttributePanel({ 
+                        new AttributePanel({
                           query: {
-                            query: `{nestedSetParent<0 && kind=server && duration > ${minDuration}}`,
+                            query: `{nestedSetParent<0 && duration > ${minDuration} ${state.filter ?? ''}}`,
                           },
-                          title: state.title, 
+                          title: state.title,
                           type: state.type,
                           renderDurationPanel: true,
                         }),
                       ],
-                    })
-                  }); 
+                    }),
+                  });
                 }
               }
             }
@@ -104,9 +109,9 @@ export class AttributePanel extends SceneObjectBase<AttributePanelState> {
                     type: state.type,
                   }),
                 ],
-              })
+              }),
             });
-          } else if (data.data?.state === LoadingState.Loading || data.data?.state === LoadingState.Streaming) {
+          } else {
             this.setState({
               panel: new SceneFlexLayout({
                 direction: 'column',
@@ -166,7 +171,7 @@ export const SkeletonComponent = () => {
             </div>
             <div className={styles.rowRight}>
               <Skeleton count={1} />
-              </div>
+            </div>
           </div>
         ))}
       </div>

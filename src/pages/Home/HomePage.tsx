@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { newHome } from '../../utils/utils';
-import { DATASOURCE_LS_KEY } from '../../utils/shared';
+import { DATASOURCE_LS_KEY, HOMEPAGE_FILTERS_LS_KEY } from '../../utils/shared';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../utils/analytics';
 import { Home } from './Home';
 
 const HomePage = () => {
   const initialDs = localStorage.getItem(DATASOURCE_LS_KEY) || '';
-  const [home] = useState(newHome(initialDs));
+  const localStorageFilters = localStorage.getItem(HOMEPAGE_FILTERS_LS_KEY);
+  const filters = localStorageFilters ? JSON.parse(localStorageFilters) : [];
+  const [home] = useState(newHome(filters, initialDs));
 
   return <HomeView home={home} />;
 };

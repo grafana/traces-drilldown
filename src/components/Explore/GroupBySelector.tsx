@@ -13,7 +13,7 @@ type Props = {
   options: Array<SelectableValue<string>>;
   radioAttributes: string[];
   value?: string;
-  onChange: (label: string) => void;
+  onChange: (label: string, ignore?: boolean) => void;
   showAll?: boolean;
   model: AttributesBreakdownScene | AttributesComparisonScene;
 };
@@ -104,7 +104,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
     const defaultValue = radioAttributes[0] ?? options[0]?.value;
     if (defaultValue) {
       if (!showAll && (!value || value === ALL)) {
-        onChange(defaultValue);
+        onChange(defaultValue, true);
       }
     }
   });
@@ -122,7 +122,10 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
           value={value && getModifiedSelectOptions(otherAttrOptions).some((x) => x.value === value) ? value : null} // remove value from select when radio button clicked
           placeholder={'Other attributes'}
           options={getModifiedSelectOptions(otherAttrOptions)}
-          onChange={(selected) => onChange(selected?.value ?? defaultOnChangeValue)}
+          onChange={(selected) => {
+            const newSelected = selected?.value ?? defaultOnChangeValue;
+            onChange(newSelected);
+          }}
           className={styles.select}
           isClearable
           onInputChange={(value: string, { action }: InputActionMeta) => {

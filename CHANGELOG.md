@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.6](https://github.com/grafana/traces-drilldown/compare/v0.2.4...v0.2.6) (2025-03-12)
+
+### Enhancements
+
+* Support for add to investigation. ([#320](https://github.com/grafana/traces-drilldown/pull/320))
+* Support for metrics streaming. ([#312](https://github.com/grafana/traces-drilldown/pull/312))
+* Rename plugin to Grafana Traces Drilldown. ([#329](https://github.com/grafana/traces-drilldown/pull/329))
+* Add back and forward support for app actions. ([#294](https://github.com/grafana/traces-drilldown/pull/294))
+* Exposes a component which takes properties and creates a LinkButton with a href to navigate to the Traces Drilldown from outside. ([#335](https://github.com/grafana/traces-drilldown/pull/335))
+* Select custom columns in trace list. ([#342](https://github.com/grafana/traces-drilldown/pull/342))
+
 ## [0.2.3](https://github.com/grafana/explore-traces/compare/v0.2.2...v0.2.3) (2025-02-06)
 
 ### Enhancements

@@ -157,9 +157,9 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     });
   };
 
-  public onChange = (value: string) => {
+  public onChange = (value: string, ignore?: boolean) => {
     const variable = getGroupByVariable(this);
-    variable.changeValueTo(value);
+    variable.changeValueTo(value, undefined, !ignore);
 
     reportAppInteraction(
       USER_EVENTS_PAGES.analyse_traces,

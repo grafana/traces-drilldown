@@ -34,13 +34,13 @@ For more information, refer to [Profiling types](../concepts/#profile-types/) fo
 Refer to [Understand profile types](https://grafana.com/docs/pyroscope/latest/view-and-analyze-profile-data/profiling-types/) to learn about profile types and instrumentation methods.
 
 After you’ve identified the problem process or service, you can filter and explore using labels and flame graphs to view lower levels.
-With capabilities like the [Flame graph AI interpreter](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/flamegraph-ai/) or the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/), Explore Profiles helps you locate the root cause and how to address it.
+With capabilities like the [Flame graph AI interpreter](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/flamegraph-ai/) or the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/), Grafana Profiles Drilldown helps you locate the root cause and how to address it.
 
 ## Use case 1: Investigate an issue
 
 Profiling data is ideal when you know there is a specific service or area where there is a performance issue.
 Maybe an alert from spike in CPU led you to profiles or maybe your logs showed OOM issue for a particular service and you need to debug it.
-Explore Profiles lets you quickly drill into a service and identify the performance issue in these scenarios.
+Profiles Drilldown lets you quickly drill into a service and identify the performance issue in these scenarios.
 
 ### Example: Know the problem service, not the cause
 

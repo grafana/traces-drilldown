@@ -3,14 +3,14 @@ import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps } from '@grafana/scenes';
 import { Icon, useStyles2 } from '@grafana/ui';
 import React from 'react';
-import { MetricFunction } from 'utils/shared';
 import { AttributePanelRows } from './AttributePanelRows';
+import { HomepagePanelType } from './AttributePanel';
 
 interface AttributePanelSceneState extends SceneObjectState {
   series?: DataFrame[];
   title: string;
-  type: MetricFunction;
-  message?: string
+  type: HomepagePanelType;
+  message?: string;
 }
 
 export class AttributePanelScene extends SceneObjectBase<AttributePanelSceneState> {
@@ -21,13 +21,26 @@ export class AttributePanelScene extends SceneObjectBase<AttributePanelSceneStat
     return (
       <div className={styles.container}>
         <div className={styles.title}>
-          <Icon name={type === 'duration' ? 'clock-nine' : 'exclamation-triangle'} size='lg' />
+          <Icon name={getIcon(type)} size="lg" />
           <span className={styles.titleText}>{title}</span>
         </div>
         <AttributePanelRows series={series} type={type} message={message} />
       </div>
     );
   };
+}
+
+function getIcon(type: HomepagePanelType) {
+  switch (type) {
+    case 'slowest-services':
+      return 'clock-nine';
+    case 'slowest-traces':
+      return 'crosshair';
+    case 'errored-services':
+      return 'exclamation-triangle';
+    default:
+      return 'exclamation-triangle';
+  }
 }
 
 function getStyles(theme: GrafanaTheme2) {

@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
-  "name": "Explore Traces",
+  "name": "Grafana Traces Drilldown",
   "id": "grafana-exploretraces-app",
   "preload": true,
   "autoEnabled": true,
   "info": {
     "keywords": ["app", "tempo", "traces", "explore"],
-    "description": "Grafana app plugin that allows users for a query-less way to navigate and visualize trace data stored in Tempo.",
+    "description": "Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate errors within complex distributed systems.",
     "author": {
       "name": "Grafana"
     },
@@ -57,16 +57,28 @@
     "plugins": []
   },
   "extensions": {
+    "exposedComponents": [
+      {
+        "id": "grafana-exploretraces-app/open-in-explore-traces-button/v1",
+        "title": "Open in Traces Drilldown button",
+        "description": "A button that opens a traces view in the Traces Drilldown app."
+      }
+    ],
     "addedLinks": [
       {
         "targets": ["grafana-lokiexplore-app/toolbar-open-related/v1"],
-        "title": "open traces",
-        "description": "Open traces"
+        "title": "traces drilldown",
+        "description": "Open in Traces Drilldown"
       },
       {
         "targets": ["grafana/dashboard/panel/menu"],
         "title": "Open in Explore Traces",
         "description": "Open current query in the Explore Traces app"
+      }
+    ],
+    "extensionPoints": [
+      {
+        "id": "grafana-exploretraces-app/investigation/v1"
       }
     ]
   }

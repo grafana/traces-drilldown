@@ -2,7 +2,7 @@
 description: Choose a view that best suits what you need to investigate.
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/choose-a-view/
 keywords:
-  - Explore Traces
+  - Traces Drilldown
   - Concepts
 title: Choose a view
 menuTitle: Choose a view
@@ -12,16 +12,16 @@ weight: 500
 
 # Choose a view
 
-<!-- needs to be updated for Explore Traces -->
+<!-- needs to be updated for Profiles Drilldown -->
 
-The available views in Explore Profiles correspond to how you move through your data: from broader to more specific.
+The available views in Grafana Profiles Drilldown correspond to how you move through your data: from broader to more specific.
 For example, you can start with **All services** and then move to **Profile types** or **Labels** for more specific views into your data.
 
 This matches the hierarchy of the [profiling data](../concepts/).
 
 After you choose a view, you can [Investigate trends and spikes](../investigate/).
 
-{{< docs/public-preview product="Explore Profiles" >}}
+{{< docs/public-preview product="Traces Drilldown" >}}
 
 ## Select a view
 
@@ -140,7 +140,7 @@ Determining which view to use frames the rest of your investigation.
 
 ### All services view
 
-The **All services** view is the default view when you first open Explore Profiles.
+The **All services** view is the default view when you first open Traces Drilldown.
 
 ![The All services view](../images/explore-profiles-homescreen.png)
 

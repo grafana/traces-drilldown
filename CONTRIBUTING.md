@@ -1,6 +1,6 @@
-# Grafana Traces app
+# Grafana Traces Drilldown
 
-Grafana app plugin that allows users for a query-less way to navigate and visualize trace data stored in Explore Traces.
+The Grafana Traces Drilldown app lets users navigate and visualize trace data stored in Tempo without complex queries.
 
 We love accepting contributions!
 If your change is minor, please feel free submit
