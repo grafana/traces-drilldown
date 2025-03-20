@@ -37,7 +37,6 @@ import { FilterByVariable } from 'components/Explore/filters/FilterByVariable';
 import { getSignalForKey, primarySignalOptions } from './primary-signals';
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
-import { BookmarkIcon } from 'pages/Home/bookmarks/BookmarkIcon';
 
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
@@ -232,8 +231,6 @@ export class TraceExplorationScene extends SceneObjectBase {
                 </Stack>
               )}
               <div className={styles.controls}>
-                <BookmarkIcon model={model} />
-
                 <Tooltip content={<PreviewTooltip text={compositeVersion} />} interactive>
                   <span className={styles.preview}>
                     <Badge text="&nbsp;Preview" color="blue" icon="rocket" />
