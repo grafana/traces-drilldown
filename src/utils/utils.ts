@@ -23,13 +23,14 @@ import {
   VAR_LATENCY_PARTIAL_THRESHOLD,
   VAR_LATENCY_THRESHOLD,
   VAR_METRIC,
+  VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
 } from './shared';
-import { primarySignalOptions } from '../pages/Explore/primary-signals';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { ActionViewType } from '../components/Explore/TracesByService/Tabs/TabsBarScene';
 import { LocationService } from '@grafana/runtime';
 import { Home } from 'pages/Home/Home';
+import { PrimarySignalVariable } from 'pages/Explore/PrimarySignalVariable';
 
 export function getTraceExplorationScene(model: SceneObject): TraceExploration {
   return sceneGraph.getAncestor(model, TraceExploration);
@@ -50,7 +51,7 @@ export function newTracesExploration(
 ): TraceExploration {
   return new TraceExploration({
     initialDS,
-    initialFilters: initialFilters ?? [primarySignalOptions[0].filter],
+    initialFilters: initialFilters ?? [],
     $timeRange: new SceneTimeRange({ from: 'now-30m', to: 'now' }),
     locationService,
   });
@@ -167,6 +168,14 @@ export function getFiltersVariable(scene: SceneObject): AdHocFiltersVariable {
   const variable = sceneGraph.lookupVariable(VAR_FILTERS, scene);
   if (!(variable instanceof AdHocFiltersVariable)) {
     throw new Error('Filters variable not found');
+  }
+  return variable;
+}
+
+export function getPrimarySignalVariable(scene: SceneObject): PrimarySignalVariable {
+  const variable = sceneGraph.lookupVariable(VAR_PRIMARY_SIGNAL, scene);
+  if (!(variable instanceof PrimarySignalVariable)) {
+    throw new Error('Primary signal variable not found');
   }
   return variable;
 }
