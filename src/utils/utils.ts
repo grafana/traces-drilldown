@@ -216,3 +216,5 @@ export const formatLabelValue = (value: string) => {
   }
   return value;
 };
+
+export const capitalizeFirstChar = (str: string) => str?.[0]?.toUpperCase() + str?.slice(1) || "";

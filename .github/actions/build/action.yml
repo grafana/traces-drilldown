@@ -23,37 +23,37 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'npm'
+        cache: 'yarn'
 
     - name: Install dependencies
-      run: npm ci
+      run: yarn install --frozen-lockfile
       shell: bash
 
     - name: Check types
-      run: npm run typecheck
+      run: yarn typecheck
       shell: bash
 
     - name: Lint
-      run: npm run lint
+      run: yarn lint
       shell: bash
 
     - name: Unit tests
-      run: npm run test:ci
+      run: yarn test:ci
       shell: bash
 
     - name: Build frontend
-      run: npm run build
+      run: yarn build
       shell: bash
 
     - name: Check bundlesize
-      run: yarn run bundlewatch
+      run: yarn bundlewatch
       shell: bash
-    
+
     - name: Start Grafana Docker container
-      run: npm run server:ci
+      run: yarn server:ci
       shell: bash
     - name: Install Playwright Browsers
-      run: npx playwright install chromium --with-deps
+      run: yarn playwright install chromium --with-deps
       shell: bash
     - name: Wait for Docker container
       uses: cygnetdigital/wait_for_response@v2.0.0
@@ -64,7 +64,7 @@ runs:
         interval: 500
     - name: Run e2e tests
       id: run-tests
-      run: npm run e2e:fast
+      run: yarn e2e:fast
       shell: bash
     - name: Upload Playwright artifacts
       uses: actions/upload-artifact@v4
@@ -74,7 +74,7 @@ runs:
         path: playwright-report/
         retention-days: 5
     - name: Stop Grafana Docker container
-      run: npm run server:ci:down
+      run: yarn server:ci:down
       shell: bash
 
     - name: Check for backend
@@ -107,7 +107,7 @@ runs:
         args: buildAll
 
     - name: Sign plugin
-      run: npm run sign
+      run: yarn sign
       shell: bash
       env:
         GRAFANA_ACCESS_POLICY_TOKEN: ${{ inputs.policy_token }}

@@ -40,7 +40,12 @@ import {
 import { getDataSourceSrv } from '@grafana/runtime';
 import { ActionViewType, TabsBarScene, actionViewsDefinitions } from './Tabs/TabsBarScene';
 import { isEqual } from 'lodash';
-import { getDatasourceVariable, getGroupByVariable, getSpanListColumnsVariable, getTraceExplorationScene } from 'utils/utils';
+import {
+  getDatasourceVariable,
+  getGroupByVariable,
+  getSpanListColumnsVariable,
+  getTraceExplorationScene,
+} from 'utils/utils';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../utils/analytics';
 import { MiniREDPanel } from './MiniREDPanel';
 import { Icon, LinkButton, Stack, Tooltip, useStyles2 } from '@grafana/ui';
@@ -69,6 +74,13 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   }
 
   private _onActivate() {
+    // Get the initial actionView from URL if it exists i.e. coming from a bookmark
+    const params = new URLSearchParams(window.location.search);
+    const urlActionView = params.get('actionView');
+    if (urlActionView && actionViewsDefinitions.find((v) => v.value === urlActionView)) {
+      this.setState({ actionView: urlActionView as ActionViewType });
+    }
+
     this.updateBody();
 
     const exploration = getTraceExplorationScene(this);
