@@ -101,7 +101,8 @@
     "zod": "^3.23.8"
   },
   "resolutions": {
-    "nwsapi": "2.2.16"
+    "nwsapi": "2.2.16",
+    "rxjs": "^7.8.1"
   },
   "packageManager": "yarn@1.22.22"
 }
