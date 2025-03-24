@@ -44,7 +44,7 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
     return (
       <Box>
         <div className={styles.actions}>
-          <Stack gap={2}>
+          <Stack gap={1}>
             <ShareExplorationAction exploration={exploration} />
           </Stack>
         </div>
