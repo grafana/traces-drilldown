@@ -1,10 +1,10 @@
 import { css } from "@emotion/css";
 import { GrafanaTheme2 } from "@grafana/data";
 import { locationService } from "@grafana/runtime";
-import { Button, useStyles2 } from "@grafana/ui";
-import React, { useState } from "react";
+import { Button, useStyles2, LoadingPlaceholder } from "@grafana/ui";
+import React, { useEffect, useState } from "react";
 import { BookmarkItem } from "./BookmarkItem";
-import { getBookmarkForUrl, getBookmarks, removeBookmark } from "./utils";
+import { getBookmarkForUrl, useBookmarksStorage } from "./utils";
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from "utils/analytics";
 
 export type Bookmark = {
@@ -13,13 +13,61 @@ export type Bookmark = {
 
 export const Bookmarks = () => {
   const styles = useStyles2(getStyles);
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>(getBookmarks());
+  const { getBookmarks, removeBookmark } = useBookmarksStorage();
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isRemoving, setIsRemoving] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchBookmarks = async () => {
+      setIsLoading(true);
+      try {
+        const loadedBookmarks = await getBookmarks();
+        setBookmarks(loadedBookmarks);
+      } catch (error) {
+        console.error('Error loading bookmarks:', error);
+        setBookmarks([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchBookmarks();
+  }, []);
 
   const goToBookmark = (bookmark: Bookmark) => {
     reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.go_to_bookmark_clicked);
 
     const url = getBookmarkForUrl(bookmark);
     locationService.push(url);
+  }
+
+  const removeBookmarkClicked = async (bookmark: Bookmark, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setIsRemoving(true);
+    
+    try {
+      await removeBookmark(bookmark);
+      const updatedBookmarks = await getBookmarks();
+      setBookmarks(updatedBookmarks);
+    } catch (error) {
+      console.error('Error removing bookmark:', error);
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className={styles.header}>
+          <h4>Or view bookmarks</h4>
+        </div>
+        <div className={styles.loading}>
+          <LoadingPlaceholder text="Loading bookmarks..." />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -45,11 +93,8 @@ export const Bookmarks = () => {
                   variant='secondary' 
                   fill='text' 
                   icon='trash-alt'
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeBookmark(bookmark);
-                    setBookmarks(getBookmarks());
-                  }}
+                  disabled={isRemoving}
+                  onClick={(e) => removeBookmarkClicked(bookmark, e)}
                 />
               </div>
             </div>
@@ -106,6 +151,11 @@ function getStyles(theme: GrafanaTheme2) {
     noBookmarks: css({
       margin: `${theme.spacing(4)} 0 ${theme.spacing(2)} 0`,
       textAlign: 'center',
+    }),
+    loading: css({
+      display: 'flex',
+      justifyContent: 'center',
+      margin: `${theme.spacing(4)} 0`,
     }),
   }
 }
