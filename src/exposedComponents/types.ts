@@ -2,7 +2,7 @@
 export type TempoMatcher = {
   name: string;
   value: string;
-  operator: '=' | '!=' | '>' | '<';
+  operator: '=' | '!=' | '>' | '<' | '=~' | '!~';
 };
 
 export interface OpenInExploreTracesButtonProps {
