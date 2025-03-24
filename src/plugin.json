@@ -69,6 +69,11 @@
         "targets": ["grafana-lokiexplore-app/toolbar-open-related/v1"],
         "title": "traces drilldown",
         "description": "Open in Traces Drilldown"
+      },
+      {
+        "targets": ["grafana/dashboard/panel/menu"],
+        "title": "Open in Explore Traces",
+        "description": "Open current query in the Explore Traces app"
       }
     ],
     "extensionPoints": [
