@@ -27,8 +27,7 @@ export const SlowestServicesRows = (props: Props) => {
       'var-filters': `resource.service.name|=|${serviceName}`,
       'var-metric': 'duration',
     };
-    const url = urlUtil.renderUrl(EXPLORATIONS_ROUTE, params);
-    return `${url}&var-filters=nestedSetParent|<|0`;
+    return urlUtil.renderUrl(EXPLORATIONS_ROUTE, params);
   };
 
   const getDuration = (df: DataFrame) => {
