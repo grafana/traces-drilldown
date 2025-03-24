@@ -284,10 +284,9 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
         name: VAR_FILTERS,
         datasource: explorationDS,
         layout: 'combobox',
-        filters: initialFilters ?? [],
+        filters: (initialFilters ?? []).map((f) => ({ ...f, readOnly: embedded })),
         allowCustomValue: true,
         expressionBuilder: renderTraceQLLabelFilters,
-        readOnly: embedded,
       }),
       new CustomVariable({
         name: VAR_METRIC,
