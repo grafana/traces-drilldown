@@ -1,10 +1,8 @@
-import React from 'react';
+import React, { act } from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { act } from 'react';
 import { Bookmarks, Bookmark } from './Bookmarks';
-import { getBookmarkForUrl, goToBookmark } from './utils';
+import { getBookmarkForUrl, goToBookmark, useBookmarksStorage } from './utils';
 import { locationService } from '@grafana/runtime';
-import { useBookmarksStorage } from './utils';
 
 // Mock the BookmarkItem component
 jest.mock('./BookmarkItem', () => ({

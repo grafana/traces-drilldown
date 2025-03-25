@@ -2,9 +2,7 @@ import { ACTION_VIEW, PRIMARY_SIGNAL, VAR_FILTERS, FILTER_SEPARATOR, BOOKMARKS_L
 import { Bookmark } from "./Bookmarks";
 import { urlUtil } from "@grafana/data";
 import { locationService, usePluginUserStorage } from '@grafana/runtime';
-import { USER_EVENTS_ACTIONS } from "utils/analytics";
-import { USER_EVENTS_PAGES } from "utils/analytics";
-import { reportAppInteraction } from "utils/analytics";
+import { USER_EVENTS_ACTIONS, USER_EVENTS_PAGES, reportAppInteraction } from "utils/analytics";
 
 type PluginStorage = ReturnType<typeof usePluginUserStorage>;
 
