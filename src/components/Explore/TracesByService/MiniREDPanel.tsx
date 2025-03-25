@@ -25,15 +25,18 @@ import { buildHistogramQuery } from '../queries/histogram';
 import { histogramPanelConfig } from '../panels/histogram';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { exemplarsTransformations } from '../../../utils/exemplars';
+import { StreamingIndicator } from '../StreamingIndicator';
 
 export interface MiniREDPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
   metric: MetricFunction;
+  isStreaming?: boolean;
 }
 
 export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
   constructor(state: MiniREDPanelState) {
     super({
+      isStreaming: false,
       ...state,
     });
 
@@ -43,6 +46,8 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
 
       this._subs.add(
         data.subscribeToState((data) => {
+          this.setState({ isStreaming: data.data?.state === LoadingState.Streaming });
+
           if (data.data?.state === LoadingState.Done) {
             if (data.data.series.length === 0 || data.data.series[0].length === 0 || fieldHasEmptyValues(data)) {
               this.setState({
@@ -129,7 +134,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<MiniREDPanel>) => {
-    const { panel } = model.useState();
+    const { panel, isStreaming } = model.useState();
     const styles = useStyles2(getStyles);
     const traceExploration = getTraceExplorationScene(model);
 
@@ -147,13 +152,20 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
 
     return (
       <div className={css([styles.container, styles.clickable])} onClick={selectMetric}>
-        <RadioButtonList
-          className={styles.radioButton}
-          name={`metric-${model.state.metric}`}
-          options={[{ title: '', value: 'selected' }]}
-          onChange={() => selectMetric()}
-          value={'not-selected'}
-        />
+        <div className={styles.headerWrapper}>
+          <RadioButtonList
+            className={styles.radioButton}
+            name={`metric-${model.state.metric}`}
+            options={[{ title: '', value: 'selected' }]}
+            onChange={() => selectMetric()}
+            value={'not-selected'}
+          />
+        </div>
+        {isStreaming && (
+          <div className={styles.indicatorWrapper}>
+            <StreamingIndicator isStreaming={true} iconSize={10} />
+          </div>
+        )}
         <panel.Component model={panel} />
       </div>
     );
@@ -166,6 +178,7 @@ function getStyles(theme: GrafanaTheme2) {
       flex: 1,
       width: '100%',
       display: 'flex',
+      flexDirection: 'column',
       border: `1px solid ${theme.colors.border.weak}`,
       borderRadius: '2px',
       background: theme.colors.background.primary,
@@ -178,6 +191,14 @@ function getStyles(theme: GrafanaTheme2) {
       '& .show-on-hover': {
         display: 'none',
       },
+    }),
+    headerWrapper: css({
+      display: 'flex',
+      alignItems: 'center',
+      position: 'absolute',
+      top: '4px',
+      left: '8px',
+      zIndex: 2,
     }),
     clickable: css({
       cursor: 'pointer',
@@ -199,9 +220,11 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     radioButton: css({
       display: 'block',
+    }),
+    indicatorWrapper: css({
       position: 'absolute',
       top: '4px',
-      left: '8px',
+      right: '8px',
       zIndex: 2,
     }),
   };
