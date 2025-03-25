@@ -6,6 +6,7 @@ import { sidecarServiceSingleton_EXPERIMENTAL } from '@grafana/runtime';
 import pluginJson from './plugin.json';
 import { EmbeddedTraceExplorationState, OpenInExploreTracesButtonProps } from 'exposedComponents/types';
 import { SuspendedEmbeddedTraceExploration, SuspendedOpenInExploreTracesButton } from 'exposedComponents';
+import { linkConfigs } from 'utils/links';
 
 const App = lazy(() => import('./components/App/App'));
 const AppConfig = lazy(() => import('./components/AppConfig/AppConfig'));
@@ -39,3 +40,7 @@ export const plugin = new AppPlugin<{}>()
     description: 'A component that renders a trace exploration view that can be embedded in other parts of Grafana.',
     component: SuspendedEmbeddedTraceExploration as React.ComponentType<EmbeddedTraceExplorationState>,
   });
+
+for (const linkConfig of linkConfigs) {
+  plugin.addLink(linkConfig);
+}

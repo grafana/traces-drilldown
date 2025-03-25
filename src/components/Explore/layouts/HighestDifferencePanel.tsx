@@ -25,8 +25,16 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
 
   private _onActivate() {
     const { frame } = this.state;
-    const { maxDifference, maxDifferenceIndex } = computeHighestDifference(frame);
-    this.setState({ maxDifference, maxDifferenceIndex });
+    this.setState({ ...computeHighestDifference(frame) });
+
+    this._subs.add(
+      this.subscribeToState((newState, prevState) => {
+        if (newState.frame !== prevState.frame) {
+          const { frame } = newState;
+          this.setState({ ...computeHighestDifference(frame) });
+        }
+      })
+    );
   }
 
   private getAttribute() {
@@ -59,30 +67,31 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
     return (
       <div className={styles.container}>
         {<panel.Component model={panel} />}
-        {maxDifference !== undefined && maxDifferenceIndex !== undefined && (
-          <div className={styles.differenceContainer}>
-            <Stack gap={1} justifyContent={'space-between'} alignItems={'center'}>
-              <div className={styles.title}>Highest difference</div>
-              {!filterExists && (
-                <Button
-                  size="sm"
-                  variant="primary"
-                  icon={'search-plus'}
-                  fill="text"
-                  onClick={() => model.onAddToFilters()}
-                  disabled={embedded}
-                >
-                  Add to filters
-                </Button>
-              )}
-            </Stack>
-
-            <div className={styles.differenceValue}>
-              {(Math.abs(maxDifference) * 100).toFixed(maxDifference === 0 ? 0 : 2)}%
-            </div>
-            <div className={styles.value}>{value}</div>
-          </div>
-        )}
+        <div className={styles.differenceContainer}>
+          {maxDifference !== undefined && maxDifferenceIndex !== undefined && (
+            <>
+              <Stack gap={1} justifyContent={'space-between'} alignItems={'center'}>
+                <div className={styles.title}>Highest difference</div>
+                {!filterExists && (
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    icon={'search-plus'}
+                    fill="text"
+                    onClick={() => model.onAddToFilters()}
+                    disabled={embedded}
+                  >
+                    Add to filters
+                  </Button>
+                )}
+              </Stack>
+              <div className={styles.differenceValue}>
+                {(Math.abs(maxDifference) * 100).toFixed(maxDifference === 0 ? 0 : 2)}%
+              </div>
+              <div className={styles.value}>{value}</div>
+            </>
+          )}
+        </div>
       </div>
     );
   };
@@ -105,6 +114,7 @@ function getStyles(theme: GrafanaTheme2) {
       padding: '8px',
       marginBottom: theme.spacing(2),
       fontSize: '12px',
+      height: '116px',
     }),
     differenceValue: css({
       fontSize: '36px',

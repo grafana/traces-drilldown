@@ -1,6 +1,6 @@
 import { ToolbarButton, Icon } from '@grafana/ui';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   getGroupByVariable,
   getDatasourceVariable,
@@ -10,7 +10,7 @@ import {
   getMetricVariable,
   getPrimarySignalVariable,
 } from 'utils/utils';
-import { bookmarkExists, getBookmarkFromURL, toggleBookmark } from './utils';
+import { getBookmarkFromURL, useBookmarksStorage } from './utils';
 import { TraceExplorationScene } from 'pages/Explore/TraceExploration';
 import { SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
@@ -18,6 +18,9 @@ import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'ut
 export const BookmarkIcon = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
   const traceExploration = getTraceExplorationScene(model);
   const { topScene } = traceExploration.useState();
+  const { bookmarkExists, toggleBookmark } = useBookmarksStorage();
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const { value: datasource } = getDatasourceVariable(model).useState();
   const { value: metric } = getMetricVariable(model).useState();
@@ -27,7 +30,7 @@ export const BookmarkIcon = ({ model }: SceneComponentProps<TraceExplorationScen
   const { filters } = getFiltersVariable(model).useState();
   const timeRange = sceneGraph.getTimeRange(model).useState().value;
 
-  const [actionView, setActionView] = React.useState<string | undefined>(
+  const [actionView, setActionView] = useState<string | undefined>(
     topScene instanceof TracesByServiceScene ? topScene.state.actionView : undefined
   );
 
@@ -43,11 +46,56 @@ export const BookmarkIcon = ({ model }: SceneComponentProps<TraceExplorationScen
     return () => {};
   }, [topScene]);
 
-  const [isBookmarked, setIsBookmarked] = React.useState(bookmarkExists(getBookmarkFromURL()));
+  const checkIfBookmarked = async () => {
+    setIsLoading(true);
+    try {
+      const bookmark = getBookmarkFromURL();
+      const exists = await bookmarkExists(bookmark);
+      setIsBookmarked(exists);
+    } catch (error) {
+      console.error('Error checking bookmark status:', error);
+      setIsBookmarked(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setIsBookmarked(bookmarkExists(getBookmarkFromURL()));
-  }, [datasource, metric, primarySignal, filters, actionView, groupBy, timeRange.from, timeRange.to, spanListColumns]);
+    checkIfBookmarked();
+  }, []);
+
+  useEffect(() => {
+    checkIfBookmarked();
+  }, [
+    datasource,
+    metric,
+    primarySignal,
+    filters,
+    actionView,
+    groupBy,
+    timeRange.from,
+    timeRange.to,
+    spanListColumns,
+  ]);
+
+  const toggleBookmarkClicked = async () => {
+    try {
+      setIsLoading(true);
+      const isNowBookmarked = await toggleBookmark();
+      setIsBookmarked(isNowBookmarked);
+      reportAppInteraction(
+        USER_EVENTS_PAGES.analyse_traces,
+        USER_EVENTS_ACTIONS.analyse_traces.toggle_bookmark_clicked,
+        {
+          isBookmarked: isNowBookmarked,
+        }
+      );
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <ToolbarButton
@@ -60,17 +108,8 @@ export const BookmarkIcon = ({ model }: SceneComponentProps<TraceExplorationScen
         )
       }
       tooltip={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
-      onClick={() => {
-        const isNowBookmarked = toggleBookmark();
-        setIsBookmarked(isNowBookmarked);
-        reportAppInteraction(
-          USER_EVENTS_PAGES.analyse_traces,
-          USER_EVENTS_ACTIONS.analyse_traces.toggle_bookmark_clicked,
-          {
-            isBookmarked: isNowBookmarked,
-          }
-        );
-      }}
+      onClick={toggleBookmarkClicked}
+      disabled={isLoading}
     />
   );
 };
