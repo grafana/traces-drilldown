@@ -24,5 +24,5 @@ function renderFilter(filter: AdHocVariableFilter) {
 }
 
 function isNumber(value?: string | number): boolean {
-  return value != null && value !== '' && !isNaN(Number(value.toString()));
+  return value != null && value !== '' && !isNaN(Number(value.toString().trim()));
 }
