@@ -1,14 +1,12 @@
 import { PanelBuilders } from '@grafana/scenes';
 import { DrawStyle, StackingMode, TooltipDisplayMode } from '@grafana/ui';
 
-export const barsPanelConfig = () => {
+export const panelConfig = () => {
   return PanelBuilders.timeseries()
     .setOption('legend', { showLegend: false })
-    .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
+    .setCustomFieldConfig('drawStyle', DrawStyle.Line)
     .setCustomFieldConfig('stacking', { mode: StackingMode.Normal })
-    .setCustomFieldConfig('fillOpacity', 100)
-    .setCustomFieldConfig('lineWidth', 0)
-    .setCustomFieldConfig('pointSize', 0)
+    .setCustomFieldConfig('fillOpacity', 15)
     .setCustomFieldConfig('axisLabel', 'Rate')
     .setOverrides((overrides) => {
       overrides.matchFieldsWithNameByRegex('.*"?error"?.*').overrideColor({

@@ -17,7 +17,7 @@ import { formatLabelValue, getLabelValue, getTraceExplorationScene } from '../..
 import { map, Observable } from 'rxjs';
 import { DataFrame, PanelData, reduceField, ReducerID } from '@grafana/data';
 import { generateMetricsQuery, metricByWithStatus } from '../queries/generateMetricsQuery';
-import { barsPanelConfig } from '../panels/barsPanel';
+import { panelConfig } from '../panels/panel';
 import { linesPanelConfig } from '../panels/linesPanel';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { syncYAxis } from '../behaviors/syncYaxis';
@@ -133,7 +133,7 @@ export function getLayoutChild(
       })
     );
 
-    const panel = (metric === 'duration' ? linesPanelConfig().setUnit('s') : barsPanelConfig())
+    const panel = (metric === 'duration' ? linesPanelConfig().setUnit('s') : panelConfig())
       .setTitle(getTitle(frame, variable.getValueText()))
       .setMenu(new PanelMenu({ query, labelValue: getLabelValue(frame) }))
       .setData(dataNode);

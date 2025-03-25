@@ -14,7 +14,7 @@ import { explorationDS, MetricFunction } from 'utils/shared';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';
-import { barsPanelConfig } from '../panels/barsPanel';
+import { panelConfig } from '../panels/panel';
 import { metricByWithStatus } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { RadioButtonList, useStyles2 } from '@grafana/ui';
@@ -107,7 +107,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
   }
 
   private getRateOrErrorPanel(metric: MetricFunction) {
-    const panel = barsPanelConfig().setHoverHeader(true).setDisplayMode('transparent');
+    const panel = panelConfig().setHoverHeader(true).setDisplayMode('transparent');
     if (metric === 'errors') {
       panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'Errors').setColor({
         fixedColor: 'semi-dark-red',
