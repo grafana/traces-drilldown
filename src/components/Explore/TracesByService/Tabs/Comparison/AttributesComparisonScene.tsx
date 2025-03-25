@@ -105,7 +105,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
                   .sort((a, b) => {
                     const aCompare = computeHighestDifference(a);
                     const bCompare = computeHighestDifference(b);
-                    return bCompare.maxDifference - aCompare.maxDifference;
+                    return Math.abs(bCompare.maxDifference) - Math.abs(aCompare.maxDifference);
                   });
               })
             );

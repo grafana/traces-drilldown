@@ -26,8 +26,7 @@ export const ErroredServicesRows = (props: Props) => {
       'var-filters': `resource.service.name|=|${serviceName}`,
       'var-metric': 'errors',
     };
-    const url = urlUtil.renderUrl(EXPLORATIONS_ROUTE, params);
-    return `${url}&var-filters=nestedSetParent|<|0`;
+    return urlUtil.renderUrl(EXPLORATIONS_ROUTE, params);
   };
 
   const getTotalErrs = (df: DataFrame) => {
