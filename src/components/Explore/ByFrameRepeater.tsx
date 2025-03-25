@@ -72,7 +72,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
                 new SceneCSSGridLayout({
                   children: [
                     new ErrorStateScene({
-                      message: data.data.errors?.[0]?.message ?? 'An error occurred in the query',
+                      message: (data.data.errors?.[0]?.message || data.data.error?.message) ?? 'An error occurred in the query',
                     }),
                   ],
                 }),
