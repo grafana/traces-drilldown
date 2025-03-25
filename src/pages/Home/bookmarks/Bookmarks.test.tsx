@@ -2,13 +2,23 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { act } from 'react';
 import { Bookmarks, Bookmark } from './Bookmarks';
-import { getBookmarkForUrl } from './utils';
+import { getBookmarkForUrl, goToBookmark } from './utils';
 import { locationService } from '@grafana/runtime';
 import { useBookmarksStorage } from './utils';
+
+// Mock the BookmarkItem component
+jest.mock('./BookmarkItem', () => ({
+  BookmarkItem: ({ bookmark }: { bookmark: any }) => {
+    const primarySignal = new URLSearchParams(bookmark.params).get('primarySignal');
+    // Display the primarySignal value for the test to find
+    return <div>{primarySignal?.replace('_', ' ')}</div>;
+  }
+}));
 
 jest.mock('./utils', () => ({
   ...jest.requireActual('./utils'),
   getBookmarkForUrl: jest.fn(),
+  goToBookmark: jest.fn(),
   useBookmarksStorage: jest.fn().mockReturnValue({
     getBookmarks: jest.fn(),
     removeBookmark: jest.fn()
@@ -89,6 +99,9 @@ describe('Bookmarks', () => {
     mockGetBookmarks.mockResolvedValue(mockBookmarks);
     const mockUrl = '/d/abc123/dashboard?var-datasource=prometheus';
     (getBookmarkForUrl as jest.Mock).mockReturnValue(mockUrl);
+    (goToBookmark as jest.Mock).mockImplementation((bookmark) => {
+      locationService.push(getBookmarkForUrl(bookmark));
+    });
     
     render(<Bookmarks />);
     
@@ -101,6 +114,7 @@ describe('Bookmarks', () => {
     expect(bookmarkByText).not.toBeNull();
     fireEvent.click(bookmarkByText!);
     
+    expect(goToBookmark).toHaveBeenCalledWith(mockBookmarks[0]);
     expect(getBookmarkForUrl).toHaveBeenCalledWith(mockBookmarks[0]);
     expect(locationService.push).toHaveBeenCalledWith(mockUrl);
   });

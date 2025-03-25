@@ -1,7 +1,10 @@
 import { ACTION_VIEW, PRIMARY_SIGNAL, VAR_FILTERS, FILTER_SEPARATOR, BOOKMARKS_LS_KEY, EXPLORATIONS_ROUTE, VAR_LATENCY_PARTIAL_THRESHOLD, VAR_LATENCY_THRESHOLD, SELECTION, VAR_METRIC } from "utils/shared";
 import { Bookmark } from "./Bookmarks";
 import { urlUtil } from "@grafana/data";
-import { usePluginUserStorage } from '@grafana/runtime';
+import { locationService, usePluginUserStorage } from '@grafana/runtime';
+import { USER_EVENTS_ACTIONS } from "utils/analytics";
+import { USER_EVENTS_PAGES } from "utils/analytics";
+import { reportAppInteraction } from "utils/analytics";
 
 type PluginStorage = ReturnType<typeof usePluginUserStorage>;
 
@@ -143,4 +146,10 @@ export const areBookmarksEqual = (bookmark: Bookmark, storedBookmark: Bookmark) 
   // Check if every filter in bookmarkFilters exists in storedFilters
   // This handles cases where order might be different
   return bookmarkFilters.every(filter => storedFilters.includes(filter));
+}
+
+export const goToBookmark = (bookmark: Bookmark) => {
+  reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.go_to_bookmark_clicked);
+  const url = getBookmarkForUrl(bookmark);
+  locationService.push(url);
 }

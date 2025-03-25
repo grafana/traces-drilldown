@@ -1,11 +1,9 @@
 import { css } from "@emotion/css";
 import { GrafanaTheme2 } from "@grafana/data";
-import { locationService } from "@grafana/runtime";
 import { Button, useStyles2, LoadingPlaceholder } from "@grafana/ui";
 import React, { useEffect, useState } from "react";
 import { BookmarkItem } from "./BookmarkItem";
-import { getBookmarkForUrl, useBookmarksStorage } from "./utils";
-import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from "utils/analytics";
+import { useBookmarksStorage, goToBookmark } from "./utils";
 
 export type Bookmark = {
   params: string;
@@ -34,13 +32,6 @@ export const Bookmarks = () => {
     
     fetchBookmarks();
   }, []);
-
-  const goToBookmark = (bookmark: Bookmark) => {
-    reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.go_to_bookmark_clicked);
-
-    const url = getBookmarkForUrl(bookmark);
-    locationService.push(url);
-  }
 
   const removeBookmarkClicked = async (bookmark: Bookmark, event: React.MouseEvent) => {
     event.stopPropagation();
