@@ -11,7 +11,9 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, groupBy
   // Generate span set filters
   let filters = `${VAR_FILTERS_EXPR}`;
 
-  if (metric === 'errors') {
+  if (metric === 'rate') {
+    filters += ' && status!=error';
+  } else if (metric === 'errors') {
     filters += ' && status=error';
   }
 
