@@ -50,7 +50,9 @@ function getLayoutChild(
     });
 
     if (existingGridItem) {
-      existingGridItem.state.body?.setState({ $data: dataNode });
+      const body = existingGridItem.state.body as HighestDifferencePanel;
+      body.setState({ frame });
+      body.state.panel.setState({ $data: dataNode });
       return existingGridItem;
     }
 

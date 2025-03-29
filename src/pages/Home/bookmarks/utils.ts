@@ -1,6 +1,10 @@
 import { ACTION_VIEW, PRIMARY_SIGNAL, VAR_FILTERS, FILTER_SEPARATOR, BOOKMARKS_LS_KEY, EXPLORATIONS_ROUTE, VAR_LATENCY_PARTIAL_THRESHOLD, VAR_LATENCY_THRESHOLD, SELECTION, VAR_METRIC } from "utils/shared";
 import { Bookmark } from "./Bookmarks";
 import { urlUtil } from "@grafana/data";
+import { locationService, usePluginUserStorage } from '@grafana/runtime';
+import { USER_EVENTS_ACTIONS, USER_EVENTS_PAGES, reportAppInteraction } from "utils/analytics";
+
+type PluginStorage = ReturnType<typeof usePluginUserStorage>;
 
 const cleanupParams = (params: URLSearchParams) => {
   // Remove selection, latency threshold, and latency partial threshold because
@@ -11,14 +15,16 @@ const cleanupParams = (params: URLSearchParams) => {
   return params;
 }
 
-export const getBookmarks = (): Bookmark[] => {
-  try {
-    return JSON.parse(localStorage.getItem(BOOKMARKS_LS_KEY) || "[]");
-  } catch (e) {
-    console.error("Failed to get bookmarks from localStorage:", e);
-    return [];
-  }
-}
+export const useBookmarksStorage = () => {
+  const storage = usePluginUserStorage();
+  
+  return {
+    getBookmarks: () => getBookmarks(storage),
+    removeBookmark: (bookmark: Bookmark) => removeBookmark(storage, bookmark),
+    bookmarkExists: (bookmark: Bookmark) => bookmarkExists(storage, bookmark),
+    toggleBookmark: () => toggleBookmark(storage),
+  };
+};
 
 export const getBookmarkParams = (bookmark: Bookmark) => {
   if (!bookmark || !bookmark.params) {
@@ -56,35 +62,56 @@ export const getBookmarkForUrl = (bookmark: Bookmark): string => {
   return url;
 }
 
-export const toggleBookmark = (): boolean => {
+const setBookmarks = async (storage: PluginStorage, bookmarks: Bookmark[]): Promise<void> => {
+  try {
+    await storage.setItem(BOOKMARKS_LS_KEY, JSON.stringify(bookmarks));
+  } catch (e) {
+    console.error("Failed to save bookmarks to storage:", e);
+  }
+};
+
+export const getBookmarks = async (storage: PluginStorage): Promise<Bookmark[]> => {
+  try {
+    const value = await storage.getItem(BOOKMARKS_LS_KEY);
+    if (value) {
+      return JSON.parse(value);
+    }
+    return [];
+  } catch (e) {
+    console.error("Failed to get bookmarks from storage:", e);
+    return [];
+  }
+};
+
+export const toggleBookmark = async (storage: PluginStorage): Promise<boolean> => {
   const bookmark = getBookmarkFromURL();
-  const exists = bookmarkExists(bookmark);
+  const exists = await bookmarkExists(storage, bookmark);
   
   if (exists) {
-    removeBookmark(bookmark);
-    return false; 
+    await removeBookmark(storage, bookmark);
+    return false;
   } else {
-    addBookmark(bookmark);
-    return true; 
+    await addBookmark(storage, bookmark);
+    return true;
   }
-}
+};
 
-const addBookmark = (bookmark: Bookmark) => {
-  const bookmarks = getBookmarks();
+const addBookmark = async (storage: PluginStorage, bookmark: Bookmark): Promise<void> => {
+  const bookmarks = await getBookmarks(storage);
   bookmarks.push(bookmark);
-  localStorage.setItem(BOOKMARKS_LS_KEY, JSON.stringify(bookmarks));
-}
+  await setBookmarks(storage, bookmarks);
+};
 
-export const removeBookmark = (bookmark: Bookmark) => {
-  const storedBookmarks = getBookmarks();
-  const filteredBookmarks = storedBookmarks.filter((storedBookmark: Bookmark) => !areBookmarksEqual(bookmark, storedBookmark));  
-  localStorage.setItem(BOOKMARKS_LS_KEY, JSON.stringify(filteredBookmarks));
-}
+export const removeBookmark = async (storage: PluginStorage, bookmark: Bookmark): Promise<void> => {
+  const storedBookmarks = await getBookmarks(storage);
+  const filteredBookmarks = storedBookmarks.filter((storedBookmark) => !areBookmarksEqual(bookmark, storedBookmark));
+  await setBookmarks(storage, filteredBookmarks);
+};
 
-export const bookmarkExists = (bookmark: Bookmark): boolean => {
-  const bookmarks = getBookmarks();
-  return bookmarks.some((b: Bookmark) => areBookmarksEqual(b, bookmark));
-}
+export const bookmarkExists = async (storage: PluginStorage, bookmark: Bookmark): Promise<boolean> => {
+  const bookmarks = await getBookmarks(storage);
+  return bookmarks.some((b) => areBookmarksEqual(bookmark, b));
+};
 
 export const areBookmarksEqual = (bookmark: Bookmark, storedBookmark: Bookmark) => {
   const bookmarkParams = cleanupParams(new URLSearchParams(bookmark.params));
@@ -117,4 +144,10 @@ export const areBookmarksEqual = (bookmark: Bookmark, storedBookmark: Bookmark) 
   // Check if every filter in bookmarkFilters exists in storedFilters
   // This handles cases where order might be different
   return bookmarkFilters.every(filter => storedFilters.includes(filter));
+}
+
+export const goToBookmark = (bookmark: Bookmark) => {
+  reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.go_to_bookmark_clicked);
+  const url = getBookmarkForUrl(bookmark);
+  locationService.push(url);
 }

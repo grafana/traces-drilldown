@@ -9,15 +9,15 @@ export const panelConfig = () => {
     .setCustomFieldConfig('fillOpacity', 15)
     .setCustomFieldConfig('axisLabel', 'Rate')
     .setOverrides((overrides) => {
-      overrides.matchFieldsWithNameByRegex('.*"?error"?.*').overrideColor({
+      overrides.matchFieldsWithNameByRegex('(^error$|.*status="error".*)').overrideColor({
         mode: 'fixed',
         fixedColor: 'semi-dark-red',
       });
-      overrides.matchFieldsWithNameByRegex('.*"?unset"?.*').overrideColor({
+      overrides.matchFieldsWithNameByRegex('(^unset$|.*status="unset".*)').overrideColor({
         mode: 'fixed',
         fixedColor: 'green',
       });
-      overrides.matchFieldsWithNameByRegex('.*"?ok"?.*').overrideColor({
+      overrides.matchFieldsWithNameByRegex('(^ok$|.*status="ok".*)').overrideColor({
         mode: 'fixed',
         fixedColor: 'dark-green',
       });

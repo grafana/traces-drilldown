@@ -1,42 +1,200 @@
 import { 
-  getBookmarks, 
-  bookmarkExists, 
   getBookmarkParams, 
   getBookmarkFromURL, 
-  toggleBookmark,
-  removeBookmark,
   getBookmarkForUrl,
-  areBookmarksEqual
+  areBookmarksEqual,
+  useBookmarksStorage
 } from './utils';
 import { ACTION_VIEW, PRIMARY_SIGNAL, BOOKMARKS_LS_KEY, EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_GROUPBY, VAR_METRIC, SELECTION, VAR_LATENCY_THRESHOLD, VAR_LATENCY_PARTIAL_THRESHOLD } from 'utils/shared';
+import { renderHook } from '@testing-library/react';
+import { usePluginUserStorage } from '@grafana/runtime';
+
+jest.mock('@grafana/runtime', () => ({
+  usePluginUserStorage: jest.fn().mockReturnValue({
+    getItem: jest.fn(),
+    setItem: jest.fn()
+  }),
+}));
 
 describe('Bookmark Utils', () => {
   const sampleBookmark = {
     params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
   };
 
-  let localStorageMock: { [key: string]: string } = {};
+  const mockStorage = {
+    getItem: jest.fn(),
+    setItem: jest.fn()
+  };
+  
+  const mockedUsePluginUserStorage = usePluginUserStorage as jest.Mock;
+
   beforeEach(() => {
-    localStorageMock = {};
-    Storage.prototype.getItem = jest.fn((key) => localStorageMock[key] || null);
-    Storage.prototype.setItem = jest.fn((key, value) => {
-      localStorageMock[key] = value.toString();
-    });
+    jest.clearAllMocks();
+    mockedUsePluginUserStorage.mockReturnValue(mockStorage);
+    mockStorage.getItem.mockResolvedValue(null);
+    mockStorage.setItem.mockResolvedValue(undefined);
   });
 
-  describe('getBookmarks', () => {
-    it('should return empty array when localStorage is empty', () => {
-      const bookmarks = getBookmarks();
-      expect(bookmarks).toEqual([]);
-      expect(localStorage.getItem).toHaveBeenCalledWith(BOOKMARKS_LS_KEY);
+  describe('useBookmarksStorage', () => {
+    it('should return the bookmarks API hooks', () => {
+      const { result } = renderHook(() => useBookmarksStorage());
+      
+      expect(result.current).toHaveProperty('getBookmarks');
+      expect(result.current).toHaveProperty('removeBookmark');
+      expect(result.current).toHaveProperty('bookmarkExists');
+      expect(result.current).toHaveProperty('toggleBookmark');
     });
 
-    it('should return bookmarks from localStorage', () => {
-      const bookmarksData = [sampleBookmark];
-      localStorageMock[BOOKMARKS_LS_KEY] = JSON.stringify(bookmarksData);
-      
-      const bookmarks = getBookmarks();
-      expect(bookmarks).toEqual(bookmarksData);
+    describe('getBookmarks', () => {
+      it('should return empty array when storage is empty', async () => {
+        mockStorage.getItem.mockResolvedValue(null);
+        
+        const { result } = renderHook(() => useBookmarksStorage());
+        const bookmarks = await result.current.getBookmarks();
+        
+        expect(bookmarks).toEqual([]);
+        expect(mockStorage.getItem).toHaveBeenCalledWith(BOOKMARKS_LS_KEY);
+      });
+  
+      it('should return bookmarks from storage', async () => {
+        const bookmarksData = [sampleBookmark];
+        mockStorage.getItem.mockResolvedValue(JSON.stringify(bookmarksData));
+        
+        const { result } = renderHook(() => useBookmarksStorage());
+        const bookmarks = await result.current.getBookmarks();
+        
+        expect(bookmarks).toEqual(bookmarksData);
+      });
+  
+      it('should handle JSON parse errors', async () => {
+        mockStorage.getItem.mockResolvedValue('invalid json');
+        
+        // Temporarily mock console.error to suppress output
+        const originalConsoleError = console.error;
+        console.error = jest.fn();
+        
+        try {
+          const { result } = renderHook(() => useBookmarksStorage());
+          const bookmarks = await result.current.getBookmarks();
+          
+          expect(bookmarks).toEqual([]);
+          expect(console.error).toHaveBeenCalled();
+        } finally {
+          // Restore console.error
+          console.error = originalConsoleError;
+        }
+      });
+    });
+
+    describe('toggleBookmark', () => {
+      const originalLocation = window.location;
+  
+      beforeEach(() => {
+        Object.defineProperty(window, 'location', {
+          configurable: true,
+          value: {
+            ...originalLocation,
+            search: `?${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces`
+          }
+        });
+  
+        mockStorage.getItem.mockResolvedValue(JSON.stringify([]));
+      });
+  
+      afterEach(() => {
+        Object.defineProperty(window, 'location', {
+          configurable: true,
+          value: originalLocation
+        });
+      });
+  
+      it('should add bookmark when it does not exist', async () => {
+        mockStorage.getItem.mockResolvedValue(JSON.stringify([]));
+        
+        const { result } = renderHook(() => useBookmarksStorage());
+        const isNowBookmarked = await result.current.toggleBookmark();
+        
+        expect(isNowBookmarked).toBe(true);
+        expect(mockStorage.setItem).toHaveBeenCalledWith(
+          BOOKMARKS_LS_KEY,
+          expect.stringContaining('actionView=breakdown')
+        );
+      });
+  
+      it('should remove bookmark when it exists', async () => {
+        const currentBookmark = getBookmarkFromURL();
+        mockStorage.getItem.mockResolvedValue(JSON.stringify([currentBookmark]));
+        
+        const { result } = renderHook(() => useBookmarksStorage());
+        const isNowBookmarked = await result.current.toggleBookmark();
+        
+        expect(isNowBookmarked).toBe(false);
+        expect(mockStorage.setItem).toHaveBeenCalledWith(
+          BOOKMARKS_LS_KEY,
+          '[]'
+        );
+      });
+    });
+  
+    describe('removeBookmark', () => {
+      it('should remove a bookmark', async () => {
+        mockStorage.getItem.mockResolvedValue(JSON.stringify([sampleBookmark]));
+        
+        const { result } = renderHook(() => useBookmarksStorage());
+        await result.current.removeBookmark(sampleBookmark);
+        
+        expect(mockStorage.setItem).toHaveBeenCalledWith(
+          BOOKMARKS_LS_KEY,
+          '[]'
+        );
+      });
+  
+      it('should do nothing if bookmark does not exist', async () => {
+        const differentBookmark = {
+          params: 'actionView=different'
+        };
+        mockStorage.getItem.mockResolvedValue(JSON.stringify([differentBookmark]));
+        
+        const { result } = renderHook(() => useBookmarksStorage());
+        await result.current.removeBookmark(sampleBookmark);
+        
+        expect(mockStorage.setItem).toHaveBeenCalledWith(
+          BOOKMARKS_LS_KEY,
+          JSON.stringify([differentBookmark])
+        );
+      });
+    });
+  
+    describe('bookmarkExists', () => {
+      it('should return true if bookmark exists', async () => {
+        mockStorage.getItem.mockResolvedValue(JSON.stringify([sampleBookmark]));
+        
+        const { result } = renderHook(() => useBookmarksStorage());
+        const exists = await result.current.bookmarkExists(sampleBookmark);
+        
+        expect(exists).toBe(true);
+      });
+  
+      it('should return false if bookmark does not exist', async () => {
+        const differentBookmark = {
+          params: 'actionView=different'
+        };
+        mockStorage.getItem.mockResolvedValue(JSON.stringify([differentBookmark]));
+        
+        const { result } = renderHook(() => useBookmarksStorage());
+        const exists = await result.current.bookmarkExists(sampleBookmark);
+        
+        expect(exists).toBe(false);
+      });
+  
+      it('should return false if storage is empty', async () => {
+        mockStorage.getItem.mockResolvedValue(null);
+        
+        const { result } = renderHook(() => useBookmarksStorage());
+        const exists = await result.current.bookmarkExists(sampleBookmark);
+        
+        expect(exists).toBe(false);
+      });
     });
   });
 
@@ -139,145 +297,6 @@ describe('Bookmark Utils', () => {
 
       const url = getBookmarkForUrl(bookmark);
       expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=&primarySignal=&var-ds=EBorgLFZ&var-groupBy=&var-metric=`);
-    });
-  });
-
-  describe('addBookmark', () => {
-    const originalLocation = window.location;
-    
-    beforeEach(() => {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: {
-          ...originalLocation,
-          search: `?${ACTION_VIEW}=structure&${PRIMARY_SIGNAL}=full_traces`
-        }
-      });
-      
-      localStorageMock = {};
-    });
-    
-    afterEach(() => {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: originalLocation
-      });
-    });
-    
-    it('should add a bookmark to localStorage', () => {
-      toggleBookmark();
-      
-      const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
-      expect(storedData.length).toBe(1);
-      expect(storedData[0].params).toBe('actionView=structure&primarySignal=full_traces');
-    });
-    
-    it('should add a bookmark to an existing list in localStorage', () => {
-      // Add an initial bookmark
-      localStorageMock[BOOKMARKS_LS_KEY] = JSON.stringify([{ params: 'actionView=breakdown&primarySignal=full_traces' }]);
-      
-      // Add a new bookmark with different parameters
-      window.location.search = `?${ACTION_VIEW}=structure&${PRIMARY_SIGNAL}=full_traces`;
-      toggleBookmark();
-      
-      const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
-      expect(storedData.length).toBe(2);
-      expect(storedData[0].params).toBe('actionView=breakdown&primarySignal=full_traces');
-      expect(storedData[1].params).toBe('actionView=structure&primarySignal=full_traces');
-    });
-    
-    it('should not add duplicate bookmarks', () => {
-      toggleBookmark();
-      
-      // Try to add the same bookmark again
-      toggleBookmark();
-      
-      // The second call should remove the bookmark instead of adding a duplicate
-      const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
-      expect(storedData.length).toBe(0);
-    });
-  });
-
-  describe('toggleBookmark', () => {
-    const originalLocation = window.location;
-
-    beforeEach(() => {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: {
-          ...originalLocation,
-          search: `?${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces`
-        }
-      });
-
-      localStorageMock = {};
-    });
-
-    afterEach(() => {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: originalLocation
-      });
-    });
-
-    it('should add bookmark when it does not exist', () => {
-      toggleBookmark();
-      
-      const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
-      expect(storedData.length).toBe(1);
-      expect(storedData[0].params).toBe('actionView=breakdown&primarySignal=full_traces');
-    });
-
-    it('should remove bookmark when it exists', () => {
-      toggleBookmark();
-      
-      // Toggle bookmark again to remove
-      toggleBookmark();
-      
-      const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
-      expect(storedData.length).toBe(0);
-    });
-  });
-
-  describe('removeBookmark', () => {
-    it('should remove a bookmark', () => {
-      localStorageMock[BOOKMARKS_LS_KEY] = JSON.stringify([sampleBookmark]);
-      
-      removeBookmark(sampleBookmark);
-      
-      const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
-      expect(storedData.length).toBe(0);
-    });
-
-    it('should not change localStorage when bookmark does not exist', () => {
-      const differentBookmark = {
-        params: `${ACTION_VIEW}=differentView&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
-      };
-      
-      // Add a bookmark to localStorage
-      localStorageMock[BOOKMARKS_LS_KEY] = JSON.stringify([sampleBookmark]);
-      
-      // Try to remove a different bookmark
-      removeBookmark(differentBookmark);
-      
-      const storedData = JSON.parse(localStorageMock[BOOKMARKS_LS_KEY] || '[]');
-      expect(storedData.length).toBe(1);
-      expect(storedData[0]).toEqual(sampleBookmark);
-    });
-  });
-
-  describe('bookmarkExists', () => {
-    it('should return false when bookmark does not exist', () => {
-      const result = bookmarkExists(sampleBookmark);
-      expect(result).toBe(false);
-    });
-
-    it('should return true when the bookmark exists', () => {
-      const bookmarksData = [sampleBookmark];
-      localStorageMock[BOOKMARKS_LS_KEY] = JSON.stringify(bookmarksData);
-      
-      const result = bookmarkExists(sampleBookmark);
-      expect(result).toBe(true);
     });
   });
 
