@@ -1,7 +1,7 @@
 import { PanelBuilders } from '@grafana/scenes';
 import { DrawStyle, StackingMode, TooltipDisplayMode } from '@grafana/ui';
 
-export const panelConfig = () => {
+export const barsPanelConfig = () => {
   return PanelBuilders.timeseries()
     .setOption('legend', { showLegend: false })
     .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
