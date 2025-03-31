@@ -6,7 +6,7 @@ export const barsPanelConfig = () => {
     .setOption('legend', { showLegend: false })
     .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
     .setCustomFieldConfig('stacking', { mode: StackingMode.Normal })
-    .setCustomFieldConfig('fillOpacity', 50)
+    .setCustomFieldConfig('fillOpacity', 75)
     .setCustomFieldConfig('lineWidth', 0)
     .setCustomFieldConfig('pointSize', 0)
     .setCustomFieldConfig('axisLabel', 'Rate')
