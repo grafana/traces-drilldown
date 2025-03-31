@@ -17,7 +17,7 @@ import { formatLabelValue, getLabelValue, getTraceExplorationScene } from '../..
 import { map, Observable } from 'rxjs';
 import { DataFrame, PanelData, reduceField, ReducerID } from '@grafana/data';
 import { generateMetricsQuery, metricByWithStatus } from '../queries/generateMetricsQuery';
-import { panelConfig } from '../panels/panel';
+import { panelConfig } from '../panels/barsPanel';
 import { linesPanelConfig } from '../panels/linesPanel';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { syncYAxis } from '../behaviors/syncYaxis';

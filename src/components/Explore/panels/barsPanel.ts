@@ -4,9 +4,11 @@ import { DrawStyle, StackingMode, TooltipDisplayMode } from '@grafana/ui';
 export const panelConfig = () => {
   return PanelBuilders.timeseries()
     .setOption('legend', { showLegend: false })
-    .setCustomFieldConfig('drawStyle', DrawStyle.Line)
+    .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
     .setCustomFieldConfig('stacking', { mode: StackingMode.Normal })
-    .setCustomFieldConfig('fillOpacity', 15)
+    .setCustomFieldConfig('fillOpacity', 35)
+    .setCustomFieldConfig('lineWidth', 0)
+    .setCustomFieldConfig('pointSize', 0)
     .setCustomFieldConfig('axisLabel', 'Rate')
     .setOverrides((overrides) => {
       overrides.matchFieldsWithNameByRegex('(^error$|.*status="error".*)').overrideColor({
