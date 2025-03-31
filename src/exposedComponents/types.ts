@@ -1,5 +1,6 @@
-import { SceneObjectState, SceneTimeRangeState } from '@grafana/scenes';
-import { AdHocVariableFilter } from '@grafana/data';
+import { SceneTimeRangeState } from '@grafana/scenes';
+import { TimeRange } from '@grafana/data';
+import { TraceExplorationState } from 'pages/Explore';
 
 export type TempoMatcher = {
   name: string;
@@ -16,8 +17,7 @@ export interface OpenInExploreTracesButtonProps {
   renderButton?: (props: { href: string }) => React.ReactElement<any>;
 }
 
-export interface EmbeddedTraceExplorationState extends SceneObjectState {
+export interface EmbeddedTraceExplorationState extends TraceExplorationState {
   timeRangeState: SceneTimeRangeState;
-  initialDS?: string;
-  initialFilters?: AdHocVariableFilter[];
+  onTimeRangeChange?: (timeRange: TimeRange) => void;
 }

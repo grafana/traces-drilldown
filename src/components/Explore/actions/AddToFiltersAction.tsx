@@ -3,7 +3,7 @@ import React from 'react';
 import { DataFrame } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, AdHocFiltersVariable } from '@grafana/scenes';
 import { Button } from '@grafana/ui';
-import { getFiltersVariable, getLabelValue, getTraceExplorationScene } from '../../../utils/utils';
+import { getFiltersVariable, getLabelValue } from '../../../utils/utils';
 import { DATABASE_CALLS_KEY } from 'pages/Explore/primary-signals';
 
 export interface AddToFiltersActionState extends SceneObjectState {
@@ -36,9 +36,6 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
   };
 
   public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
-    const traceExploration = getTraceExplorationScene(model);
-    const { embedded } = traceExploration.useState();
-
     const key = model.state?.labelKey ?? '';
     const field = model.state?.frame.fields.filter((x) => x.type !== 'time');
     const value = field?.[0]?.labels?.[key] ?? '';
@@ -46,14 +43,7 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
 
     if (!filterExists) {
       return (
-        <Button
-          variant="primary"
-          size="sm"
-          fill="text"
-          onClick={model.onClick}
-          icon={'search-plus'}
-          disabled={embedded}
-        >
+        <Button variant="primary" size="sm" fill="text" onClick={model.onClick} icon={'search-plus'}>
           Add to filters
         </Button>
       );

@@ -4,12 +4,22 @@ import { SceneTimeRange } from '@grafana/scenes';
 import { TraceExploration } from '../../pages/Explore/TraceExploration';
 import { EmbeddedTraceExplorationState } from 'exposedComponents/types';
 
-function buildTraceExplorationFromState({ initialDS, initialFilters, timeRangeState }: EmbeddedTraceExplorationState) {
+function buildTraceExplorationFromState({
+  timeRangeState,
+  onTimeRangeChange,
+  ...state
+}: EmbeddedTraceExplorationState) {
+  const $timeRange = new SceneTimeRange(timeRangeState);
+  $timeRange.subscribeToState((state) => {
+    if (onTimeRangeChange) {
+      onTimeRangeChange(state.value);
+    }
+  });
+
   return new TraceExploration({
-    $timeRange: new SceneTimeRange(timeRangeState),
-    initialDS,
-    initialFilters,
+    $timeRange,
     embedded: true,
+    ...state,
   });
 }
 

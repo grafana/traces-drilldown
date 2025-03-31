@@ -10,6 +10,7 @@ import { buildStructureScene } from './Structure/StructureScene';
 import { buildBreakdownScene } from './Breakdown/BreakdownScene';
 import { MetricFunction } from 'utils/shared';
 import { buildComparisonScene } from './Comparison/ComparisonScene';
+import { useMount } from 'react-use';
 
 interface ActionViewDefinition {
   displayName: (metric: MetricFunction) => string;
@@ -33,13 +34,29 @@ export interface TabsBarSceneState extends SceneObjectState {}
 
 export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
   public static Component = ({ model }: SceneComponentProps<TabsBarScene>) => {
-    const metricScene = getTraceByServiceScene(model);
     const styles = useStyles2(getStyles);
+
+    const metricScene = getTraceByServiceScene(model);
     const exploration = getTraceExplorationScene(model);
+
     const { actionView } = metricScene.useState();
     const { value: metric } = exploration.getMetricVariable().useState();
+    const { allowedActionViews } = exploration.useState();
     const dataState = sceneGraph.getData(model).useState();
     const tracesCount = dataState.data?.series?.[0]?.length;
+
+    const enabledViews =
+      actionViewsDefinitions.filter((view) => allowedActionViews?.includes(view.value)) ?? actionViewsDefinitions;
+
+    useMount(() => {
+      if (enabledViews.length === 1) {
+        metricScene.setActionView(enabledViews[0].value);
+      }
+    });
+
+    if (enabledViews.length === 1) {
+      return null;
+    }
 
     return (
       <Box>
@@ -50,7 +67,7 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
         </div>
 
         <TabsBar>
-          {actionViewsDefinitions.map((tab, index) => {
+          {enabledViews.map((tab, index) => {
             return (
               <Tab
                 key={index}
