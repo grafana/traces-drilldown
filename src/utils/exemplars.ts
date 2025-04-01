@@ -21,7 +21,7 @@ export const exemplarsTransformations = (locationService: LocationService): Cust
                   const traceId = traceIDField.values[i];
                   const value = valueField.values[i];
                   
-                  // A row is valid if:
+                  // A row(exemplar) is valid if:
                   // 1. The traceId is not null/undefined
                   // 2. The value is not null/undefined
                   // 3. The value is not 0
