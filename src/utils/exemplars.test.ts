@@ -12,8 +12,8 @@ describe('exemplarsTransformations', () => {
   };
 
   const createExemplarFrame = (
-    traceIds: (string | null | undefined)[], 
-    values: (number | null | undefined)[]
+    traceIds: Array<string | null | undefined>, 
+    values: Array<number | null | undefined>
   ): DataFrame => {
     const traceIdField: Field = {
       name: 'traceId',
