@@ -75,30 +75,30 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
   }
 
   public _onActivate() {
-    this.state.$data?.subscribeToState((state) => {
-      if (state.data?.state === LoadingState.Loading) {
-        this.setState({ loading: true });
-        return;
-      }
-      
-      if (
-        (state.data?.state === LoadingState.Done || state.data?.state === LoadingState.Streaming) &&
-        state.data?.series.length
-      ) {
-        const frame = state.data?.series[0].fields[0].values[0];
-        if (frame) {
-          const now = Date.now();
-          // Prevent duplicate processing of the same data
-          // Skip if we processed this exact data less than 100ms ago
-          if (this.lastProcessedData === frame && now - this.lastProcessedTime < 100) {
-            return;
-          }
-          
-          // Track this data as processed
-          this.lastProcessedData = frame;
-          this.lastProcessedTime = now;
-          
-          try {
+    this._subs.add(
+      this.state.$data?.subscribeToState((state) => {
+        if (state.data?.state === LoadingState.Loading) {
+          this.setState({ loading: true });
+          return;
+        }
+        
+        if (
+          (state.data?.state === LoadingState.Done || state.data?.state === LoadingState.Streaming) &&
+          state.data?.series.length
+        ) {
+          const frame = state.data?.series[0].fields[0].values[0];
+          if (frame) {
+            const now = Date.now();
+            // Prevent duplicate processing of the same data
+            // Skip if we processed this exact data less than 100ms ago
+            if (this.lastProcessedData === frame && now - this.lastProcessedTime < 100) {
+              return;
+            }
+            
+            // Track this data as processed
+            this.lastProcessedData = frame;
+            this.lastProcessedTime = now;
+            
             const response = JSON.parse(frame) as TraceSearchMetadata[];
             const merged = mergeTraces(response);
             merged.children.sort((a, b) => countSpans(b) - countSpans(a));
@@ -120,13 +120,10 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
             
             // For done state, update immediately
             this.updatePanels(merged);
-          } catch (error) {
-            console.error('Error processing trace data:', error);
-            this.setState({ loading: false });
           }
         }
-      }
-    });
+      })
+    );
   }
   
   private updatePanels(tree: TreeNode) {
