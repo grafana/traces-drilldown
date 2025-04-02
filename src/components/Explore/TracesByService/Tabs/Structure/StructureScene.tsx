@@ -45,7 +45,7 @@ const STREAMING_DEBOUNCE_TIME_MS = 500;
 export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
   private updateTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private lastProcessedData: string | null = null;
-  private lastProcessedTime: number = 0;
+  private lastProcessedTime = 0;
   
   constructor(state: Partial<ServicesTabSceneState>) {
     super({
