@@ -11,7 +11,9 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, groupBy
   // Generate span set filters
   let filters = `${VAR_FILTERS_EXPR}`;
 
-  if (metric === 'errors') {
+  if (metric === 'rate') {
+    filters += ' && status!=error';
+  } else if (metric === 'errors') {
     filters += ' && status=error';
   }
 
@@ -52,7 +54,7 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, groupBy
 export function metricByWithStatus(metric: MetricFunction, tagKey?: string) {
   return {
     refId: 'A',
-    query: generateMetricsQuery({ metric, groupByKey: tagKey, groupByStatus: true }),
+    query: generateMetricsQuery({ metric, groupByKey: tagKey, groupByStatus: false }),
     queryType: 'traceql',
     tableType: 'spans',
     limit: 100,
