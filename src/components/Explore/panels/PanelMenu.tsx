@@ -12,8 +12,7 @@ import { AddToInvestigationButton } from '../actions/AddToInvestigationButton';
 // Certain imports are not available in the dependant package, but can be if the plugin is running in a different Grafana version.
 // We need both imports to support Grafana v11 and v12.
 // @ts-expect-error
-import { getObservablePluginLinks } from '@grafana/runtime/unstable';
-import { config, getPluginLinkExtensions } from '@grafana/runtime';
+import { config, getPluginLinkExtensions, getObservablePluginLinks } from '@grafana/runtime';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
 import { lastValueFrom } from 'rxjs';
