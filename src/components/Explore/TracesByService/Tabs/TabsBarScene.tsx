@@ -45,8 +45,11 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
     const dataState = sceneGraph.getData(model).useState();
     const tracesCount = dataState.data?.series?.[0]?.length;
 
-    const enabledViews =
-      actionViewsDefinitions.filter((view) => allowedActionViews?.includes(view.value)) ?? actionViewsDefinitions;
+    let enabledViews = actionViewsDefinitions.filter((view) => allowedActionViews?.includes(view.value));
+
+    if (!allowedActionViews?.length) {
+      enabledViews = actionViewsDefinitions;
+    }
 
     useMount(() => {
       if (enabledViews.length === 1) {
