@@ -1,6 +1,6 @@
 {
   "name": "exploretraces-app",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Queryless exploration of trace data stored in Tempo",
   "scripts": {
     "build": "webpack -c ./webpack.config.ts --env production",
@@ -88,8 +88,8 @@
     "@emotion/css": "^11.10.6",
     "@grafana/data": "^11.3.0",
     "@grafana/runtime": "^11.3.0",
-    "@grafana/schema": "^11.3.0",
     "@grafana/scenes": "^6.1.0",
+    "@grafana/schema": "^11.3.0",
     "@grafana/ui": "11.3.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.0.1",
