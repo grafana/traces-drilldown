@@ -38,6 +38,9 @@ import { computeHighestDifference } from '../../../../../utils/comparison';
 import { AttributesDescription } from '../Breakdown/AttributesDescription';
 import { isEqual } from 'lodash';
 
+// Filter out to avoid duplication
+const FILTERED_ATTRIBUTES = ['rootName', 'rootServiceName'];
+
 export interface AttributesComparisonSceneState extends SceneObjectState {
   body?: SceneObject;
 }
@@ -101,6 +104,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
               map((data: DataFrame[]) => {
                 const groupedFrames = groupFrameListByAttribute(data);
                 return Object.entries(groupedFrames)
+                  .filter(([attribute, _]) => !FILTERED_ATTRIBUTES.includes(attribute))
                   .map(([attribute, frames]) => frameGroupToDataframe(attribute, frames))
                   .sort((a, b) => {
                     const aCompare = computeHighestDifference(a);
