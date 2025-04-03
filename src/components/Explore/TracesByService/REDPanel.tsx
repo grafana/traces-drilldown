@@ -36,7 +36,7 @@ import { SelectionColor } from '../layouts/allComparison';
 import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
-import { exemplarsTransformations } from '../../../utils/exemplars';
+import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -186,7 +186,9 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           datasource: explorationDS,
           queries: [this.isDuration() ? buildHistogramQuery() : metricByWithStatus(metric)],
         }),
-        transformations: [...exemplarsTransformations(traceExploration.state.locationService)],
+        transformations: this.isDuration() 
+          ? [...removeExemplarsTransformation()] 
+          : [...exemplarsTransformations(traceExploration.state.locationService)],
       }),
       panel: this.getVizPanel(),
     });
