@@ -65,6 +65,7 @@ export interface TraceExplorationState extends SceneObjectState {
   // just for the starting data source
   initialDS?: string;
   initialFilters?: AdHocVariableFilter[];
+  initialGroupBy?: string;
   initialActionView?: ActionViewType;
   allowedActionViews?: ActionViewType[];
 }
@@ -80,7 +81,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   public constructor(state: Partial<TraceExplorationState>) {
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
-      $variables: state.$variables ?? getVariableSet(state.initialDS, state.initialFilters, state.embedded),
+      $variables: state.$variables ?? getVariableSet(state as TraceExplorationState),
       controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
@@ -321,19 +322,19 @@ const PreviewTooltip = ({ text }: { text: string }) => {
   );
 };
 
-function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter[], embedded?: boolean) {
+function getVariableSet(state: TraceExplorationState) {
   return new SceneVariableSet({
     variables: [
       new DataSourceVariable({
         name: VAR_DATASOURCE,
         label: 'Data source',
-        value: initialDS,
+        value: state.initialDS,
         pluginId: 'tempo',
-        isReadOnly: embedded,
+        isReadOnly: state.embedded,
       }),
       new PrimarySignalVariable({
         name: VAR_PRIMARY_SIGNAL,
-        isReadOnly: embedded,
+        isReadOnly: state.embedded,
       }),
       new AdHocFiltersVariable({
         addFilterButtonText: 'Add filter',
@@ -341,7 +342,7 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
         name: VAR_FILTERS,
         datasource: explorationDS,
         layout: 'combobox',
-        filters: (initialFilters ?? []).map((f) => ({ ...f, readOnly: embedded })),
+        filters: (state.initialFilters ?? []).map((f) => ({ ...f, readOnly: state.embedded })),
         allowCustomValue: true,
         expressionBuilder: renderTraceQLLabelFilters,
       }),
@@ -352,6 +353,7 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
       new CustomVariable({
         name: VAR_GROUPBY,
         defaultToAll: false,
+        value: state.initialGroupBy,
       }),
       new CustomVariable({
         name: VAR_SPAN_LIST_COLUMNS,

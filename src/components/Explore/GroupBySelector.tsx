@@ -7,7 +7,7 @@ import { Select, RadioButtonGroup, useStyles2, useTheme2, measureText, Field, In
 import { ALL, ignoredAttributes, maxOptions, MetricFunction, RESOURCE_ATTR, SPAN_ATTR } from 'utils/shared';
 import { AttributesBreakdownScene } from './TracesByService/Tabs/Breakdown/AttributesBreakdownScene';
 import { AttributesComparisonScene } from './TracesByService/Tabs/Comparison/AttributesComparisonScene';
-import { getFiltersVariable, getMetricVariable } from 'utils/utils';
+import { getFiltersVariable, getMetricVariable, getTraceExplorationScene } from 'utils/utils';
 
 type Props = {
   options: Array<SelectableValue<string>>;
@@ -27,10 +27,12 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
   const { fontSize } = theme.typography;
 
   const [selectQuery, setSelectQuery] = useState<string>('');
+  const [allowAutoUpdate, setAllowAutoUpdate] = useState<boolean>(true);
 
   const [availableWidth, setAvailableWidth] = useState<number>(0);
   const controlsContainer = useRef<HTMLDivElement>(null);
 
+  const { initialGroupBy } = getTraceExplorationScene(model).useState();
   const { filters } = getFiltersVariable(model).useState();
   const { value: metric } = getMetricVariable(model).useState();
   const metricValue = metric as MetricFunction;
@@ -99,15 +101,21 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
       .map((op) => ({ label: op.label?.replace(SPAN_ATTR, '').replace(RESOURCE_ATTR, ''), value: op.value }));
   };
 
+  const defaultValue = initialGroupBy ?? radioOptions[0]?.value ?? otherAttrOptions[0]?.value;
+
   // Set default value as first value in options
   useEffect(() => {
-    const defaultValue = radioAttributes[0] ?? options[0]?.value;
-    if (defaultValue) {
-      if (!showAll && (!value || value === ALL)) {
-        onChange(defaultValue, true);
-      }
+    if (defaultValue && !showAll && allowAutoUpdate) {
+      onChange(defaultValue, true);
+      setAllowAutoUpdate(false);
     }
-  });
+  }, [value, defaultValue, showAll, onChange, allowAutoUpdate]);
+
+  useEffect(() => {
+    if (radioOptions.length > 0) {
+      setAllowAutoUpdate(true);
+    }
+  }, [radioOptions.map((o) => o.label)]);
 
   const showAllOption = showAll ? [{ label: ALL, value: ALL }] : [];
   const defaultOnChangeValue = showAll ? ALL : '';
