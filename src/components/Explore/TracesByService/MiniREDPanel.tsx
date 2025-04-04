@@ -116,7 +116,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
     if (metric === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (metric === 'errors') {
-      panel.setCustomFieldConfig('axisLabel', 'span/s').setColor({
+      panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'span/s').setColor({
         fixedColor: 'semi-dark-red',
         mode: 'fixed',
       });
