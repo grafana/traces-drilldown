@@ -61,7 +61,6 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
           tableType: 'spans',
           limit: 1,
           spss: 1,
-          maxDataPoints: 1,
           filters: [],
         }],
       }),
