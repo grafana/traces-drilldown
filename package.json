@@ -7,7 +7,7 @@
     "dev": "webpack -w -c ./webpack.config.ts --env development",
     "e2e": "playwright test -x --trace on --ui",
     "e2e:fast": "playwright test --retries=2 --workers=3 -x --trace on",
-    "e2e:debug": "playwright test --debug -x --trace on /test",
+    "e2e:debug": "playwright test --debug -x --trace on /e2e",
     "e2e:codegen": "playwright codegen",
     "test": "jest --watch --onlyChanged",
     "test:ci": "jest --passWithNoTests --maxWorkers 4",

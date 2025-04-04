@@ -64,7 +64,7 @@ export const histogramPanelConfig = () => {
     .setOption('legend', { show: false })
     .setOption('yAxis', {
       unit: 's',
-      axisLabel: 'Duration',
+      axisLabel: 'duration',
     })
     .setOption('color', {
       scheme: 'Blues',
