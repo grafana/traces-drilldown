@@ -1,4 +1,4 @@
-import { LoadingState } from '@grafana/data';
+import { LoadingState, dateTime } from '@grafana/data';
 import {
   SceneObjectBase,
   SceneObjectState,
@@ -7,7 +7,6 @@ import {
 } from '@grafana/scenes';
 import { StepQueryRunner } from './queries/StepQueryRunner';
 import { getDatasourceVariable } from '../../utils/utils';
-import { dateTime } from '@grafana/data';
 import { Alert, LinkButton } from '@grafana/ui';
 import React from 'react';
 
