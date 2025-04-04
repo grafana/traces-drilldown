@@ -42,6 +42,7 @@ import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
+import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
 
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
@@ -60,6 +61,8 @@ export interface TraceExplorationState extends SceneObjectState {
   initialFilters?: AdHocVariableFilter[];
 
   locationService: LocationService;
+  
+  issueDetector?: TraceQLIssueDetector;
 }
 
 const version = process.env.VERSION;
@@ -77,6 +80,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
+      issueDetector: new TraceQLIssueDetector(),
       ...state,
     });
 
@@ -94,6 +98,12 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
         localStorage.setItem(DATASOURCE_LS_KEY, newState.value.toString());
       }
     });
+    
+    if (this.state.issueDetector) {
+      if (!this.state.issueDetector.isActive) {
+        this.state.issueDetector.activate();
+      }
+    }
   }
 
   getUrlState() {
@@ -152,7 +162,10 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const { controls, topScene, drawerScene, traceId } = traceExploration.useState();
+    const { controls, topScene, drawerScene, traceId, issueDetector } = traceExploration.useState();
+    const { hasIssue } = issueDetector?.useState() || { 
+      hasIssue: false
+    };
     const styles = useStyles2(getStyles);
     const [menuVisible, setMenuVisible] = React.useState(false);
 
@@ -193,6 +206,7 @@ export class TraceExplorationScene extends SceneObjectBase {
       <>
         <div className={styles.container}>
           <div className={styles.headerContainer}>
+            {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
             <Stack gap={1} justifyContent={'space-between'} wrap={'wrap'}>
               <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
                 {dsVariable && (
