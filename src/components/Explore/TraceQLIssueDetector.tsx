@@ -2,7 +2,6 @@ import { LoadingState, dateTime } from '@grafana/data';
 import {
   SceneObjectBase,
   SceneObjectState,
-  SceneDataTransformer,
   SceneTimeRange,
 } from '@grafana/scenes';
 import { StepQueryRunner } from './queries/StepQueryRunner';
@@ -48,23 +47,19 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
       to: now.toISOString(),
     });
     
-    const issueDetector = new SceneDataTransformer({
+    const issueDetector = new StepQueryRunner({
+      maxDataPoints: 1,
+      datasource: { uid: String(datasourceVar.state.value) },
       $timeRange: minimalTimeRange,
-      $data: new StepQueryRunner({
-        maxDataPoints: 1,
-        datasource: { uid: String(datasourceVar.state.value) },
-        $timeRange: minimalTimeRange,
-        queries: [{
-          refId: 'issueDetectorQuery',
-          query: '{} | rate()',
-          queryType: 'traceql',
-          tableType: 'spans',
-          limit: 1,
-          spss: 1,
-          filters: [],
-        }],
-      }),
-      transformations: [],
+      queries: [{
+        refId: 'issueDetectorQuery',
+        query: '{} | rate()',
+        queryType: 'traceql',
+        tableType: 'spans',
+        limit: 1,
+        spss: 1,
+        filters: [],
+      }],
     });
     
     this._subs.add(
@@ -91,7 +86,7 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
 } 
 
 const TraceQLWarningTitle = 'TraceQL metrics not configured';
-const TraceQLWarningMessage = 'The "localblocks processor not found" error occurred. This typically means the required processor is not configured in Tempo.';
+const TraceQLWarningMessage = 'We found an error running a TraceQL metrics query: "localblocks processor not found". This typically means the "local-blocks" processor is not configured in Tempo, which is required for Grafana Traces Drilldown to work.';
 
 export const TraceQLConfigWarning: React.FC<{ detector: TraceQLIssueDetector }> = ({ detector }) => {
   const { hasIssue } = detector.useState();
