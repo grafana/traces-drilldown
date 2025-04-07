@@ -15,7 +15,7 @@ import { AddToInvestigationButton } from '../actions/AddToInvestigationButton';
 import { config, getPluginLinkExtensions, getObservablePluginLinks } from '@grafana/runtime';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 const ADD_TO_INVESTIGATION_MENU_TEXT = 'Add to investigation';
 const extensionPointId = 'grafana-exploretraces-app/investigation/v1';
@@ -128,7 +128,7 @@ const getInvestigationLink = async (addToInvestigations: AddToInvestigationButto
 
   // `getObservablePluginLinks` is introduced in Grafana v12
   if (getObservablePluginLinks !== undefined) {
-    const links: PluginExtensionLink[] = await lastValueFrom(
+    const links: PluginExtensionLink[] = await firstValueFrom(
       getObservablePluginLinks({
         extensionPointId,
         context,
