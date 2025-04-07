@@ -3,8 +3,8 @@ import {
   SceneObjectBase,
   SceneObjectState,
   SceneTimeRange,
+  SceneQueryRunner,
 } from '@grafana/scenes';
-import { StepQueryRunner } from './queries/StepQueryRunner';
 import { getDatasourceVariable } from '../../utils/utils';
 import { Alert, LinkButton } from '@grafana/ui';
 import React from 'react';
@@ -47,7 +47,7 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
       to: now.toISOString(),
     });
     
-    const issueDetector = new StepQueryRunner({
+    const issueDetector = new SceneQueryRunner({
       maxDataPoints: 1,
       datasource: { uid: String(datasourceVar.state.value) },
       $timeRange: minimalTimeRange,
