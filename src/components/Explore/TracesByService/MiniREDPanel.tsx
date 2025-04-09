@@ -115,13 +115,13 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
 
   private getRateOrErrorPanel(metric: MetricFunction) {
     const panel = barsPanelConfig().setHoverHeader(true).setDisplayMode('transparent');
-    if (metric === 'errors') {
-      panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'Errors').setColor({
+    if (metric === 'rate') {
+      panel.setCustomFieldConfig('axisLabel', 'span/s');
+    } else if (metric === 'errors') {
+      panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'span/s').setColor({
         fixedColor: 'semi-dark-red',
         mode: 'fixed',
       });
-    } else {
-      panel.setTitle('Span rate');
     }
 
     return panel.build();
