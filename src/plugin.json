@@ -62,6 +62,11 @@
         "id": "grafana-exploretraces-app/open-in-explore-traces-button/v1",
         "title": "Open in Traces Drilldown button",
         "description": "A button that opens a traces view in the Traces Drilldown app."
+      },
+      {
+        "id": "grafana-exploretraces-app/embedded-trace-exploration/v1",
+        "title": "Embedded Trace Exploration",
+        "description": "A component that renders a trace exploration view that can be embedded in other parts of Grafana."
       }
     ],
     "addedLinks": [

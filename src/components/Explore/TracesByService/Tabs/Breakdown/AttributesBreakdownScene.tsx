@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import {
@@ -107,7 +107,8 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
   };
 
   public static Component = ({ model }: SceneComponentProps<AttributesBreakdownScene>) => {
-    const groupBy = getGroupByVariable(model).getValueText();
+    const { value: groupByValue } = getGroupByVariable(model).useState();
+    const groupBy = groupByValue as string;
     const defaultScope = groupBy.includes(SPAN_ATTR) || radioAttributesSpan.includes(groupBy) ? SPAN : RESOURCE;
     const [scope, setScope] = useState(defaultScope);
     const { body } = model.useState();
@@ -135,6 +136,12 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
       }
     };
     const description = getDescription(metric as MetricFunction);
+
+    useEffect(() => {
+      if (scope !== defaultScope) {
+        setScope(defaultScope);
+      }
+    }, [groupBy]);
 
     return (
       <div className={styles.container}>

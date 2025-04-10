@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, fireEvent, screen, act } from '@testing-library/react';
-import { locationService } from '@grafana/runtime';
 
 import { ShareExplorationAction } from './ShareExplorationAction';
 import { TraceExploration } from '../../../pages/Explore';
@@ -24,7 +23,6 @@ describe('ShareExplorationAction', () => {
   const mockExploration = new TraceExploration({
     initialDS: 'mockDataSource',
     initialFilters: [],
-    locationService: locationService,
   });
 
   beforeEach(() => {

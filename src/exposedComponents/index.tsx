@@ -1,9 +1,14 @@
 import { LinkButton } from '@grafana/ui';
-import { OpenInExploreTracesButtonProps } from 'exposedComponents/types';
+import { OpenInExploreTracesButtonProps, EmbeddedTraceExplorationState } from 'exposedComponents/types';
 import React, { lazy, Suspense } from 'react';
-const OpenInExploreTracesButton = lazy(() => import('exposedComponents/OpenInExploreTracesButton/OpenInExploreTracesButton'));
+const OpenInExploreTracesButton = lazy(
+  () => import('exposedComponents/OpenInExploreTracesButton/OpenInExploreTracesButton')
+);
+const EmbeddedTraceExploration = lazy(
+  () => import('exposedComponents/EmbeddedTraceExploration/EmbeddedTraceExploration')
+);
 
-function SuspendedOpenInExploreTracesButton(props: OpenInExploreTracesButtonProps) {
+export function SuspendedOpenInExploreTracesButton(props: OpenInExploreTracesButtonProps) {
   return (
     <Suspense
       fallback={
@@ -17,11 +22,10 @@ function SuspendedOpenInExploreTracesButton(props: OpenInExploreTracesButtonProp
   );
 }
 
-export const exposedComponents = [
-  {
-    id: 'grafana-exploretraces-app/open-in-explore-traces-button/v1',
-    title: 'Open in Traces Drilldown button',
-    description: 'A button that opens a traces view in the Traces drilldown app.',
-    component: SuspendedOpenInExploreTracesButton,
-  },
-];
+export function SuspendedEmbeddedTraceExploration(props: EmbeddedTraceExplorationState) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EmbeddedTraceExploration {...props} />
+    </Suspense>
+  );
+}
