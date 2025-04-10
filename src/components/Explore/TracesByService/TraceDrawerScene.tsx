@@ -117,7 +117,9 @@ export class TraceDrawerScene extends SceneObjectBase<DetailsSceneState> {
 
   private async updateInvestigationLink() {
     const { addToInvestigationButton } = this.state;
-    if (!addToInvestigationButton) return;
+    if (!addToInvestigationButton) { 
+      return;
+    }
 
     const link = await getInvestigationLink(addToInvestigationButton);
     if (link) {
