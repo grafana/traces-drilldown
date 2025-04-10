@@ -44,3 +44,17 @@ export const exemplarsTransformations = (
     },
   },
 ];
+
+export const removeExemplarsTransformation = (): CustomTransformerDefinition[] => [
+  {
+    topic: DataTopic.Annotations,
+    operator: () => (source: Observable<DataFrame[]>) => {
+      return source.pipe(
+        map((data: DataFrame[]) => {
+          return data.filter((frame) => frame.name !== 'exemplar');
+        })
+      );
+    },
+  },
+];
+

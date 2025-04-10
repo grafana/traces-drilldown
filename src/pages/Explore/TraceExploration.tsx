@@ -49,6 +49,8 @@ import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { primarySignalOptions } from './primary-signals';
 import { ActionViewType } from 'components/Explore/TracesByService/Tabs/TabsBarScene';
+import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
+
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
   controls: SceneObject[];
@@ -68,6 +70,8 @@ export interface TraceExplorationState extends SceneObjectState {
   initialGroupBy?: string;
   initialActionView?: ActionViewType;
   allowedActionViews?: ActionViewType[];
+
+  issueDetector?: TraceQLIssueDetector;
 }
 
 const version = process.env.VERSION;
@@ -85,6 +89,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
+      issueDetector: new TraceQLIssueDetector(),
       ...state,
     });
 
@@ -108,6 +113,12 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
         localStorage.setItem(DATASOURCE_LS_KEY, newState.value.toString());
       }
     });
+
+    if (this.state.issueDetector) {
+      if (!this.state.issueDetector.isActive) {
+        this.state.issueDetector.activate();
+      }
+    }
   }
 
   getUrlState() {
@@ -166,12 +177,16 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const { controls, topScene, drawerScene, traceId, embedded } = traceExploration.useState();
+    const { controls, topScene, drawerScene, traceId, issueDetector, embedded } = traceExploration.useState();
+    const { hasIssue } = issueDetector?.useState() || {
+      hasIssue: false,
+    };
     const styles = useStyles2(getStyles);
 
     return (
       <>
         <div className={styles.container}>
+          {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
           {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
           <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
         </div>

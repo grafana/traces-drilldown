@@ -12,11 +12,12 @@ import {
   SceneObjectState,
   SceneQueryRunner,
   VariableDependencyConfig,
+  VariableValue,
 } from '@grafana/scenes';
 import { getTheme, useStyles2 } from '@grafana/ui';
 
 import { GroupBySelector } from '../../../GroupBySelector';
-import { VAR_FILTERS, explorationDS, VAR_FILTERS_EXPR, ALL, radioAttributesSpan } from '../../../../../utils/shared';
+import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL, radioAttributesSpan } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -29,6 +30,7 @@ import { buildAttributeComparison } from '../../../layouts/attributeComparison';
 import {
   getAttributesAsOptions,
   getGroupByVariable,
+  getPrimarySignalVariable,
   getTraceByServiceScene,
   getTraceExplorationScene,
 } from 'utils/utils';
@@ -44,7 +46,7 @@ export interface AttributesComparisonSceneState extends SceneObjectState {
 
 export class AttributesComparisonScene extends SceneObjectBase<AttributesComparisonSceneState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: [VAR_FILTERS],
+    variableNames: [VAR_FILTERS, VAR_PRIMARY_SIGNAL],
     onReferencedVariableValueChanged: this.onReferencedVariableValueChanged.bind(this),
   });
 
@@ -69,6 +71,11 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
       }
     });
 
+    getPrimarySignalVariable(this).subscribeToState(() => {
+      this.updateData();
+      this.setBody(variable);
+    });
+
     getTraceByServiceScene(this).subscribeToState((newState, prevState) => {
       if (!isEqual(newState.selection, prevState.selection)) {
         this.updateData();
@@ -83,11 +90,17 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     this.setBody(variable);
   }
 
+  private getFilteredAttributes = (primarySignal: VariableValue): string[] => {
+    return primarySignal === 'nestedSetParent<0' ? ['rootName', 'rootServiceName'] : [];
+  };
+
   private updateData() {
     const byServiceScene = getTraceByServiceScene(this);
     const sceneTimeRange = sceneGraph.getTimeRange(this);
     const from = sceneTimeRange.state.value.from.unix();
     const to = sceneTimeRange.state.value.to.unix();
+    const primarySignal = getPrimarySignalVariable(this).state.value;
+    const filteredAttributes = this.getFilteredAttributes(primarySignal);
 
     this.setState({
       $data: new SceneDataTransformer({
@@ -101,6 +114,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
               map((data: DataFrame[]) => {
                 const groupedFrames = groupFrameListByAttribute(data);
                 return Object.entries(groupedFrames)
+                  .filter(([attribute, _]) => !filteredAttributes.includes(attribute))
                   .map(([attribute, frames]) => frameGroupToDataframe(attribute, frames))
                   .sort((a, b) => {
                     const aCompare = computeHighestDifference(a);
