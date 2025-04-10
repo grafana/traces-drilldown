@@ -42,15 +42,7 @@ export const linkConfigs: Array<{ targets: string | string[] } & PluginExtension
   }
 ];
 
-/**
- * Props shared between ...
- */
-type ContextToLinkProps = {
-  targets: DataQuery[],
-  timeRange: RawTimeRange,
-}
-
-export function contextToLink(context?: ContextToLinkProps) {
+export function contextToLink(context?: PluginExtensionPanelContext | PluginExtensionExploreContext) {
   if (!context) {
     return undefined;
   }
