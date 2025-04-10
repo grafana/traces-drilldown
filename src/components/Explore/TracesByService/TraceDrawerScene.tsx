@@ -8,9 +8,8 @@ import { getDataSource, getTraceExplorationScene } from '../../../utils/utils';
 import { AddToInvestigationButton } from '../actions/AddToInvestigationButton';
 import { Button, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
-import { GrafanaTheme2, PluginExtensionLink } from '@grafana/data';
+import { GrafanaTheme2, PluginExtensionLink, LoadingState } from '@grafana/data';
 import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from '../panels/PanelMenu';
-import { LoadingState } from '@grafana/data';
 
 export interface DetailsSceneState extends SceneObjectState {
   body?: SceneObject;
