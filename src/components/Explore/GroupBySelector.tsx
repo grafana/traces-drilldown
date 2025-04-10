@@ -112,10 +112,16 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
   }, [value, defaultValue, showAll, onChange, allowAutoUpdate]);
 
   useEffect(() => {
-    if (radioOptions.length > 0) {
+    if (radioAttributes.length > 0) {
       setAllowAutoUpdate(true);
     }
-  }, [radioOptions.map((o) => o.label)]);
+  }, [radioAttributes]);
+
+  useEffect(() => {
+    if (filters.some((f) => f.key === value)) {
+      setAllowAutoUpdate(true);
+    }
+  }, [filters, value]);
 
   const showAllOption = showAll ? [{ label: ALL, value: ALL }] : [];
   const defaultOnChangeValue = showAll ? ALL : '';

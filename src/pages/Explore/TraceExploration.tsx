@@ -205,7 +205,7 @@ interface EmbeddedHeaderProps {
 }
 
 const EmbeddedHeader = ({ model }: EmbeddedHeaderProps) => {
-  const styles = useStyles2(getStyles);
+  const styles = useStyles2(getStyles, true);
   const traceExploration = getTraceExplorationScene(model);
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
@@ -388,7 +388,7 @@ function getVariableSet(state: TraceExplorationState) {
   });
 }
 
-function getStyles(theme: GrafanaTheme2) {
+function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
   return {
     bodyContainer: css({
       label: 'bodyContainer',
@@ -417,7 +417,7 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     headerContainer: css({
       label: 'headerContainer',
-      backgroundColor: theme.colors.background.primary,
+      backgroundColor: embedded ? theme.colors.background.primary : theme.colors.background.canvas,
       display: 'flex',
       flexDirection: 'column',
       position: 'sticky',
