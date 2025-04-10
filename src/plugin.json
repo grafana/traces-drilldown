@@ -74,6 +74,11 @@
         "targets": ["grafana/dashboard/panel/menu"],
         "title": "Open in Explore Traces",
         "description": "Open current query in the Explore Traces app"
+      },
+      {
+        "title": "Open in Grafana Traces Drilldown",
+        "description": "Try our new queryless experience for traces",
+        "targets": ["grafana/explore/toolbar/action"]
       }
     ],
     "extensionPoints": [
