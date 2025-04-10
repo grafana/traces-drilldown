@@ -74,7 +74,7 @@ export function contextToLink(context?: PluginExtensionPanelContext | PluginExte
   const getFilters = (filters: TraceqlFilter[]) => {
     return filters
         .filter((filter) => filter.tag !== 'status')
-        .map((filter) => `${filter.scope}.${filter.tag}|${filter.operator}|${filter.value}`);
+        .map((filter) => `${filter.scope}${getScopeSeparator(filter)}${filter.tag}|${filter.operator}|${filter.value}`);
   };
   getFilters(filters).forEach((filter) => params.append(`var-${VAR_FILTERS}`, filter));
 
@@ -86,4 +86,37 @@ export function contextToLink(context?: PluginExtensionPanelContext | PluginExte
 
 function createAppUrl(urlParams?: URLSearchParams): string {
   return `${EXPLORATIONS_ROUTE}${urlParams ? `?${urlParams.toString()}` : ''}`;
+}
+
+const intrinsics = [
+  'event:name',
+  'event:timeSinceStart',
+  'instrumentation:name',
+  'instrumentation:version',
+  'link:spanID',
+  'link:traceID',
+  'span:duration',
+  'span:id',
+  'span:kind',
+  'span:name',
+  'span:status',
+  'span:statusMessage',
+  'trace:duration',
+  'trace:id',
+  'trace:rootName',
+  'trace:rootService',
+].map(fullName => {
+    const [scope, tag] = fullName.split(':');
+    return {
+        scope,
+        tag,
+    };
+});
+
+function isIntrinsic(filter: TraceqlFilter) {
+  return intrinsics.some((intrinsic) => intrinsic.tag === filter.tag && intrinsic.scope === filter.scope);
+}
+
+function getScopeSeparator(filter: TraceqlFilter) {
+  return isIntrinsic(filter) ? ':' : '.';
 }
