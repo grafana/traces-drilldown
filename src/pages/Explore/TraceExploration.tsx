@@ -338,8 +338,8 @@ function getStyles(theme: GrafanaTheme2) {
       minHeight: '100%',
       flexDirection: 'column',
       padding: `0 ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
-      overflow: 'auto' /* Needed for sticky positioning */,
-      height: '1px' /* Needed for sticky positioning */,
+      overflow: 'auto', /* Needed for sticky positioning */
+      maxHeight: '100%' /* Needed for sticky positioning */
     }),
     body: css({
       label: 'body',
