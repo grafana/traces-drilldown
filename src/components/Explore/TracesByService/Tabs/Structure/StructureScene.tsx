@@ -29,7 +29,7 @@ import { Icon, LinkButton, Stack, Text, useTheme2 } from '@grafana/ui';
 import Skeleton from 'react-loading-skeleton';
 import { EmptyState } from '../../../../states/EmptyState/EmptyState';
 import { css } from '@emotion/css';
-import { getTraceExplorationScene } from 'utils/utils';
+import { getOpenTrace, getTraceExplorationScene } from 'utils/utils';
 import { structureDisplayName } from '../TabsBarScene';
 
 export interface ServicesTabSceneState extends SceneObjectState {
@@ -97,9 +97,10 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
 
   private getPanel(tree: TreeNode) {
     const timeRange = sceneGraph.getTimeRange(this);
-    const traceExplorationScene = getTraceExplorationScene(this);
     const from = timeRange.state.value.from;
     const to = timeRange.state.value.to;
+
+    const openTrace = getOpenTrace(this);
 
     return PanelBuilders.traces()
       .setTitle(`Structure for ${tree.serviceName} [${countSpans(tree)} spans used]`)
@@ -107,9 +108,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         return {
           title: 'Open trace',
           href: '#',
-          onClick: () => {
-            traceExplorationScene.state.locationService.partial({ traceId, spanId });
-          },
+          onClick: () => openTrace(traceId, spanId),
           origin: {} as Field,
           target: '_self',
         };
@@ -403,7 +402,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       'div[data-testid="TimelineRowCell"]': {
         'button[role="switch"]': {
           cursor: 'text',
-        }
+        },
       },
       'div[data-testid="span-view"]': {
         cursor: 'text !important',

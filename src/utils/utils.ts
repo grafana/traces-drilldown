@@ -14,6 +14,7 @@ import {
 
 import { TraceExploration } from '../pages/Explore';
 import {
+  EventTraceOpened,
   EXPLORATIONS_ROUTE,
   VAR_DATASOURCE,
   VAR_DATASOURCE_EXPR,
@@ -28,7 +29,6 @@ import {
 } from './shared';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { ActionViewType } from '../components/Explore/TracesByService/Tabs/TabsBarScene';
-import { LocationService } from '@grafana/runtime';
 import { Home } from 'pages/Home/Home';
 import { PrimarySignalVariable } from 'pages/Explore/PrimarySignalVariable';
 
@@ -44,16 +44,11 @@ export function getTraceByServiceScene(model: SceneObject): TracesByServiceScene
   return sceneGraph.getAncestor(model, TracesByServiceScene);
 }
 
-export function newTracesExploration(
-  locationService: LocationService,
-  initialDS?: string,
-  initialFilters?: AdHocVariableFilter[]
-): TraceExploration {
+export function newTracesExploration(initialDS?: string, initialFilters?: AdHocVariableFilter[]): TraceExploration {
   return new TraceExploration({
     initialDS,
     initialFilters: initialFilters ?? [],
     $timeRange: new SceneTimeRange({ from: 'now-30m', to: 'now' }),
-    locationService,
   });
 }
 
@@ -223,4 +218,10 @@ export const formatLabelValue = (value: string) => {
   return value;
 };
 
-export const capitalizeFirstChar = (str: string) => str?.[0]?.toUpperCase() + str?.slice(1) || "";
+export const capitalizeFirstChar = (str: string) => str?.[0]?.toUpperCase() + str?.slice(1) || '';
+
+export const getOpenTrace = (scene: SceneObject) => {
+  return (traceId: string, spanId?: string) => {
+    scene.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
+  };
+};
