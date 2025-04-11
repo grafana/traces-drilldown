@@ -40,13 +40,7 @@ export interface ServicesTabSceneState extends SceneObjectState {
 }
 
 const ROOT_SPAN_ID = '0000000000000000';
-const STREAMING_DEBOUNCE_TIME_MS = 500;
-
-export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
-  private updateTimeoutId: ReturnType<typeof setTimeout> | null = null;
-  private lastProcessedData: string | null = null;
-  private lastProcessedTime = 0;
-  
+export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {  
   constructor(state: Partial<ServicesTabSceneState>) {
     super({
       $data: new SceneDataTransformer({
@@ -62,82 +56,37 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
 
     this.addActivationHandler(() => {
       this._onActivate();
-      return () => this._onDeactivate();
     });
-  }
-
-  private _onDeactivate() {
-    if (this.updateTimeoutId) {
-      clearTimeout(this.updateTimeoutId);
-      this.updateTimeoutId = null;
-    }
-    this.lastProcessedData = null;
   }
 
   public _onActivate() {
     this._subs.add(
       this.state.$data?.subscribeToState((state) => {
-        if (state.data?.state === LoadingState.Loading) {
+        if (state.data?.state === LoadingState.Loading || state.data?.state === LoadingState.Streaming) {
           this.setState({ loading: true });
           return;
         }
         
-        if (
-          (state.data?.state === LoadingState.Done || state.data?.state === LoadingState.Streaming) &&
-          state.data?.series.length
-        ) {
+        if (state.data?.state === LoadingState.Done && state.data?.series.length) {
           const frame = state.data?.series[0].fields[0].values[0];
           if (frame) {
-            const now = Date.now();
-            // Prevent duplicate processing of the same data
-            // Skip if we processed this exact data less than 100ms ago
-            if (this.lastProcessedData === frame && now - this.lastProcessedTime < 100) {
-              return;
-            }
-            
-            // Track this data as processed
-            this.lastProcessedData = frame;
-            this.lastProcessedTime = now;
-            
             const response = JSON.parse(frame) as TraceSearchMetadata[];
-            const merged = mergeTraces(response);
-            merged.children.sort((a, b) => countSpans(b) - countSpans(a));
-            
-            if (state.data?.state === LoadingState.Streaming) {
-              // Clear any pending update
-              if (this.updateTimeoutId) {
-                clearTimeout(this.updateTimeoutId);
-              }
-              
-              // Set a timeout to apply the update after the debounce time
-              this.updateTimeoutId = setTimeout(() => {
-                this.updatePanels(merged);
-                this.updateTimeoutId = null;
-              }, STREAMING_DEBOUNCE_TIME_MS);
-              
-              return;
-            }
-            
-            // For done state, update immediately
-            this.updatePanels(merged);
+            const tree = mergeTraces(response);
+            tree.children.sort((a, b) => countSpans(b) - countSpans(a));
+                        
+            this.setState({
+              loading: false,
+              tree,
+              panel: new SceneFlexLayout({
+                height: '100%',
+                wrap: 'wrap',
+                children: this.getPanels(tree),
+              }),
+            });
           }
         }
       })
     );
-  }
-  
-  private updatePanels(tree: TreeNode) {
-    const panel = new SceneFlexLayout({
-      height: '100%',
-      wrap: 'wrap',
-      children: this.getPanels(tree),
-    });
-    
-    this.setState({
-      loading: false,
-      tree: tree,
-      panel: panel,
-    });
   }
 
   private getPanels(tree: TreeNode) {
