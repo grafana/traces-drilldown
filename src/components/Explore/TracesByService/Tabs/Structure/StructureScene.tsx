@@ -40,6 +40,7 @@ export interface ServicesTabSceneState extends SceneObjectState {
 }
 
 const ROOT_SPAN_ID = '0000000000000000';
+
 export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {  
   constructor(state: Partial<ServicesTabSceneState>) {
     super({
@@ -54,9 +55,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       ...state,
     });
 
-    this.addActivationHandler(() => {
-      this._onActivate();
-    });
+    this.addActivationHandler(this._onActivate.bind(this));
   }
 
   public _onActivate() {
