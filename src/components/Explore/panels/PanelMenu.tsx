@@ -1,4 +1,4 @@
-import { PanelMenuItem, toURLRange, urlUtil } from '@grafana/data';
+import { PanelMenuItem, PluginExtensionLink, toURLRange, urlUtil } from '@grafana/data';
 import {
   SceneObjectBase,
   VizPanelMenu,
@@ -9,9 +9,13 @@ import {
 } from '@grafana/scenes';
 import React from 'react';
 import { AddToInvestigationButton } from '../actions/AddToInvestigationButton';
-import { config, getPluginLinkExtensions } from '@grafana/runtime';
+// Certain imports are not available in the dependant package, but can be if the plugin is running in a different Grafana version.
+// We need both imports to support Grafana v11 and v12.
+// @ts-expect-error
+import { config, getPluginLinkExtensions, getObservablePluginLinks } from '@grafana/runtime';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
+import { firstValueFrom } from 'rxjs';
 
 const ADD_TO_INVESTIGATION_MENU_TEXT = 'Add to investigation';
 const extensionPointId = 'grafana-exploretraces-app/investigation/v1';
@@ -109,33 +113,42 @@ const onExploreClick = () => {
   reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.open_in_explore_clicked);
 };
 
-const getInvestigationLink = (addToInvestigations: AddToInvestigationButton) => {
-  const links = getPluginLinkExtensions({
-    extensionPointId,
-    context: addToInvestigations.state.context,
-  });
+const getInvestigationLink = async (addToInvestigations: AddToInvestigationButton) => {
+  const context = addToInvestigations.state.context;
 
-  return links.extensions[0];
-};
+  // `getPluginLinkExtensions` is removed in Grafana v12
+  if (getPluginLinkExtensions !== undefined) {
+    const links = getPluginLinkExtensions({
+      extensionPointId,
+      context,
+    });
 
-const onAddToInvestigationClick = (event: React.MouseEvent, addToInvestigationButton: AddToInvestigationButton) => {
-  const link = getInvestigationLink(addToInvestigationButton);
-  if (link && link.onClick) {
-    link.onClick(event);
+    return links.extensions[0];
   }
 
-  reportAppInteraction(
-    USER_EVENTS_PAGES.analyse_traces,
-    USER_EVENTS_ACTIONS.analyse_traces.add_to_investigation_clicked
-  );
+  // `getObservablePluginLinks` is introduced in Grafana v12
+  if (getObservablePluginLinks !== undefined) {
+    const links: PluginExtensionLink[] = await firstValueFrom(
+      getObservablePluginLinks({
+        extensionPointId,
+        context,
+      })
+    );
+
+    return links[0];
+  }
+
+  return undefined;
 };
 
-function subscribeToAddToInvestigation(menu: PanelMenu) {
+async function subscribeToAddToInvestigation(menu: PanelMenu) {
   const addToInvestigationButton = menu.state.addToInvestigationButton;
   if (addToInvestigationButton) {
-    const link = getInvestigationLink(addToInvestigationButton);
+    const link = await getInvestigationLink(addToInvestigationButton);
     const existingMenuItems = menu.state.body?.state.items ?? [];
-    const existingAddToInvestigationLink = existingMenuItems.find((item) => item.text === ADD_TO_INVESTIGATION_MENU_TEXT);
+    const existingAddToInvestigationLink = existingMenuItems.find(
+      (item) => item.text === ADD_TO_INVESTIGATION_MENU_TEXT
+    );
 
     if (link) {
       if (!existingAddToInvestigationLink) {
@@ -150,7 +163,16 @@ function subscribeToAddToInvestigation(menu: PanelMenu) {
         menu.state.body?.addItem({
           text: ADD_TO_INVESTIGATION_MENU_TEXT,
           iconClassName: 'plus-square',
-          onClick: (e) => onAddToInvestigationClick(e, addToInvestigationButton),
+          onClick: (e) => {
+            if (link.onClick) {
+              link.onClick(e);
+            }
+
+            reportAppInteraction(
+              USER_EVENTS_PAGES.analyse_traces,
+              USER_EVENTS_ACTIONS.analyse_traces.add_to_investigation_clicked
+            );
+          },
         });
       } else {
         if (existingAddToInvestigationLink) {

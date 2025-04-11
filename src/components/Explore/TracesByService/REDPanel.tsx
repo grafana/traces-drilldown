@@ -36,7 +36,7 @@ import { SelectionColor } from '../layouts/allComparison';
 import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
-import { exemplarsTransformations } from '../../../utils/exemplars';
+import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -186,7 +186,9 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           datasource: explorationDS,
           queries: [this.isDuration() ? buildHistogramQuery() : metricByWithStatus(metric)],
         }),
-        transformations: [...exemplarsTransformations(traceExploration.state.locationService)],
+        transformations: this.isDuration() 
+          ? [...removeExemplarsTransformation()] 
+          : [...exemplarsTransformations(traceExploration.state.locationService)],
       }),
       panel: this.getVizPanel(),
     });
@@ -203,8 +205,10 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
     const panel = barsPanelConfig().setHoverHeader(true).setDisplayMode('transparent');
-    if (type === 'errors') {
-      panel.setCustomFieldConfig('axisLabel', 'Errors').setColor({
+    if (type === 'rate') {
+      panel.setCustomFieldConfig('axisLabel', 'span/s');
+    } else if (type === 'errors') {
+      panel.setCustomFieldConfig('axisLabel', 'span/s').setColor({
         fixedColor: 'semi-dark-red',
         mode: 'fixed',
       });

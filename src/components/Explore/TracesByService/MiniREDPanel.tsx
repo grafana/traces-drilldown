@@ -24,7 +24,7 @@ import { MINI_PANEL_HEIGHT } from './TracesByServiceScene';
 import { buildHistogramQuery } from '../queries/histogram';
 import { histogramPanelConfig } from '../panels/histogram';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
-import { exemplarsTransformations } from '../../../utils/exemplars';
+import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 import { StreamingIndicator } from '../StreamingIndicator';
 
 export interface MiniREDPanelState extends SceneObjectState {
@@ -94,7 +94,9 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
           datasource: explorationDS,
           queries: [this.state.metric === 'duration' ? buildHistogramQuery() : metricByWithStatus(this.state.metric)],
         }),
-        transformations: [...exemplarsTransformations(traceExploration.state.locationService)],
+        transformations: this.state.metric === 'duration' 
+          ? [...removeExemplarsTransformation()] 
+          : [...exemplarsTransformations(traceExploration.state.locationService)],
       }),
       panel: this.getVizPanel(this.state.metric),
     });
@@ -113,13 +115,13 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
 
   private getRateOrErrorPanel(metric: MetricFunction) {
     const panel = barsPanelConfig().setHoverHeader(true).setDisplayMode('transparent');
-    if (metric === 'errors') {
-      panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'Errors').setColor({
+    if (metric === 'rate') {
+      panel.setCustomFieldConfig('axisLabel', 'span/s');
+    } else if (metric === 'errors') {
+      panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'span/s').setColor({
         fixedColor: 'semi-dark-red',
         mode: 'fixed',
       });
-    } else {
-      panel.setTitle('Span rate');
     }
 
     return panel.build();
