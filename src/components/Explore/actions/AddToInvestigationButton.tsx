@@ -3,12 +3,12 @@ import { sceneGraph, SceneObject, SceneObjectBase, SceneObjectState, SceneQueryR
 import { DataQuery, DataSourceRef } from '@grafana/schema';
 
 import Logo from '../../../../src/img/logo.svg';
-import { VAR_DATASOURCE_EXPR } from 'utils/shared';
 
 export interface AddToInvestigationButtonState extends SceneObjectState {
   dsUid?: string;
   query?: string;
   labelValue?: string;
+  type?: string;
   context?: ExtensionContext;
   queries: DataQuery[];
 }
@@ -39,9 +39,6 @@ export class AddToInvestigationButton extends SceneObjectBase<AddToInvestigation
         this.getContext();
       })
     );
-
-    const datasourceUid = sceneGraph.interpolate(this, VAR_DATASOURCE_EXPR);
-    this.setState({ dsUid: datasourceUid });
   };
 
   private readonly getQueries = () => {
@@ -61,7 +58,7 @@ export class AddToInvestigationButton extends SceneObjectBase<AddToInvestigation
   };
 
   private readonly getContext = () => {
-    const { queries, dsUid, labelValue } = this.state;
+    const { queries, dsUid, labelValue, type = 'traceMetrics' } = this.state;
     const timeRange = sceneGraph.getTimeRange(this);
 
     if (!timeRange || !queries || !dsUid) {
@@ -69,7 +66,7 @@ export class AddToInvestigationButton extends SceneObjectBase<AddToInvestigation
     }
     const ctx = {
       origin: 'Explore Traces',
-      type: 'traces',
+      type,
       queries,
       timeRange: { ...timeRange.state.value },
       datasource: { uid: dsUid },
