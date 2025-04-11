@@ -11,9 +11,9 @@ import {
   VizPanelState,
 } from '@grafana/scenes';
 import { LayoutSwitcher } from '../LayoutSwitcher';
-import { EventTraceOpened, explorationDS, GRID_TEMPLATE_COLUMNS, MetricFunction } from '../../../utils/shared';
+import { explorationDS, GRID_TEMPLATE_COLUMNS, MetricFunction } from '../../../utils/shared';
 import { ByFrameRepeater } from '../ByFrameRepeater';
-import { formatLabelValue, getLabelValue, getTraceExplorationScene } from '../../../utils/utils';
+import { formatLabelValue, getLabelValue, getOpenTrace, getTraceExplorationScene } from '../../../utils/utils';
 import { map, Observable } from 'rxjs';
 import { DataFrame, PanelData, reduceField, ReducerID } from '@grafana/data';
 import { generateMetricsQuery, metricByWithStatus } from '../queries/generateMetricsQuery';
@@ -34,10 +34,6 @@ export function buildNormalLayout(
   const query = metricByWithStatus(metric, variable.getValueText());
   const panels: Record<string, SceneCSSGridItem> = {};
 
-  const openTrace = (traceId: string, spanId?: string) => {
-    scene.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
-  };
-
   return new LayoutSwitcher({
     $behaviors: [syncYAxis()],
     $data: new SceneDataTransformer({
@@ -47,7 +43,7 @@ export function buildNormalLayout(
         queries: [query],
       }),
       transformations: [
-        ...exemplarsTransformations(openTrace),
+        ...exemplarsTransformations(getOpenTrace(scene)),
         () => (source: Observable<DataFrame[]>) => {
           return source.pipe(
             map((data: DataFrame[]) => {

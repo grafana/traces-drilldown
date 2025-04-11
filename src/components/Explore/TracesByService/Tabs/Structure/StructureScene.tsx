@@ -14,7 +14,6 @@ import {
 } from '@grafana/scenes';
 import {
   EMPTY_STATE_ERROR_MESSAGE,
-  EventTraceOpened,
   explorationDS,
   filterStreamingProgressTransformations,
   MetricFunction,
@@ -30,7 +29,7 @@ import { Icon, LinkButton, Stack, Text, useTheme2 } from '@grafana/ui';
 import Skeleton from 'react-loading-skeleton';
 import { EmptyState } from '../../../../states/EmptyState/EmptyState';
 import { css } from '@emotion/css';
-import { getTraceExplorationScene } from 'utils/utils';
+import { getOpenTrace, getTraceExplorationScene } from 'utils/utils';
 import { structureDisplayName } from '../TabsBarScene';
 
 export interface ServicesTabSceneState extends SceneObjectState {
@@ -101,9 +100,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
     const from = timeRange.state.value.from;
     const to = timeRange.state.value.to;
 
-    const openTrace = (traceId: string, spanId?: string) => {
-      this.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
-    };
+    const openTrace = getOpenTrace(this);
 
     return PanelBuilders.traces()
       .setTitle(`Structure for ${tree.serviceName} [${countSpans(tree)} spans used]`)
