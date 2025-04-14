@@ -28,8 +28,8 @@ type PluginExtensionExploreContext = {
 export const linkConfigs: Array<{ targets: string | string[] } & PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>> = [
   {
     targets: PluginExtensionPoints.DashboardPanelMenu,
-    title: 'Open in Explore Traces',
-    description: 'Open current query in the Explore Traces app',
+    title: 'Open in Traces Drilldown',
+    description: 'Open current query in the Traces Drilldown app',
     path: createAppUrl(),
     configure: (context?: PluginExtensionPanelContext) => contextToLink(context),
   },
