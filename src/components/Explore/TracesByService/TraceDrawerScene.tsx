@@ -155,7 +155,7 @@ export class TraceDrawerScene extends SceneObjectBase<DetailsSceneState> {
     
     return (
       <div className={styles.container}>
-        {addToInvestigationButton && (
+        {addToInvestigationButton && investigationLink && (
           <div className={styles.buttonContainer}>
             <Button
               variant='primary'
