@@ -17,7 +17,7 @@ import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'ut
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
 import { firstValueFrom } from 'rxjs';
 
-const ADD_TO_INVESTIGATION_MENU_TEXT = 'Add to investigation';
+export const ADD_TO_INVESTIGATION_MENU_TEXT = 'Add to investigation';
 const extensionPointId = 'grafana-exploretraces-app/investigation/v1';
 const ADD_TO_INVESTIGATION_MENU_DIVIDER_TEXT = 'investigations_divider'; // Text won't be visible
 const ADD_TO_INVESTIGATION_MENU_GROUP_TEXT = 'Investigations';
@@ -52,20 +52,26 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
         }),
       });
 
+      const traceExploration = getTraceExplorationScene(this);
+      const dsUid = getDataSource(traceExploration);
+
       const addToInvestigationButton = new AddToInvestigationButton({
         query: this.state.query,
-        labelValue: this.state.labelValue,
+        dsUid,
       });
+
+      addToInvestigationButton.activate();
+      this.setState({ addToInvestigationButton });
       this._subs.add(
         addToInvestigationButton?.subscribeToState(() => {
           subscribeToAddToInvestigation(this);
         })
       );
-      this.setState({
-        addToInvestigationButton: addToInvestigationButton,
+    
+      addToInvestigationButton.setState({
+        ...addToInvestigationButton.state,
+        labelValue: this.state.labelValue,
       });
-
-      this.state.addToInvestigationButton?.activate();
     });
   }
 
@@ -113,7 +119,7 @@ const onExploreClick = () => {
   reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.open_in_explore_clicked);
 };
 
-const getInvestigationLink = async (addToInvestigations: AddToInvestigationButton) => {
+export const getInvestigationLink = async (addToInvestigations: AddToInvestigationButton) => {
   const context = addToInvestigations.state.context;
 
   // `getPluginLinkExtensions` is removed in Grafana v12
