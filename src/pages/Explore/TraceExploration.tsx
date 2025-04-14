@@ -461,12 +461,15 @@ function getStyles(theme: GrafanaTheme2) {
       borderBottom: `1px solid ${theme.colors.border.weak}`,
       paddingBottom: theme.spacing(2),
       marginBottom: theme.spacing(2),
+
+      'h3': {
+        margin: 0,
+      },
     }),
     drawerHeaderButtons: css({
       display: 'flex',
       justifyContent: 'flex-end',
       gap: theme.spacing(1.5),
-      padding: `0 0 ${theme.spacing(1)} 0`,
     }),
     body: css({
       label: 'body',
