@@ -5,8 +5,6 @@ import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { TraceViewPanelScene } from '../panels/TraceViewPanelScene';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../utils/analytics';
 import { getTraceExplorationScene } from '../../../utils/utils';
-import { useStyles2 } from '@grafana/ui';
-import { css } from '@emotion/css';
 
 export interface DetailsSceneState extends SceneObjectState {
   body?: SceneObject;
@@ -39,12 +37,11 @@ export class TraceDrawerScene extends SceneObjectBase<DetailsSceneState> {
 
   private updateBody() {
     const traceExploration = getTraceExplorationScene(this);
-    const traceId = traceExploration.state.traceId;
 
-    if (traceId) {
+    if (traceExploration.state.traceId) {
       this.setState({
         body: new TraceViewPanelScene({
-          traceId,
+          traceId: traceExploration.state.traceId,
           spanId: traceExploration.state.spanId,
         }),
       });
@@ -58,24 +55,7 @@ export class TraceDrawerScene extends SceneObjectBase<DetailsSceneState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<TraceDrawerScene>) => {
-    const { body } = model.useState();
-    const styles = useStyles2(getStyles);
-   
-    return (
-      <div className={styles.container}>
-        {body && <body.Component model={body} />}
-      </div>
-    );
-  };
-}
-
-function getStyles() {
-  return {
-    container: css({
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      width: '100%',
-    }),
+    const { body } = model.useState();   
+    return body && <body.Component model={body} />;
   };
 }
