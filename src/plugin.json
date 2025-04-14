@@ -67,8 +67,8 @@
     "addedLinks": [
       {
         "targets": ["grafana/dashboard/panel/menu"],
-        "title": "Open in Explore Traces",
-        "description": "Open current query in the Explore Traces app"
+        "title": "Open in Traces Drilldown",
+        "description": "Open current query in the Traces Drilldown app"
       },
       {
         "title": "Open in Grafana Traces Drilldown",
