@@ -29,7 +29,7 @@ import { Icon, LinkButton, Stack, Text, useTheme2 } from '@grafana/ui';
 import Skeleton from 'react-loading-skeleton';
 import { EmptyState } from '../../../../states/EmptyState/EmptyState';
 import { css } from '@emotion/css';
-import { getTraceExplorationScene } from 'utils/utils';
+import { getOpenTrace, getTraceExplorationScene } from 'utils/utils';
 import { structureDisplayName } from '../TabsBarScene';
 
 export interface ServicesTabSceneState extends SceneObjectState {
@@ -41,7 +41,7 @@ export interface ServicesTabSceneState extends SceneObjectState {
 
 const ROOT_SPAN_ID = '0000000000000000';
 
-export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
+export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {  
   constructor(state: Partial<ServicesTabSceneState>) {
     super({
       $data: new SceneDataTransformer({
@@ -59,29 +59,33 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
   }
 
   public _onActivate() {
-    this.state.$data?.subscribeToState((state) => {
-      this.setState({ loading: state.data?.state === LoadingState.Loading });
-
-      if (
-        (state.data?.state === LoadingState.Done || state.data?.state === LoadingState.Streaming) &&
-        state.data?.series.length
-      ) {
-        const frame = state.data?.series[0].fields[0].values[0];
-        if (frame) {
-          const response = JSON.parse(frame) as TraceSearchMetadata[];
-          const merged = mergeTraces(response);
-          merged.children.sort((a, b) => countSpans(b) - countSpans(a));
-          this.setState({
-            tree: merged,
-            panel: new SceneFlexLayout({
-              height: '100%',
-              wrap: 'wrap',
-              children: this.getPanels(merged),
-            }),
-          });
+    this._subs.add(
+      this.state.$data?.subscribeToState((state) => {
+        if (state.data?.state === LoadingState.Loading || state.data?.state === LoadingState.Streaming) {
+          this.setState({ loading: true });
+          return;
         }
-      }
-    });
+        
+        if (state.data?.state === LoadingState.Done && state.data?.series.length) {
+          const frame = state.data?.series[0].fields[0].values[0];
+          if (frame) {
+            const response = JSON.parse(frame) as TraceSearchMetadata[];
+            const tree = mergeTraces(response);
+            tree.children.sort((a, b) => countSpans(b) - countSpans(a));
+                        
+            this.setState({
+              loading: false,
+              tree,
+              panel: new SceneFlexLayout({
+                height: '100%',
+                wrap: 'wrap',
+                children: this.getPanels(tree),
+              }),
+            });
+          }
+        }
+      })
+    );
   }
 
   private getPanels(tree: TreeNode) {
@@ -97,9 +101,10 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
 
   private getPanel(tree: TreeNode) {
     const timeRange = sceneGraph.getTimeRange(this);
-    const traceExplorationScene = getTraceExplorationScene(this);
     const from = timeRange.state.value.from;
     const to = timeRange.state.value.to;
+
+    const openTrace = getOpenTrace(this);
 
     return PanelBuilders.traces()
       .setTitle(`Structure for ${tree.serviceName} [${countSpans(tree)} spans used]`)
@@ -107,9 +112,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         return {
           title: 'Open trace',
           href: '#',
-          onClick: () => {
-            traceExplorationScene.state.locationService.partial({ traceId, spanId });
-          },
+          onClick: () => openTrace(traceId, spanId),
           origin: {} as Field,
           target: '_self',
         };
@@ -403,7 +406,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       'div[data-testid="TimelineRowCell"]': {
         'button[role="switch"]': {
           cursor: 'text',
-        }
+        },
       },
       'div[data-testid="span-view"]': {
         cursor: 'text !important',

@@ -1,9 +1,10 @@
 import { map, Observable } from 'rxjs';
 import { DataFrame, DataTopic, Field } from '@grafana/data';
 import { CustomTransformerDefinition } from '@grafana/scenes';
-import { LocationService } from '@grafana/runtime';
 
-export const exemplarsTransformations = (locationService: LocationService): CustomTransformerDefinition[] => [
+export const exemplarsTransformations = (
+  openTrace?: (traceId: string, spanId?: string) => void
+): CustomTransformerDefinition[] => [
   {
     topic: DataTopic.Annotations,
     operator: () => (source: Observable<DataFrame[]>) => {
@@ -29,9 +30,7 @@ export const exemplarsTransformations = (locationService: LocationService): Cust
                       if (!traceId || traceId === '') {
                         return;
                       }
-                      locationService.partial({
-                        traceId,
-                      });
+                      openTrace?.(traceId);
                     },
                   },
                 ];

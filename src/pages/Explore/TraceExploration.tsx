@@ -18,12 +18,13 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { config, LocationService } from '@grafana/runtime';
+import { config } from '@grafana/runtime';
 import { Badge, Button, Drawer, Dropdown, Icon, Menu, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 
 import { TracesByServiceScene } from '../../components/Explore/TracesByService/TracesByServiceScene';
 import {
   DATASOURCE_LS_KEY,
+  EventTraceOpened,
   explorationDS,
   MetricFunction,
   VAR_DATASOURCE,
@@ -60,8 +61,6 @@ export interface TraceExplorationState extends SceneObjectState {
   initialDS?: string;
   initialFilters?: AdHocVariableFilter[];
 
-  locationService: LocationService;
-  
   issueDetector?: TraceQLIssueDetector;
 }
 
@@ -73,7 +72,7 @@ const compositeVersion = `v${version} - ${buildTime?.split('T')[0]} (${commitSha
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['primarySignal', 'traceId', 'spanId', 'metric'] });
 
-  public constructor(state: { locationService: LocationService } & Partial<TraceExplorationState>) {
+  public constructor(state: Partial<TraceExplorationState>) {
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
       $variables: state.$variables ?? getVariableSet(state.initialDS, state.initialFilters),
@@ -92,13 +91,19 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       this.setState({ topScene: getTopScene() });
     }
 
+    this._subs.add(
+      this.subscribeToEvent(EventTraceOpened, (event) => {
+        this.setState({ traceId: event.payload.traceId, spanId: event.payload.spanId });
+      })
+    );
+
     const datasourceVar = sceneGraph.lookupVariable(VAR_DATASOURCE, this) as DataSourceVariable;
     datasourceVar.subscribeToState((newState) => {
       if (newState.value) {
         localStorage.setItem(DATASOURCE_LS_KEY, newState.value.toString());
       }
     });
-    
+
     if (this.state.issueDetector) {
       if (!this.state.issueDetector.isActive) {
         this.state.issueDetector.activate();
@@ -163,8 +168,8 @@ export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
     const { controls, topScene, drawerScene, traceId, issueDetector } = traceExploration.useState();
-    const { hasIssue } = issueDetector?.useState() || { 
-      hasIssue: false
+    const { hasIssue } = issueDetector?.useState() || {
+      hasIssue: false,
     };
     const styles = useStyles2(getStyles);
     const [menuVisible, setMenuVisible] = React.useState(false);
@@ -338,8 +343,8 @@ function getStyles(theme: GrafanaTheme2) {
       minHeight: '100%',
       flexDirection: 'column',
       padding: `0 ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
-      overflow: 'auto' /* Needed for sticky positioning */,
-      height: '1px' /* Needed for sticky positioning */,
+      overflow: 'auto', /* Needed for sticky positioning */
+      maxHeight: '100%' /* Needed for sticky positioning */
     }),
     body: css({
       label: 'body',

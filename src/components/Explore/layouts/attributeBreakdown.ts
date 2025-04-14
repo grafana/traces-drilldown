@@ -13,7 +13,7 @@ import {
 import { LayoutSwitcher } from '../LayoutSwitcher';
 import { explorationDS, GRID_TEMPLATE_COLUMNS, MetricFunction } from '../../../utils/shared';
 import { ByFrameRepeater } from '../ByFrameRepeater';
-import { formatLabelValue, getLabelValue, getTraceExplorationScene } from '../../../utils/utils';
+import { formatLabelValue, getLabelValue, getOpenTrace, getTraceExplorationScene } from '../../../utils/utils';
 import { map, Observable } from 'rxjs';
 import { DataFrame, PanelData, reduceField, ReducerID } from '@grafana/data';
 import { generateMetricsQuery, metricByWithStatus } from '../queries/generateMetricsQuery';
@@ -43,7 +43,7 @@ export function buildNormalLayout(
         queries: [query],
       }),
       transformations: [
-        ...exemplarsTransformations(traceExploration.state.locationService),
+        ...exemplarsTransformations(getOpenTrace(scene)),
         () => (source: Observable<DataFrame[]>) => {
           return source.pipe(
             map((data: DataFrame[]) => {
