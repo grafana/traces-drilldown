@@ -359,6 +359,7 @@ export class TraceExplorationScene extends SceneObjectBase {
                     name='times' 
                     onClick={() => traceExploration.closeDrawer()} 
                     tooltip='Close drawer'
+                    size='lg'
                   />
                 </div>
             </div>
