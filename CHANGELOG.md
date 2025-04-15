@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.2.9](https://github.com/grafana/traces-drilldown/compare/v0.2.8...v0.2.9) (2025-03-12)
+
 ## [0.2.6](https://github.com/grafana/traces-drilldown/compare/v0.2.4...v0.2.6) (2025-03-12)
 
 ### Enhancements
