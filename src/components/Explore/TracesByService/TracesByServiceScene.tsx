@@ -51,7 +51,6 @@ import { Icon, LinkButton, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { getDefaultSelectionForMetric } from '../../../utils/comparison';
 import { map, Observable } from 'rxjs';
-import { processColumns, DEFAULT_HTTP_SPAN_COLUMNS } from './Tabs/Spans/columnsUtil';
 
 export interface TraceSceneState extends SceneObjectState {
   body: SceneFlexLayout;
@@ -225,8 +224,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
 
   private updateQueryRunner(metric: MetricFunction) {
     const selection = this.state.selection;
-    const existingColumns = getSpanListColumnsVariable(this).getValue()?.toString() ?? '';
-    const columns = processColumns(existingColumns, DEFAULT_HTTP_SPAN_COLUMNS);
+    const columns = getSpanListColumnsVariable(this).getValue()?.toString() ?? '';
 
     this.setState({
       $data: new SceneDataTransformer({
