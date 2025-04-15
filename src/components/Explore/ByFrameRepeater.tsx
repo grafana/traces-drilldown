@@ -58,7 +58,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
                   }),
                 ],
               });
-            } else {
+            } else if (data.data?.state === LoadingState.Done) {
               const filtered = {
                 ...data.data,
                 series: data.data?.series.filter(doesQueryMatchDataFrameLabels(this.state.searchQuery)),
