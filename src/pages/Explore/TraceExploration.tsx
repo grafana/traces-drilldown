@@ -18,7 +18,7 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { config } from '@grafana/runtime';
+import { config, useReturnToPrevious } from '@grafana/runtime';
 import { Badge, Button, Drawer, Dropdown, Icon, Menu, Stack, Tooltip, useStyles2, LinkButton } from '@grafana/ui';
 
 import { TracesByServiceScene } from '../../components/Explore/TracesByService/TracesByServiceScene';
@@ -54,7 +54,9 @@ import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Exp
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
   controls: SceneObject[];
+
   embedded?: boolean;
+  returnToPreviousSource?: string;
 
   body: SceneObject;
 
@@ -200,13 +202,11 @@ export class TraceExplorationScene extends SceneObjectBase {
   };
 }
 
-interface EmbeddedHeaderProps {
-  model: SceneObject;
-}
-
-const EmbeddedHeader = ({ model }: EmbeddedHeaderProps) => {
+const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
+  const setReturnToPrevious = useReturnToPrevious();
   const styles = useStyles2(getStyles, true);
   const traceExploration = getTraceExplorationScene(model);
+  const { returnToPreviousSource } = traceExploration.useState();
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
@@ -227,9 +227,12 @@ const EmbeddedHeader = ({ model }: EmbeddedHeaderProps) => {
             href={getUrlForExploration(traceExploration)}
             variant="secondary"
             icon="arrow-right"
-            onClick={() =>
-              reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.explore_traces_clicked)
-            }
+            onClick={() => {
+              if (returnToPreviousSource) {
+                setReturnToPrevious(returnToPreviousSource);
+              }
+              reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.explore_traces_clicked);
+            }}
           >
             Traces Drilldown
           </LinkButton>
