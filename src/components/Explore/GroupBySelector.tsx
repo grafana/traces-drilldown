@@ -4,7 +4,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { Select, RadioButtonGroup, useStyles2, useTheme2, measureText, Field, InputActionMeta } from '@grafana/ui';
-import { ALL, ignoredAttributes, maxOptions, MetricFunction, RESOURCE_ATTR, SPAN_ATTR } from 'utils/shared';
+import { usePluginUserStorage } from '@grafana/runtime';
+import { ALL, GROUP_BY_CLICK_COUNTS_STORAGE_KEY, ignoredAttributes, maxOptions, MetricFunction, RESOURCE_ATTR, SPAN_ATTR } from 'utils/shared';
 import { AttributesBreakdownScene } from './TracesByService/Tabs/Breakdown/AttributesBreakdownScene';
 import { AttributesComparisonScene } from './TracesByService/Tabs/Comparison/AttributesComparisonScene';
 import { getFiltersVariable, getMetricVariable } from 'utils/utils';
@@ -25,8 +26,10 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
   const styles = useStyles2(getStyles);
   const theme = useTheme2();
   const { fontSize } = theme.typography;
+  const storage = usePluginUserStorage();
 
   const [selectQuery, setSelectQuery] = useState<string>('');
+  const [clickCounts, setClickCounts] = useState<Record<string, number>>({});
 
   const [availableWidth, setAvailableWidth] = useState<number>(0);
   const controlsContainer = useRef<HTMLDivElement>(null);
@@ -34,6 +37,38 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
   const { filters } = getFiltersVariable(model).useState();
   const { value: metric } = getMetricVariable(model).useState();
   const metricValue = metric as MetricFunction;
+
+  useEffect(() => {
+    const loadClickCounts = async () => {
+      try {
+        const storedCounts = await storage.getItem(GROUP_BY_CLICK_COUNTS_STORAGE_KEY);
+        if (storedCounts) {
+          const counts = JSON.parse(storedCounts);
+          setClickCounts(counts);
+        }
+      } catch (e) {
+        console.error('Failed to load group by click counts:', e);
+      }
+    };
+    
+    loadClickCounts();
+  }, []);
+
+  const trackOptionClick = async (option: string) => {
+    try {
+      const updatedCounts = { ...clickCounts };
+      updatedCounts[option] = (updatedCounts[option] || 0) + 1;
+      setClickCounts(updatedCounts);
+      await storage.setItem(GROUP_BY_CLICK_COUNTS_STORAGE_KEY, JSON.stringify(updatedCounts));
+    } catch (e) {
+      console.error('Failed to update group by click counts:', e);
+    }
+  };
+
+  const onOptionChanged = (option: string) => {
+    trackOptionClick(option);
+    onChange(option);
+  };
 
   useResizeObserver({
     ref: controlsContainer,
@@ -45,37 +80,64 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
     },
   });
 
+  const filterValidOptions = useMemo(() => {
+    const isOptionValid = (option: string) => {
+      // Check if option exists in dropdown
+      let isValid = !!options.find((o) => o.value === option);
+
+      // Remove options that are in the filters
+      if (filters.find((f) => f.key === option && (f.operator === '=' || f.operator === '!='))) {
+        return false;
+      }
+
+      // If filters (primary signal) has 'Full Traces' selected, then don't add rootName or rootServiceName to options
+      if (filters.find((f) => f.key === 'nestedSetParent')) {
+        isValid = isValid && option !== 'rootName' && option !== 'rootServiceName';
+      }
+
+      // If rate or error rate metric is selected, then don't add status to options
+      if (metricValue === 'rate' || metricValue === 'errors') {
+        isValid = isValid && option !== 'status';
+      }
+
+      // Filter out ignored attributes
+      isValid = isValid && !ignoredAttributes.includes(option);
+
+      return isValid;
+    };
+
+    const allOptionValues = options.map(op => op.value?.toString() ?? '');
+    
+    const validRadioOptions = radioAttributes.filter(isOptionValid);
+    
+    // Get valid other options (not in radio attributes, but valid and have been clicked)
+    const validOtherOptions = allOptionValues
+      .filter(option => 
+        isOptionValid(option) && 
+        !radioAttributes.includes(option) && 
+        (clickCounts[option] || 0) > 0
+      );
+
+    const allOptions = [...validRadioOptions, ...validOtherOptions];
+
+    return {
+      allOptions,
+      isOptionValid
+    };
+  }, [options, radioAttributes, filters, metricValue, clickCounts]);
+
   const radioOptions = useMemo(() => {
     let radioOptionsWidth = 0;
-    return radioAttributes
-      .filter((op) => {
-        // remove radio options that are in the dropdown
-        let checks = !!options.find((o) => o.value === op);
-
-        // remove radio options that are in the filters
-        if (filters.find((f) => f.key === op && (f.operator === '=' || f.operator === '!='))) {
-          return false;
-        }
-
-        // if filters (primary signal) has 'Full Traces' selected, then don't add rootName or rootServiceName to options
-        // as you would overwrite it in the query if it's selected
-        if (filters.find((f) => f.key === 'nestedSetParent')) {
-          checks = checks && op !== 'rootName' && op !== 'rootServiceName';
-        }
-
-        // if rate or error rate metric is selected, then don't add status to options
-        // as you would overwrite it in the query if it's selected
-        if (metricValue === 'rate' || metricValue === 'errors') {
-          checks = checks && op !== 'status';
-        }
-
-        return checks;
-      })
+    const { allOptions } = filterValidOptions;
+    
+    return allOptions
       .map((attribute) => ({
         label: attribute.replace(SPAN_ATTR, '').replace(RESOURCE_ATTR, ''),
         text: attribute,
         value: attribute,
+        clickCount: clickCounts[attribute] || 0
       }))
+      .sort((a, b) => b.clickCount - a.clickCount)
       .filter((option) => {
         const text = option.label || option.text || '';
         const textWidth = measureText(text, fontSize).width;
@@ -86,18 +148,72 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
           return false;
         }
       });
-  }, [radioAttributes, options, filters, metricValue, fontSize, availableWidth]);
+  }, [filterValidOptions, fontSize, availableWidth, clickCounts]);
 
+  // Get all options that are not in the radio group
   const otherAttrOptions = useMemo(() => {
-    const ops = options.filter((op) => !radioOptions.find((ro) => ro.value === op.value?.toString()));
+    const radioOptionValues = radioOptions.map(opt => opt.value);
+    const ops = options.filter(op => {
+      const optionValue = op.value?.toString() ?? '';
+      return !radioOptionValues.includes(optionValue) && filterValidOptions.isOptionValid(optionValue);
+    });
+    
     return filteredOptions(ops, selectQuery);
-  }, [selectQuery, options, radioOptions]);
+  }, [selectQuery, options, radioOptions, filterValidOptions]);
 
-  const getModifiedSelectOptions = (options: Array<SelectableValue<string>>) => {
-    return options
-      .filter((op) => !ignoredAttributes.includes(op.value?.toString()!))
-      .map((op) => ({ label: op.label?.replace(SPAN_ATTR, '').replace(RESOURCE_ATTR, ''), value: op.value }));
-  };
+  const getModifiedSelectOptions = useMemo(() => {
+    return (options: Array<SelectableValue<string>>) => {
+      const processedOptions = options
+        .map((op) => ({ 
+          label: op.label?.replace(SPAN_ATTR, '').replace(RESOURCE_ATTR, ''), 
+          value: op.value 
+        }));
+      
+      const frequentlyUsed: Array<SelectableValue<string>> = [];
+      const other: Array<SelectableValue<string>> = [];
+      
+      // Track processed option values to avoid duplicates within the groups
+      const radioOptionValues = radioOptions.map(opt => opt.value);
+      const processedValues = new Set<string>();
+      
+      processedOptions.forEach(option => {
+        const optionValue = option.value?.toString() ?? '';
+        
+        // Skip if we've already processed this value or if it's in the radio buttons
+        if (processedValues.has(optionValue) || radioOptionValues.includes(optionValue)) {
+          return;
+        }
+        
+        processedValues.add(optionValue);
+        const clickCount = clickCounts[optionValue] || 0;
+        clickCount > 0 ? frequentlyUsed.push(option) : other.push(option);
+      });
+      
+      frequentlyUsed.sort((a, b) => {
+        const aClicks = clickCounts[a.value?.toString() ?? ''] || 0;
+        const bClicks = clickCounts[b.value?.toString() ?? ''] || 0;
+        return bClicks - aClicks;
+      });
+      
+      const result: Array<SelectableValue<string>> = [];
+      
+      if (frequentlyUsed.length > 0) {
+        result.push({
+          label: 'Frequently Used',
+          options: frequentlyUsed,
+        });
+      }
+      
+      if (other.length > 0) {
+        result.push({
+          label: 'Other',
+          options: other,
+        });
+      }
+      
+      return result;
+    };
+  }, [radioOptions, clickCounts]);
 
   // Set default value as first value in options
   useEffect(() => {
@@ -107,7 +223,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
         onChange(defaultValue, true);
       }
     }
-  });
+  }, [radioAttributes, options, value, showAll, onChange]);
 
   const showAllOption = showAll ? [{ label: ALL, value: ALL }] : [];
   const defaultOnChangeValue = showAll ? ALL : '';
@@ -116,15 +232,19 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
     <Field label="Group by">
       <div ref={controlsContainer} className={styles.container}>
         {radioOptions.length > 0 && (
-          <RadioButtonGroup options={[...showAllOption, ...radioOptions]} value={value} onChange={onChange} />
+          <RadioButtonGroup 
+            options={[...showAllOption, ...radioOptions]} 
+            value={value} 
+            onChange={onOptionChanged} 
+          />
         )}
         <Select
-          value={value && getModifiedSelectOptions(otherAttrOptions).some((x) => x.value === value) ? value : null} // remove value from select when radio button clicked
+          value={value && otherAttrOptions.some(op => op.value === value) ? value : null} // remove value from select when radio button clicked
           placeholder={'Other attributes'}
           options={getModifiedSelectOptions(otherAttrOptions)}
           onChange={(selected) => {
             const newSelected = selected?.value ?? defaultOnChangeValue;
-            onChange(newSelected);
+            onOptionChanged(newSelected);
           }}
           className={styles.select}
           isClearable
