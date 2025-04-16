@@ -10,7 +10,7 @@ import {
   SceneObjectState,
 } from '@grafana/scenes';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
-import { EventTraceOpened, explorationDS, MetricFunction } from 'utils/shared';
+import { explorationDS, MetricFunction } from 'utils/shared';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';

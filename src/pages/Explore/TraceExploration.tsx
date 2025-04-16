@@ -65,6 +65,7 @@ import { ActionViewType } from 'components/Explore/TracesByService/Tabs/TabsBarS
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
 import { AddToInvestigationButton } from 'components/Explore/actions/AddToInvestigationButton';
 import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from 'components/Explore/panels/PanelMenu';
+import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
@@ -455,6 +456,10 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
     </div>
   );
 };
+
+function getTopScene() {
+  return new TracesByServiceScene({});
+}
 
 const PreviewTooltip = ({ text }: { text: string }) => {
   const styles = useStyles2(getStyles);
