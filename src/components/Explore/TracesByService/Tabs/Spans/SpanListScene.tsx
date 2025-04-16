@@ -162,6 +162,9 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
     }
     if (data?.state === LoadingState.Done || data?.state === LoadingState.Streaming) {
       if (data.series.length === 0 || data.series[0].length === 0) {
+        if (this.state.dataState === 'empty' && this.state.panel) {
+          return;
+        }
         this.setState({
           dataState: 'empty',
           panel: new SceneFlexLayout({
