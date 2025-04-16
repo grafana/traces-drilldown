@@ -19,7 +19,7 @@ import { metricByWithStatus } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { RadioButtonList, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
-import { fieldHasEmptyValues, getTraceExplorationScene } from '../../../utils/utils';
+import { fieldHasEmptyValues, getOpenTrace, getTraceExplorationScene } from '../../../utils/utils';
 import { MINI_PANEL_HEIGHT } from './TracesByServiceScene';
 import { buildHistogramQuery } from '../queries/histogram';
 import { histogramPanelConfig } from '../panels/histogram';
@@ -86,10 +86,6 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
   }
 
   private _onActivate() {
-    const openTrace = (traceId: string, spanId?: string) => {
-      this.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
-    };
-
     this.setState({
       $data: new SceneDataTransformer({
         $data: new StepQueryRunner({
@@ -100,7 +96,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
         transformations:
           this.state.metric === 'duration'
             ? [...removeExemplarsTransformation()]
-            : [...exemplarsTransformations(openTrace)],
+            : [...exemplarsTransformations(getOpenTrace(this))],
       }),
       panel: this.getVizPanel(this.state.metric),
     });
@@ -122,7 +118,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
     if (metric === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (metric === 'errors') {
-      panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'span/s').setColor({
+      panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'error/s').setColor({
         fixedColor: 'semi-dark-red',
         mode: 'fixed',
       });

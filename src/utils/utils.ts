@@ -14,6 +14,7 @@ import {
 
 import { TraceExploration } from '../pages/Explore';
 import {
+  EventTraceOpened,
   EXPLORATIONS_ROUTE,
   VAR_DATASOURCE,
   VAR_DATASOURCE_EXPR,
@@ -217,4 +218,10 @@ export const formatLabelValue = (value: string) => {
   return value;
 };
 
-export const capitalizeFirstChar = (str: string) => str?.[0]?.toUpperCase() + str?.slice(1) || "";
+export const capitalizeFirstChar = (str: string) => str?.[0]?.toUpperCase() + str?.slice(1) || '';
+
+export const getOpenTrace = (scene: SceneObject) => {
+  return (traceId: string, spanId?: string) => {
+    scene.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
+  };
+};

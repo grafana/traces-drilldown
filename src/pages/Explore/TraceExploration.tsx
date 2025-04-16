@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import React from 'react';
 
-import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
+import { AdHocVariableFilter, GrafanaTheme2, LoadingState, PluginExtensionLink } from '@grafana/data';
 import {
   AdHocFiltersVariable,
   CustomVariable,
@@ -13,15 +13,27 @@ import {
   SceneObjectState,
   SceneObjectUrlSyncConfig,
   SceneObjectUrlValues,
+  SceneQueryRunner,
   SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
 import { config, useReturnToPrevious } from '@grafana/runtime';
-import { Badge, Button, Drawer, Dropdown, Icon, Menu, Stack, Tooltip, useStyles2, LinkButton } from '@grafana/ui';
+import {
+  Badge,
+  Button,
+  Drawer,
+  Dropdown,
+  Icon,
+  IconButton,
+  Menu,
+  Stack,
+  Tooltip,
+  useStyles2,
+  LinkButton,
+} from '@grafana/ui';
 
-import { TracesByServiceScene } from '../../components/Explore/TracesByService/TracesByServiceScene';
 import {
   DATASOURCE_LS_KEY,
   EventTraceOpened,
@@ -40,6 +52,7 @@ import {
   getTraceExplorationScene,
   getFiltersVariable,
   getPrimarySignalVariable,
+  getDataSource,
   getUrlForExploration,
 } from '../../utils/utils';
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
@@ -50,6 +63,8 @@ import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { primarySignalOptions } from './primary-signals';
 import { ActionViewType } from 'components/Explore/TracesByService/Tabs/TabsBarScene';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
+import { AddToInvestigationButton } from 'components/Explore/actions/AddToInvestigationButton';
+import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from 'components/Explore/panels/PanelMenu';
 
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
@@ -69,11 +84,15 @@ export interface TraceExplorationState extends SceneObjectState {
   // just for the starting data source
   initialDS?: string;
   initialFilters?: AdHocVariableFilter[];
+
   initialGroupBy?: string;
   initialActionView?: ActionViewType;
   allowedActionViews?: ActionViewType[];
 
   issueDetector?: TraceQLIssueDetector;
+
+  investigationLink?: PluginExtensionLink;
+  addToInvestigationButton?: AddToInvestigationButton;
 }
 
 const version = process.env.VERSION;
@@ -100,14 +119,19 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
   public _onActivate() {
     if (!this.state.topScene) {
-      this.setState({ topScene: new TracesByServiceScene({ actionView: this.state.initialActionView }) });
+      this.setState({ topScene: getTopScene() });
     }
 
     this._subs.add(
       this.subscribeToEvent(EventTraceOpened, (event) => {
+        this.setupInvestigationButton(event.payload.traceId);
         this.setState({ traceId: event.payload.traceId, spanId: event.payload.spanId });
       })
     );
+
+    if (this.state.traceId) {
+      this.setupInvestigationButton(this.state.traceId);
+    }
 
     const datasourceVar = sceneGraph.lookupVariable(VAR_DATASOURCE, this) as DataSourceVariable;
     datasourceVar.subscribeToState((newState) => {
@@ -168,6 +192,71 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     this.setState({ traceId: undefined, spanId: undefined });
   }
 
+  private setupInvestigationButton(traceId: string) {
+    const traceExploration = getTraceExplorationScene(this);
+    const dsUid = getDataSource(traceExploration);
+
+    const queryRunner = new SceneQueryRunner({
+      datasource: { uid: dsUid },
+      queries: [
+        {
+          refId: 'A',
+          query: traceId,
+          queryType: 'traceql',
+        },
+      ],
+    });
+
+    const addToInvestigationButton = new AddToInvestigationButton({
+      query: traceId,
+      type: 'trace',
+      dsUid,
+      $data: queryRunner,
+    });
+
+    addToInvestigationButton.activate();
+    this.setState({ addToInvestigationButton });
+    this._subs.add(
+      addToInvestigationButton.subscribeToState(() => {
+        this.updateInvestigationLink();
+      })
+    );
+
+    queryRunner.activate();
+
+    this._subs.add(
+      queryRunner.subscribeToState((state) => {
+        if (state.data?.state === LoadingState.Done && state.data?.series?.length > 0) {
+          const serviceNameField = state.data.series[0]?.fields?.find((f) => f.name === 'serviceName');
+
+          if (serviceNameField && serviceNameField.values[0]) {
+            addToInvestigationButton.setState({
+              ...addToInvestigationButton.state,
+              labelValue: `${serviceNameField.values[0]}`,
+            });
+          }
+        }
+      })
+    );
+
+    addToInvestigationButton.setState({
+      ...addToInvestigationButton.state,
+      labelValue: traceId,
+    });
+  }
+
+  private async updateInvestigationLink() {
+    const { addToInvestigationButton } = this.state;
+    if (!addToInvestigationButton) {
+      return;
+    }
+
+    const link = await getInvestigationLink(addToInvestigationButton);
+    if (link) {
+      this.setState({ investigationLink: link });
+    }
+  }
+
   static Component = ({ model }: SceneComponentProps<TraceExploration>) => {
     const { body } = model.useState();
     const styles = useStyles2(getStyles);
@@ -179,11 +268,33 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const { controls, topScene, drawerScene, traceId, issueDetector, embedded } = traceExploration.useState();
+    const {
+      controls,
+      topScene,
+      drawerScene,
+      traceId,
+      issueDetector,
+      investigationLink,
+      addToInvestigationButton,
+      embedded,
+    } = traceExploration.useState();
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
     const styles = useStyles2(getStyles);
+
+    const addToInvestigationClicked = (e: React.MouseEvent) => {
+      if (investigationLink?.onClick) {
+        investigationLink.onClick(e);
+      }
+
+      reportAppInteraction(
+        USER_EVENTS_PAGES.analyse_traces,
+        USER_EVENTS_ACTIONS.analyse_traces.add_to_investigation_trace_view_clicked
+      );
+
+      setTimeout(() => traceExploration.closeDrawer(), 100);
+    };
 
     return (
       <>
@@ -193,7 +304,23 @@ export class TraceExplorationScene extends SceneObjectBase {
           <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
         </div>
         {drawerScene && traceId && (
-          <Drawer title={`View trace ${traceId}`} size={'lg'} onClose={() => traceExploration.closeDrawer()}>
+          <Drawer size={'lg'} onClose={() => traceExploration.closeDrawer()}>
+            <div className={styles.drawerHeader}>
+              <h3>View trace {traceId}</h3>
+              <div className={styles.drawerHeaderButtons}>
+                {addToInvestigationButton && investigationLink && (
+                  <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
+                    {ADD_TO_INVESTIGATION_MENU_TEXT}
+                  </Button>
+                )}
+                <IconButton
+                  name="times"
+                  onClick={() => traceExploration.closeDrawer()}
+                  tooltip="Close drawer"
+                  size="lg"
+                />
+              </div>
+            </div>
             <drawerScene.Component model={drawerScene} />
           </Drawer>
         )}
@@ -297,7 +424,6 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
             </Stack>
           )}
         </Stack>
-
         <div className={styles.controls}>
           <Tooltip content={<PreviewTooltip text={compositeVersion} />} interactive>
             <span className={styles.preview}>
@@ -409,7 +535,24 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
       flexDirection: 'column',
       padding: `0 ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
       overflow: 'auto' /* Needed for sticky positioning */,
-      height: '1px' /* Needed for sticky positioning */,
+      maxHeight: '100%' /* Needed for sticky positioning */,
+    }),
+    drawerHeader: css({
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderBottom: `1px solid ${theme.colors.border.weak}`,
+      paddingBottom: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+
+      h3: {
+        margin: 0,
+      },
+    }),
+    drawerHeaderButtons: css({
+      display: 'flex',
+      justifyContent: 'flex-end',
+      gap: theme.spacing(1.5),
     }),
     body: css({
       label: 'body',
