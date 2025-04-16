@@ -33,16 +33,16 @@ export function SpanListColumnsSelector({ options, value, onChange }: Props) {
             const label = curr.label.slice(curr.label.indexOf('.') + 1);
 
             // use text until first dot as key
-            if (curr.label && RECOMMENDED_ATTRIBUTES.includes(curr.label)) {
+            if (RECOMMENDED_ATTRIBUTES.includes(curr.label)) {
               const group = acc['recommended'] ?? { label: 'Recommended', options: [] };
               group.options.push({ ...curr, label });
               acc['recommended'] = group;
-            } else if (curr.label?.startsWith('resource.')) {
+            } else if (curr.label.startsWith('resource.')) {
               const group = acc['resource'] ?? { label: 'Resource', options: [] };
               group.options.push({ ...curr, label });
               acc['resource'] = group;
             } else {
-              if (curr.label?.startsWith('span.')) {
+              if (curr.label.startsWith('span.')) {
                 const group = acc['span'] ?? { label: 'Span', options: [] };
                 group.options.push({ ...curr, label });
                 acc['span'] = group;
