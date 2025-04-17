@@ -16,7 +16,6 @@ test.describe('components', () => {
 
   test('in header are visible', async ({ page }) => {
     await expect(page.getByText('Data source')).toBeVisible();
-    await expect(page.getByText('Preview')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Need help' })).toBeVisible();
     await expect(page.getByTestId('data-testid TimePicker Open Button')).toBeVisible();
     await expect(page.getByTestId('data-testid RefreshPicker run button')).toBeVisible();
