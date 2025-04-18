@@ -317,7 +317,7 @@ const frameGroupToDataframe = (attribute: string, frames: DataFrame[]): DataFram
   return newFrame;
 };
 
-function getTotalForMetaType(frames: DataFrame[], metaType: string, values: Record<string, Field[]>) {
+export function getTotalForMetaType(frames: DataFrame[], metaType: string, values: Record<string, Field[]>) {
   // calculate total from values so that we are properly normalizing the field values when dividing by the total
   const calculatedTotal = Object.values(values).reduce((total, fields) => {
     const field = fields.find((field) => field.labels?.['__meta_type'] === `"${metaType}"`);
