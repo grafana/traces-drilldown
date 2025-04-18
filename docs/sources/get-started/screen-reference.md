@@ -1,17 +1,16 @@
 ---
-description: Learn how to get started with Traces Drilldown
+description: Learn about the UI elements in Traces Drilldown.
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/get-started/
 keywords:
   - Traces Drilldown
-  - Get started
-title: Get started with Traces Drilldown
-menuTitle: Get started
+  - user interface
+  - reference
+title: UI reference
+menuTitle: UI reference
 weight: 300
 ---
 
-# Get started with Traces Drilldown
-
-{{< docs/public-preview product="Traces Drilldown" >}}
+# UI reference
 
 You can use traces to identify errors in your apps and services and then to optimize and streamline them.
 
