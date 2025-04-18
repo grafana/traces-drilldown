@@ -299,8 +299,8 @@ const frameGroupToDataframe = (attribute: string, frames: DataFrame[]): DataFram
     return acc;
   }, {});
 
-  const baselineTotal = getValueForMetaType(frames, '"baseline_total"');
-  const selectionTotal = getValueForMetaType(frames, '"selection_total"');
+  const baselineTotal = getTotalForMetaType(frames, 'baseline', values);
+  const selectionTotal = getTotalForMetaType(frames, 'selection', values);
 
   newFrame.length = Object.keys(values).length;
 
@@ -317,14 +317,37 @@ const frameGroupToDataframe = (attribute: string, frames: DataFrame[]): DataFram
   return newFrame;
 };
 
-function getValueForMetaType(frames: DataFrame[], metaType: string) {
-  return frames.reduce((currentValue, frame) => {
+function getTotalForMetaType(frames: DataFrame[], metaType: string, values: Record<string, Field[]>) {
+  // calculate total from values so that we are properly normalizing the field values when dividing by the total
+  const calculatedTotal = Object.values(values).reduce((total, fields) => {
+    const field = fields.find((field) => field.labels?.['__meta_type'] === `"${metaType}"`);
+    return total + (field?.values[0] || 0);
+  }, 0);
+
+  let total = frames.reduce((currentValue, frame) => {
     const field = frame.fields.find((f) => f.type === 'number');
-    if (field?.labels?.['__meta_type'] === metaType) {
+    if (field?.labels?.['__meta_type'] === `"${metaType}_total"`) {
       return field.values[0];
     }
     return currentValue;
   }, 1);
+
+  // if the baseline_total or selection_total field is found, but the total value is less than the calculated total
+  // we need to return the calculated total otherwise the values will be skewed
+  // e.g. calculatedTotal = 100, total = 80
+  // if we return the total, the field values will be normalized via 80/100 = 1.25 (incorrect)
+  // if we return the calculated total, the field values will be normalized via 100/100 = 1 (correct)
+  if (total < calculatedTotal) {
+    return calculatedTotal === 0 ? 1 : calculatedTotal; // fallback to 1 to avoid division by zero
+  }
+
+  // 1 if the baseline_total or selection_total field is not found
+  // 0 if the baseline_total or selection_total field is found, but the total value is 0
+  if (total === 1 || total === 0) {
+    return calculatedTotal === 0 ? 1 : calculatedTotal;
+  }
+
+  return total;
 }
 
 function getStyles(theme: GrafanaTheme2) {
