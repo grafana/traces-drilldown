@@ -11,24 +11,13 @@ weight: 600
 
 # Analyze tracing data
 
-Grafana Traces Drilldown provides powerful tools that help you identify and analyze problems in your applications and services.
-
-Using these steps, you can use the tracing data to investigate issues.
-
-1. Select the whether to use **Root spans** or **All spans**.
-1. Choose the metric you want to use: rates, errors, or duration.
-1. Define filters to refine the view of your data.
-1. Use the structural or trace list to drill down into the issue.
-
-## Analyze tracing data
-
 To further analyze the filtered spans, use the dynamically changing tabs, **Comparison**, **Structure**, **Root cause analysis**, and **Trace list**.
 
 When you select a RED metric, the tabs underneath the metrics selection changes match the context.
 
 Each tab provides a brief explanation about the information provided.
 
-### Comparison
+## Comparison
 
 The **Comparison** tab highlights attributes that are correlated with the selected metric.
 
@@ -38,7 +27,7 @@ However, if you're viewing **Duration** metrics, the comparison shows the attrib
 
 ![Comparison view](/media/docs/explore-traces/explore-traces-rate-comparison-v2.4.png)
 
-### Structure
+## Structure
 
 The structural tab lets you extract and view aggregate data from your traces.
 
@@ -61,7 +50,7 @@ The pictured spans are an aggregated view compiled using spans from multiple tra
 
 ![Duration metric showing root cause latency](/media/docs/explore-traces/explore-traces-duration-root-cause-latency.png)
 
-### Trace list
+## Trace list
 
 Each RED metric has a trace list:
 
@@ -71,7 +60,7 @@ Each RED metric has a trace list:
 
 ![Example trace list for Duration showing slow traces](/media/docs/explore-traces/explore-traces-duration-slow-traces-v0.9.png)
 
-## Change selected time range
+## Change the selected time range
 
 Use the time picker at the top right to modify the data shown in Traces Drilldown.
 

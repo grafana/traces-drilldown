@@ -28,7 +28,7 @@ The list of filters expands as you investigate and explore your tracing data usi
 
 ![Change filters for your investigation](../images/explore-traces-filters.png)
 
-### Use the Breakdown tab
+## Use the Breakdown tab
 
 The **Breakdown** tab highlights attributes that are correlated with the selected metric.
 When you're using **Duration** metrics, **Breakdown** orders the sequence of attributes by their average duration.
@@ -44,7 +44,7 @@ For example, if you have selected **Errors** as a metric type and then choose th
 The app defaults to `service.name` and displays other commonly used resource level attributes such as `cluster`, `environment`, and `namespace`.
 In the drop-down list, you can choose any resource level attribute to group by.
 
-### Modify a filter
+## Modify a filter
 
 Selecting an option for a filter automatically updates the displayed data.
 If there are no matches, the app displays a “No data for selected query” message.
@@ -56,7 +56,7 @@ To modify an applied filter:
 
 You can also click in the **Filter** bar to add filters using drop-down lists.
 
-### Remove filters
+## Remove filters
 
 You can remove all or individual filters.
 

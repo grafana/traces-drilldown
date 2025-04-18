@@ -11,27 +11,28 @@ weight: 200
 
 # Choose root or full span data
 
-Grafana Traces Drilldown provides powerful tools that help you identify and analyze problems in your applications and services.
-
-Using these steps, you can use the tracing data to investigate issues.
-
-1. Select the whether to use **Root spans** or **All spans**.
-1. Choose the metric you want to use: rates, errors, or duration.
-1. Define filters to refine the view of your data.
-1. Use the structural or trace list to drill down into the issue.
-
-
-## Select root spans or raw tracing data from all spans
-
 Tracing data is highly structured and annotated and reflects events that happen in your services.
 You can choose the type of services you want to observe and think about.
 
-By default, Traces Drilldown displays information about root spans. You can change this by using the selector in the filter bar.
-
-You can use any one of these primary signal types.
+By default, Traces Drilldown displays information about root spans.
+You can change this by using the selector in the filter bar.
 
 Root spans traces
 : Inspect full journeys of requests across services
 
 All spans
 : View and analyze raw span data
+
+<!-- Add screenshots of root span vs all spans and some info about when you'd use one or the other-->
+
+## Root spans
+
+A root span is the first span in a trace.
+In tracing data, think of it as the trunk from which all subsequent spans in the same trace branch.
+
+Queries against root spans are faster because you're searching a subset of the tracing data.
+
+## All spans
+
+The **All spans** option lets you query all span data for all traces within the selected time period.
+Query times take longer they search the raw span data.

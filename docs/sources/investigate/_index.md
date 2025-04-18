@@ -25,17 +25,18 @@ Depending on what you find, you may start with root spans, delve into error data
 
 {{< docs/play title="the Grafana Play site" url="https://play.grafana.org/a/grafana-exploretraces-app/explore" >}}
 
-## Example of traces drilldown in action
+## Screen reference
 
 The screenshot above illustrates the **Traces Drilldown** app in Grafana.
-
-Using the **Breakdown**, **Comparison**, **Structure**, and **Trace list** tabs, you can drill down into specific issues and gain actionable insights into your system's performance and reliability.
+Some of the screen sections are context sensitive and change depending upon the metric you've chosen.
+Refer to [Analyze tracing data](analyze-tracing-data) for more information.
 
 1. **Data source selection**:
    At the top left, you select the data source for your traces. In this example, the data source is set to `grafanacloud-traces`.
 
 2. **Filters**:
-   The filter bar helps you refine the data displayed. You can apply filters such as `Root spans`, `All spans`, or specific label values to narrow the scope of your investigation.
+   The filter bar helps you refine the data displayed.
+   You can select the type of trace data, either **Root spans** or **All spans**. You can also add specific label values to narrow the scope of your investigation.
 
 3. **Select metric type**:
    Choose between **Rate**, **Errors**, or **Duration** metrics. In this example, the **Span rate** metric is selected, showing the number of spans per second.
@@ -44,18 +45,16 @@ Using the **Breakdown**, **Comparison**, **Structure**, and **Trace list** tabs,
    - The **Duration** heatmap (bottom right) visualizes the distribution of span durations, helping you identify latency patterns.
 
 5. **Breakdown tab**:
-   The **Breakdown** tab (highlighted in the screenshot) organizes attributes by their correlation with the selected metric. For example:
+   The **Breakdown** tab organizes attributes by their correlation with the selected metric. For example:
    - The tab groups attributes by `service.name` (e.g., `frontend-proxy`, `frontend-web`, `load-generator`).
    - Each group shows the rate of requests per second, with errors highlighted in red.
 
 6. **Group by and scope options**:
-   - The **Group by** lets you group metrics by attributes such as `service.name`, `service.namespace`, or `service.version`.
+   - **Group by** lets you group metrics by attributes such as `service.name`, `service.namespace`, or `service.version`.
    - The **Scope** selector lets you toggle between **Resource** and **Span** views.
 
 7. **Add to filters**:
-   Each attribute group includes an **Add to filters** option, enabling you to refine your investigation further by focusing on specific services or attributes.
+   Each attribute group includes an **Add to filters** option, so you can add your selections into the current investigation.
 
 8. **Time range selector**:
    At the top right, you can adjust the time range for the displayed data using the time picker. In this example, the time range is set to the last 30 minutes.
-
-
