@@ -17,8 +17,6 @@ refs:
 
 # Access or install Traces Drilldown
 
-{{< docs/public-preview product="Traces Drilldown" >}}
-
 You can access Grafana Traces Drilldown using any of these:
 
  - [Grafana Cloud](access-in-grafana-cloud): The easiest method, since no setup or installation is required.

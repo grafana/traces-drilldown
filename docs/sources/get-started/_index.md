@@ -11,8 +11,6 @@ weight: 300
 
 # Get started with Traces Drilldown
 
-{{< docs/public-preview product="Traces Drilldown" >}}
-
 You can use traces to identify errors in your apps and services and then to optimize and streamline them.
 
 When working with traces, start with the big picture.

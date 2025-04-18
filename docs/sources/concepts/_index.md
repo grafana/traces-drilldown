@@ -17,12 +17,9 @@ Traces record the details of a request to help understand why an issue is or was
 Tracing is best used for analyzing the performance of your system, identifying bottlenecks, monitoring latency, and providing a complete picture of how requests are processed.
 
 To use the Grafana Traces Drilldown app, you should understand these concepts:
-
-- [Concepts](#concepts)
   - [Rate, error, and duration metrics](#rate-error-and-duration-metrics)
   - [Traces and spans](#traces-and-spans)
-
-{{< docs/public-preview product="Traces Drilldown" >}}
+  - [Tre structure]
 
 ## Rate, error, and duration metrics
 

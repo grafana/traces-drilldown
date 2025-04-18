@@ -14,8 +14,6 @@ draft: true
 
 # Determine your use case
 
-{{< docs/public-preview product="Explore Traces" >}}
-
 At the beginning of your investigation, you may either know what's wrong (for example, you know the affected service or that there’s too much CPU usage), or you may want identify resource hot spots so you can address them.
 
 This can lead you to two different starting points:
