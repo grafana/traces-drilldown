@@ -32,7 +32,13 @@ In tracing data, think of it as the trunk from which all subsequent spans in the
 
 Queries against root spans are faster because you're searching a subset of the tracing data.
 
+**Root spans** is the default selection.
+
+![The Errors metric view showing Root spans selected](/media/docs/explore-traces/traces-drilldown-errors-root-spans.png)
+
 ## All spans
 
 The **All spans** option lets you query all span data for all traces within the selected time period.
 Query times take longer they search the raw span data.
+
+![The Errors metric view showing All spans selected](/media/docs/explore-traces/traces-drilldown-errors-all-spans.png)

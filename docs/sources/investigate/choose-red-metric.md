@@ -23,10 +23,12 @@ For example, selecting **Duration** displays **Root cause latency** and **Slow t
 Choosing **Errors** changes the tabs to **Root cause errors** and **Errored traces**. Rate provides **Service structure**, and **Traces** tabs.
 These tabs are used when you [analyze tracing data](#analyze-tracing-data).
 
+{{< video-embed src="/media/docs/explore-traces/traces-drilldown-select-metric-type.mp4" >}}
+
 To choose a RED metric:
 
-1. Select a graph to select a **Rate**, **Errors**, or **Duration** metric type. Notice that your selection changes the first drop-down list on the filter bar.
-1. Optional: Select the signal you want to observe. **Full traces** are the default selection.
+1. Select a graph to select a **Spans** (rate), **Errors**, or **Duration** metric type. Notice that your selection changes the first drop-down list on the filter bar.
+1. Optional: Select the signal you want to observe. **Root spans** is the default selection.
 1. Look for spikes or trends in the data to help identify issues.
 
 {{< admonition type="tip" >}}

@@ -22,7 +22,7 @@ Each tab provides a brief explanation about the information provided.
 The **Comparison** tab highlights attributes that are correlated with the selected metric.
 
 The behavior of the comparison also differs depending upon the RED metric you've chosen.
-For example, if you're viewing **Error** metrics, the comparison shows the attribute values that correlate with errors.
+For example, if you're viewing **Errors** metrics, the comparison shows the attribute values that correlate with errors.
 However, if you're viewing **Duration** metrics, the comparison shows the attributes that correlate with high latency.
 
 ![Comparison view](/media/docs/explore-traces/explore-traces-rate-comparison-v2.4.png)
@@ -33,9 +33,9 @@ The structural tab lets you extract and view aggregate data from your traces.
 
 * Rate provides **Service structure**
 * Errors provides **Root cause errors**
-* Duration metrics provides **Root cause latency**
+* Duration (**spans** in the UI) metrics provides **Root cause latency**
 
-For **Rate**, the **Service structure** tab shows you how your applications "talk" to each other to fulfill requests.
+For **Rate**, the **Service structure** tab shows you how your applications talk to each other to fulfill requests.
 Use this tab to analyze the service structure of the traces that match the current filters.
 
 ![Service structure tab](/media/docs/explore-traces/explore-traces-rate-service-structure-v0.9.png)
@@ -56,7 +56,7 @@ Each RED metric has a trace list:
 
 * **Rate** provides a tab that lists **Traces**.
 * **Errors** provides a list of **Errored traces**.
-* **Duration** lists **Slow traces**.
+* **Duration** (**spans**) lists **Slow traces**.
 
 ![Example trace list for Duration showing slow traces](/media/docs/explore-traces/explore-traces-duration-slow-traces-v0.9.png)
 
