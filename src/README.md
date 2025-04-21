@@ -2,13 +2,13 @@
 
 Remove any remaining comments before publishing as these may be displayed on Grafana.com -->
 
-# Explore Traces
+# Drilldown Traces
 
 Distributed traces provide a way to monitor applications by tracking requests across services.
 Traces record the details of a request to help understand why an issue is or was happening.
 Tracing is best used for analyzing the performance of your system, identifying bottlenecks, monitoring latency, and providing a complete picture of how requests are processed.
 
-Explore Traces helps you make sense of your tracing data so you can automatically visualize insights from your Tempo traces data.
+Drilldown Traces helps you make sense of your tracing data so you can automatically visualize insights from your Tempo traces data.
 Using the app, you can:
 
 * Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate issues
@@ -16,26 +16,24 @@ Using the app, you can:
 * Browse automatic visualizations of your data based on its characteristics
 * Do all of this without writing TraceQL queries
 
->**Note:** Explore Traces is presently undergoing active development and is offered in a preview state. Subsequent updates are likely to incorporate significant changes that may impact existing functionality.
-
 ![Root cause latency using Duration metrics](https://grafana.com/media/docs/explore-traces/explore-traces-rate-comparison.png)
 
 ## Before you begin
 
-To use Explore Traces with Grafana Cloud, you need:
+To use Drilldown Traces with Grafana Cloud, you need:
 
 - A Grafana Cloud account
 - A Grafana stack in Grafana Cloud with a configured [Tempo data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/tempo/configure-tempo-data-source/) receiving tracing data
 
-To use Explore Traces with self-hosted Grafana open source or Grafana Enterprise, you need:
+To use Drilldown Traces with self-hosted Grafana open source or Grafana Enterprise, you need:
 
-- Your own Grafana instance running 11.2 or newer
+- Your own Grafana instance running 11.3 or newer
 - Tempo 2.6 or newer
 - A configured [Tempo data source](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/) receiving tracing data
 
 ## Getting started
 
-Refer to the [Explore Traces](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/) documentation.
+Refer to the [Drilldown Traces](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/) documentation.
 For instructions installing, refer to the [access and installation instructions](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/).
 
 ## Resources
@@ -61,7 +59,7 @@ If your issue is a bug, please open one [here](https://github.com/grafana/explor
 ### Changes
 
 We do not have a formal proposal process for changes or feature requests. If you have a change you would like to see in
-Explore Traces, please [file an issue](https://github.com/grafana/explore-traces/issues/new) with the necessary details.
+Drilldown Traces, please [file an issue](https://github.com/grafana/explore-traces/issues/new) with the necessary details.
 
 
 <!-- To help maximize the impact of your README and improve usability for users, we propose the following loose structure:
