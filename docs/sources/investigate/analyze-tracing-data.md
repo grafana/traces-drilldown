@@ -86,4 +86,4 @@ You can select a time range of up to 24 hours in duration.
 This time range can be any 24-hour period in your configured trace data retention period.
 The default is 30 days.
 
-For more information about the time range picker, refer to [Use dashboards](https://grafana.com/docs/grafana/latest/dashboards/use-dashboards/#set-dashboard-time-range).
+For more information about the time range picker, refer to [Use dashboards](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range).
