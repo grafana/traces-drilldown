@@ -25,7 +25,7 @@ Refer to [Analyze tracing data](analyze-tracing-data) for more information.
    You can select the type of trace data, either **Root spans** or **All spans**. You can also add specific label values to narrow the scope of your investigation.
 
 1. **Select metric type**:
-   Choose between **Rate**, **Errors**, or **Duration** metrics. In this example, the **Span rate** metric is selected, showing the number of spans per second.
+   Choose between **Rate** (spans), **Errors**, or **Duration** metrics. In this example, the **Span rate** metric is selected, showing the number of spans per second.
    - The **Span rate** graph (top left) shows the rate of spans over time.
    - The **Errors** graph (top right) displays the error rate over time, with red bars indicating errors.
    - The **Duration** heatmap (bottom right) visualizes the distribution of span durations and can help identify latency patterns.
@@ -39,3 +39,10 @@ Refer to [Analyze tracing data](analyze-tracing-data) for more information.
 
 1. **Time range selector**:
    At the top right, you can adjust the time range for the displayed data using the time picker. In this example, the time range is set to the last 30 minutes. Refer to [Set dashboard time range](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range) for more information.
+
+## Streaming query results
+
+When you first open Traces Drilldown, you may notice a green dot on the upper right corner of any of the metrics graphs.
+
+This green dot indicates that Traces Drilldown is displaying data that's still being received, or streamed.
+Streaming lets you view partial query results before the entire query completes.

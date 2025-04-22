@@ -6,7 +6,7 @@ keywords:
   - Analyze
 title: Analyze tracing data
 menuTitle: Analyze tracing data
-weight: 600
+weight: 500
 ---
 
 # Analyze tracing data
@@ -17,7 +17,23 @@ When you select a RED metric, the tabs underneath the metrics selection changes 
 
 Each tab provides a brief explanation about the information provided.
 
-## Comparison
+## Use the Breakdown tab
+
+The **Breakdown** tab highlights attributes that are correlated with the selected metric.
+When you're using **Duration** metrics, **Breakdown** orders the sequence of attributes by their average duration.
+When you select **Rate**, **Breakdown** orders the sequence of attributes by their rate of requests per second, with errors colored red.
+
+You can change the **Scope** to show **Resource** or **Span**.
+
+Using the **Group by** selector, you can group the selected metric by different attributes.
+For example, if you have selected **Errors** as a metric type and then choose the `service.name` attribute, the displayed results show the number of errors sorted by the `service.name` with the most matches.
+
+![Errors metric showing the **Breakdown** tab without filters](/media/docs/explore-traces/traces-drilldown-errors-breakdown-tab.png)
+
+The app defaults to `service.name` and displays other commonly used resource level attributes such as `cluster`, `environment`, and `namespace`.
+In the drop-down list, you can choose any resource level attribute to group by.
+
+## Use the Comparison tab
 
 The **Comparison** tab highlights attributes that are correlated with the selected metric.
 
@@ -25,9 +41,9 @@ The behavior of the comparison also differs depending upon the RED metric you've
 For example, if you're viewing **Errors** metrics, the comparison shows the attribute values that correlate with errors.
 However, if you're viewing **Duration** metrics, the comparison shows the attributes that correlate with high latency.
 
-![Comparison view](/media/docs/explore-traces/explore-traces-rate-comparison-v2.4.png)
+![Comparison view](/media/docs/explore-traces/traces-drilldown-root-spans-duration-comparison-tab.png)
 
-## Structure
+## Use the Structure tab
 
 The structural tab lets you extract and view aggregate data from your traces.
 
@@ -38,19 +54,19 @@ The structural tab lets you extract and view aggregate data from your traces.
 For **Rate**, the **Service structure** tab shows you how your applications talk to each other to fulfill requests.
 Use this tab to analyze the service structure of the traces that match the current filters.
 
-![Service structure tab](/media/docs/explore-traces/explore-traces-rate-service-structure-v0.9.png)
+![Service structure tab](/media/docs/explore-traces/traces-drilldown-span-rate-service-structure.png)
 
 For **Errors**, the **Root cause errors** tab shows structure of errors beneath your selected filters. Use this tab to immediately see the chain of errors that are causing issues higher up in traces.
 
-![Link to span data from Root cause errors](/media/docs/explore-traces/explore-traces-errors-root-cause-v0.9.png)
+![Link to span data from Root cause errors](/media/docs/explore-traces/traces-drilldown-errors-root-cause-errors.png)
 
 When you select **Duration** metrics, the **Root cause latency** tab shows the structure of the longest running spans so you can analyze the structure of slow spans.
 
 The pictured spans are an aggregated view compiled using spans from multiple traces.
 
-![Duration metric showing root cause latency](/media/docs/explore-traces/explore-traces-duration-root-cause-latency.png)
+![Duration metric showing root cause latency](/media/docs/explore-traces/traces-drilldown-duration-root-cause.png)
 
-## Trace list
+## Use the Trace list
 
 Each RED metric has a trace list:
 
@@ -58,7 +74,9 @@ Each RED metric has a trace list:
 * **Errors** provides a list of **Errored traces**.
 * **Duration** (**spans**) lists **Slow traces**.
 
-![Example trace list for Duration showing slow traces](/media/docs/explore-traces/explore-traces-duration-slow-traces-v0.9.png)
+From this view, you can add additional attributes to new columns using **Add extra columns**.
+
+{{< video-embed src="/media/docs/explore-traces/traces-drilldown-add-column-trace-view.mp4" >}}
 
 ## Change the selected time range
 

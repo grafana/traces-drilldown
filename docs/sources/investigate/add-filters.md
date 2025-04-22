@@ -6,14 +6,15 @@ keywords:
   - Investigate
 title: Add filters
 menuTitle: Add filters
-weight: 400
+weight: 600
 ---
 
 # Add filters to refine your investigation
 
 Use filters to refine your investigation.
 
-Filters are available on the **Breakdown** and **Comparison** tabs.
+Filters are available on the **Breakdown** and **Comparison** views.
+Refer to [Analyze tracing data](analyze-tracing-data) for how to use these views.
 
 Each time you add a filter, the condition appears in the list of filters at the top of the page.
 The list of filters expands as you investigate and explore your tracing data using Traces Drilldown.
@@ -26,23 +27,18 @@ The list of filters expands as you investigate and explore your tracing data usi
     * Select **Inspect**.
     * Use the **Filter** bar near the top.
 
-![Change filters for your investigation](../images/explore-traces-filters.png)
+![Change filters for your investigation](/media/docs/explore-traces/traces-drilldown-filters-ga-1.png)
 
-## Use the Breakdown tab
+### Example
 
-The **Breakdown** tab highlights attributes that are correlated with the selected metric.
-When you're using **Duration** metrics, **Breakdown** orders the sequence of attributes by their average duration.
-When you select **Rate**, **Breakdown** orders the sequence of attributes by their rate of requests per second, with errors colored red.
+Let's say that you want to investigate a spike in errored root spans longer than 200ms.
 
-You can change the **Scope** to show **Resource** or **Span**.
+1. Select **Root spans**.
+1. Select the **Errored traces** tab.
+1. In the Filter by labeled values, enter `span:duration`, select greater than (`>`) from the dropdown list, and then enter `200ms`.
+1. Once the data updates, sort the **Errored traces** table by the **Duration** column.
 
-Using the **Group by** selector, you can group the selected metric by different attributes.
-For example, if you have selected **Errors** as a metric type and then choose the `service.name` attribute, the displayed results show the number of errors sorted by the `service.name` with the most matches.
-
-![Errors metric showing the **Breakdown** tab without filters](/media/docs/explore-traces/explore-traces-breakdown-errors-v0.9.png)
-
-The app defaults to `service.name` and displays other commonly used resource level attributes such as `cluster`, `environment`, and `namespace`.
-In the drop-down list, you can choose any resource level attribute to group by.
+{{< video-embed src="/media/docs/explore-traces/traces-drilldown-errors-root-span-duration-filter.mp4" >}}
 
 ## Modify a filter
 
