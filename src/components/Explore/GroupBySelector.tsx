@@ -30,6 +30,8 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
 
   const [selectQuery, setSelectQuery] = useState<string>('');
   const [clickCounts, setClickCounts] = useState<Record<string, number>>({});
+  // Store initial click counts separately for sorting to prevent reordering on clicks
+  const [initialClickCounts, setInitialClickCounts] = useState<Record<string, number>>({});
 
   const [availableWidth, setAvailableWidth] = useState<number>(0);
   const controlsContainer = useRef<HTMLDivElement>(null);
@@ -45,6 +47,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
         if (storedCounts) {
           const counts = JSON.parse(storedCounts);
           setClickCounts(counts);
+          setInitialClickCounts(counts);
         }
       } catch (e) {
         console.error('Failed to load group by click counts:', e);
@@ -115,7 +118,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
       .filter(option => 
         isOptionValid(option) && 
         !radioAttributes.includes(option) && 
-        (clickCounts[option] || 0) > 0
+        (initialClickCounts[option] || 0) > 0
       );
 
     const allOptions = [...validRadioOptions, ...validOtherOptions];
@@ -124,7 +127,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
       allOptions,
       isOptionValid
     };
-  }, [options, radioAttributes, filters, metricValue, clickCounts]);
+  }, [options, radioAttributes, filters, metricValue, initialClickCounts]);
 
   const radioOptions = useMemo(() => {
     let radioOptionsWidth = 0;
@@ -135,7 +138,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
         label: attribute.replace(SPAN_ATTR, '').replace(RESOURCE_ATTR, ''),
         text: attribute,
         value: attribute,
-        clickCount: clickCounts[attribute] || 0
+        clickCount: initialClickCounts[attribute] || 0
       }))
       .sort((a, b) => b.clickCount - a.clickCount)
       .filter((option) => {
@@ -148,7 +151,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
           return false;
         }
       });
-  }, [filterValidOptions, fontSize, availableWidth, clickCounts]);
+  }, [filterValidOptions, fontSize, availableWidth, initialClickCounts]);
 
   // Get all options that are not in the radio group
   const otherAttrOptions = useMemo(() => {
@@ -185,13 +188,13 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
         }
         
         processedValues.add(optionValue);
-        const clickCount = clickCounts[optionValue] || 0;
+        const clickCount = initialClickCounts[optionValue] || 0;
         clickCount > 0 ? frequentlyUsed.push(option) : other.push(option);
       });
       
       frequentlyUsed.sort((a, b) => {
-        const aClicks = clickCounts[a.value?.toString() ?? ''] || 0;
-        const bClicks = clickCounts[b.value?.toString() ?? ''] || 0;
+        const aClicks = initialClickCounts[a.value?.toString() ?? ''] || 0;
+        const bClicks = initialClickCounts[b.value?.toString() ?? ''] || 0;
         return bClicks - aClicks;
       });
       
@@ -213,7 +216,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
       
       return result;
     };
-  }, [radioOptions, clickCounts]);
+  }, [radioOptions, initialClickCounts]);
 
   // Set default value as first value in options
   useEffect(() => {
