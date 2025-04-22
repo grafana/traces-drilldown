@@ -22,7 +22,7 @@ The list of filters expands as you investigate and explore your tracing data usi
 1. Refine your investigation by adding filters.
 1. Optional: Choose one of the attributes to group by or use **Search** to locate the service.
 1. Optional: Use the tabs underneath the metrics selection to provide insights into breakdowns, comparisons, latency, and other explorations.
-1. Choose filters to hone in on the problem areas. Each filter that you select adds to the **Filter** statement at the top of the page. You can select filters on the **Comparison** and **Breakdown** tabs in the following ways:
+1. Choose filters to hone in on the problem areas. Each filter that you select adds to the **Filter** bar at the top of the page. You can select filters on the **Comparison** and **Breakdown** tabs in the following ways:
     * Select **Add to filters**.
     * Select **Inspect**.
     * Use the **Filter** bar near the top.
@@ -60,8 +60,6 @@ To remove a filter, select **Remove filter** (**X**) at the end of the filter yo
 
 To remove all filters, select **Clear filters** (**X**) from the right side of the filter bar.
 
-Selecting **Clear filters** resets your investigation back to the first metric you selected.
-For example, if you selected Errors metrics and **Group by** the `host` service.name, selecting **Clear filters** resets the search back to just **Errors** selected as the metric type.
 
 ## Change selected time range
 

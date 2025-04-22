@@ -66,7 +66,7 @@ The pictured spans are an aggregated view compiled using spans from multiple tra
 
 ![Duration metric showing root cause latency](/media/docs/explore-traces/traces-drilldown-duration-root-cause.png)
 
-## Use the Trace list
+## Use the Trace list tab
 
 Each RED metric has a trace list:
 
