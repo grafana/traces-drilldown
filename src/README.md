@@ -2,13 +2,13 @@
 
 Remove any remaining comments before publishing as these may be displayed on Grafana.com -->
 
-# Drilldown Traces
+# Traces Drilldown
 
 Distributed traces provide a way to monitor applications by tracking requests across services.
 Traces record the details of a request to help understand why an issue is or was happening.
 Tracing is best used for analyzing the performance of your system, identifying bottlenecks, monitoring latency, and providing a complete picture of how requests are processed.
 
-Drilldown Traces helps you make sense of your tracing data so you can automatically visualize insights from your Tempo traces data.
+Traces Drilldown helps you make sense of your tracing data so you can automatically visualize insights from your Tempo traces data.
 Using the app, you can:
 
 * Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate issues
@@ -20,12 +20,12 @@ Using the app, you can:
 
 ## Before you begin
 
-To use Drilldown Traces with Grafana Cloud, you need:
+To use Traces Drilldown with Grafana Cloud, you need:
 
 - A Grafana Cloud account
 - A Grafana stack in Grafana Cloud with a configured [Tempo data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/tempo/configure-tempo-data-source/) receiving tracing data
 
-To use Drilldown Traces with self-hosted Grafana open source or Grafana Enterprise, you need:
+To use Traces Drilldown with self-hosted Grafana open source or Grafana Enterprise, you need:
 
 - Your own Grafana instance running 11.3 or newer
 - Tempo 2.6 or newer
@@ -33,14 +33,14 @@ To use Drilldown Traces with self-hosted Grafana open source or Grafana Enterpri
 
 ## Getting started
 
-Refer to the [Drilldown Traces](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/) documentation.
+Refer to the [Traces Drilldown](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/) documentation.
 For instructions installing, refer to the [access and installation instructions](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/).
 
 ## Resources
 
 - [Documentation](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/)
-- [CHANGELOG](https://github.com/grafana/explore-traces/releases)
-- [GITHUB](https://github.com/grafana/explore-traces/)
+- [CHANGELOG](https://github.com/grafana/traces-drilldown/releases)
+- [GITHUB](https://github.com/grafana/traces-drilldown/)
 
 ## Contributing
 
@@ -54,12 +54,12 @@ change and then reviewing the implementation separately.
 
 ### Bugs
 
-If your issue is a bug, please open one [here](https://github.com/grafana/explore-traces/issues/new).
+If your issue is a bug, please open one [here](https://github.com/grafana/traces-drilldown/issues/new).
 
 ### Changes
 
 We do not have a formal proposal process for changes or feature requests. If you have a change you would like to see in
-Drilldown Traces, please [file an issue](https://github.com/grafana/explore-traces/issues/new) with the necessary details.
+Traces Drilldown, please [file an issue](https://github.com/grafana/traces-drilldown/issues/new) with the necessary details.
 
 
 <!-- To help maximize the impact of your README and improve usability for users, we propose the following loose structure:
