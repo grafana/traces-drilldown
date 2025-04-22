@@ -56,9 +56,8 @@ Here's how this works.
 
 ### Choose the level of data and a metric
 
-To identify the troublespot, you want to use raw tracing data instead of just the root span, which is the first span of every trace.
+To identify the trouble spot, you want to use raw tracing data instead of just the root span, which is the first span of every trace.
 Select **All spans** in the Filters, then choose the **Errors** metric.
-Use **All spans** to gain insight into the errors in the root of your traces or at the edge of your application.
 
 ![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors.png)
 

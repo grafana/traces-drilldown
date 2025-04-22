@@ -13,7 +13,7 @@ weight: 600
 
 Exemplars provide a link between the metrics and the traces themselves.
 
-An exemplar is a specific trace representative of measurement taken in a given time interval. While metrics excel at giving you an aggregated view of your system, traces give you a fine grained view of a single request; exemplars are a way to link the two.
+An exemplar is a specific trace representative of measurement taken in a given time interval. While metrics excel at giving you an aggregated view of your system, traces give you a fine-grained view of a single request; exemplars are a way to link the two.
 
 Use exemplars to help isolate problems within your data distribution by pinpointing query traces exhibiting high latency within a time interval.
 Once you localize the latency problem to a few exemplar traces, you can combine it with additional system based information or location properties to perform a root cause analysis faster, leading to quick resolutions to performance issues.

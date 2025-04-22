@@ -1,5 +1,5 @@
 ---
-description: Analyze tracing data using comparison, root cause analysis, Comparison, and traces view to investigate trends and spikes.
+description: Analyze tracing data using comparison, root cause analysis, and traces view to investigate trends and spikes.
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/
 keywords:
   - Traces Drilldown
@@ -13,7 +13,7 @@ weight: 500
 
 To further analyze the filtered spans, use the dynamically changing tabs, **Comparison**, **Structure**, **Root cause analysis**, and **Trace list**.
 
-When you select a RED metric, the tabs underneath the metrics selection changes match the context.
+When you select a RED metric, the tabs change to match the context.
 
 Each tab provides a brief explanation about the information provided.
 
@@ -45,7 +45,8 @@ However, if you're viewing **Duration** metrics, the comparison shows the attrib
 
 ## Use the Structure tab
 
-The structural tab lets you extract and view aggregate data from your traces.
+The Structure tab lets you extract and view aggregate data from your traces. 
+The name of the tab differs depending on the metric you are viewing: 
 
 * Rate provides **Service structure**
 * Errors provides **Root cause errors**
@@ -56,7 +57,7 @@ Use this tab to analyze the service structure of the traces that match the curre
 
 ![Service structure tab](/media/docs/explore-traces/traces-drilldown-span-rate-service-structure.png)
 
-For **Errors**, the **Root cause errors** tab shows structure of errors beneath your selected filters. Use this tab to immediately see the chain of errors that are causing issues higher up in traces.
+For **Errors**, the **Root cause errors** tab shows the structure of errors beneath your selected filters. Use this tab to immediately see the chain of errors that are causing issues higher up in traces.
 
 ![Link to span data from Root cause errors](/media/docs/explore-traces/traces-drilldown-errors-root-cause-errors.png)
 

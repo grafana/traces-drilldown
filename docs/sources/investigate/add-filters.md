@@ -35,7 +35,7 @@ Let's say that you want to investigate a spike in errored root spans longer than
 
 1. Select **Root spans**.
 1. Select the **Errored traces** tab.
-1. In the Filter by labeled values, enter `span:duration`, select greater than (`>`) from the dropdown list, and then enter `200ms`.
+1. In the Filter by labeled values, enter `span:duration`, select greater than (`>`) from the drop-down list, and then enter `200ms`.
 1. Once the data updates, sort the **Errored traces** table by the **Duration** column.
 
 {{< video-embed src="/media/docs/explore-traces/traces-drilldown-errors-root-span-duration-filter.mp4" >}}
@@ -61,7 +61,7 @@ To remove a filter, select **Remove filter** (**X**) at the end of the filter yo
 To remove all filters, select **Clear filters** (**X**) from the right side of the filter bar.
 
 
-## Change selected time range
+## Change the time range
 
 Use the time picker at the top right to modify the data shown in Traces Drilldown.
 

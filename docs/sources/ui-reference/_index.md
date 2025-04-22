@@ -11,7 +11,7 @@ weight: 600
 
 # Traces Drilldown UI reference
 
-Grafana Traces Drilldown provides an easy to use interface that helps focus your tracing data exploration.
+Grafana Traces Drilldown helps you focus your tracing data exploration.
 Some of the screen sections are context sensitive and change depending upon the metric you've chosen.
 Refer to [Analyze tracing data](analyze-tracing-data) for more information.
 
