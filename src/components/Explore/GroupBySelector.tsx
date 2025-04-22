@@ -3,7 +3,7 @@ import { useResizeObserver } from '@react-aria/utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { Select, RadioButtonGroup, useStyles2, useTheme2, measureText, Field, InputActionMeta } from '@grafana/ui';
+import { Select, RadioButtonGroup, useStyles2, useTheme2, measureText, Field, InputActionMeta, Tooltip, Icon } from '@grafana/ui';
 import { usePluginUserStorage } from '@grafana/runtime';
 import { ALL, GROUP_BY_CLICK_COUNTS_STORAGE_KEY, ignoredAttributes, maxOptions, MetricFunction, RESOURCE_ATTR, SPAN_ATTR } from 'utils/shared';
 import { AttributesBreakdownScene } from './TracesByService/Tabs/Breakdown/AttributesBreakdownScene';
@@ -228,8 +228,24 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
   const showAllOption = showAll ? [{ label: ALL, value: ALL }] : [];
   const defaultOnChangeValue = showAll ? ALL : '';
 
+  const tooltipContent = (
+    <div className={styles.tooltip}>
+      <p>Attributes are ordered by frequency of use. Most frequently used attributes appear first in the radio buttons and dropdown menu.</p>
+      <p>Traces Drilldown tracks your selections and automatically prioritizes the attributes you use most often.</p>
+    </div>
+  );
+
   return (
-    <Field label="Group by">
+    <Field 
+      label={
+        <div className={styles.labelWithTooltip}>
+          Group by
+          <Tooltip content={tooltipContent} placement="right" theme="info">
+            <Icon name="info-circle" className={styles.infoIcon} />
+          </Tooltip>
+        </div>
+      }
+    >
       <div ref={controlsContainer} className={styles.container}>
         {radioOptions.length > 0 && (
           <RadioButtonGroup 
@@ -269,6 +285,23 @@ function getStyles(theme: GrafanaTheme2) {
     container: css({
       display: 'flex',
       gap: theme.spacing(1),
+    }),
+    labelWithTooltip: css({
+      display: 'flex',
+      alignItems: 'center',
+      gap: theme.spacing(0.5),
+    }),
+    infoIcon: css({
+      cursor: 'pointer',
+    }),
+    tooltip: css({
+      maxWidth: '300px',
+      p: {
+        margin: theme.spacing(0, 0, 1, 0),
+        '&:last-child': {
+          marginBottom: 0,
+        },
+      },
     }),
   };
 }
