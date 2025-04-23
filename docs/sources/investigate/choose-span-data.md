@@ -17,28 +17,34 @@ You can choose the type of services you want to observe and think about.
 By default, Traces Drilldown displays information about root spans.
 You can change this by using the selector in the filter bar.
 
-Root spans
-: Inspect full journeys of requests across services
+* Use **Root spans** for trace‑level insights and faster performance (one span/trace).
+* Use **All spans** when you need to drill down into every operation within those traces.
 
-All spans
-: View and analyze raw span data
+## Querying root spans only
 
-<!-- Add screenshots of root span vs all spans and some info about when you'd use one or the other-->
+Using **Root spans**, you get exactly one span per trace (the root span or the first span in a trace) so you see one data point per trace in your results.
 
-## Root spans
+When to use:
+- High‑level or service‑level investigations (e.g. error rate by root operation).
+- Fast filtering by trace‑wide metrics (e.g. trace duration, success vs. failure at the entry point).
 
-A root span is the first span in a trace.
-In tracing data, think of it as the trunk from which all subsequent spans in the same trace branch.
-
-Queries against root spans are faster because you're searching a subset of the tracing data.
-
-**Root spans** is the default selection.
+Benefits:
+- End-to-end view: Root spans represent the complete, end‑to‑end request or job. Querying just roots ensures you measure the full request lifecycle, exactly what your RED (Rate, Errors, Duration) metrics are built on. Duration and error‑rate histograms truly reflect user‑facing operations.
+- Speed: Only inspects the first span per trace.
 
 ![The Errors metric view showing Root spans selected](/media/docs/explore-traces/traces-drilldown-errors-root-spans.png)
 
-## All spans
+## Querying all spans
 
-The **All spans** option lets you query all span data for all traces within the selected time period.
-Query times take longer they search the raw span data.
+With this option you query every matching span in every trace.
+
+When to use:
+- Deep‑dive troubleshooting where you need every operation in the call graph.
+- Filtering by child‑span attributes, for example, database calls and background jobs.
+
+Trade‑offs:
+- Skewed RED metrics: Unless used with an appropriate filter, aggregating duration or error rates across every span inflates counts and misrepresents true end‑to‑end performance. Your RED metrics become a mix of server, client, database, and internal spans. The average latency and error rates no longer align with user‑facing operations.
+- Performance: Scanning all spans is heavier, especially in wide or deep traces.
+- Result size: You may hit maximum spans per span-set limits if your traces are large.
 
 ![The Errors metric view showing All spans selected](/media/docs/explore-traces/traces-drilldown-errors-all-spans.png)
