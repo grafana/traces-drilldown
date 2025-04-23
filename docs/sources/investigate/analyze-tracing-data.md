@@ -50,7 +50,7 @@ The name of the tab differs depending on the metric you are viewing:
 
 * Rate provides **Service structure**
 * Errors provides **Root cause errors**
-* Duration (**spans** in the UI) metrics provides **Root cause latency**
+* Duration metrics provides **Root cause latency**
 
 For **Rate**, the **Service structure** tab shows you how your applications talk to each other to fulfill requests.
 Use this tab to analyze the service structure of the traces that match the current filters.
