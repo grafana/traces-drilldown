@@ -20,7 +20,7 @@ You can change this by using the selector in the filter bar.
 * Use **Root spans** for trace‑level insights and faster performance (one span/trace).
 * Use **All spans** when you need to drill down into every operation within those traces.
 
-## Querying root spans only
+## Query root spans only
 
 Using **Root spans**, you get exactly one span per trace (the root span or the first span in a trace) so you see one data point per trace in your results.
 
@@ -34,7 +34,7 @@ Benefits:
 
 ![The Errors metric view showing Root spans selected](/media/docs/explore-traces/traces-drilldown-errors-root-spans.png)
 
-## Querying all spans
+## Query all spans
 
 With this option you query every matching span in every trace.
 

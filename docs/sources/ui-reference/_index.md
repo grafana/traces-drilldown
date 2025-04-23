@@ -32,7 +32,7 @@ Refer to [Analyze tracing data](../analyze-tracing-data) for more information.
 
 1. **Investigation-focused tabs**:
    Each metric type has its own set of tabs that help you explore your tracing data. These tabs differ depending on the metric type you've selected.
-   For example, when you are using Span rate, then the Investigation type tabs show **Breakdown**, **Service structure**, **Comparison**, and **Traces**.
+   For example, when you use Span rate, then the Investigation type tabs show **Breakdown**, **Service structure**, **Comparison**, and **Traces**.
 
 1. **Add to filters**:
    Each attribute group includes an **Add to filters** option, so you can add your selections into the current investigation.
