@@ -35,7 +35,13 @@ In the drop-down list, you can choose any resource level attribute to group by.
 
 ## Use the Comparison tab
 
-The **Comparison** tab highlights attributes that are correlated with the selected metric.
+The **Comparison** tab helps you surface and rank which span attributes are most correlated with the selected metric so you can immediately spot what's driving your trace-level issues.
+
+Upon selecting a metric, the tab computes, for each resource or span attribute, how strongly that attribute value differs between the selected subset (**selection**) and all other spans (**baseline**). It lists attribute‑value pairs in descending order of that difference, so the top entries are those most uniquely associated with your signal of interest.
+
+- If you're viewing the **Errors** metric, the **selection** contains all erroring spans, while the **baseline** contains all non-erroring spans.
+
+- If you're viewing the **Duration** metric, by default the **selection** contains the slowest spans above the 90th percentile, while the **baseline** contains all other spans. You can manually adjust the selection on the duration heatmap.
 
 The behavior of the comparison also differs depending upon the RED metric you've chosen.
 For example, if you're viewing **Errors** metrics, the comparison shows the attribute values that correlate with errors.
