@@ -66,8 +66,9 @@ To remove all filters, select **Clear filters** (**X**) from the right side of t
 Use the time picker at the top right to modify the data shown in Traces Drilldown.
 
 You can select a time range of up to 24 hours in duration.
-This time range can be any 24-hour period in your configured trace data retention period.
-The default is 30 days.
+By default, this time range can be any 24-hour period in your configured trace data retention period.
+The default retention period is 30 days.
+Your configuration may vary from these values. 
 
 For more information about the time range picker, refer to [Use dashboards](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range).
 
