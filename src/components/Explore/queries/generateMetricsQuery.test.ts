@@ -73,7 +73,7 @@ describe('metricByWithStatus', () => {
     const result = metricByWithStatus('rate');
     expect(result).toEqual({
       refId: 'A',
-      query: '{${primarySignal} && ${filters} && status!=error} | rate() ',
+      query: '{${primarySignal} && ${filters} && status!=error} | rate() by(status)',
       queryType: 'traceql',
       tableType: 'spans',
       limit: 100,
@@ -86,7 +86,7 @@ describe('metricByWithStatus', () => {
     const result = metricByWithStatus('errors');
     expect(result).toEqual({
       refId: 'A',
-      query: '{${primarySignal} && ${filters} && status=error} | rate() ',
+      query: '{${primarySignal} && ${filters} && status=error} | rate() by(status)',
       queryType: 'traceql',
       tableType: 'spans',
       limit: 100,
@@ -112,7 +112,7 @@ describe('metricByWithStatus', () => {
     const result = metricByWithStatus('rate', 'serviceName');
     expect(result).toEqual({
       refId: 'A',
-      query: '{${primarySignal} && ${filters} && status!=error && serviceName != nil} | rate() by(serviceName)',
+      query: '{${primarySignal} && ${filters} && status!=error && serviceName != nil} | rate() by(serviceName, status)',
       queryType: 'traceql',
       tableType: 'spans',
       limit: 100,
