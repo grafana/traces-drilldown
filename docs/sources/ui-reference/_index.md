@@ -13,7 +13,7 @@ weight: 600
 
 Grafana Traces Drilldown helps you focus your tracing data exploration.
 Some of the screen sections are context sensitive and change depending upon the metric you've chosen.
-Refer to [Analyze tracing data](analyze-tracing-data) for more information.
+Refer to [Analyze tracing data](../analyze-tracing-data) for more information.
 
 ![Numbered sections of the Traces Drilldown app](/media/docs/explore-traces/traces-drilldown-screen-ui.png)
 
@@ -32,7 +32,7 @@ Refer to [Analyze tracing data](analyze-tracing-data) for more information.
 
 1. **Investigation-focused tabs**:
    Each metric type has its own set of tabs that help you explore your tracing data. These tabs differ depending on the metric type you've selected.
-   For example, when you are using Span rate, then the Investigation type tabs show **Breakdown**, **Service structure**, **Comparison**, and **Traces**. The **Breakdown** tab organizes attributes by their correlation with the selected metric.
+   For example, when you are using Span rate, then the Investigation type tabs show **Breakdown**, **Service structure**, **Comparison**, and **Traces**.
 
 1. **Add to filters**:
    Each attribute group includes an **Add to filters** option, so you can add your selections into the current investigation.

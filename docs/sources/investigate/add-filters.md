@@ -54,11 +54,8 @@ You can also click in the **Filter** bar to add filters using drop-down lists.
 
 ## Remove filters
 
-You can remove all or individual filters.
 
 To remove a filter, select **Remove filter** (**X**) at the end of the filter you want to remove.
-
-To remove all filters, select **Clear filters** (**X**) from the right side of the filter bar.
 
 
 ## Change the time range
