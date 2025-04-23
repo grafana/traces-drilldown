@@ -17,7 +17,7 @@ You can choose the type of services you want to observe and think about.
 By default, Traces Drilldown displays information about root spans.
 You can change this by using the selector in the filter bar.
 
-Root spans traces
+Root spans
 : Inspect full journeys of requests across services
 
 All spans
