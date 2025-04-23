@@ -37,7 +37,10 @@ In the drop-down list, you can choose any resource level attribute to group by.
 
 The **Comparison** tab helps you surface and rank which span attributes are most correlated with the selected metric so you can immediately spot what's driving your trace-level issues.
 
-Upon selecting a metric, the tab computes, for each resource or span attribute, how strongly that attribute value differs between the selected subset (**selection**) and all other spans (**baseline**). It lists attribute‑value pairs in descending order of that difference, so the top entries are those most uniquely associated with your signal of interest.
+![Comparison view](/media/docs/explore-traces/traces-drilldown-root-spans-duration-comparison-tab.png)
+
+Upon selecting a metric, the tab computes, for each resource or span attribute, how strongly that attribute value differs between the selected subset (**selection**) and all other spans (**baseline**).
+It lists attribute‑value pairs in descending order of that difference, so the top entries are those most uniquely associated with your signal of interest.
 
 - If you're viewing the **Errors** metric, the **selection** contains all erroring spans, while the **baseline** contains all non-erroring spans.
 
@@ -47,12 +50,21 @@ The behavior of the comparison also differs depending upon the RED metric you've
 For example, if you're viewing **Errors** metrics, the comparison shows the attribute values that correlate with errors.
 However, if you're viewing **Duration** metrics, the comparison shows the attributes that correlate with high latency.
 
-![Comparison view](/media/docs/explore-traces/traces-drilldown-root-spans-duration-comparison-tab.png)
+### Focus on individual attributes with **Inspect**
+
+**Inspect** lets you breakdown and see the individual attribute values from a given comparison
+If you have a comparison like this, you can highlight the value with the highest difference (here, `attribute=value` is `span.app.product.id=OLJCESPC7Z` ), but you can't easily see all other values.
+
+![Select Inspect on an attribute](/media/docs/explore-traces/traceas-drilldown-comparison-inspect-example.png)
+
+When selecting **Inspect**, the app shows only one attribute, `span.app.product.id`, but with a visualization for every value.
+
+![Inspect focuses the results on the selected attribute](/media/docs/explore-traces/traces-drilldown-comparison-inspect-post-select.png)
 
 ## Use the Structure tab
 
-The Structure tab lets you extract and view aggregate data from your traces. 
-The name of the tab differs depending on the metric you are viewing: 
+The Structure tab lets you extract and view aggregate data from your traces.
+The name of the tab differs depending on the metric you are viewing:
 
 * Rate provides **Service structure**
 * Errors provides **Root cause errors**

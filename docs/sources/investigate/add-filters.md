@@ -9,22 +9,22 @@ menuTitle: Add filters
 weight: 600
 ---
 
-# Add filters to refine your investigation
+# Refine your investigation using filters
 
 Use filters to refine your investigation.
 
 Filters are available on the **Breakdown** and **Comparison** views.
 Refer to [Analyze tracing data](analyze-tracing-data) for how to use these views.
 
+## Add filters
+
 Each time you add a filter, the condition appears in the list of filters at the top of the page.
 The list of filters expands as you investigate and explore your tracing data using Traces Drilldown.
 
 1. Refine your investigation by adding filters.
-1. Optional: Choose one of the attributes to group by or use **Search** to locate the service.
 1. Optional: Use the tabs underneath the metrics selection to provide insights into breakdowns, comparisons, latency, and other explorations.
 1. Choose filters to hone in on the problem areas. Each filter that you select adds to the **Filter** bar at the top of the page. You can select filters on the **Comparison** and **Breakdown** tabs in the following ways:
     * Select **Add to filters**.
-    * Select **Inspect**.
     * Use the **Filter** bar near the top.
 
 ![Change filters for your investigation](/media/docs/explore-traces/traces-drilldown-filters-ga-1.png)
@@ -54,9 +54,7 @@ You can also click in the **Filter** bar to add filters using drop-down lists.
 
 ## Remove filters
 
-
 To remove a filter, select **Remove filter** (**X**) at the end of the filter you want to remove.
-
 
 ## Change the time range
 
@@ -65,7 +63,7 @@ Use the time picker at the top right to modify the data shown in Traces Drilldow
 You can select a time range of up to 24 hours in duration.
 By default, this time range can be any 24-hour period in your configured trace data retention period.
 The default retention period is 30 days.
-Your configuration may vary from these values. 
+Your configuration may vary from these values.
 
 For more information about the time range picker, refer to [Use dashboards](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range).
 
