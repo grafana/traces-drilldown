@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.3.0](https://github.com/grafana/traces-drilldown/compare/v0.2.9...v0.3.0) (2025-04-24)
+## [1.0.0](https://github.com/grafana/traces-drilldown/compare/v0.2.9...v1.0.0) (2025-04-24)
 
 * Breakdown: Do not show an empty state while streaming is still in progress. ([#426](https://github.com/grafana/traces-drilldown/pull/426))
 * Add support for contextualised trace list table. ([#409](https://github.com/grafana/traces-drilldown/pull/409))
