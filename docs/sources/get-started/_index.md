@@ -59,7 +59,7 @@ Here's how this works.
 To identify the trouble spot, you want to use raw tracing data instead of just the root span, which is the first span of every trace.
 Select **All spans** in the Filters, then choose the **Errors** metric.
 
-![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors.png)
+![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors-red.png)
 
 ### Correlate attributes
 
