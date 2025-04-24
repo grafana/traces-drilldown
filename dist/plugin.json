@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "app",
+  "name": "Grafana Traces Drilldown",
+  "id": "grafana-exploretraces-app",
+  "preload": true,
+  "autoEnabled": true,
+  "info": {
+    "keywords": ["app", "tempo", "traces", "explore"],
+    "description": "Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate errors within complex distributed systems.",
+    "author": {
+      "name": "Grafana"
+    },
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "screenshots": [
+      {
+        "name": "histogram-breakdown",
+        "path": "img/histogram-breakdown.png"
+      },
+      {
+        "name": "errors-metric-flow",
+        "path": "img/errors-metric-flow.png"
+      },
+      {
+        "name": "errors-root-cause",
+        "path": "img/errors-root-cause.png"
+      }
+    ],
+    "version": "1.0.0",
+    "updated": "2025-04-24",
+    "links": [
+      {
+        "name": "Github",
+        "url": "https://github.com/grafana/explore-traces"
+      },
+      {
+        "name": "Report bug",
+        "url": "https://github.com/grafana/explore-traces/issues/new"
+      }
+    ]
+  },
+  "includes": [
+    {
+      "type": "page",
+      "name": "Explore",
+      "path": "/a/grafana-exploretraces-app/",
+      "action": "datasources:explore",
+      "addToNav": true,
+      "defaultNav": true
+    }
+  ],
+  "dependencies": {
+    "grafanaDependency": ">=11.3.0",
+    "plugins": []
+  },
+  "extensions": {
+    "exposedComponents": [
+      {
+        "id": "grafana-exploretraces-app/open-in-explore-traces-button/v1",
+        "title": "Open in Traces Drilldown button",
+        "description": "A button that opens a traces view in the Traces Drilldown app."
+      }
+    ],
+    "addedLinks": [
+      {
+        "targets": ["grafana/dashboard/panel/menu"],
+        "title": "Open in Traces Drilldown",
+        "description": "Open current query in the Traces Drilldown app"
+      },
+      {
+        "title": "Open in Grafana Traces Drilldown",
+        "description": "Try our new queryless experience for traces",
+        "targets": ["grafana/explore/toolbar/action"]
+      }
+    ],
+    "extensionPoints": [
+      {
+        "id": "grafana-exploretraces-app/investigation/v1"
+      }
+    ]
+  }
+}
