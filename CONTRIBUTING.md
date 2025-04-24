@@ -20,7 +20,7 @@ The toolkit also provides [document templates](https://github.com/grafana/writer
 
 When you create a PR for documentation, add the `type/doc` label to identify the PR as contributing documentation.
 
-To preview the documentation locally, run `make docs` from the root folder of the Explore Traces repository. This uses
+To preview the documentation locally, run `make docs` from the root folder of the Traces Drilldown repository. This uses
 the `grafana/docs` image which internally uses Hugo to generate the static site. The site is available on `localhost:3002/docs/`.
 
 > **Note** The `make docs` command uses a lot of memory. If it is crashing, make sure to increase the memory allocated to Docker
