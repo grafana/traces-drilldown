@@ -33,6 +33,8 @@ export default function OpenInExploreTracesButton({
       params.append('var-filters', `${streamSelector.name}|${streamSelector.operator}|${streamSelector.value}`);
     });
 
+    params.append('var-primarySignal', 'true'); // so all spans is selected
+
     return `a/${pluginJson.id}/explore?${params.toString()}`;
   }, [datasourceUid, from, to, matchers]);
 
