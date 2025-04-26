@@ -4,6 +4,12 @@ canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploratio
 keywords:
   - Traces Drilldown
   - Get started
+refs:
+  drilldown-apps:
+    - pattern: /docs/grafana/
+      destination: /docs/grafana/<GRAFANA_VERSION>/explore/simplified-exploration/
+    - pattern: /docs/grafana-cloud/
+      destination: /docs/grafana-cloud/visualizations/simplified-exploration/
 title: Get started with Traces Drilldown
 menuTitle: Get started
 weight: 300
@@ -18,7 +24,7 @@ Investigate using primary signals, RED metrics, filters, and structural or trace
 To learn more, refer to [Concepts](../concepts/).
 
 {{< admonition type="note" >}}
-Expand your observability journey and learn about [the Drilldown apps suite](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/).
+Expand your observability journey and learn about [the Drilldown apps suite](ref:drilldown-apps).
 {{< /admonition >}}
 
 {{< youtube id="a3uB1C2oHA4" >}}
