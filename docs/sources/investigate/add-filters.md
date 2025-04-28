@@ -1,9 +1,15 @@
 ---
 description: Investigate trends and spikes to identify issues.
-canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/add-filters/
 keywords:
   - Traces Drilldown
   - Investigate
+refs:
+  use-dashboards:
+    - pattern: /docs/grafana/
+      destination: /docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range
+    - pattern: /docs/grafana-cloud/
+      destination: /docs/grafana-cloud/visualizations/dashboards/use-dashboards/
 title: Add filters
 menuTitle: Add filters
 weight: 600
@@ -14,7 +20,7 @@ weight: 600
 Use filters to refine your investigation.
 
 Filters are available on the **Breakdown** and **Comparison** views.
-Refer to [Analyze tracing data](analyze-tracing-data) for how to use these views.
+Refer to [Analyze tracing data](../analyze-tracing-data) for how to use these views.
 
 ## Add filters
 
@@ -65,5 +71,5 @@ By default, this time range can be any 24-hour period in your configured trace d
 The default retention period is 30 days.
 Your configuration may vary from these values.
 
-For more information about the time range picker, refer to [Use dashboards](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range).
+For more information about the time range picker, refer to [Use dashboards](ref:use-dashboards).
 

@@ -1,6 +1,6 @@
 ---
 description: Analyze tracing data using comparison, root cause analysis, and traces view to investigate trends and spikes.
-canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/intigate/analyze-tracing-data/
 keywords:
   - Traces Drilldown
   - Analyze

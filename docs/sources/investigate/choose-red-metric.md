@@ -1,6 +1,6 @@
 ---
 description: Choose a rate, error, or duration metric for your investigation.
-canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/choose-red-metric/
 keywords:
   - Traces Drilldown
   - Investigate
@@ -21,7 +21,7 @@ In this context, RED metrics mean:
 When you select a RED metric, the tabs underneath the metrics selection changes match the context.
 For example, selecting **Duration** displays **Root cause latency** and **Slow traces tabs**.
 Choosing **Errors** changes the tabs to **Root cause errors** and **Errored traces**. Rate provides **Service structure**, and **Traces** tabs.
-These tabs are used when you [analyze tracing data](./analyze-tracing-data).
+These tabs are used when you [analyze tracing data](../analyze-tracing-data).
 
 {{< video-embed src="/media/docs/explore-traces/traces-drilldown-select-metric-type.mp4" >}}
 

@@ -1,6 +1,6 @@
 ---
 description: Use root span or full span data for your investigation.
-canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/choose-span-data/
 keywords:
   - Traces Drilldown
   - Investigate

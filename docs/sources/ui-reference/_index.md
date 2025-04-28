@@ -1,9 +1,15 @@
 ---
 description: Learn about the user interface for Traces Drilldown.
-canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/ui-reference/
 keywords:
   - Traces Drilldown
   - UI reference
+refs:
+  use-dashboards-time:
+    - pattern: /docs/grafana/
+      destination: /docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range
+    - pattern: /docs/grafana-cloud/
+      destination: /docs/grafana-cloud/visualizations/dashboards/use-dashboards/#set-dashboard-time-range
 title: Traces Drilldown UI reference
 menuTitle: UI reference
 weight: 600
@@ -13,7 +19,7 @@ weight: 600
 
 Grafana Traces Drilldown helps you focus your tracing data exploration.
 Some of the screen sections are context sensitive and change depending upon the metric you've chosen.
-Refer to [Analyze tracing data](../analyze-tracing-data) for more information.
+Refer to [Analyze tracing data](../investigate/analyze-tracing-data) for more information.
 
 ![Numbered sections of the Traces Drilldown app](/media/docs/explore-traces/traces-drilldown-screen-ui.png)
 
