@@ -43,6 +43,11 @@ Next, [access Traces Drilldown](#access-traces-drilldown).
 
 ### Install the Traces Drilldown plugin
 
+{{< admonition type="note" >}}
+If you are using Grafana v12 or later, Traces Drilldown may be pre-installed.
+To check, refer to [Access Traces Drilldown](#access-traces-drilldown).
+{{</ admonition >}}
+
 Traces Drilldown is distributed as a Grafana Plugin.
 You can find it in the official [Grafana Plugin Directory](https://grafana.com/grafana/plugins/grafana-exploretraces-app/).
 
