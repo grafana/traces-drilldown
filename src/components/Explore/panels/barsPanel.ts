@@ -20,11 +20,6 @@ export const barsPanelConfig = (metric: MetricFunction) => {
           fixedColor: 'semi-dark-red',
         });
       } else {
-        // Regular styling based on status
-        overrides.matchFieldsWithNameByRegex('(^error$|.*status="error".*)').overrideColor({
-          mode: 'fixed',
-          fixedColor: 'semi-dark-red',
-        });
         overrides.matchFieldsWithNameByRegex('(^unset$|.*status="unset".*)').overrideColor({
           mode: 'fixed',
           fixedColor: 'green',
