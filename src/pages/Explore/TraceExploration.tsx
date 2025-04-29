@@ -20,19 +20,7 @@ import {
   SceneVariableSet,
 } from '@grafana/scenes';
 import { config, useReturnToPrevious } from '@grafana/runtime';
-import {
-  Button,
-  Drawer,
-  Dropdown,
-  Icon,
-  IconButton,
-  Menu,
-  Stack,
-  useStyles2,
-  LinkButton,
-  Tooltip,
-  Badge,
-} from '@grafana/ui';
+import { Button, Drawer, Dropdown, Icon, IconButton, Menu, Stack, useStyles2, LinkButton } from '@grafana/ui';
 
 import {
   DATASOURCE_LS_KEY,
@@ -437,11 +425,6 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           )}
         </Stack>
         <div className={styles.controls}>
-          <Tooltip content={<PreviewTooltip text={compositeVersion} />} interactive>
-            <span className={styles.preview}>
-              <Badge text="&nbsp;Preview" color="blue" icon="rocket" />
-            </span>
-          </Tooltip>
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
             <Button variant="secondary" icon="info-circle">
               Need help
