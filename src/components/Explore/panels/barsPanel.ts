@@ -3,7 +3,7 @@ import { DrawStyle, StackingMode, TooltipDisplayMode } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 
 export const barsPanelConfig = (metric: MetricFunction) => {
-  const hasErrors = metric === 'errors' || false;
+  const isErrorsMetric = metric === 'errors' || false;
   
   const builder = PanelBuilders.timeseries()
     .setOption('legend', { showLegend: false })
@@ -14,7 +14,7 @@ export const barsPanelConfig = (metric: MetricFunction) => {
     .setCustomFieldConfig('pointSize', 0)
     .setCustomFieldConfig('axisLabel', 'Rate')
     .setOverrides((overrides) => {
-      if (hasErrors) {
+      if (isErrorsMetric) {
         overrides.matchFieldsWithNameByRegex('.*').overrideColor({
           mode: 'fixed',
           fixedColor: 'semi-dark-red',
