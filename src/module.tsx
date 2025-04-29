@@ -20,7 +20,7 @@ export const plugin = new AppPlugin<{}>()
     id: 'configuration',
   })
   .addLink({
-    title: 'traces drilldown',
+    title: 'Traces Drilldown',
     description: 'Open in Traces Drilldown',
     icon: 'align-left',
     targets: 'grafana-lokiexplore-app/toolbar-open-related/v1',
