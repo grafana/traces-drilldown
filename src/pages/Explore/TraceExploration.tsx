@@ -21,7 +21,6 @@ import {
 } from '@grafana/scenes';
 import { config, useReturnToPrevious } from '@grafana/runtime';
 import {
-  Badge,
   Button,
   Drawer,
   Dropdown,
@@ -29,9 +28,10 @@ import {
   IconButton,
   Menu,
   Stack,
-  Tooltip,
   useStyles2,
   LinkButton,
+  Tooltip,
+  Badge,
 } from '@grafana/ui';
 
 import {
@@ -99,7 +99,7 @@ export interface TraceExplorationState extends SceneObjectState {
 const version = process.env.VERSION;
 const buildTime = process.env.BUILD_TIME;
 const commitSha = process.env.COMMIT_SHA;
-const compositeVersion = `v${version} - ${buildTime?.split('T')[0]} (${commitSha})`;
+const compositeVersion = `${buildTime?.split('T')[0]} (${commitSha})`;
 
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['primarySignal', 'traceId', 'spanId', 'metric'] });
@@ -385,8 +385,19 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
 
+  function VersionHeader() {
+    const styles = useStyles2(getStyles);
+
+    return (
+      <div className={styles.menuHeader}>
+        <h5>Grafana Traces Drilldown v{version}</h5>
+        <div className={styles.menuHeaderSubtitle}>Last update: {compositeVersion}</div>
+      </div>
+    );
+  }
+
   const menu = (
-    <Menu>
+    <Menu header={<VersionHeader />}>
       <div className={styles.menu}>
         {config.feedbackLinksEnabled && (
           <Menu.Item
@@ -460,16 +471,6 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
 function getTopScene() {
   return new TracesByServiceScene({});
 }
-
-const PreviewTooltip = ({ text }: { text: string }) => {
-  const styles = useStyles2(getStyles);
-
-  return (
-    <Stack direction={'column'} gap={2}>
-      <div className={styles.tooltip}>{text}</div>
-    </Stack>
-  );
-};
 
 function getVariableSet(state: TraceExplorationState) {
   return new SceneVariableSet({
@@ -603,14 +604,14 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
         color: theme.colors.text.link,
       },
     }),
-    preview: css({
-      label: 'preview',
-      cursor: 'help',
-
-      '> div:first-child': {
-        padding: '5.5px',
-      },
-    }),
+    menuHeader: css`
+      padding: ${theme.spacing(0.5, 1)};
+      white-space: nowrap;
+    `,
+    menuHeaderSubtitle: css`
+      color: ${theme.colors.text.secondary};
+      font-size: ${theme.typography.bodySmall.fontSize};
+    `,
     tooltip: css({
       label: 'tooltip',
       fontSize: '14px',

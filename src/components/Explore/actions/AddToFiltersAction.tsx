@@ -58,6 +58,10 @@ export const addToFilters = (variable: AdHocFiltersVariable, label: string, valu
   // and also keep span.db.name as it is a primary filter
   const filtersWithoutNew = variable.state.filters.filter((f) => f.key === DATABASE_CALLS_KEY || f.key !== label);
 
+  // TODO: Replace it with new API introduced in https://github.com/grafana/scenes/issues/1103
+  // At the moment AdHocFiltersVariable doesn't support pushing new history entry on change
+  history.pushState(null, '');
+
   variable.setState({
     filters: [
       ...filtersWithoutNew,

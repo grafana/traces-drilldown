@@ -26,10 +26,6 @@ hero:
 cards:
   title_class: pt-0 lh-1
   items:
-    - title: Concepts
-      href: ./concepts/
-      description: Learn the concepts you need to use tracing.
-      height: 24
     - title: Get started
       href: ./get-started/
       description: How do you use tracing data to investigate an issue? Start here.
@@ -37,6 +33,10 @@ cards:
     - title: Access or install
       href: ./access/
       description: Access or install Traces Drilldown.
+      height: 24
+    - title: Concepts
+      href: ./concepts/
+      description: Learn the concepts you need to use tracing.
       height: 24
     - title: Investigate trends and spikes
       href: ./investigate/
@@ -49,9 +49,6 @@ cards:
 ---
 
 # Traces Drilldown
-<!-- Use this for the product name {{< param "PRODUCT_NAME" >}} -->
-
-{{< docs/public-preview product="Traces Drilldown" >}}
 
 Distributed traces provide a way to monitor applications by tracking requests across services.
 Traces record the details of a request to help understand why an issue is or was happening.

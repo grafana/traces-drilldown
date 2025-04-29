@@ -54,7 +54,7 @@ describe('metricByWithStatus', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${primarySignal} && ${filters} && status=error} | rate() ',
+      query: '{${primarySignal} && ${filters} && status=error} | rate() by(status)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -67,7 +67,7 @@ describe('metricByWithStatus', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${primarySignal} && ${filters} && status=error && service != nil} | rate() by(service)',
+      query: '{${primarySignal} && ${filters} && status=error && service != nil} | rate() by(service, status)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,

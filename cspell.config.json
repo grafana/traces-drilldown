@@ -54,6 +54,9 @@
     "Drilldown",
     "combobox",
     "Cvalue",
-    "localblocks"
+    "localblocks",
+    "grafanacloud",
+    "OLJCESPC",
+    "contextualised"
   ]
 }
