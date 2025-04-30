@@ -14,17 +14,10 @@ export const barsPanelConfig = (metric: MetricFunction) => {
     .setCustomFieldConfig('pointSize', 0)
     .setCustomFieldConfig('axisLabel', 'Rate')
     .setOverrides((overrides) => {
-      if (isErrorsMetric) {
-        overrides.matchFieldsWithNameByRegex('.*').overrideColor({
-          mode: 'fixed',
-          fixedColor: 'semi-dark-red',
-        });
-      } else {
-        overrides.matchFieldsWithNameByRegex('.*').overrideColor({
-          mode: 'fixed',
-          fixedColor: 'green',
-        });
-      }
+      overrides.matchFieldsWithNameByRegex('.*').overrideColor({
+        mode: 'fixed',
+        fixedColor: isErrorsMetric ? 'semi-dark-red' : 'green',
+      });
     })
     .setOption('tooltip', { mode: TooltipDisplayMode.Multi });
 
