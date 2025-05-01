@@ -133,7 +133,7 @@ export function getLayoutChild(
       })
     );
 
-    const panel = (metric === 'duration' ? linesPanelConfig().setUnit('s') : barsPanelConfig())
+    const panel = (metric === 'duration' ? linesPanelConfig().setUnit('s') : barsPanelConfig(metric))
       .setTitle(getTitle(frame, variable.getValueText()))
       .setMenu(new PanelMenu({ query, labelValue: getLabelValue(frame) }))
       .setData(dataNode);

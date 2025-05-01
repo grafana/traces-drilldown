@@ -204,7 +204,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
-    const panel = barsPanelConfig().setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(type).setHoverHeader(true).setDisplayMode('transparent');
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {

@@ -54,7 +54,7 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, groupBy
 export function metricByWithStatus(metric: MetricFunction, tagKey?: string) {
   return {
     refId: 'A',
-    query: generateMetricsQuery({ metric, groupByKey: tagKey, groupByStatus: true }),
+    query: generateMetricsQuery({ metric, groupByKey: tagKey, groupByStatus: false }),
     queryType: 'traceql',
     tableType: 'spans',
     limit: 100,
