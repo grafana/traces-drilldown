@@ -1,8 +1,11 @@
 import { PanelBuilders } from '@grafana/scenes';
 import { DrawStyle, StackingMode, TooltipDisplayMode } from '@grafana/ui';
+import { MetricFunction } from 'utils/shared';
 
-export const barsPanelConfig = () => {
-  return PanelBuilders.timeseries()
+export const barsPanelConfig = (metric: MetricFunction) => {
+  const isErrorsMetric = metric === 'errors' || false;
+  
+  const builder = PanelBuilders.timeseries()
     .setOption('legend', { showLegend: false })
     .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
     .setCustomFieldConfig('stacking', { mode: StackingMode.Normal })
@@ -11,18 +14,12 @@ export const barsPanelConfig = () => {
     .setCustomFieldConfig('pointSize', 0)
     .setCustomFieldConfig('axisLabel', 'Rate')
     .setOverrides((overrides) => {
-      overrides.matchFieldsWithNameByRegex('(^error$|.*status="error".*)').overrideColor({
+      overrides.matchFieldsWithNameByRegex('.*').overrideColor({
         mode: 'fixed',
-        fixedColor: 'semi-dark-red',
-      });
-      overrides.matchFieldsWithNameByRegex('(^unset$|.*status="unset".*)').overrideColor({
-        mode: 'fixed',
-        fixedColor: 'green',
-      });
-      overrides.matchFieldsWithNameByRegex('(^ok$|.*status="ok".*)').overrideColor({
-        mode: 'fixed',
-        fixedColor: 'dark-green',
+        fixedColor: isErrorsMetric ? 'semi-dark-red' : 'green',
       });
     })
     .setOption('tooltip', { mode: TooltipDisplayMode.Multi });
+
+  return builder;
 };

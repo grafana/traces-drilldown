@@ -131,8 +131,11 @@ runs:
       id: package-plugin
       shell: bash
       run: |
-        mv dist ${{ steps.metadata.outputs.plugin-id }}
-        zip ${{ steps.metadata.outputs.archive }} ${{ steps.metadata.outputs.plugin-id }} -r
+        mv dist "$PLUGIN_ID"
+        zip "$ARCHIVE_NAME" "$PLUGIN_ID" -r
+      env:
+        PLUGIN_ID: ${{ steps.metadata.outputs.plugin-id }}
+        ARCHIVE_NAME: ${{ steps.metadata.outputs.archive }}
 
     - name: Archive Build
       uses: actions/upload-artifact@v4
