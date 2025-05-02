@@ -44,7 +44,7 @@ Next, [access Traces Drilldown](#access-traces-drilldown).
 ### Install the Traces Drilldown plugin
 
 {{< admonition type="note" >}}
-If you are using Grafana v12 or later, Traces Drilldown may be pre-installed.
+If you are using Grafana v12 or later, Traces Drilldown is already installed, go to [Access Traces Drilldown](#access-traces-drilldown).
 To check, refer to [Access Traces Drilldown](#access-traces-drilldown).
 {{</ admonition >}}
 
