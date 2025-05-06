@@ -114,7 +114,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
   }
 
   private getRateOrErrorPanel(metric: MetricFunction) {
-    const panel = barsPanelConfig().setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(metric).setHoverHeader(true).setDisplayMode('transparent');
     if (metric === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (metric === 'errors') {

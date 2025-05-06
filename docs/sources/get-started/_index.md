@@ -4,12 +4,6 @@ canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploratio
 keywords:
   - Traces Drilldown
   - Get started
-refs:
-  drilldown-apps:
-    - pattern: /docs/grafana/
-      destination: /docs/grafana/<GRAFANA_VERSION>/explore/simplified-exploration/
-    - pattern: /docs/grafana-cloud/
-      destination: /docs/grafana-cloud/visualizations/simplified-exploration/
 title: Get started with Traces Drilldown
 menuTitle: Get started
 weight: 300
@@ -24,7 +18,7 @@ Investigate using primary signals, RED metrics, filters, and structural or trace
 To learn more, refer to [Concepts](../concepts/).
 
 {{< admonition type="note" >}}
-Expand your observability journey and learn about [the Drilldown apps suite](ref:drilldown-apps).
+Expand your observability journey and learn about [the Drilldown apps suite](../../).
 {{< /admonition >}}
 
 {{< youtube id="a3uB1C2oHA4" >}}
@@ -80,7 +74,7 @@ You can see here that 99.34% of the time, the span name was equal to `HTTP GET /
 ### Inspect the problem
 
 To dig deeper, select **Inspect** to focus in on the problem.
-It's easy to spot the problem: the tall, red bar indicates that the problems are happening with  `HTTP GET /api/datasources/proxy/uid/:uid/*`.
+It's easy to spot the problem: the tall, red bar indicates that the problems are happening with `HTTP GET /api/datasources/proxy/uid/:uid/*`.
 Next, use **Add to filters** to focus just on the erroring API call.
 
 ![Add to filters to focus on the API call](../images/explore-traces-errors-add-filters-flow.png)
