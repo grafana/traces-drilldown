@@ -19,10 +19,9 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { config } from '@grafana/runtime';
-import { Button, Drawer, Dropdown, Icon, IconButton, Menu, Stack, useStyles2 } from '@grafana/ui';
+import { config, useReturnToPrevious } from '@grafana/runtime';
+import { Button, Drawer, Dropdown, Icon, IconButton, Menu, Stack, useStyles2, LinkButton } from '@grafana/ui';
 
-import { TracesByServiceScene } from '../../components/Explore/TracesByService/TracesByServiceScene';
 import {
   DATASOURCE_LS_KEY,
   EventTraceOpened,
@@ -37,20 +36,32 @@ import {
   VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
 } from '../../utils/shared';
-import { getTraceExplorationScene, getFiltersVariable, getPrimarySignalVariable, getDataSource } from '../../utils/utils';
+import {
+  getTraceExplorationScene,
+  getFiltersVariable,
+  getPrimarySignalVariable,
+  getDataSource,
+  getUrlForExploration,
+} from '../../utils/utils';
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
-import { primarySignalOptions } from './primary-signals';
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
+import { primarySignalOptions } from './primary-signals';
+import { ActionViewType } from 'components/Explore/TracesByService/Tabs/TabsBarScene';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
 import { AddToInvestigationButton } from 'components/Explore/actions/AddToInvestigationButton';
 import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from 'components/Explore/panels/PanelMenu';
+import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 
 export interface TraceExplorationState extends SceneObjectState {
   topScene?: SceneObject;
   controls: SceneObject[];
+
+  embedded?: boolean;
+  embedderName?: string;
+  returnToPreviousSource?: string;
 
   body: SceneObject;
 
@@ -63,6 +74,10 @@ export interface TraceExplorationState extends SceneObjectState {
   // just for the starting data source
   initialDS?: string;
   initialFilters?: AdHocVariableFilter[];
+
+  initialGroupBy?: string;
+  initialActionView?: ActionViewType;
+  allowedActionViews?: ActionViewType[];
 
   issueDetector?: TraceQLIssueDetector;
 
@@ -81,7 +96,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   public constructor(state: Partial<TraceExplorationState>) {
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
-      $variables: state.$variables ?? getVariableSet(state.initialDS, state.initialFilters),
+      $variables: state.$variables ?? getVariableSet(state as TraceExplorationState),
       controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
@@ -173,11 +188,13 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
     const queryRunner = new SceneQueryRunner({
       datasource: { uid: dsUid },
-      queries: [{ 
-        refId: 'A', 
-        query: traceId, 
-        queryType: 'traceql',
-      }],
+      queries: [
+        {
+          refId: 'A',
+          query: traceId,
+          queryType: 'traceql',
+        },
+      ],
     });
 
     const addToInvestigationButton = new AddToInvestigationButton({
@@ -186,7 +203,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       dsUid,
       $data: queryRunner,
     });
-    
+
     addToInvestigationButton.activate();
     this.setState({ addToInvestigationButton });
     this._subs.add(
@@ -194,14 +211,14 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
         this.updateInvestigationLink();
       })
     );
-        
+
     queryRunner.activate();
-    
+
     this._subs.add(
       queryRunner.subscribeToState((state) => {
         if (state.data?.state === LoadingState.Done && state.data?.series?.length > 0) {
           const serviceNameField = state.data.series[0]?.fields?.find((f) => f.name === 'serviceName');
-          
+
           if (serviceNameField && serviceNameField.values[0]) {
             addToInvestigationButton.setState({
               ...addToInvestigationButton.state,
@@ -211,7 +228,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
         }
       })
     );
-    
+
     addToInvestigationButton.setState({
       ...addToInvestigationButton.state,
       labelValue: traceId,
@@ -220,7 +237,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
   private async updateInvestigationLink() {
     const { addToInvestigationButton } = this.state;
-    if (!addToInvestigationButton) { 
+    if (!addToInvestigationButton) {
       return;
     }
 
@@ -241,133 +258,58 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const { controls, topScene, drawerScene, traceId, issueDetector, investigationLink, addToInvestigationButton } = traceExploration.useState();
+    const {
+      controls,
+      topScene,
+      drawerScene,
+      traceId,
+      issueDetector,
+      investigationLink,
+      addToInvestigationButton,
+      embedded,
+    } = traceExploration.useState();
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
     const styles = useStyles2(getStyles);
-    const [menuVisible, setMenuVisible] = React.useState(false);
-
-    const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
-    const filtersVariable = getFiltersVariable(traceExploration);
-    const primarySignalVariable = getPrimarySignalVariable(traceExploration);
-
-    function VersionHeader() {
-      const styles = useStyles2(getStyles);
-    
-      return (
-        <div className={styles.menuHeader}>
-          <h5>Grafana Traces Drilldown v{version}</h5>
-          <div className={styles.menuHeaderSubtitle}>Last update: {compositeVersion}</div>
-        </div>
-      );
-    }
-
-    const menu = (
-      <Menu header={<VersionHeader />}>
-        <div className={styles.menu}>
-          {config.feedbackLinksEnabled && (
-            <Menu.Item
-              label="Give feedback"
-              ariaLabel="Give feedback"
-              icon={'comment-alt-message'}
-              url="https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS"
-              target="_blank"
-              onClick={() =>
-                reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.global_docs_link_clicked)
-              }
-            />
-          )}
-          <Menu.Item
-            label="Documentation"
-            ariaLabel="Documentation"
-            icon={'external-link-alt'}
-            url="https://grafana.com/docs/grafana/next/explore/simplified-exploration/traces/"
-            target="_blank"
-            onClick={() =>
-              reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.feedback_link_clicked)
-            }
-          />
-        </div>
-      </Menu>
-    );
 
     const addToInvestigationClicked = (e: React.MouseEvent) => {
       if (investigationLink?.onClick) {
         investigationLink.onClick(e);
       }
-      
+
       reportAppInteraction(
         USER_EVENTS_PAGES.analyse_traces,
         USER_EVENTS_ACTIONS.analyse_traces.add_to_investigation_trace_view_clicked
       );
-      
+
       setTimeout(() => traceExploration.closeDrawer(), 100);
     };
 
     return (
       <>
         <div className={styles.container}>
-          <div className={styles.headerContainer}>
-            {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
-            <Stack gap={1} justifyContent={'space-between'} wrap={'wrap'}>
-              <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
-                {dsVariable && (
-                  <Stack gap={0} alignItems={'center'}>
-                    <div className={styles.datasourceLabel}>Data source</div>
-                    <dsVariable.Component model={dsVariable} />
-                  </Stack>
-                )}
-              </Stack>
-
-              <div className={styles.controls}>
-                <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
-                  <Button variant="secondary" icon="info-circle">
-                    Need help
-                    <Icon className={styles.helpIcon} name={menuVisible ? 'angle-up' : 'angle-down'} size="lg" />
-                  </Button>
-                </Dropdown>
-                {controls.map((control) => (
-                  <control.Component key={control.state.key} model={control} />
-                ))}
-              </div>
-            </Stack>
-            <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
-              <Stack gap={0} alignItems={'center'}>
-                <div className={styles.datasourceLabel}>Filters</div>
-                {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
-              </Stack>
-              {filtersVariable && (
-                <div>
-                  <filtersVariable.Component model={filtersVariable} />
-                </div>
-              )}
-            </Stack>
-          </div>
+          {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
+          {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
           <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
         </div>
         {drawerScene && traceId && (
           <Drawer size={'lg'} onClose={() => traceExploration.closeDrawer()}>
             <div className={styles.drawerHeader}>
               <h3>View trace {traceId}</h3>
-                <div className={styles.drawerHeaderButtons}>
-                  {addToInvestigationButton && investigationLink && (
-                    <Button
-                      variant='secondary'
-                      size='sm'
-                      icon='plus-square'
-                      onClick={addToInvestigationClicked}
-                    >
-                      {ADD_TO_INVESTIGATION_MENU_TEXT}
-                    </Button>
-                  )}
-                  <IconButton 
-                    name='times' 
-                    onClick={() => traceExploration.closeDrawer()} 
-                    tooltip='Close drawer'
-                    size='lg'
-                  />
-                </div>
+              <div className={styles.drawerHeaderButtons}>
+                {addToInvestigationButton && investigationLink && (
+                  <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
+                    {ADD_TO_INVESTIGATION_MENU_TEXT}
+                  </Button>
+                )}
+                <IconButton
+                  name="times"
+                  onClick={() => traceExploration.closeDrawer()}
+                  tooltip="Close drawer"
+                  size="lg"
+                />
+              </div>
             </div>
             <drawerScene.Component model={drawerScene} />
           </Drawer>
@@ -377,22 +319,156 @@ export class TraceExplorationScene extends SceneObjectBase {
   };
 }
 
+const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
+  const setReturnToPrevious = useReturnToPrevious();
+  const styles = useStyles2(getStyles, true);
+  const traceExploration = getTraceExplorationScene(model);
+  const { returnToPreviousSource } = traceExploration.useState();
+  const filtersVariable = getFiltersVariable(traceExploration);
+  const primarySignalVariable = getPrimarySignalVariable(traceExploration);
+  const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
+
+  // Force the primary signal to be 'All Spans'
+  primarySignalVariable?.changeValueTo(primarySignalOptions[1].value!);
+
+  return (
+    <div className={styles.headerContainer}>
+      <Stack gap={1} alignItems={'center'} wrap={'wrap'} justifyContent="space-between">
+        {filtersVariable && (
+          <div>
+            <filtersVariable.Component model={filtersVariable} />
+          </div>
+        )}
+        <Stack gap={1} alignItems={'center'}>
+          <LinkButton
+            href={getUrlForExploration(traceExploration)}
+            variant="secondary"
+            icon="arrow-right"
+            onClick={() => {
+              if (returnToPreviousSource) {
+                setReturnToPrevious(returnToPreviousSource);
+              }
+              reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.go_to_full_app_clicked);
+            }}
+          >
+            Traces Drilldown
+          </LinkButton>
+          {timeRangeControl && <timeRangeControl.Component model={timeRangeControl} />}
+        </Stack>
+      </Stack>
+    </div>
+  );
+};
+
+interface TraceExplorationHeaderProps {
+  controls: SceneObject[];
+  model: SceneObject;
+}
+
+const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps) => {
+  const styles = useStyles2(getStyles);
+  const [menuVisible, setMenuVisible] = React.useState(false);
+  const traceExploration = getTraceExplorationScene(model);
+
+  const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
+  const filtersVariable = getFiltersVariable(traceExploration);
+  const primarySignalVariable = getPrimarySignalVariable(traceExploration);
+
+  function VersionHeader() {
+    const styles = useStyles2(getStyles);
+
+    return (
+      <div className={styles.menuHeader}>
+        <h5>Grafana Traces Drilldown v{version}</h5>
+        <div className={styles.menuHeaderSubtitle}>Last update: {compositeVersion}</div>
+      </div>
+    );
+  }
+
+  const menu = (
+    <Menu header={<VersionHeader />}>
+      <div className={styles.menu}>
+        {config.feedbackLinksEnabled && (
+          <Menu.Item
+            label="Give feedback"
+            ariaLabel="Give feedback"
+            icon={'comment-alt-message'}
+            url="https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS"
+            target="_blank"
+            onClick={() =>
+              reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.global_docs_link_clicked)
+            }
+          />
+        )}
+        <Menu.Item
+          label="Documentation"
+          ariaLabel="Documentation"
+          icon={'external-link-alt'}
+          url="https://grafana.com/docs/grafana/next/explore/simplified-exploration/traces/"
+          target="_blank"
+          onClick={() =>
+            reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.feedback_link_clicked)
+          }
+        />
+      </div>
+    </Menu>
+  );
+
+  return (
+    <div className={styles.headerContainer}>
+      <Stack gap={1} justifyContent={'space-between'} wrap={'wrap'}>
+        <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
+          {dsVariable && (
+            <Stack gap={0} alignItems={'center'}>
+              <div className={styles.datasourceLabel}>Data source</div>
+              <dsVariable.Component model={dsVariable} />
+            </Stack>
+          )}
+        </Stack>
+        <div className={styles.controls}>
+          <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
+            <Button variant="secondary" icon="info-circle">
+              Need help
+              <Icon className={styles.helpIcon} name={menuVisible ? 'angle-up' : 'angle-down'} size="lg" />
+            </Button>
+          </Dropdown>
+          {controls.map((control) => (
+            <control.Component key={control.state.key} model={control} />
+          ))}
+        </div>
+      </Stack>
+      <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
+        <Stack gap={0} alignItems={'center'}>
+          <div className={styles.datasourceLabel}>Filters</div>
+          {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
+        </Stack>
+        {filtersVariable && (
+          <div>
+            <filtersVariable.Component model={filtersVariable} />
+          </div>
+        )}
+      </Stack>
+    </div>
+  );
+};
+
 function getTopScene() {
   return new TracesByServiceScene({});
 }
 
-function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter[]) {
+function getVariableSet(state: TraceExplorationState) {
   return new SceneVariableSet({
     variables: [
       new DataSourceVariable({
         name: VAR_DATASOURCE,
         label: 'Data source',
-        value: initialDS,
+        value: state.initialDS,
         pluginId: 'tempo',
+        isReadOnly: state.embedded,
       }),
       new PrimarySignalVariable({
         name: VAR_PRIMARY_SIGNAL,
-        value: primarySignalOptions[0].value,
+        isReadOnly: state.embedded,
       }),
       new AdHocFiltersVariable({
         addFilterButtonText: 'Add filter',
@@ -400,7 +476,11 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
         name: VAR_FILTERS,
         datasource: explorationDS,
         layout: 'combobox',
-        filters: initialFilters ?? [],
+        filters: (state.initialFilters ?? []).map((f) => ({
+          ...f,
+          readOnly: state.embedded,
+          origin: state.embedderName,
+        })),
         allowCustomValue: true,
         expressionBuilder: renderTraceQLLabelFilters,
       }),
@@ -411,6 +491,7 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
       new CustomVariable({
         name: VAR_GROUPBY,
         defaultToAll: false,
+        value: state.initialGroupBy,
       }),
       new CustomVariable({
         name: VAR_SPAN_LIST_COLUMNS,
@@ -430,7 +511,7 @@ function getVariableSet(initialDS?: string, initialFilters?: AdHocVariableFilter
   });
 }
 
-function getStyles(theme: GrafanaTheme2) {
+function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
   return {
     bodyContainer: css({
       label: 'bodyContainer',
@@ -447,8 +528,8 @@ function getStyles(theme: GrafanaTheme2) {
       minHeight: '100%',
       flexDirection: 'column',
       padding: `0 ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
-      overflow: 'auto', /* Needed for sticky positioning */
-      maxHeight: '100%' /* Needed for sticky positioning */
+      overflow: 'auto' /* Needed for sticky positioning */,
+      maxHeight: '100%' /* Needed for sticky positioning */,
     }),
     drawerHeader: css({
       display: 'flex',
@@ -458,7 +539,7 @@ function getStyles(theme: GrafanaTheme2) {
       paddingBottom: theme.spacing(2),
       marginBottom: theme.spacing(2),
 
-      'h3': {
+      h3: {
         margin: 0,
       },
     }),
@@ -476,7 +557,7 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     headerContainer: css({
       label: 'headerContainer',
-      backgroundColor: theme.colors.background.canvas,
+      backgroundColor: embedded ? theme.colors.background.primary : theme.colors.background.canvas,
       display: 'flex',
       flexDirection: 'column',
       position: 'sticky',
