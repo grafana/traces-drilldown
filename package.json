@@ -89,7 +89,7 @@
     "@grafana/data": "^11.3.0",
     "@grafana/runtime": "^11.3.0",
     "@grafana/schema": "^11.3.0",
-    "@grafana/scenes": "^6.6.0",
+    "@grafana/scenes": "^6.10.3",
     "@grafana/ui": "11.3.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.0.1",

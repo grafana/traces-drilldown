@@ -60,6 +60,7 @@ export interface TraceExplorationState extends SceneObjectState {
   controls: SceneObject[];
 
   embedded?: boolean;
+  embedderName?: string;
   returnToPreviousSource?: string;
 
   body: SceneObject;
@@ -475,7 +476,11 @@ function getVariableSet(state: TraceExplorationState) {
         name: VAR_FILTERS,
         datasource: explorationDS,
         layout: 'combobox',
-        filters: (state.initialFilters ?? []).map((f) => ({ ...f, readOnly: state.embedded })),
+        filters: (state.initialFilters ?? []).map((f) => ({
+          ...f,
+          readOnly: state.embedded,
+          origin: state.embedderName,
+        })),
         allowCustomValue: true,
         expressionBuilder: renderTraceQLLabelFilters,
       }),
