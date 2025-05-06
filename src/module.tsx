@@ -2,8 +2,6 @@ import { lazy } from 'react';
 import { AppPlugin } from '@grafana/data';
 
 // @ts-ignore new API that is not yet in stable release
-import { sidecarServiceSingleton_EXPERIMENTAL } from '@grafana/runtime';
-import pluginJson from './plugin.json';
 import { EmbeddedTraceExplorationState, OpenInExploreTracesButtonProps } from 'exposedComponents/types';
 import { SuspendedEmbeddedTraceExploration, SuspendedOpenInExploreTracesButton } from 'exposedComponents';
 import { linkConfigs } from 'utils/links';
@@ -18,15 +16,6 @@ export const plugin = new AppPlugin<{}>()
     icon: 'cog',
     body: AppConfig,
     id: 'configuration',
-  })
-  .addLink({
-    title: 'Traces Drilldown',
-    description: 'Open in Traces Drilldown',
-    icon: 'align-left',
-    targets: 'grafana-lokiexplore-app/toolbar-open-related/v1',
-    onClick: () => {
-      sidecarServiceSingleton_EXPERIMENTAL?.openAppV3({ pluginId: pluginJson.id, path: '/explore' });
-    },
   })
   .exposeComponent({
     id: 'grafana-exploretraces-app/open-in-explore-traces-button/v1',
