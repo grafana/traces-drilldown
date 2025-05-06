@@ -348,7 +348,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
               if (returnToPreviousSource) {
                 setReturnToPrevious(returnToPreviousSource);
               }
-              reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.explore_traces_clicked);
+              reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.go_to_full_app_clicked);
             }}
           >
             Traces Drilldown
