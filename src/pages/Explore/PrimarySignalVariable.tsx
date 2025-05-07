@@ -6,20 +6,25 @@ import { useMount } from 'react-use';
 
 export class PrimarySignalVariable extends CustomVariable {
   static Component = ({ model }: SceneComponentProps<MultiValueVariable<MultiValueVariableState>>) => {
-    const { value } = model.useState();
+    const { value, isReadOnly } = model.useState();
 
     // ensure the variable is set to the default value
     useMount(() => {
       if (!value) {
-        model.changeValueTo(primarySignalOptions[0].value!);
+        model.changeValueTo(isReadOnly ? primarySignalOptions[1].value! : primarySignalOptions[0].value!);
       }
     });
+
+    if (isReadOnly) {
+      return <></>;
+    }
 
     return (
       <RadioButtonGroup
         options={primarySignalOptions}
         value={value as string}
         onChange={(v: string) => model.changeValueTo(v!, undefined, true)}
+        disabled={isReadOnly}
       />
     );
   };

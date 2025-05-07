@@ -59,5 +59,6 @@ export const USER_EVENTS_ACTIONS = {
     global_docs_link_clicked: 'global_docs_link_clicked',
     metric_docs_link_clicked: 'metric_docs_link_clicked',
     feedback_link_clicked: 'feedback_link_clicked',
+    go_to_full_app_clicked: 'go_to_full_app_clicked',
   },
 } as const;
