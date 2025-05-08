@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: grafana/plugin-actions/bundle-types@jackw/fix-bundle-types
+      - uses: grafana/plugin-actions/bundle-types@chore/timur/trying-official-auth-action
         with:
           entry-point: ./src/exposedComponents/types.ts
           ts-config: ./tsconfig-for-bundle-types.json
