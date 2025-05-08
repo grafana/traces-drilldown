@@ -28,9 +28,9 @@ import {
   VAR_SPAN_LIST_COLUMNS,
 } from './shared';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
-import { ActionViewType } from '../components/Explore/TracesByService/Tabs/TabsBarScene';
 import { Home } from 'pages/Home/Home';
 import { PrimarySignalVariable } from 'pages/Explore/PrimarySignalVariable';
+import { ActionViewType } from 'exposedComponents/types';
 
 export function getTraceExplorationScene(model: SceneObject): TraceExploration {
   return sceneGraph.getAncestor(model, TraceExploration);
