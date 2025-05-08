@@ -1,6 +1,5 @@
 import { SceneTimeRangeState } from '@grafana/scenes';
 import { AdHocVariableFilter, TimeRange } from '@grafana/data';
-import { ActionViewType } from 'components/Explore/TracesByService/Tabs/TabsBarScene';
 
 export type TempoMatcher = {
   name: string;
@@ -8,6 +7,7 @@ export type TempoMatcher = {
   operator: '=' | '!=' | '>' | '<' | '=~' | '!~';
 };
 
+export type ActionViewType = 'traceList' | 'breakdown' | 'structure' | 'comparison';
 export interface OpenInExploreTracesButtonProps {
   datasourceUid?: string;
   matchers: TempoMatcher[];
