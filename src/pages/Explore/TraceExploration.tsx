@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import React from 'react';
 
-import { AdHocVariableFilter, GrafanaTheme2, LoadingState, PluginExtensionLink } from '@grafana/data';
+import { GrafanaTheme2, LoadingState, PluginExtensionLink } from '@grafana/data';
 import {
   AdHocFiltersVariable,
   CustomVariable,
@@ -49,19 +49,15 @@ import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'ut
 import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { primarySignalOptions } from './primary-signals';
-import { ActionViewType } from 'components/Explore/TracesByService/Tabs/TabsBarScene';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
 import { AddToInvestigationButton } from 'components/Explore/actions/AddToInvestigationButton';
 import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from 'components/Explore/panels/PanelMenu';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
+import { SharedExplorationState } from 'exposedComponents/types';
 
-export interface TraceExplorationState extends SceneObjectState {
+export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
   controls: SceneObject[];
-
-  embedded?: boolean;
-  embedderName?: string;
-  returnToPreviousSource?: string;
 
   body: SceneObject;
 
@@ -70,14 +66,6 @@ export interface TraceExplorationState extends SceneObjectState {
   // details scene
   traceId?: string;
   spanId?: string;
-
-  // just for the starting data source
-  initialDS?: string;
-  initialFilters?: AdHocVariableFilter[];
-
-  initialGroupBy?: string;
-  initialActionView?: ActionViewType;
-  allowedActionViews?: ActionViewType[];
 
   issueDetector?: TraceQLIssueDetector;
 
