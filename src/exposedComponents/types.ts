@@ -1,4 +1,3 @@
-import { SceneTimeRangeState } from '@grafana/scenes';
 import { AdHocVariableFilter, TimeRange } from '@grafana/data';
 
 export type TempoMatcher = {
@@ -18,7 +17,7 @@ export interface OpenInExploreTracesButtonProps {
 }
 
 export interface EmbeddedTraceExplorationState extends SharedExplorationState {
-  timeRangeState: SceneTimeRangeState;
+  initialTimeRange: TimeRange;
   onTimeRangeChange?: (timeRange: TimeRange) => void;
 }
 
