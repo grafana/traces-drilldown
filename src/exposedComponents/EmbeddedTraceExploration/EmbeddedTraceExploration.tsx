@@ -5,11 +5,16 @@ import { TraceExploration } from '../../pages/Explore/TraceExploration';
 import { EmbeddedTraceExplorationState } from 'exposedComponents/types';
 
 function buildTraceExplorationFromState({
-  timeRangeState,
+  initialTimeRange,
   onTimeRangeChange,
   ...state
 }: EmbeddedTraceExplorationState) {
-  const $timeRange = new SceneTimeRange(timeRangeState);
+  const $timeRange = new SceneTimeRange({
+    value: initialTimeRange,
+    from: initialTimeRange.raw.from.toString(),
+    to: initialTimeRange.raw.to.toString(),
+  });
+  
   $timeRange.subscribeToState((state) => {
     if (onTimeRangeChange) {
       onTimeRangeChange(state.value);
