@@ -53,8 +53,11 @@
     }
   ],
   "dependencies": {
-    "grafanaDependency": ">=11.3.0",
-    "plugins": []
+    "grafanaDependency": ">=11.5.0",
+    "plugins": [],
+    "extensions": {
+      "exposedComponents": ["grafana-asserts-app/entity-assertions-widget/v1"]
+    }
   },
   "extensions": {
     "exposedComponents": [
@@ -67,6 +70,13 @@
         "id": "grafana-exploretraces-app/embedded-trace-exploration/v1",
         "title": "Embedded Trace Exploration",
         "description": "A component that renders a trace exploration view that can be embedded in other parts of Grafana."
+      }
+    ],
+    "addedComponents": [
+      {
+        "targets": ["grafana-asserts-app/entity-assertions-widget/v1"],
+        "title": "Asserts widget",
+        "description": "A block with assertions for a given service"
       }
     ],
     "addedLinks": [
