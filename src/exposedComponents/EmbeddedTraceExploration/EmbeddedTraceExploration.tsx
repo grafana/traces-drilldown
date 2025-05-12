@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SceneTimeRange } from '@grafana/scenes';
+import { SceneTimeRange, UrlSyncContextProvider } from '@grafana/scenes';
 
 import { TraceExploration } from '../../pages/Explore/TraceExploration';
 import { EmbeddedTraceExplorationState } from 'exposedComponents/types';
@@ -14,7 +14,7 @@ function buildTraceExplorationFromState({
     from: initialTimeRange.raw.from.toString(),
     to: initialTimeRange.raw.to.toString(),
   });
-  
+
   $timeRange.subscribeToState((state) => {
     if (onTimeRangeChange) {
       onTimeRangeChange(state.value);
@@ -31,5 +31,9 @@ function buildTraceExplorationFromState({
 export default function EmbeddedTraceExploration(props: EmbeddedTraceExplorationState) {
   const [exploration] = useState(buildTraceExplorationFromState(props));
 
-  return <exploration.Component model={exploration} />;
+  return (
+    <UrlSyncContextProvider scene={exploration} updateUrlOnInit={false} createBrowserHistorySteps={true}>
+      <exploration.Component model={exploration} />
+    </UrlSyncContextProvider>
+  );
 }
