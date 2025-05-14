@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SceneTimeRange, UrlSyncContextProvider } from '@grafana/scenes';
+import { SceneTimeRange, UrlSyncContextProvider, sceneUtils } from '@grafana/scenes';
 
 import { TraceExploration } from '../../pages/Explore/TraceExploration';
 import { EmbeddedTraceExplorationState } from 'exposedComponents/types';
@@ -21,11 +21,12 @@ function buildTraceExplorationFromState({
     }
   });
 
-  return new TraceExploration({
-    $timeRange,
-    embedded: true,
-    ...state,
-  });
+  const exploration = new TraceExploration({ $timeRange, embedded: true, ...state });
+
+  const params = new URLSearchParams(window.location.search);
+  sceneUtils.syncStateFromSearchParams(exploration, params);
+
+  return exploration;
 }
 
 export default function EmbeddedTraceExploration(props: EmbeddedTraceExplorationState) {

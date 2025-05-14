@@ -79,7 +79,7 @@ const commitSha = process.env.COMMIT_SHA;
 const compositeVersion = `${buildTime?.split('T')[0]} (${commitSha})`;
 
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
-  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['primarySignal', 'traceId', 'spanId', 'metric'] });
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
 
   public constructor(state: Partial<TraceExplorationState>) {
     super({
@@ -322,6 +322,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   return (
     <div className={styles.headerContainer}>
       <Stack gap={1} alignItems={'center'} wrap={'wrap'} justifyContent="space-between">
+        <primarySignalVariable.Component model={primarySignalVariable} />
         {filtersVariable && (
           <div>
             <filtersVariable.Component model={filtersVariable} />
