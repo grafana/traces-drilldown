@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SceneTimeRange, UrlSyncContextProvider, sceneUtils } from '@grafana/scenes';
+import { SceneTimeRange, sceneUtils, UrlSyncContextProvider } from '@grafana/scenes';
 
 import { TraceExploration } from '../../pages/Explore/TraceExploration';
 import { EmbeddedTraceExplorationState } from 'exposedComponents/types';
@@ -31,6 +31,10 @@ function buildTraceExplorationFromState({
 
 export default function EmbeddedTraceExploration(props: EmbeddedTraceExplorationState) {
   const [exploration] = useState(buildTraceExplorationFromState(props));
+
+  if (!props.urlSync) {
+    return <exploration.Component model={exploration} />;
+  }
 
   return (
     <UrlSyncContextProvider scene={exploration} updateUrlOnInit={false} createBrowserHistorySteps={true}>
