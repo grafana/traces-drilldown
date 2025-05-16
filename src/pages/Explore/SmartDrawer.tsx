@@ -53,7 +53,13 @@ export const SmartDrawer = ({
 
   if (shouldUseDrawer) {
     return (
-      <Drawer size="lg" onClose={onClose}>
+      <Drawer
+        size="lg"
+        onClose={() => {
+          setIsAnimating(false);
+          onClose();
+        }}
+      >
         {title && (
           <div className={styles.drawerHeader}>
             <h3>{title}</h3>

@@ -3,7 +3,6 @@ import React from 'react';
 
 import { GrafanaTheme2, LoadingState, PluginExtensionLink } from '@grafana/data';
 import {
-  AdHocFiltersVariable,
   CustomVariable,
   DataSourceVariable,
   SceneComponentProps,
@@ -25,10 +24,8 @@ import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton } from '@gr
 import {
   DATASOURCE_LS_KEY,
   EventTraceOpened,
-  explorationDS,
   MetricFunction,
   VAR_DATASOURCE,
-  VAR_FILTERS,
   VAR_GROUPBY,
   VAR_LATENCY_PARTIAL_THRESHOLD,
   VAR_LATENCY_THRESHOLD,
@@ -47,7 +44,6 @@ import { TraceDrawerScene } from '../../components/Explore/TracesByService/Trace
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { PrimarySignalVariable } from './PrimarySignalVariable';
-import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { primarySignalOptions } from './primary-signals';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
 import { AddToInvestigationButton } from 'components/Explore/actions/AddToInvestigationButton';
@@ -55,6 +51,7 @@ import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from 'components
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { SharedExplorationState } from 'exposedComponents/types';
 import { SmartDrawer } from './SmartDrawer';
+import { AttributeFiltersVariable } from './AttributeFiltersVariable';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -296,7 +293,7 @@ export class TraceExplorationScene extends SceneObjectBase {
             )
           }
         >
-          {drawerScene && traceId && <drawerScene.Component model={drawerScene} />}
+          {drawerScene && <drawerScene.Component model={drawerScene} />}
         </SmartDrawer>
       </>
     );
@@ -455,19 +452,10 @@ function getVariableSet(state: TraceExplorationState) {
         name: VAR_PRIMARY_SIGNAL,
         isReadOnly: state.embedded,
       }),
-      new AdHocFiltersVariable({
-        addFilterButtonText: 'Add filter',
-        hide: VariableHide.hideLabel,
-        name: VAR_FILTERS,
-        datasource: explorationDS,
-        layout: 'combobox',
-        filters: (state.initialFilters ?? []).map((f) => ({
-          ...f,
-          readOnly: state.embedded,
-          origin: state.embedderName,
-        })),
-        allowCustomValue: true,
-        expressionBuilder: renderTraceQLLabelFilters,
+      new AttributeFiltersVariable({
+        initialFilters: state.initialFilters,
+        embedderName: state.embedderName,
+        embedded: state.embedded,
       }),
       new CustomVariable({
         name: VAR_METRIC,
