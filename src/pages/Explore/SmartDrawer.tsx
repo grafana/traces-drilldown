@@ -1,4 +1,4 @@
-import { css } from '@emotion/css';
+import { css, keyframes } from '@emotion/css';
 import React, { useEffect, useState } from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Button, Drawer, IconButton, useStyles2 } from '@grafana/ui';
@@ -21,6 +21,7 @@ export const SmartDrawer = ({
   investigationButton,
 }: SmartDrawerProps) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [isAnimating, setIsAnimating] = useState(false);
   const styles = useStyles2(getStyles);
 
   useEffect(() => {
@@ -32,9 +33,21 @@ export const SmartDrawer = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    if (isOpen) {
+      setIsAnimating(true);
+    }
+  }, [isOpen]);
+
+  const handleAnimationEnd = () => {
+    if (!isOpen) {
+      setIsAnimating(false);
+    }
+  };
+
   const shouldUseDrawer = !forceNoDrawer && windowWidth > 1500;
 
-  if (!isOpen) {
+  if (!isOpen && !isAnimating) {
     return null;
   }
 
@@ -56,9 +69,12 @@ export const SmartDrawer = ({
   }
 
   return (
-    <div className={styles.container}>
+    <div
+      className={`${styles.container} ${isOpen ? styles.slideIn : styles.slideOut}`}
+      onAnimationEnd={handleAnimationEnd}
+    >
       <div className={styles.drawerHeader}>
-        <Button variant="secondary" fill="text" size="md" icon="arrow-left" onClick={onClose}>
+        <Button variant="secondary" fill="text" size="md" icon={'arrow-left'} onClick={onClose}>
           Back to all traces
         </Button>
         {investigationButton}
@@ -67,6 +83,24 @@ export const SmartDrawer = ({
     </div>
   );
 };
+
+const slideInAnimation = keyframes`
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+`;
+
+const slideOutAnimation = keyframes`
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+`;
 
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css({
@@ -80,6 +114,12 @@ const getStyles = (theme: GrafanaTheme2) => ({
     top: 0,
     left: 0,
     zIndex: 3,
+  }),
+  slideIn: css({
+    animation: `${slideInAnimation} 0.3s ease-out forwards`,
+  }),
+  slideOut: css({
+    animation: `${slideOutAnimation} 0.3s ease-in forwards`,
   }),
   drawerHeader: css({
     display: 'flex',
