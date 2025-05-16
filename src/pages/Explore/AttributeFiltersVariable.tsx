@@ -47,7 +47,7 @@ export class AttributeFiltersVariable extends AdHocFiltersVariable {
               initialFilter.value === filter.value
           );
 
-          if (matchingInitialFilter) {
+          if (matchingInitialFilter && !filter.readOnly && filter.origin !== this.embedderName) {
             hasChanges = true;
             return {
               ...filter,
