@@ -20,7 +20,7 @@ import {
   SceneVariableSet,
 } from '@grafana/scenes';
 import { config, useReturnToPrevious } from '@grafana/runtime';
-import { Button, Drawer, Dropdown, Icon, IconButton, Menu, Stack, useStyles2, LinkButton } from '@grafana/ui';
+import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton } from '@grafana/ui';
 
 import {
   DATASOURCE_LS_KEY,
@@ -54,6 +54,7 @@ import { AddToInvestigationButton } from 'components/Explore/actions/AddToInvest
 import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from 'components/Explore/panels/PanelMenu';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { SharedExplorationState } from 'exposedComponents/types';
+import { SmartDrawer } from './SmartDrawer';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -281,27 +282,22 @@ export class TraceExplorationScene extends SceneObjectBase {
           {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
           <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
         </div>
-        {drawerScene && traceId && (
-          <Drawer size={'lg'} onClose={() => traceExploration.closeDrawer()}>
-            <div className={styles.drawerHeader}>
-              <h3>View trace {traceId}</h3>
-              <div className={styles.drawerHeaderButtons}>
-                {addToInvestigationButton && investigationLink && (
-                  <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
-                    {ADD_TO_INVESTIGATION_MENU_TEXT}
-                  </Button>
-                )}
-                <IconButton
-                  name="times"
-                  onClick={() => traceExploration.closeDrawer()}
-                  tooltip="Close drawer"
-                  size="lg"
-                />
-              </div>
-            </div>
-            <drawerScene.Component model={drawerScene} />
-          </Drawer>
-        )}
+        <SmartDrawer
+          isOpen={!!drawerScene && !!traceId}
+          onClose={() => traceExploration.closeDrawer()}
+          title={`View trace ${traceId}`}
+          forceNoDrawer={embedded}
+          investigationButton={
+            addToInvestigationButton &&
+            investigationLink && (
+              <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
+                {ADD_TO_INVESTIGATION_MENU_TEXT}
+              </Button>
+            )
+          }
+        >
+          {drawerScene && traceId && <drawerScene.Component model={drawerScene} />}
+        </SmartDrawer>
       </>
     );
   };
