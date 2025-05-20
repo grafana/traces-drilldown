@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.0.0](https://github.com/grafana/traces-drilldown/compare/v0.2.9...v1.0.0) (2025-04-24)
+
+* Breakdown: Do not show an empty state while streaming is still in progress. ([#426](https://github.com/grafana/traces-drilldown/pull/426))
+* Add support for contextualised trace list table. ([#409](https://github.com/grafana/traces-drilldown/pull/409))
+* Move version to menu and remove preview badge. ([#429](https://github.com/grafana/traces-drilldown/pull/429))
+* Add fix to show empty state in the trace list. ([#430](https://github.com/grafana/traces-drilldown/pull/430))
+* Fix to normalize comparison data when total fields are missing or invalid. ([#435](https://github.com/grafana/traces-drilldown/pull/435))
+* Breakdown: create a new history item when a filter is added from the breakdown. ([#431](https://github.com/grafana/traces-drilldown/pull/431))
+
+## [0.2.9](https://github.com/grafana/traces-drilldown/compare/v0.2.8...v0.2.9) (2025-04-15)
+
+* Remove exemplars from heatmap. ([#398](https://github.com/grafana/traces-drilldown/pull/398))
+* Filter out redundant attributes. ([#397](https://github.com/grafana/traces-drilldown/pull/397))
+* Show warning if datasource is not configured with TraceQL metrics. ([#400](https://github.com/grafana/traces-drilldown/pull/400))
+* Ensure Y-axis label matches the data for RED metrics. ([#401](https://github.com/grafana/traces-drilldown/pull/401))
+* Explore: Add "Go Queryless" hook. ([#404](https://github.com/grafana/traces-drilldown/pull/404))
+* Fix issue with container height. ([#422](https://github.com/grafana/traces-drilldown/pull/422))
+* Use events to open traces. ([#410](https://github.com/grafana/traces-drilldown/pull/410))
+* chore: remove extension link from logs drilldown. ([#421](https://github.com/grafana/traces-drilldown/pull/421))
+* Fix structure tab flickering. ([#394](https://github.com/grafana/traces-drilldown/pull/394))
+* Support typed query generation. ([#423](https://github.com/grafana/traces-drilldown/pull/423))
+* RED Panels: update error panel y-axis labels. ([#424](https://github.com/grafana/traces-drilldown/pull/424))
+* Rename plugin extension link from Explore to Drilldown. ([#425](https://github.com/grafana/traces-drilldown/pull/425))
+* Add support for adding a trace to investigations. ([#408](https://github.com/grafana/traces-drilldown/pull/408))
+
 ## [0.2.6](https://github.com/grafana/traces-drilldown/compare/v0.2.4...v0.2.6) (2025-03-12)
 
 ### Enhancements

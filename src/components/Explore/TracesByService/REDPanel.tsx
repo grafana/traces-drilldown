@@ -26,8 +26,8 @@ import {
   getLatencyPartialThresholdVariable,
   getLatencyThresholdVariable,
   getMetricVariable,
+  getOpenTrace,
   getTraceByServiceScene,
-  getTraceExplorationScene,
   shouldShowSelection,
 } from '../../../utils/utils';
 import { getHistogramVizPanel, yBucketToDuration } from '../panels/histogram';
@@ -178,7 +178,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
 
   private _onActivate() {
     const metric = getMetricVariable(this).state.value as MetricFunction;
-    const traceExploration = getTraceExplorationScene(this);
+
     this.setState({
       $data: new SceneDataTransformer({
         $data: new StepQueryRunner({
@@ -186,9 +186,9 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           datasource: explorationDS,
           queries: [this.isDuration() ? buildHistogramQuery() : metricByWithStatus(metric)],
         }),
-        transformations: this.isDuration() 
-          ? [...removeExemplarsTransformation()] 
-          : [...exemplarsTransformations(traceExploration.state.locationService)],
+        transformations: this.isDuration()
+          ? [...removeExemplarsTransformation()]
+          : [...exemplarsTransformations(getOpenTrace(this))],
       }),
       panel: this.getVizPanel(),
     });
@@ -204,11 +204,11 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
-    const panel = barsPanelConfig().setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(type).setHoverHeader(true).setDisplayMode('transparent');
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
-      panel.setCustomFieldConfig('axisLabel', 'span/s').setColor({
+      panel.setCustomFieldConfig('axisLabel', 'error/s').setColor({
         fixedColor: 'semi-dark-red',
         mode: 'fixed',
       });
@@ -300,9 +300,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
             {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
           </div>
           <div className={styles.actions}>
-            {isStreaming && (
-              <StreamingIndicator isStreaming={true} iconSize={10} />
-            )}
+            {isStreaming && <StreamingIndicator isStreaming={true} iconSize={10} />}
             {actions?.map((action) => <action.Component model={action} key={action.state.key} />)}
           </div>
         </div>

@@ -22,7 +22,6 @@ import {
   SceneObjectUrlValues,
   SceneQueryRunner,
   SceneTimeRange,
-  VariableValue,
 } from '@grafana/scenes';
 
 import { REDPanel } from './REDPanel';
@@ -225,13 +224,13 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
 
   private updateQueryRunner(metric: MetricFunction) {
     const selection = this.state.selection;
-    const select = getSpanListColumnsVariable(this).getValue();
+    const columns = getSpanListColumnsVariable(this).getValue()?.toString() ?? '';
 
     this.setState({
       $data: new SceneDataTransformer({
         $data: new SceneQueryRunner({
           datasource: explorationDS,
-          queries: [buildQuery(metric, select, selection)],
+          queries: [buildQuery(metric, columns, selection)],
           $timeRange: timeRangeFromSelection(selection),
         }),
         transformations: [...filterStreamingProgressTransformations, ...spanListTransformations],
@@ -347,8 +346,7 @@ function getStyles(theme: GrafanaTheme2) {
 const MAIN_PANEL_HEIGHT = 240;
 export const MINI_PANEL_HEIGHT = (MAIN_PANEL_HEIGHT - 8) / 2;
 
-export function buildQuery(type: MetricFunction, select: VariableValue, selection?: ComparisonSelection) {
-  const columns = select?.toString();
+export function buildQuery(type: MetricFunction, columns: string, selection?: ComparisonSelection) {
   const selectQuery = columns !== '' ? ` | select(${columns})` : '';
   let typeQuery = '';
   switch (type) {
@@ -495,12 +493,18 @@ const spanListTransformations = [
     id: 'organize',
     options: {
       indexByName: {
-        'Trace Service': 0,
-        'Trace Name': 1,
-        'Span ID': 2,
-        Duration: 3,
-        'Start time': 4,
-        status: 5,
+        'Start time': 0,
+        status: 1,
+        'Trace Service': 2,
+        'Trace Name': 3,
+        Duration: 4,
+        'Span ID': 5,
+        'span.http.method': 6,
+        'span.http.request.method': 7,
+        'span.http.path': 8,
+        'span.http.route': 9,
+        'span.http.status_code': 10,
+        'span.http.response.status_code': 11,
       },
     },
   },

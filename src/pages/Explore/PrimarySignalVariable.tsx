@@ -7,12 +7,12 @@ import { css } from '@emotion/css';
 
 export class PrimarySignalVariable extends CustomVariable {
   static Component = ({ model }: SceneComponentProps<MultiValueVariable<MultiValueVariableState>>) => {
-    const { value } = model.useState();
+    const { value, isReadOnly } = model.useState();
 
     // ensure the variable is set to the default value
     useMount(() => {
       if (!value) {
-        model.changeValueTo(primarySignalOptions[0].value!);
+        model.changeValueTo(isReadOnly ? primarySignalOptions[1].value! : primarySignalOptions[0].value!);
       }
     });
 
@@ -25,12 +25,17 @@ export class PrimarySignalVariable extends CustomVariable {
       (option) => !buttonGroupOptions.some((b) => b.value === option.value)
     );
 
+    if (isReadOnly) {
+      return <></>;
+    }
+
     return (
       <>
         <RadioButtonGroup
           options={buttonGroupOptions}
           value={value as string}
           onChange={(v: string) => model.changeValueTo(v!, undefined, true)}
+          disabled={isReadOnly}
           className={styles.buttonGroup}
         />
         <Select

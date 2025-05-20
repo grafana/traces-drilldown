@@ -37,7 +37,7 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
 
   public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
     const key = model.state?.labelKey ?? '';
-    const field = model.state?.frame.fields.filter(x => x.type !== 'time');
+    const field = model.state?.frame.fields.filter((x) => x.type !== 'time');
     const value = field?.[0]?.labels?.[key] ?? '';
     const filterExists = filterExistsForKey(getFiltersVariable(model), key, value.replace(/"/g, ''));
 
@@ -58,6 +58,10 @@ export const addToFilters = (variable: AdHocFiltersVariable, label: string, valu
   // and also keep span.db.name as it is a primary filter
   const filtersWithoutNew = variable.state.filters.filter((f) => f.key === DATABASE_CALLS_KEY || f.key !== label);
 
+  // TODO: Replace it with new API introduced in https://github.com/grafana/scenes/issues/1103
+  // At the moment AdHocFiltersVariable doesn't support pushing new history entry on change
+  history.pushState(null, '');
+
   variable.setState({
     filters: [
       ...filtersWithoutNew,
@@ -73,4 +77,4 @@ export const addToFilters = (variable: AdHocFiltersVariable, label: string, valu
 export const filterExistsForKey = (model: AdHocFiltersVariable, key: string, value: string) => {
   const variable = getFiltersVariable(model);
   return variable.state.filters.find((f) => f.key === key && f.value === value);
-}
+};

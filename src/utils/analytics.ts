@@ -40,6 +40,7 @@ export const USER_EVENTS_ACTIONS = {
     open_trace: 'open_trace',
     open_in_explore_clicked: 'open_in_explore_clicked',
     add_to_investigation_clicked: 'add_to_investigation_clicked',
+    add_to_investigation_trace_view_clicked: 'add_to_investigation_trace_view_clicked',
     span_list_columns_changed: 'span_list_columns_changed',
     toggle_bookmark_clicked: 'toggle_bookmark_clicked',
   },
@@ -58,5 +59,6 @@ export const USER_EVENTS_ACTIONS = {
     global_docs_link_clicked: 'global_docs_link_clicked',
     metric_docs_link_clicked: 'metric_docs_link_clicked',
     feedback_link_clicked: 'feedback_link_clicked',
+    go_to_full_app_clicked: 'go_to_full_app_clicked',
   },
 } as const;
