@@ -40,11 +40,15 @@ export class PrimarySignalVariable extends CustomVariable {
         />
         <Select
           options={selectOptions}
-          value={value as string}
+          value={''}
           placeholder=""
           width={4}
           onChange={(v) => model.changeValueTo(v.value!, undefined, true)}
           className={styles.select}
+          components={{
+            IndicatorSeparator: () => null,
+            SingleValue: () => null,
+          }}
         />
       </>
     );
@@ -53,12 +57,22 @@ export class PrimarySignalVariable extends CustomVariable {
 
 const styles = {
   select: css`
-    // [class$='grafana-select-value-container'] {
-    //   display: none;
-    // }
+    [class$='input-suffix'] {
+      position: absolute;
+      z-index: 2;
+    }
+
+    :focus-within {
+      outline: none;
+      box-shadow: none;
+    }
 
     > div {
       padding: 0;
+    }
+
+    input {
+      opacity: 0 !important;
     }
 
     border-radius: 0 2px 2px 0;
