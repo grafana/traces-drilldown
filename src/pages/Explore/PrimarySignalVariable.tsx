@@ -4,6 +4,11 @@ import { primarySignalOptions } from './primary-signals';
 import { RadioButtonGroup, Select } from '@grafana/ui';
 import { useMount } from 'react-use';
 import { css } from '@emotion/css';
+import { components } from 'react-select';
+
+const CustomMenu = (props: any) => {
+  return <components.Menu {...props} className={styles.customMenu} />;
+};
 
 export class PrimarySignalVariable extends CustomVariable {
   static Component = ({ model }: SceneComponentProps<MultiValueVariable<MultiValueVariableState>>) => {
@@ -48,6 +53,7 @@ export class PrimarySignalVariable extends CustomVariable {
           components={{
             IndicatorSeparator: () => null,
             SingleValue: () => null,
+            Menu: CustomMenu,
           }}
         />
       </>
@@ -80,5 +86,16 @@ const styles = {
   `,
   buttonGroup: css`
     border-radius: 2px 0 0 2px;
+  `,
+  customMenu: css`
+    width: 230px;
+
+    [class$='grafana-select-option-grafana-select-option-focused'] {
+      background: transparent;
+
+      ::before {
+        display: none;
+      }
+    }
   `,
 };
