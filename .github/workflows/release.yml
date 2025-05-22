@@ -18,10 +18,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - id: get-secrets
+        name: get secrets
+        uses: grafana/shared-workflows/actions/get-vault-secrets@5d7e361bc7e0a183cde8afe9899fb7b596d2659b
+        with:
+          common_secrets: |
+            GRAFANA_ACCESS_POLICY_TOKEN=plugins/sign-plugin-access-policy-token:token
+            GCP_UPLOAD_ARTIFACTS_KEY=grafana/integration-artifacts-uploader-service-account:'credentials.json'
       - uses: grafana/plugin-actions/build-plugin@main
         id: build-release
         with:
-          policy_token: ${{ secrets.GRAFANA_ACCESS_POLICY_TOKEN }}
+          policy_token: ${{ env.GRAFANA_ACCESS_POLICY_TOKEN }}
       - name: Get plugin metadata
         id: metadata
         run: |
@@ -33,11 +40,6 @@ jobs:
           echo "plugin-id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
           echo "archive=${GRAFANA_PLUGIN_ARTIFACT}" >> $GITHUB_OUTPUT
 
-      - id: get-secrets
-        uses: grafana/shared-workflows/actions/get-vault-secrets@main
-        with:
-          common_secrets: |
-            GCP_UPLOAD_ARTIFACTS_KEY=grafana/integration-artifacts-uploader-service-account:'credentials.json'
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
         with:
