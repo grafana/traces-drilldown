@@ -3,7 +3,6 @@ import React from 'react';
 
 import { GrafanaTheme2, LoadingState, PluginExtensionLink } from '@grafana/data';
 import {
-  AdHocFiltersVariable,
   CustomVariable,
   DataSourceVariable,
   SceneComponentProps,
@@ -20,15 +19,13 @@ import {
   SceneVariableSet,
 } from '@grafana/scenes';
 import { config, useReturnToPrevious } from '@grafana/runtime';
-import { Button, Drawer, Dropdown, Icon, IconButton, Menu, Stack, useStyles2, LinkButton } from '@grafana/ui';
+import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton } from '@grafana/ui';
 
 import {
   DATASOURCE_LS_KEY,
   EventTraceOpened,
-  explorationDS,
   MetricFunction,
   VAR_DATASOURCE,
-  VAR_FILTERS,
   VAR_GROUPBY,
   VAR_LATENCY_PARTIAL_THRESHOLD,
   VAR_LATENCY_THRESHOLD,
@@ -47,13 +44,14 @@ import { TraceDrawerScene } from '../../components/Explore/TracesByService/Trace
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { PrimarySignalVariable } from './PrimarySignalVariable';
-import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { primarySignalOptions } from './primary-signals';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
 import { AddToInvestigationButton } from 'components/Explore/actions/AddToInvestigationButton';
 import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from 'components/Explore/panels/PanelMenu';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { SharedExplorationState } from 'exposedComponents/types';
+import { SmartDrawer } from './SmartDrawer';
+import { AttributeFiltersVariable } from './AttributeFiltersVariable';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -79,7 +77,7 @@ const commitSha = process.env.COMMIT_SHA;
 const compositeVersion = `${buildTime?.split('T')[0]} (${commitSha})`;
 
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
-  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['primarySignal', 'traceId', 'spanId', 'metric'] });
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
 
   public constructor(state: Partial<TraceExplorationState>) {
     super({
@@ -281,27 +279,22 @@ export class TraceExplorationScene extends SceneObjectBase {
           {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
           <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
         </div>
-        {drawerScene && traceId && (
-          <Drawer size={'lg'} onClose={() => traceExploration.closeDrawer()}>
-            <div className={styles.drawerHeader}>
-              <h3>View trace {traceId}</h3>
-              <div className={styles.drawerHeaderButtons}>
-                {addToInvestigationButton && investigationLink && (
-                  <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
-                    {ADD_TO_INVESTIGATION_MENU_TEXT}
-                  </Button>
-                )}
-                <IconButton
-                  name="times"
-                  onClick={() => traceExploration.closeDrawer()}
-                  tooltip="Close drawer"
-                  size="lg"
-                />
-              </div>
-            </div>
-            <drawerScene.Component model={drawerScene} />
-          </Drawer>
-        )}
+        <SmartDrawer
+          isOpen={!!drawerScene && !!traceId}
+          onClose={() => traceExploration.closeDrawer()}
+          title={`View trace ${traceId}`}
+          embedded={embedded}
+          investigationButton={
+            addToInvestigationButton &&
+            investigationLink && (
+              <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
+                {ADD_TO_INVESTIGATION_MENU_TEXT}
+              </Button>
+            )
+          }
+        >
+          {drawerScene && <drawerScene.Component model={drawerScene} />}
+        </SmartDrawer>
       </>
     );
   };
@@ -322,6 +315,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   return (
     <div className={styles.headerContainer}>
       <Stack gap={1} alignItems={'center'} wrap={'wrap'} justifyContent="space-between">
+        <primarySignalVariable.Component model={primarySignalVariable} />
         {filtersVariable && (
           <div>
             <filtersVariable.Component model={filtersVariable} />
@@ -458,19 +452,10 @@ function getVariableSet(state: TraceExplorationState) {
         name: VAR_PRIMARY_SIGNAL,
         isReadOnly: state.embedded,
       }),
-      new AdHocFiltersVariable({
-        addFilterButtonText: 'Add filter',
-        hide: VariableHide.hideLabel,
-        name: VAR_FILTERS,
-        datasource: explorationDS,
-        layout: 'combobox',
-        filters: (state.initialFilters ?? []).map((f) => ({
-          ...f,
-          readOnly: state.embedded,
-          origin: state.embedderName,
-        })),
-        allowCustomValue: true,
-        expressionBuilder: renderTraceQLLabelFilters,
+      new AttributeFiltersVariable({
+        initialFilters: state.initialFilters,
+        embedderName: state.embedderName,
+        embedded: state.embedded,
       }),
       new CustomVariable({
         name: VAR_METRIC,
