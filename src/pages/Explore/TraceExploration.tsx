@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { GrafanaTheme2, LoadingState, PluginExtensionLink } from '@grafana/data';
+import { GrafanaTheme2, LoadingState, PluginExtensionLink, AdHocVariableFilter } from '@grafana/data';
 import {
   AdHocFiltersVariable,
   CustomVariable,
@@ -54,6 +54,7 @@ import { AddToInvestigationButton } from 'components/Explore/actions/AddToInvest
 import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from 'components/Explore/panels/PanelMenu';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { SharedExplorationState } from 'exposedComponents/types';
+import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWidget/EntityAssertionsWidget';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -307,6 +308,31 @@ export class TraceExplorationScene extends SceneObjectBase {
   };
 }
 
+const useServiceName = (model: SceneObject) => {
+  const [serviceName, setServiceName] = React.useState<string>();
+  const traceExploration = getTraceExplorationScene(model);
+  const filtersVariable = getFiltersVariable(traceExploration);
+
+  const getServiceNameFromFilters = (filters: AdHocVariableFilter[]) => {
+    const serviceNameFilter = filters.find(f => f.key === 'resource.service.name');
+    return serviceNameFilter?.value?.replace(/"/g, '');
+  };
+
+  useEffect(() => {
+    setServiceName(getServiceNameFromFilters(filtersVariable.state.filters));
+
+    const sub = filtersVariable.subscribeToState((newState) => {
+      setServiceName(getServiceNameFromFilters(newState.filters));
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [filtersVariable]);
+
+  return serviceName;
+};
+
 const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
   const setReturnToPrevious = useReturnToPrevious();
   const styles = useStyles2(getStyles, true);
@@ -315,6 +341,8 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
+  const timeRange = sceneGraph.getTimeRange(model);
+  const serviceName = useServiceName(model);
 
   // Force the primary signal to be 'All Spans'
   primarySignalVariable?.changeValueTo(primarySignalOptions[1].value!);
@@ -328,6 +356,10 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
           </div>
         )}
         <Stack gap={1} alignItems={'center'}>
+          <EntityAssertionsWidget
+            serviceName={serviceName || ''}
+            range={timeRange.state.value}
+          />
           <LinkButton
             href={getUrlForExploration(traceExploration)}
             variant="secondary"
@@ -356,7 +388,9 @@ interface TraceExplorationHeaderProps {
 const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps) => {
   const styles = useStyles2(getStyles);
   const [menuVisible, setMenuVisible] = React.useState(false);
+  const serviceName = useServiceName(model);
   const traceExploration = getTraceExplorationScene(model);
+  const timeRange = sceneGraph.getTimeRange(model);
 
   const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
   const filtersVariable = getFiltersVariable(traceExploration);
@@ -414,6 +448,10 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           )}
         </Stack>
         <div className={styles.controls}>
+          <EntityAssertionsWidget
+            serviceName={serviceName || ''}
+            range={timeRange.state.value}
+          />
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
             <Button variant="secondary" icon="info-circle">
               Need help
