@@ -11,6 +11,7 @@ import { buildBreakdownScene } from './Breakdown/BreakdownScene';
 import { MetricFunction } from 'utils/shared';
 import { buildComparisonScene } from './Comparison/ComparisonScene';
 import { useMount } from 'react-use';
+import { ActionViewType } from 'exposedComponents/types';
 
 interface ActionViewDefinition {
   displayName: (metric: MetricFunction) => string;
@@ -18,7 +19,6 @@ interface ActionViewDefinition {
   getScene: (metric: MetricFunction) => SceneObject;
 }
 
-export type ActionViewType = 'traceList' | 'breakdown' | 'structure' | 'comparison';
 export const actionViewsDefinitions: ActionViewDefinition[] = [
   { displayName: breakdownDisplayName, value: 'breakdown', getScene: buildBreakdownScene },
   { displayName: structureDisplayName, value: 'structure', getScene: buildStructureScene },

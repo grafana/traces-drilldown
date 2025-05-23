@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CustomVariable, MultiValueVariable, MultiValueVariableState, SceneComponentProps } from '@grafana/scenes';
 import { primarySignalOptions } from './primary-signals';
 import { Icon, RadioButtonGroup, Select } from '@grafana/ui';
-import { useMount } from 'react-use';
 import { css } from '@emotion/css';
 import { components, DropdownIndicatorProps } from 'react-select';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
@@ -23,7 +22,7 @@ export class PrimarySignalVariable extends CustomVariable {
     const { value, isReadOnly } = model.useState();
 
     // ensure the variable is set to the default value
-    useMount(() => {
+    useEffect(() => {
       if (!value) {
         model.changeValueTo(isReadOnly ? primarySignalOptions[1].value! : primarySignalOptions[0].value!);
       }

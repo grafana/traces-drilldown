@@ -1,6 +1,4 @@
-import { SceneTimeRangeState } from '@grafana/scenes';
-import { TimeRange } from '@grafana/data';
-import { TraceExplorationState } from 'pages/Explore';
+import { AdHocVariableFilter, TimeRange } from '@grafana/data';
 
 export type TempoMatcher = {
   name: string;
@@ -8,6 +6,7 @@ export type TempoMatcher = {
   operator: '=' | '!=' | '>' | '<' | '=~' | '!~';
 };
 
+export type ActionViewType = 'traceList' | 'breakdown' | 'structure' | 'comparison';
 export interface OpenInExploreTracesButtonProps {
   datasourceUid?: string;
   matchers: TempoMatcher[];
@@ -17,7 +16,22 @@ export interface OpenInExploreTracesButtonProps {
   renderButton?: (props: { href: string }) => React.ReactElement<any>;
 }
 
-export interface EmbeddedTraceExplorationState extends TraceExplorationState {
-  timeRangeState: SceneTimeRangeState;
+export interface EmbeddedTraceExplorationState extends SharedExplorationState {
+  initialTimeRange: TimeRange;
   onTimeRangeChange?: (timeRange: TimeRange) => void;
+  urlSync?: boolean;
+}
+
+export interface SharedExplorationState {
+  embedded?: boolean;
+  embedderName?: string;
+  returnToPreviousSource?: string;
+
+  // just for the starting data source
+  initialDS?: string;
+  initialFilters?: AdHocVariableFilter[];
+
+  initialGroupBy?: string;
+  initialActionView?: ActionViewType;
+  allowedActionViews?: ActionViewType[];
 }

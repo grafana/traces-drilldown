@@ -37,7 +37,7 @@ import {
   filterStreamingProgressTransformations,
 } from '../../../utils/shared';
 import { getDataSourceSrv } from '@grafana/runtime';
-import { ActionViewType, TabsBarScene, actionViewsDefinitions } from './Tabs/TabsBarScene';
+import { TabsBarScene, actionViewsDefinitions } from './Tabs/TabsBarScene';
 import { isEqual } from 'lodash';
 import {
   getDatasourceVariable,
@@ -51,6 +51,7 @@ import { Icon, LinkButton, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { getDefaultSelectionForMetric } from '../../../utils/comparison';
 import { map, Observable } from 'rxjs';
+import { ActionViewType } from 'exposedComponents/types';
 
 export interface TraceSceneState extends SceneObjectState {
   body: SceneFlexLayout;
