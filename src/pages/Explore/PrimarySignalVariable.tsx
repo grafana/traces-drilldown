@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { CustomVariable, MultiValueVariable, MultiValueVariableState, SceneComponentProps } from '@grafana/scenes';
 import { primarySignalOptions } from './primary-signals';
-import { Icon, RadioButtonGroup, Select } from '@grafana/ui';
+import { Icon, RadioButtonGroup, Select, useStyles2, Text } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { components, DropdownIndicatorProps } from 'react-select';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
+import { GrafanaTheme2 } from '@grafana/data';
 
 const CustomMenu = (props: any) => {
+  const styles = useStyles2(getStyles);
   return <components.Menu {...props} className={styles.customMenu} />;
 };
 
@@ -17,8 +19,20 @@ export function DropdownIndicator({ selectProps }: DropdownIndicatorProps) {
   return <Icon name={icon} size={size} />;
 }
 
+const GroupHeading = () => {
+  const styles = useStyles2(getStyles);
+  return (
+    <div className={styles.heading}>
+      <Text weight="bold" variant="bodySmall" color="secondary">
+        Primary signal
+      </Text>
+    </div>
+  );
+};
+
 export class PrimarySignalVariable extends CustomVariable {
   static Component = ({ model }: SceneComponentProps<MultiValueVariable<MultiValueVariableState>>) => {
+    const styles = useStyles2(getStyles);
     const { value, isReadOnly } = model.useState();
 
     // ensure the variable is set to the default value
@@ -75,6 +89,7 @@ export class PrimarySignalVariable extends CustomVariable {
             SingleValue: () => null,
             Menu: CustomMenu,
             DropdownIndicator,
+            GroupHeading,
           }}
         />
       </>
@@ -82,7 +97,7 @@ export class PrimarySignalVariable extends CustomVariable {
   };
 }
 
-const styles = {
+const getStyles = (theme: GrafanaTheme2) => ({
   select: css`
     [class$='input-suffix'] {
       position: absolute;
@@ -119,4 +134,9 @@ const styles = {
       }
     }
   `,
-};
+  heading: css({
+    padding: theme.spacing(1, 1, 0.75, 0.75),
+    borderLeft: '2px solid transparent',
+    borderBottom: `1px solid ${theme.colors.border.weak}`,
+  }),
+});
