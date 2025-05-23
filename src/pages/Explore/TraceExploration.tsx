@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { GrafanaTheme2, LoadingState, PluginExtensionLink } from '@grafana/data';
+import { GrafanaTheme2, LoadingState, PluginExtensionLink, AdHocVariableFilter } from '@grafana/data';
 import {
   AdHocFiltersVariable,
   CustomVariable,
@@ -308,6 +308,31 @@ export class TraceExplorationScene extends SceneObjectBase {
   };
 }
 
+const useServiceName = (model: SceneObject) => {
+  const [serviceName, setServiceName] = React.useState<string>();
+  const traceExploration = getTraceExplorationScene(model);
+  const filtersVariable = getFiltersVariable(traceExploration);
+
+  const getServiceNameFromFilters = (filters: AdHocVariableFilter[]) => {
+    const serviceNameFilter = filters.find(f => f.key === 'resource.service.name');
+    return serviceNameFilter?.value?.replace(/"/g, '');
+  };
+
+  useEffect(() => {
+    setServiceName(getServiceNameFromFilters(filtersVariable.state.filters));
+
+    const sub = filtersVariable.subscribeToState((newState) => {
+      setServiceName(getServiceNameFromFilters(newState.filters));
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [filtersVariable]);
+
+  return serviceName;
+};
+
 const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
   const setReturnToPrevious = useReturnToPrevious();
   const styles = useStyles2(getStyles, true);
@@ -317,6 +342,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
   const timeRange = sceneGraph.getTimeRange(model);
+  const serviceName = useServiceName(model);
 
   // Force the primary signal to be 'All Spans'
   primarySignalVariable?.changeValueTo(primarySignalOptions[1].value!);
@@ -331,7 +357,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
         )}
         <Stack gap={1} alignItems={'center'}>
           <EntityAssertionsWidget
-            serviceName={'frontend-proxy'}
+            serviceName={serviceName || ''}
             range={timeRange.state.value}
           />
           <LinkButton
@@ -362,6 +388,7 @@ interface TraceExplorationHeaderProps {
 const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps) => {
   const styles = useStyles2(getStyles);
   const [menuVisible, setMenuVisible] = React.useState(false);
+  const serviceName = useServiceName(model);
   const traceExploration = getTraceExplorationScene(model);
   const timeRange = sceneGraph.getTimeRange(model);
 
@@ -422,7 +449,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
         </Stack>
         <div className={styles.controls}>
           <EntityAssertionsWidget
-            serviceName={'frontend-proxy'}
+            serviceName={serviceName || ''}
             range={timeRange.state.value}
           />
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>

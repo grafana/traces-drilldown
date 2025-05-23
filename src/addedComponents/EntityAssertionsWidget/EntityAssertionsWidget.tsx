@@ -2,8 +2,7 @@ import React, { ReactElement } from 'react';
 
 import { TimeRange } from '@grafana/data';
 import { ComponentSize } from '@grafana/ui';
-
-import { usePluginComponent } from './usePluginComponent';
+import { usePluginComponent } from '@grafana/runtime';
 
 interface EntityAssertionsWidgetProps {
   query: {
