@@ -3,7 +3,6 @@ import { merge } from 'webpack-merge';
 import packageJson from './package.json';
 // @ts-ignore
 import grafanaConfig from './.config/webpack/webpack.config';
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // get git info from command line
 let commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString().trim();
@@ -19,7 +18,6 @@ const config = async (env): Promise<Configuration> => {
         'process.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
         'process.env.COMMIT_SHA': JSON.stringify(commitHash || 'local'),
       }),
-      // new BundleAnalyzerPlugin(),
     ],
   });
 };
