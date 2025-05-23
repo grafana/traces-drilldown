@@ -283,7 +283,7 @@ export class TraceExplorationScene extends SceneObjectBase {
           isOpen={!!drawerScene && !!traceId}
           onClose={() => traceExploration.closeDrawer()}
           title={`View trace ${traceId}`}
-          forceNoDrawer={embedded}
+          embedded={embedded}
           investigationButton={
             addToInvestigationButton &&
             investigationLink && (

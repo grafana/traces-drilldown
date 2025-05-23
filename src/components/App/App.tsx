@@ -3,8 +3,6 @@ import { AppRootProps, PageLayoutType } from '@grafana/data';
 import { AppRoutes } from '../Routes';
 import { PluginPage } from '@grafana/runtime';
 
-import './globalStyles.css';
-
 // This is used to be able to retrieve the root plugin props anywhere inside the app.
 const PluginPropsContext = React.createContext<AppRootProps | null>(null);
 

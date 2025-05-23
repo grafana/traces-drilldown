@@ -8,6 +8,7 @@ interface SmartDrawerProps {
   title?: string;
   isOpen: boolean;
   onClose: () => void;
+  embedded?: boolean;
   forceNoDrawer?: boolean;
   investigationButton?: React.ReactNode;
 }
@@ -17,12 +18,13 @@ export const SmartDrawer = ({
   title,
   isOpen,
   onClose,
+  embedded = false,
   forceNoDrawer = false,
   investigationButton,
 }: SmartDrawerProps) => {
   const styles = useStyles2(getStyles);
 
-  const shouldUseDrawer = !forceNoDrawer;
+  const shouldUseDrawer = !forceNoDrawer && !embedded;
 
   if (!isOpen) {
     return null;
@@ -35,7 +37,6 @@ export const SmartDrawer = ({
           <div className={styles.drawerHeader}>
             <h4>{title}</h4>
             <div className={styles.drawerHeaderButtons}>
-              {investigationButton}
               <IconButton name="times" onClick={onClose} tooltip="Close drawer" size="lg" />
             </div>
           </div>
@@ -51,7 +52,7 @@ export const SmartDrawer = ({
         <Button variant="primary" fill="text" size="md" icon={'arrow-left'} onClick={onClose}>
           Back to all traces
         </Button>
-        {investigationButton}
+        {embedded && investigationButton}
       </div>
       {children}
     </div>
