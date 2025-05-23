@@ -1,14 +1,22 @@
 import React from 'react';
 import { CustomVariable, MultiValueVariable, MultiValueVariableState, SceneComponentProps } from '@grafana/scenes';
 import { primarySignalOptions } from './primary-signals';
-import { RadioButtonGroup, Select } from '@grafana/ui';
+import { Icon, RadioButtonGroup, Select } from '@grafana/ui';
 import { useMount } from 'react-use';
 import { css } from '@emotion/css';
-import { components } from 'react-select';
+import { components, DropdownIndicatorProps } from 'react-select';
+import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 
 const CustomMenu = (props: any) => {
   return <components.Menu {...props} className={styles.customMenu} />;
 };
+
+export function DropdownIndicator({ selectProps }: DropdownIndicatorProps) {
+  const isOpen = selectProps.menuIsOpen;
+  const icon = isOpen ? 'angle-up' : 'angle-down';
+  const size = 'md';
+  return <Icon name={icon} size={size} />;
+}
 
 export class PrimarySignalVariable extends CustomVariable {
   static Component = ({ model }: SceneComponentProps<MultiValueVariable<MultiValueVariableState>>) => {
@@ -30,6 +38,17 @@ export class PrimarySignalVariable extends CustomVariable {
       (option) => !buttonGroupOptions.some((b) => b.value === option.value)
     );
 
+    const onChange = (v: string) => {
+      reportAppInteraction(
+        USER_EVENTS_PAGES.analyse_traces,
+        USER_EVENTS_ACTIONS.analyse_traces.primary_signal_changed,
+        {
+          primary_signal: v,
+        }
+      );
+      model.changeValueTo(v!, undefined, true);
+    };
+
     if (isReadOnly) {
       return <></>;
     }
@@ -39,21 +58,24 @@ export class PrimarySignalVariable extends CustomVariable {
         <RadioButtonGroup
           options={buttonGroupOptions}
           value={value as string}
-          onChange={(v: string) => model.changeValueTo(v!, undefined, true)}
+          onChange={onChange}
           disabled={isReadOnly}
           className={styles.buttonGroup}
         />
         <Select
-          options={selectOptions}
+          options={[{ label: 'Primary signal', options: selectOptions }]}
           value={''}
           placeholder=""
+          isSearchable={false}
+          isClearable={false}
           width={4}
-          onChange={(v) => model.changeValueTo(v.value!, undefined, true)}
+          onChange={(v) => onChange(v.value!)}
           className={styles.select}
           components={{
             IndicatorSeparator: () => null,
             SingleValue: () => null,
             Menu: CustomMenu,
+            DropdownIndicator,
           }}
         />
       </>
