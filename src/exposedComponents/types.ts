@@ -19,6 +19,7 @@ export interface OpenInExploreTracesButtonProps {
 export interface EmbeddedTraceExplorationState extends SharedExplorationState {
   initialTimeRange: TimeRange;
   onTimeRangeChange?: (timeRange: TimeRange) => void;
+  urlSync?: boolean;
 }
 
 export interface SharedExplorationState {

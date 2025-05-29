@@ -43,6 +43,7 @@ export const USER_EVENTS_ACTIONS = {
     add_to_investigation_trace_view_clicked: 'add_to_investigation_trace_view_clicked',
     span_list_columns_changed: 'span_list_columns_changed',
     toggle_bookmark_clicked: 'toggle_bookmark_clicked',
+    primary_signal_changed: 'primary_signal_changed',
   },
   [USER_EVENTS_PAGES.home]: {
     homepage_initialized: 'homepage_initialized',
