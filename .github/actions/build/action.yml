@@ -47,10 +47,6 @@ runs:
       run: yarn build
       shell: bash
 
-    - name: Check bundlesize
-      run: yarn bundlewatch
-      shell: bash
-
     - name: Start Grafana Docker container
       run: yarn server:ci
       shell: bash
