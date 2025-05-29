@@ -334,8 +334,6 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
-  const timeRange = sceneGraph.getTimeRange(model);
-  const serviceName = useServiceName(model);
 
   // Force the primary signal to be 'All Spans'
   primarySignalVariable?.changeValueTo(primarySignalOptions[1].value!);
@@ -350,10 +348,6 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
           </div>
         )}
         <Stack gap={1} alignItems={'center'}>
-          <EntityAssertionsWidget
-            serviceName={serviceName || ''}
-            range={timeRange.state.value}
-          />
           <LinkButton
             href={getUrlForExploration(traceExploration)}
             variant="secondary"
