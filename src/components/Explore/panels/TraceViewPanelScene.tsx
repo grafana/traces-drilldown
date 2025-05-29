@@ -150,6 +150,10 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       height: '100%',
 
+      '& [data-testid="data-testid panel content"] > div': {
+        overflow: 'auto',
+      },
+
       '& .show-on-hover': {
         display: 'none',
       },
