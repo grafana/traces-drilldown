@@ -21,7 +21,7 @@ function buildTraceExplorationFromState({
     }
   });
 
-  const exploration = new TraceExploration({ $timeRange, embedded: true, ...state });
+  const exploration = new TraceExploration({ $timeRange, embedded: true, initialMetric: state.initialMetric ?? 'rate', ...state });
 
   const params = new URLSearchParams(window.location.search);
   sceneUtils.syncStateFromSearchParams(exploration, params);

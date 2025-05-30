@@ -145,7 +145,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     }
 
     if (!variable.getValue()) {
-      variable.changeValueTo('rate');
+      variable.changeValueTo(this.state.initialMetric ?? 'rate');
     }
 
     return variable;
