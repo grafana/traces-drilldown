@@ -34,4 +34,5 @@ export interface SharedExplorationState {
   initialGroupBy?: string;
   initialActionView?: ActionViewType;
   allowedActionViews?: ActionViewType[];
+  initialMetric?: string;
 }
