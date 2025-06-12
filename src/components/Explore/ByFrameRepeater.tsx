@@ -36,6 +36,9 @@ interface ByFrameRepeaterState extends SceneObjectState {
   searchQuery?: string;
 }
 
+const LIMIT_MESSAGE = /.*range specified by start and end .* exceeds.*/
+const LIMIT_MESSAGE_METRICS = /.*metrics query time range exceeds the maximum allowed duration of.*/
+
 export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
   public constructor(state: ByFrameRepeaterState) {
     super(state);
@@ -67,12 +70,16 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
               this.publishEvent(new EventTimeseriesDataReceived({ series: data.data.series }), true);
             }
           } else if (data.data?.state === LoadingState.Error) {
+            let message = data.data.errors?.[0]?.message ?? 'An error occurred in the query';
+            if (LIMIT_MESSAGE.test(message) || LIMIT_MESSAGE_METRICS.test(message)) {
+              message = "The selected time range exceed the maximum allowed duration. Please select a shorter time range.";
+            }
             this.state.body.setState({
               children: [
                 new SceneCSSGridLayout({
                   children: [
                     new ErrorStateScene({
-                      message: data.data.errors?.[0]?.message ?? 'An error occurred in the query',
+                      message,
                     }),
                   ],
                 }),
