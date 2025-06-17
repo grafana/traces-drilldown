@@ -54,7 +54,7 @@ runs:
       run: yarn playwright install chromium --with-deps
       shell: bash
     - name: Wait for Docker container
-      uses: cygnetdigital/wait_for_response@v2.0.0
+      uses: cygnetdigital/wait_for_response@34d1493a3e1b94870087d0e47d6095d362f53cda
       with:
         url: 'http://localhost:3001/'
         responseCode: '200'
@@ -92,14 +92,14 @@ runs:
 
     - name: Test backend
       if: steps.check-for-backend.outputs.has-backend == 'true'
-      uses: magefile/mage-action@v3
+      uses: magefile/mage-action@6a5dcb5fe61f43d7c08a98bc3cf9bc63c308c08e
       with:
         version: latest
         args: coverage
 
     - name: Build backend
       if: steps.check-for-backend.outputs.has-backend == 'true'
-      uses: magefile/mage-action@v3
+      uses: magefile/mage-action@6a5dcb5fe61f43d7c08a98bc3cf9bc63c308c08e
       with:
         version: latest
         args: buildAll
