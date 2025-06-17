@@ -54,7 +54,7 @@ runs:
       run: yarn playwright install chromium --with-deps
       shell: bash
     - name: Wait for Docker container
-      uses: cygnetdigital/wait_for_response@34d1493a3e1b94870087d0e47d6095d362f53cda
+      uses: cygnetdigital/wait_for_response@v2.0.0
       with:
         url: 'http://localhost:3001/'
         responseCode: '200'
