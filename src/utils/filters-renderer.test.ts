@@ -60,6 +60,24 @@ describe('filters-renderer', () => {
       expect(renderTraceQLLabelFilters(filters)).toBe('service.name=~"test"&&duration!=100');
     });
 
+    describe('boolean value handling', () => {
+      it('should not add quotes to true/false values', () => {
+        const filters: AdHocVariableFilter[] = [
+          { key: 'span.debug', operator: '=', value: 'true' },
+          { key: 'span.error', operator: '=', value: 'false' },
+        ];
+        expect(renderTraceQLLabelFilters(filters)).toBe('span.debug=true&&span.error=false');
+      });
+
+      it('should add quotes to string values that look like booleans', () => {
+        const filters: AdHocVariableFilter[] = [
+          { key: 'service.name', operator: '=', value: '"true"' },
+          { key: 'service.type', operator: '=', value: '"false"' },
+        ];
+        expect(renderTraceQLLabelFilters(filters)).toBe('service.name="true"&&service.type="false"');
+      });
+    });
+
     describe('number handling', () => {
       it('should handle integer values without quotes for duration', () => {
         const filters: AdHocVariableFilter[] = [

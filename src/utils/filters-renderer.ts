@@ -13,7 +13,8 @@ export function renderTraceQLLabelFilters(filters: AdHocVariableFilter[]) {
 function renderFilter(filter: AdHocVariableFilter) {
   let val = filter.value;
   if (['span.messaging.destination.partition.id', 'span.network.protocol.version'].includes(filter.key) || 
-    (!isNumber(val) && !['status', 'kind', 'span:status', 'span:kind', 'duration', 'span:duration', 'trace:duration', 'event:timeSinceStart'].includes(filter.key))
+    (!isNumber(val) && !['status', 'kind', 'span:status', 'span:kind', 'duration', 'span:duration', 'trace:duration', 'event:timeSinceStart'].includes(filter.key)
+    && !['true', 'false'].includes(val))
   ) {
     // Add quotes if it's coming from the filter input and it's not already quoted.
     // Adding a filter from a time series graph already has quotes. This should be handled better.
