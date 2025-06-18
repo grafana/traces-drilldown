@@ -269,7 +269,7 @@ describe('Bookmark Utils', () => {
       };
 
       const url = getBookmarkForUrl(bookmark);
-      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-${VAR_FILTERS}=filter1%7C%3D%7Cvalue1&var-groupBy=name&var-metric=rate`);
+      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1%7C%3D%7Cvalue1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`);
     });
 
     it('should handle multiple filters correctly', () => {
@@ -278,7 +278,7 @@ describe('Bookmark Utils', () => {
       };
 
       const url = getBookmarkForUrl(bookmark);
-      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-${VAR_FILTERS}=filter1%7C%3D%7Cvalue1&var-${VAR_FILTERS}=filter2%7C%3D%7Cvalue2&var-groupBy=name&var-metric=rate`);
+      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1%7C%3D%7Cvalue1&var-${VAR_FILTERS}=filter2%7C%3D%7Cvalue2&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`);
     });
 
     it('should handle a bookmark with no filters', () => {
@@ -287,7 +287,7 @@ describe('Bookmark Utils', () => {
       };
 
       const url = getBookmarkForUrl(bookmark);
-      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-groupBy=name&var-metric=rate`);
+      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=breakdown&primarySignal=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`);
     });
 
     it('should handle empty parameters', () => {
@@ -296,7 +296,7 @@ describe('Bookmark Utils', () => {
       };
 
       const url = getBookmarkForUrl(bookmark);
-      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=&primarySignal=&var-ds=EBorgLFZ&var-groupBy=&var-metric=`);
+      expect(url).toBe(`${EXPLORATIONS_ROUTE}?actionView=&primarySignal=&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_GROUPBY}=&var-${VAR_METRIC}=`);
     });
   });
 

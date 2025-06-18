@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import { DataFrame, Field, GrafanaTheme2, urlUtil } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
-import { EXPLORATIONS_ROUTE, ROUTES } from 'utils/shared';
+import { EXPLORATIONS_ROUTE, ROUTES, VAR_METRIC, VAR_FILTERS } from 'utils/shared';
 import { AttributePanelRow } from './AttributePanelRow';
 import { HomepagePanelType } from './AttributePanel';
 import { formatDuration } from '../../utils/dates';
@@ -53,8 +53,8 @@ export const SlowestTracesRows = (props: Props) => {
       const params = {
         traceId,
         spanId: spanIdField.values[index],
-        'var-filters': `resource.service.name|=|${traceServiceField.values[index]}`,
-        'var-metric': 'duration',
+        [`var-${VAR_FILTERS}`]: `resource.service.name|=|${traceServiceField.values[index]}`,
+        [`var-${VAR_METRIC}`]: 'duration',
       };
 
       return urlUtil.renderUrl(EXPLORATIONS_ROUTE, params);
