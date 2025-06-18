@@ -308,7 +308,7 @@ const useServiceName = (model: SceneObject) => {
 
   const getServiceNameFromFilters = (filters: AdHocVariableFilter[]) => {
     const serviceNameFilter = filters.find(f => f.key === 'resource.service.name');
-    return serviceNameFilter?.value?.replace(/"/g, '');
+    return serviceNameFilter?.operator === '=' || serviceNameFilter?.operator === '=~' ? serviceNameFilter?.value?.replace(/"/g, '') : undefined;
   };
 
   useEffect(() => {
