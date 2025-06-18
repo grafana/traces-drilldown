@@ -59,6 +59,7 @@ export interface TraceSceneState extends SceneObjectState {
 
   attributes?: string[];
   selection?: ComparisonSelection;
+  hasSetView?: boolean;
 }
 
 export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
