@@ -1,6 +1,6 @@
 import {dateTime, PluginExtensionPanelContext} from '@grafana/data';
 import { contextToLink, TraceqlFilter } from './links';
-import { RESOURCE, SPAN } from './shared';
+import { RESOURCE, SPAN, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC, VAR_PRIMARY_SIGNAL } from './shared';
 
 describe('contextToLink', () => {
   it('should return undefined if context is not provided', () => {
@@ -35,15 +35,15 @@ describe('contextToLink', () => {
 
     const result = getLink(mockContext);
     expect(result).toBeDefined();
-    expect(result?.path).toContain('var-primarySignal=true');
-    expect(result?.path).toContain('var-ds=test-uid');
-    expect(result?.path).toContain('var-filters=' + encodeURIComponent('resource.service.name|=|grafana'));
-    expect(result?.path).toContain('var-filters=' + encodeURIComponent('span.http.status_code|=|200'));
+    expect(result?.path).toContain(`var-${VAR_PRIMARY_SIGNAL}=true`);
+    expect(result?.path).toContain(`var-${VAR_DATASOURCE}=test-uid`);
+    expect(result?.path).toContain(`var-${VAR_FILTERS}=resource.service.name%7C%3D%7Cgrafana`);
+    expect(result?.path).toContain(`var-${VAR_FILTERS}=span.http.status_code%7C%3D%7C200`);
     expect(result?.path).toContain('from=' + encodeURIComponent('30m'));
     expect(result?.path).toContain('to=' + encodeURIComponent('1'));
   });
 
-  it('should set var-metric to errors if status filter has value error', () => {
+  it('should set metric var to errors if status filter has value error', () => {
     const mockContext = createMockContext([
       {
         datasource: { type: 'tempo', uid: 'test-uid' },
@@ -52,10 +52,10 @@ describe('contextToLink', () => {
     ]);
 
     const result = getLink(mockContext);
-    expect(result?.path).toContain('var-metric=errors');
+    expect(result?.path).toContain(`var-${VAR_METRIC}=errors`);
   });
 
-  it('should set var-metric to rate if status filter is not error', () => {
+  it('should set metric var to rate if status filter is not error', () => {
     const mockContext = createMockContext([
       {
         datasource: { type: 'tempo', uid: 'test-uid' },
@@ -64,7 +64,7 @@ describe('contextToLink', () => {
     ]);
 
     const result = getLink(mockContext);
-    expect(result?.path).toContain('var-metric=rate');
+    expect(result?.path).toContain(`var-${VAR_METRIC}=rate`);
   });
 });
 

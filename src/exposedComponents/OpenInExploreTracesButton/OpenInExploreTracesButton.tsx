@@ -3,6 +3,7 @@ import { LinkButton } from '@grafana/ui';
 import React, { useMemo } from 'react';
 import { OpenInExploreTracesButtonProps } from '../types';
 import pluginJson from '../../plugin.json';
+import { VAR_DATASOURCE, VAR_FILTERS, VAR_PRIMARY_SIGNAL } from 'utils/shared';
 
 export default function OpenInExploreTracesButton({
   datasourceUid,
@@ -18,7 +19,7 @@ export default function OpenInExploreTracesButton({
     let params = new URLSearchParams();
 
     if (datasourceUid) {
-      params.append('var-ds', datasourceUid);
+      params.append(`var-${VAR_DATASOURCE}`, datasourceUid);
     }
 
     if (from) {
@@ -30,10 +31,10 @@ export default function OpenInExploreTracesButton({
     }
 
     matchers.forEach((streamSelector) => {
-      params.append('var-filters', `${streamSelector.name}|${streamSelector.operator}|${streamSelector.value}`);
+      params.append(`var-${VAR_FILTERS}`, `${streamSelector.name}|${streamSelector.operator}|${streamSelector.value}`);
     });
 
-    params.append('var-primarySignal', 'true'); // so all spans is selected
+    params.append(`var-${VAR_PRIMARY_SIGNAL}`, 'true'); // so all spans is selected
 
     return `a/${pluginJson.id}/explore?${params.toString()}`;
   }, [datasourceUid, from, to, matchers]);

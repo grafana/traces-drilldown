@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Bookmarks, Bookmark } from './Bookmarks';
 import { getBookmarkForUrl, goToBookmark, useBookmarksStorage } from './utils';
 import { locationService } from '@grafana/runtime';
+import { VAR_DATASOURCE, VAR_FILTERS, VAR_GROUPBY, VAR_METRIC } from 'utils/shared';
 
 // Mock the BookmarkItem component
 jest.mock('./BookmarkItem', () => ({
@@ -34,10 +35,10 @@ jest.mock('@grafana/runtime', () => ({
 describe('Bookmarks', () => {
   const mockBookmarks: Bookmark[] = [
     {
-      params: 'actionView=breakdown&primarySignal=full_traces&var-ds=EBorgLFZ&var-filters=filter1|=|value1&var-groupBy=name&var-metric=rate'
+      params: `actionView=breakdown&primarySignal=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
     },
     {
-      params: 'actionView=comparison&primarySignal=server_spans&var-ds=loki&var-filters=filter2=value2&var-groupBy=service&var-metric=errors'
+      params: `actionView=comparison&primarySignal=server_spans&var-${VAR_DATASOURCE}=loki&var-${VAR_FILTERS}=filter2=value2&var-${VAR_GROUPBY}=service&var-${VAR_METRIC}=errors`
     }
   ];
 

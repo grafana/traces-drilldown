@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import { DataFrame, GrafanaTheme2, urlUtil } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
-import { EXPLORATIONS_ROUTE } from 'utils/shared';
+import { EXPLORATIONS_ROUTE, VAR_FILTERS, VAR_METRIC } from 'utils/shared';
 import { AttributePanelRow } from './AttributePanelRow';
 import { HomepagePanelType } from './AttributePanel';
 
@@ -23,8 +23,8 @@ export const ErroredServicesRows = (props: Props) => {
   const getUrl = (df: DataFrame) => {
     const serviceName = getLabel(df);
     const params = {
-      'var-filters': `resource.service.name|=|${serviceName}`,
-      'var-metric': 'errors',
+      [`var-${VAR_FILTERS}`]: `resource.service.name|=|${serviceName}`,
+      [`var-${VAR_METRIC}`]: 'errors',
     };
     return urlUtil.renderUrl(EXPLORATIONS_ROUTE, params);
   };

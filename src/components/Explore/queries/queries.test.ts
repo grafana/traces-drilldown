@@ -1,6 +1,7 @@
 import { comparisonQuery } from './comparisonQuery';
 import { buildHistogramQuery } from './histogram';
 import { metricByWithStatus } from './generateMetricsQuery';
+import { VAR_FILTERS, VAR_PRIMARY_SIGNAL } from 'utils/shared';
 
 describe('comparisonQuery', () => {
   it('should return correct query for no selection', () => {
@@ -39,7 +40,7 @@ describe('buildHistogramQuery', () => {
     expect(query).toEqual({
       filters: [],
       limit: 1000,
-      query: '{${primarySignal} && ${filters}} | histogram_over_time(duration)',
+      query: `{\${${VAR_PRIMARY_SIGNAL}\} && $\{${VAR_FILTERS}\}} | histogram_over_time(duration)`,
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -54,7 +55,7 @@ describe('metricByWithStatus', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${primarySignal} && ${filters} && status=error} | rate() ',
+      query: `{\${${VAR_PRIMARY_SIGNAL}\} && $\{${VAR_FILTERS}} && status=error} | rate() `,
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -67,7 +68,7 @@ describe('metricByWithStatus', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${primarySignal} && ${filters} && status=error && service != nil} | rate() by(service)',
+      query: `{\${${VAR_PRIMARY_SIGNAL}\} && $\{${VAR_FILTERS}} && status=error && service != nil} | rate() by(service)`,
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -80,7 +81,7 @@ describe('metricByWithStatus', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${primarySignal} && ${filters} && service != nil} | quantile_over_time(duration, 0.9) by(service)',
+      query: `{\${${VAR_PRIMARY_SIGNAL}\} && $\{${VAR_FILTERS}} && service != nil} | quantile_over_time(duration, 0.9) by(service)`,
       queryType: 'traceql',
       refId: 'A',
       spss: 10,

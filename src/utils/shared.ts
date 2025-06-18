@@ -23,19 +23,20 @@ export const EMPTY_STATE_ERROR_REMEDY_MESSAGE = 'Please try removing some filter
 
 export const FILTER_SEPARATOR = ' && ';
 
-export const VAR_DATASOURCE = 'ds';
-export const VAR_DATASOURCE_EXPR = '${ds}';
-export const VAR_PRIMARY_SIGNAL = 'primarySignal';
-export const VAR_FILTERS = 'filters';
-export const VAR_FILTERS_EXPR = '${primarySignal} && ${filters}';
-export const VAR_HOME_FILTER = 'homeFilter';
-export const VAR_GROUPBY = 'groupBy';
-export const VAR_SPAN_LIST_COLUMNS = 'spanListColumns';
-export const VAR_METRIC = 'metric';
-export const VAR_LATENCY_THRESHOLD = 'latencyThreshold';
-export const VAR_LATENCY_THRESHOLD_EXPR = '${latencyThreshold}';
-export const VAR_LATENCY_PARTIAL_THRESHOLD = 'partialLatencyThreshold';
-export const VAR_LATENCY_PARTIAL_THRESHOLD_EXPR = '${partialLatencyThreshold}';
+const VAR_PREFIX = 'tracesDrilldown';
+export const VAR_DATASOURCE = `${VAR_PREFIX}Ds`;
+export const VAR_DATASOURCE_EXPR = `$\{${VAR_PREFIX}Ds\}`;
+export const VAR_PRIMARY_SIGNAL = `${VAR_PREFIX}PrimarySignal`;
+export const VAR_FILTERS = `${VAR_PREFIX}Filters`;
+export const VAR_FILTERS_EXPR = `$\{${VAR_PREFIX}PrimarySignal\} && $\{${VAR_PREFIX}Filters\}`;
+export const VAR_HOME_FILTER = `${VAR_PREFIX}HomeFilter`;
+export const VAR_GROUPBY = `${VAR_PREFIX}GroupBy`;
+export const VAR_SPAN_LIST_COLUMNS = `${VAR_PREFIX}SpanListColumns`;
+export const VAR_METRIC = `${VAR_PREFIX}Metric`;
+export const VAR_LATENCY_THRESHOLD = `${VAR_PREFIX}LatencyThreshold`;
+export const VAR_LATENCY_THRESHOLD_EXPR = `$\{${VAR_PREFIX}LatencyThreshold\}`;
+export const VAR_LATENCY_PARTIAL_THRESHOLD = `${VAR_PREFIX}PartialLatencyThreshold`;
+export const VAR_LATENCY_PARTIAL_THRESHOLD_EXPR = `$\{${VAR_PREFIX}PartialLatencyThreshold\}`;
 export const explorationDS = { uid: VAR_DATASOURCE_EXPR };
 
 export const ACTION_VIEW = 'actionView';

@@ -6,7 +6,7 @@ import {
 } from '@grafana/data';
 
 import {DataQuery, DataSourceRef} from '@grafana/schema';
-import {EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC} from './shared';
+import {EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC, VAR_PRIMARY_SIGNAL} from './shared';
 
 type TempoQuery = {
   filters?: TraceqlFilter[];
@@ -69,7 +69,7 @@ export function contextToLink(context?: PluginExtensionPanelContext | PluginExte
     params.append(`var-${VAR_METRIC}`, statusFilter.value === 'error' ? 'errors' : 'rate');
   }
 
-  params.append('var-primarySignal', 'true');
+  params.append(`var-${VAR_PRIMARY_SIGNAL}`, 'true');
 
   const getFilters = (filters: TraceqlFilter[]) => {
     return filters
