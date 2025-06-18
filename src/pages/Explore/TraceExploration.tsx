@@ -353,9 +353,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
             variant="secondary"
             icon="arrow-right"
             onClick={() => {
-              if (returnToPreviousSource) {
-                setReturnToPrevious(returnToPreviousSource);
-              }
+              setReturnToPrevious(returnToPreviousSource || 'previous');
               reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.go_to_full_app_clicked);
             }}
           >
