@@ -378,7 +378,6 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   const [menuVisible, setMenuVisible] = React.useState(false);
   const serviceName = useServiceName(model);
   const traceExploration = getTraceExplorationScene(model);
-  const timeRange = sceneGraph.getTimeRange(model);
 
   const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
   const filtersVariable = getFiltersVariable(traceExploration);
@@ -438,7 +437,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
         <div className={styles.controls}>
           <EntityAssertionsWidget
             serviceName={serviceName || ''}
-            range={timeRange.state.value}
+            model={model}
           />
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
             <Button variant="secondary" icon="info-circle">
