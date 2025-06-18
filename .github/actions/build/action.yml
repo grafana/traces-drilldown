@@ -53,13 +53,6 @@ runs:
     - name: Install Playwright Browsers
       run: yarn playwright install chromium --with-deps
       shell: bash
-    - name: Wait for Docker container
-      uses: cygnetdigital/wait_for_response@v2.0.0
-      with:
-        url: 'http://localhost:3001/'
-        responseCode: '200'
-        timeout: 60000
-        interval: 500
     - name: Run e2e tests
       id: run-tests
       run: yarn e2e:fast
@@ -92,14 +85,14 @@ runs:
 
     - name: Test backend
       if: steps.check-for-backend.outputs.has-backend == 'true'
-      uses: magefile/mage-action@v3
+      uses: magefile/mage-action@6a5dcb5fe61f43d7c08a98bc3cf9bc63c308c08e
       with:
         version: latest
         args: coverage
 
     - name: Build backend
       if: steps.check-for-backend.outputs.has-backend == 'true'
-      uses: magefile/mage-action@v3
+      uses: magefile/mage-action@6a5dcb5fe61f43d7c08a98bc3cf9bc63c308c08e
       with:
         version: latest
         args: buildAll
