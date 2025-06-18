@@ -69,7 +69,7 @@ The results are ordered by the difference in those attributes by the highest one
 you see what's causing the errors immediately.
 You can see here that 99.34% of the time, the span name was equal to `HTTP GET /api/datasources/proxy/uid/:uid/*` the span was also erroring.
 
-![Errors are immediately visible by the large red bars](../images/explore-traces-errors-metric-flow.png)
+![Errors are immediately visible by the large red bars](/media/docs/explore-traces/explore-traces-errors-metric-flow.png)
 
 ### Inspect the problem
 
@@ -77,15 +77,15 @@ To dig deeper, select **Inspect** to focus in on the problem.
 It's easy to spot the problem: the tall, red bar indicates that the problems are happening with `HTTP GET /api/datasources/proxy/uid/:uid/*`.
 Next, use **Add to filters** to focus just on the erroring API call.
 
-![Add to filters to focus on the API call](../images/explore-traces-errors-add-filters-flow.png)
+![Add to filters to focus on the API call](/media/docs/explore-traces/explore-traces-errors-add-filters-flow.png)
 
 ### Use Root cause errors
 
 Select **Root cause errors** for an aggregated view of all of the traces that have errors in them.
 To view additional details, right-click on a line and select **HTTP Outgoing Request**.
 
-![Contextual menu available in the Root cause errors tab](../images/explore-traces-errors-rcause-menu.png)
+![Contextual menu available in the Root cause errors tab](/media/docs/explore-traces/explore-traces-errors-rcause-menu.png)
 
 To examine a single example transaction, click on an entry to open one of the individual traces used to construct that aggregate view.
 
-![Link to span data from Root cause errors](../images/explore-traces-errors-root-cause.png)
+![Link to span data from Root cause errors](/media/docs/explore-traces/explore-traces-errors-root-cause.png)
