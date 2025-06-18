@@ -1,8 +1,9 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 
 import { TimeRange } from '@grafana/data';
 import { ComponentSize } from '@grafana/ui';
 import { usePluginComponent } from '@grafana/runtime';
+import { sceneGraph, SceneObject } from '@grafana/scenes';
 
 interface EntityAssertionsWidgetProps {
   query: {
@@ -19,15 +20,29 @@ export type EntityAssertionsWidgetExternal = (props: EntityAssertionsWidgetProps
 
 interface Props {
   serviceName: string;
-  range: TimeRange;
+  model: SceneObject;
 }
 
-export function EntityAssertionsWidget({ serviceName, range }: Props) {
+export function EntityAssertionsWidget({ serviceName, model }: Props) {
   const { isLoading, component: EntityAssertionsWidgetExternal } = usePluginComponent<EntityAssertionsWidgetProps>(
     'grafana-asserts-app/entity-assertions-widget/v1'
   );
+  const [timeRange, setTimeRange] = useState<TimeRange>();
 
-  if (isLoading || !EntityAssertionsWidgetExternal) {
+  useEffect(() => {
+    const sceneTimeRange = sceneGraph.getTimeRange(model);
+    setTimeRange(sceneTimeRange.state.value);
+
+    const sub = sceneTimeRange.subscribeToState((state) => {
+      setTimeRange(state.value);
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [model]);
+
+  if (isLoading || !EntityAssertionsWidgetExternal || !timeRange) {
     return null;
   }
 
@@ -36,8 +51,8 @@ export function EntityAssertionsWidget({ serviceName, range }: Props) {
       size='md'
       source='Traces Drilldown'
       query={{
-        start: range.from.valueOf(),
-        end: range.to.valueOf(),
+        start: timeRange.from.valueOf(),
+        end: timeRange.to.valueOf(),
         entityName: serviceName,
         entityType: 'Service',
       }}

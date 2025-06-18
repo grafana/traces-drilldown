@@ -1,8 +1,8 @@
 import { css } from '@emotion/css';
-import { SceneObjectState, SceneObjectBase, SceneComponentProps, SceneObject, sceneGraph } from '@grafana/scenes';
+import { SceneObjectBase, SceneComponentProps, SceneObject, sceneGraph, SceneObjectState } from '@grafana/scenes';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
 import { useStyles2, Box, Stack, TabsBar, Tab } from '@grafana/ui';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { getTraceExplorationScene, getTraceByServiceScene } from 'utils/utils';
 import { ShareExplorationAction } from '../../actions/ShareExplorationAction';
 import { buildSpansScene } from './Spans/SpansScene';
@@ -35,7 +35,6 @@ export interface TabsBarSceneState extends SceneObjectState {}
 export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
   public static Component = ({ model }: SceneComponentProps<TabsBarScene>) => {
     const styles = useStyles2(getStyles);
-    const hasSetView = useRef(false);
 
     const metricScene = getTraceByServiceScene(model);
     const exploration = getTraceExplorationScene(model);
@@ -53,17 +52,17 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
     }
 
     useEffect(() => {
-      if (hasSetView.current) {
+      if (metricScene.state.hasSetView) {
         return;
       }
 
       // Set the view to traceList if the data is loaded and the traces count is greater than 20
       if (exploration.state.embedded && dataState.data?.state === LoadingState.Done && tracesCount !== undefined && tracesCount > 20) {
-        hasSetView.current = true;
+        metricScene.setState({ hasSetView: true });
         metricScene.setActionView('traceList');
         return;
       }
-    }, [dataState.data?.state, tracesCount]);
+    }, [dataState.data?.state, exploration.state.embedded, metricScene, tracesCount]);
 
     useMount(() => {
       if (enabledViews.length === 1) {

@@ -308,7 +308,7 @@ const useServiceName = (model: SceneObject) => {
 
   const getServiceNameFromFilters = (filters: AdHocVariableFilter[]) => {
     const serviceNameFilter = filters.find(f => f.key === 'resource.service.name');
-    return serviceNameFilter?.value?.replace(/"/g, '');
+    return serviceNameFilter?.operator === '=' || serviceNameFilter?.operator === '=~' ? serviceNameFilter?.value?.replace(/"/g, '') : undefined;
   };
 
   useEffect(() => {
@@ -353,9 +353,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
             variant="secondary"
             icon="arrow-right"
             onClick={() => {
-              if (returnToPreviousSource) {
-                setReturnToPrevious(returnToPreviousSource);
-              }
+              setReturnToPrevious(returnToPreviousSource || 'previous');
               reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.go_to_full_app_clicked);
             }}
           >
@@ -378,7 +376,6 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   const [menuVisible, setMenuVisible] = React.useState(false);
   const serviceName = useServiceName(model);
   const traceExploration = getTraceExplorationScene(model);
-  const timeRange = sceneGraph.getTimeRange(model);
 
   const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
   const filtersVariable = getFiltersVariable(traceExploration);
@@ -438,7 +435,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
         <div className={styles.controls}>
           <EntityAssertionsWidget
             serviceName={serviceName || ''}
-            range={timeRange.state.value}
+            model={model}
           />
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
             <Button variant="secondary" icon="info-circle">
