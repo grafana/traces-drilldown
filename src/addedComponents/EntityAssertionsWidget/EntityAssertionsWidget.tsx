@@ -14,6 +14,7 @@ interface EntityAssertionsWidgetProps {
   };
   size: ComponentSize;
   source?: string;
+  returnToPrevious?: boolean;
 }
 
 export type EntityAssertionsWidgetExternal = (props: EntityAssertionsWidgetProps) => ReactElement | null;
@@ -56,6 +57,7 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
         entityName: serviceName,
         entityType: 'Service',
       }}
+      returnToPrevious={true}
     />
   );
 }
