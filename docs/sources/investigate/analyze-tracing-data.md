@@ -42,7 +42,7 @@ The **Comparison** tab helps you surface and rank which span attributes are mos
 Upon selecting a metric, the tab computes, for each resource or span attribute, how strongly that attribute value differs between the selected subset (**selection**) and all other spans (**baseline**).
 It lists attribute‑value pairs in descending order of that difference, so the top entries are those most uniquely associated with your signal of interest.
 
-- If you're viewing the **Errors** metric, the **selection** contains all erroring spans, while the **baseline** contains all non-erroring spans.
+- If you're viewing the **Span rate** or **Errors** metrics, the **selection** contains all erroring spans, while the **baseline** contains all non-erroring spans.
 
 - If you're viewing the **Duration** metric, by default the **selection** contains the slowest spans above the 90th percentile, while the **baseline** contains all other spans. You can manually adjust the selection on the duration heatmap.
 
