@@ -1309,7 +1309,7 @@
     rxjs "7.8.1"
     tslib "2.8.1"
 
-"@grafana/scenes@^6.23.0":
+"@grafana/scenes@^6.24.0":
   version "6.24.0"
   resolved "https://registry.yarnpkg.com/@grafana/scenes/-/scenes-6.24.0.tgz#45fa61cf4966cd943efe500b8a1479fd2ee968f2"
   integrity sha512-xMnE9xCWrhY76gIz6l/birK1goBJuA4O5nl4u+pZ/RzgCOtuGSin5NG/dyhhII+wMAJVC/3t4N0jyt6RS6xGSg==
