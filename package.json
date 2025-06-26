@@ -1,6 +1,6 @@
 {
   "name": "exploretraces-app",
-  "version": "2.0.0",
+  "version": "0.2.9",
   "description": "Queryless exploration of trace data stored in Tempo",
   "scripts": {
     "build": "webpack -c ./webpack.config.ts --env production",
