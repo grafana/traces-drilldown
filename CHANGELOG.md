@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.1.0](https://github.com/grafana/traces-drilldown/compare/v1.0.0...v1.1.0) (2025-06-27)
+
+* Default to all spans when pressing Open in Traces Drilldown button ([#443](https://github.com/grafana/traces-drilldown/pull/443))
+* Fix broken links in docs ([#447](https://github.com/grafana/traces-drilldown/pull/447))
+* Fix zizmor detected template-injection issues ([#450](https://github.com/grafana/traces-drilldown/pull/450))
+* Style error panels according to metric ([#449](https://github.com/grafana/traces-drilldown/pull/449))
+* Work around ref URIs bug ([#457](https://github.com/grafana/traces-drilldown/pull/457))
+* New exposed component to embed the trace exploration scene ([#407](https://github.com/grafana/traces-drilldown/pull/407))
+* Fix Zizmor persist credentials issues ([#456](https://github.com/grafana/traces-drilldown/pull/456))
+* Fix exposing types ([#459](https://github.com/grafana/traces-drilldown/pull/459))
+* chore: isolate types imports for exposed component ([#460](https://github.com/grafana/traces-drilldown/pull/460))
+* chore: changing input props for exposed component ([#462](https://github.com/grafana/traces-drilldown/pull/462))
+* Embedded mode improvements ([#466](https://github.com/grafana/traces-drilldown/pull/466))
+* Bring back all primary signals ([#472](https://github.com/grafana/traces-drilldown/pull/472))
+* Upgrade packages ([#476](https://github.com/grafana/traces-drilldown/pull/476))
+* Update policy token to use env variable from Vault ([#473](https://github.com/grafana/traces-drilldown/pull/473))
+* Embedded mode improvements ([#477](https://github.com/grafana/traces-drilldown/pull/477))
+* UPreserve asserts context via embedded assertions widget component ([#464](https://github.com/grafana/traces-drilldown/pull/464))
+* Fix Zizmor issues ([#483](https://github.com/grafana/traces-drilldown/pull/483))
+* Type string booleans as booleans unless user has put them in quotes ([#482](https://github.com/grafana/traces-drilldown/pull/482))
+* Embedded mode fixes + improvements ([#484](https://github.com/grafana/traces-drilldown/pull/484))
+* Explain selection vs baseline when 'Span rate' metric is chosen ([#487](https://github.com/grafana/traces-drilldown/pull/487))
+* Update @grafana/scenes to 6.23.0 ([#488](https://github.com/grafana/traces-drilldown/pull/488))
+* Add namespace to embedded app ([#489](https://github.com/grafana/traces-drilldown/pull/489))
+
 ## [1.0.0](https://github.com/grafana/traces-drilldown/compare/v0.2.9...v1.0.0) (2025-04-24)
 
 * Breakdown: Do not show an empty state while streaming is still in progress. ([#426](https://github.com/grafana/traces-drilldown/pull/426))
