@@ -3,6 +3,8 @@ version: '3.0'
 services:
   grafana:
     container_name: 'grafana-explore-traces-e2e'
+    environment:
+      - GF_PLUGINS_PREINSTALL_DISABLED=true
     build:
       context: ../.config
       args:
