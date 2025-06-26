@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.0](https://github.com/grafana/traces-drilldown/compare/v1.0.0...v1.1.0) (2025-06-26)
+## [1.1.0](https://github.com/grafana/traces-drilldown/compare/v1.0.0...v1.1.0) (2025-06-27)
 
 * Default to all spans when pressing Open in Traces Drilldown button ([#443](https://github.com/grafana/traces-drilldown/pull/443))
 * Fix broken links in docs ([#447](https://github.com/grafana/traces-drilldown/pull/447))
