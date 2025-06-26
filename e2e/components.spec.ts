@@ -50,19 +50,17 @@ test.describe('components', () => {
     await expect(page.getByRole('radio', { name: 'Span', exact: true })).toBeVisible();
     await expect(page.getByText('Group by')).toBeVisible();
     await expect(page.getByLabel('service.name')).toBeVisible();
-    await expect(page.getByText('View', { exact: true })).toBeVisible();
-    await expect(page.getByLabel('Single')).toBeVisible();
-    await expect(page.getByLabel('Grid')).toBeVisible();
-    await expect(page.getByLabel('Rows')).toBeVisible();
-    await expect(page.getByPlaceholder('Search')).toBeVisible();
-
-    await page.getByLabel('service.name').click();
-    await expect(page.getByRole('heading', { name: 'mythical-requester' })).toBeVisible();
     await expect(
       page
         .locator('div')
         .filter({ hasText: /^Other attributes$/ })
         .nth(1)
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible();
+    await expect(page.getByText('View', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Single')).toBeVisible();
+    await expect(page.getByLabel('Grid')).toBeVisible();
+    await expect(page.getByLabel('Rows')).toBeVisible();
+    await expect(page.getByPlaceholder('Search')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'mythical-requester' })).toBeVisible();
   });
 });
