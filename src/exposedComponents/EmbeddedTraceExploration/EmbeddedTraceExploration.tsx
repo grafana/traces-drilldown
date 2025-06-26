@@ -37,7 +37,7 @@ export default function EmbeddedTraceExploration(props: EmbeddedTraceExploration
   }
 
   return (
-    <UrlSyncContextProvider scene={exploration} updateUrlOnInit={false} createBrowserHistorySteps={true}>
+    <UrlSyncContextProvider namespace='td' scene={exploration} updateUrlOnInit={false} createBrowserHistorySteps={true}>
       <exploration.Component model={exploration} />
     </UrlSyncContextProvider>
   );
