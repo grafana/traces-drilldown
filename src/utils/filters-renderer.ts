@@ -18,7 +18,9 @@ function renderFilter(filter: AdHocVariableFilter) {
   ) {
     // Add quotes if it's coming from the filter input and it's not already quoted.
     // Adding a filter from a time series graph already has quotes. This should be handled better.
-    if (typeof val === 'string' && !val.startsWith('"') && !val.endsWith('"')) {
+    if (typeof val === 'string' && !(val.startsWith('"') && val.endsWith('"'))) {
+      // Escape " and \ to \" and \\ respectively
+      val = val.replace(/["\\]/g, (s) => `\\${s}`);
       val = `"${val}"`;
     }
   }

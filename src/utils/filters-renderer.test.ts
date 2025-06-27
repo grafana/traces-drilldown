@@ -121,5 +121,14 @@ describe('filters-renderer', () => {
         expect(renderTraceQLLabelFilters(filters)).toBe('true');
       });
     });
+
+    describe('string handling', () => {
+      it('should escape quotes and backslashes in queries', () => {
+        const filters: AdHocVariableFilter[] = [
+          { key: 'name', operator: '=', value: 'some "query" \\ ' },
+        ];
+        expect(renderTraceQLLabelFilters(filters)).toBe('name="some \\"query\\" \\\\ "');
+      });
+    });
   });
-}); 
+});
