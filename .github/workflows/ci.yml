@@ -21,7 +21,7 @@ jobs:
     uses: grafana/plugin-ci-workflows/.github/workflows/ci.yml@main
     with:
       run-playwright: false
-      run-playwright-docker: true
+      run-playwright-docker: false
       run-playwright-with-skip-grafana-dev-image: ${{ inputs.skip-grafana-dev-image || false }}
       upload-playwright-artifacts: true
       playwright-report-path: e2e/test-reports/

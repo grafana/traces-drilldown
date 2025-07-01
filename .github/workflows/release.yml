@@ -45,7 +45,7 @@ jobs:
       environment: 'prod' # publishing to 'prod' will also deploy to 'ops' and 'dev'
       attestation: true # this guarantees that the plugin was built from the source code provided in the release
       run-playwright: false
-      run-playwright-docker: true
+      run-playwright-docker: false
       upload-playwright-artifacts: true # IMPORTANT: we must ensure there are no unmasked secrets in the E2E tests
       run-playwright-with-skip-grafana-dev-image: ${{ inputs.skip-grafana-dev-image || false }}
       playwright-report-path: e2e/test-reports/
