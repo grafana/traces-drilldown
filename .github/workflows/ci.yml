@@ -1,16 +1,29 @@
-name: Build
+name: CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      skip-grafana-dev-image:
+        description: Skip the grafana dev image e2e test
+        required: false
+        type: boolean
+        default: false
   pull_request:
     branches:
       - main
 
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Call shared build action
-        uses: ./.github/actions/build
+  CI:
+    uses: grafana/plugin-ci-workflows/.github/workflows/ci.yml@main
+    with:
+      run-playwright: false
+      run-playwright-docker: true
+      run-playwright-with-skip-grafana-dev-image: ${{ inputs.skip-grafana-dev-image || false }}
+      upload-playwright-artifacts: true
+      playwright-report-path: e2e/test-reports/
+      playwright-docker-compose-file: docker-compose.yaml
+      playwright-grafana-url: http://localhost:3001
