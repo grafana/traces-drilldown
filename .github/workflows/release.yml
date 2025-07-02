@@ -42,9 +42,11 @@ jobs:
     uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main
     with:
       environment: ${{ inputs.environment || 'ops' }} # publishing to 'prod' will also deploy to 'ops' and 'dev'
-      attestation:
-        true # this guarantees that the plugin was built from
+      attestation: true # this guarantees that the plugin was built from
 
+      # Add version suffix for non-release pushes to main
+      plugin-version-suffix:
+        ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'npm version')) && github.sha || '' }}
 
         # Deploy provisioned plugin to Grafana Cloud
       grafana-cloud-deployment-type: provisioned
