@@ -17,10 +17,14 @@ description: Upload new plugin artifact to GCS & publish to plugin catalog
 on:
   workflow_dispatch:
     inputs:
-      skip-grafana-dev-image:
-        required: false
-        type: boolean
-        default: false
+      environment:
+        description: Environment to publish to
+        required: true
+        type: choice
+        options:
+          - 'dev'
+          - 'ops'
+          - 'prod'
   push:
     branches:
       - main
@@ -34,21 +38,25 @@ jobs:
   CD:
     name: Deploy plugin
     # Don't run on forks, ensure tag is on main branch, and restrict workflow_dispatch to main/tag branches
-    if: |
-      github.repository == 'grafana/traces-drilldown' &&
-      (
-        (github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'npm version')) ||
-        (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')))
-      )
+    if: github.repository == 'grafana/traces-drilldown'
     uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main
     with:
-      environment: 'dev' # publishing to 'prod' will also deploy to 'ops' and 'dev'
+      environment: ${{ inputs.environment || 'ops' }} # publishing to 'prod' will also deploy to 'ops' and 'dev'
       attestation: true # this guarantees that the plugin was built from the source code provided in the release
+
+      # Don't upload to catalog unless we're doing a release
+      gcs-only:
+        ${{ !((github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'npm version')) || (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')))) }}
+
+        # Deploy provisioned plugin to Grafana Cloud
+      grafana-cloud-deployment-type: provisioned
+      argo-workflow-slack-channel: '#proj-tracesdrilldown-cd'
+
+      # Playwright
       run-playwright: false
       run-playwright-docker: false
       upload-playwright-artifacts: true # IMPORTANT: we must ensure there are no unmasked secrets in the E2E tests
-      run-playwright-with-skip-grafana-dev-image: ${{ inputs.skip-grafana-dev-image || false }}
+      run-playwright-with-skip-grafana-dev-image: true
       playwright-report-path: e2e/test-reports/
       playwright-docker-compose-file: docker-compose.yaml
       playwright-grafana-url: http://localhost:3001
-      argo-workflow-slack-channel: '#proj-tracesdrilldown-cd'
