@@ -42,7 +42,7 @@ jobs:
       )
     uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main
     with:
-      environment: 'prod' # publishing to 'prod' will also deploy to 'ops' and 'dev'
+      environment: 'dev' # publishing to 'prod' will also deploy to 'ops' and 'dev'
       attestation: true # this guarantees that the plugin was built from the source code provided in the release
       run-playwright: false
       run-playwright-docker: false
