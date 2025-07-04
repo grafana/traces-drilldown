@@ -4,9 +4,7 @@ import { renderTraceQLLabelFilters } from './filters-renderer';
 describe('filters-renderer', () => {
   describe('renderTraceQLLabelFilters', () => {
     it('should render a single filter correctly', () => {
-      const filters: AdHocVariableFilter[] = [
-        { key: 'service.name', operator: '=', value: 'test' },
-      ];
+      const filters: AdHocVariableFilter[] = [{ key: 'service.name', operator: '=', value: 'test' }];
       expect(renderTraceQLLabelFilters(filters)).toBe('service.name="test"');
     });
 
@@ -18,11 +16,9 @@ describe('filters-renderer', () => {
       expect(renderTraceQLLabelFilters(filters)).toBe('service.name="test"&&duration>100');
     });
 
-    it('should not add quotes to already quoted values', () => {
-      const filters: AdHocVariableFilter[] = [
-        { key: 'tag', operator: '=', value: '"already-quoted"' },
-      ];
-      expect(renderTraceQLLabelFilters(filters)).toBe('tag="already-quoted"');
+    it('should add quotes to quoted values', () => {
+      const filters: AdHocVariableFilter[] = [{ key: 'tag', operator: '=', value: '"already-quoted"' }];
+      expect(renderTraceQLLabelFilters(filters)).toBe('tag="\\"already-quoted\\""');
     });
 
     it('should not add quotes to status, kind, duration keys', () => {
@@ -40,7 +36,9 @@ describe('filters-renderer', () => {
         { key: 'span.messaging.destination.partition.id', operator: '=', value: '1' },
         { key: 'span.network.protocol.version', operator: '=', value: '2' },
       ];
-      expect(renderTraceQLLabelFilters(filters)).toBe('span.messaging.destination.partition.id="1"&&span.network.protocol.version="2"');
+      expect(renderTraceQLLabelFilters(filters)).toBe(
+        'span.messaging.destination.partition.id="1"&&span.network.protocol.version="2"'
+      );
     });
 
     it('should handle combined types of filters', () => {
@@ -74,59 +72,45 @@ describe('filters-renderer', () => {
           { key: 'service.name', operator: '=', value: '"true"' },
           { key: 'service.type', operator: '=', value: '"false"' },
         ];
-        expect(renderTraceQLLabelFilters(filters)).toBe('service.name="true"&&service.type="false"');
+        expect(renderTraceQLLabelFilters(filters)).toBe('service.name="\\"true\\""&&service.type="\\"false\\""');
       });
     });
 
     describe('number handling', () => {
       it('should handle integer values without quotes for duration', () => {
-        const filters: AdHocVariableFilter[] = [
-          { key: 'duration', operator: '>', value: '123' },
-        ];
+        const filters: AdHocVariableFilter[] = [{ key: 'duration', operator: '>', value: '123' }];
         expect(renderTraceQLLabelFilters(filters)).toBe('duration>123');
       });
 
       it('should handle decimal values without quotes for duration', () => {
-        const filters: AdHocVariableFilter[] = [
-          { key: 'duration', operator: '>', value: '123.45' },
-        ];
+        const filters: AdHocVariableFilter[] = [{ key: 'duration', operator: '>', value: '123.45' }];
         expect(renderTraceQLLabelFilters(filters)).toBe('duration>123.45');
       });
 
       it('should handle negative values without quotes for duration', () => {
-        const filters: AdHocVariableFilter[] = [
-          { key: 'duration', operator: '>', value: '-123' },
-        ];
+        const filters: AdHocVariableFilter[] = [{ key: 'duration', operator: '>', value: '-123' }];
         expect(renderTraceQLLabelFilters(filters)).toBe('duration>-123');
       });
 
       it('should handle values with whitespace for duration', () => {
-        const filters: AdHocVariableFilter[] = [
-          { key: 'duration', operator: '>', value: ' 123 ' },
-        ];
+        const filters: AdHocVariableFilter[] = [{ key: 'duration', operator: '>', value: ' 123 ' }];
         expect(renderTraceQLLabelFilters(filters)).toBe('duration> 123 ');
       });
 
       it('should handle numeric strings for non-numeric fields', () => {
-        const filters: AdHocVariableFilter[] = [
-          { key: 'service.id', operator: '=', value: '12345' },
-        ];
+        const filters: AdHocVariableFilter[] = [{ key: 'service.id', operator: '=', value: '12345' }];
         expect(renderTraceQLLabelFilters(filters)).toBe('service.id=12345');
       });
 
       it('should filter out empty string values', () => {
-        const filters: AdHocVariableFilter[] = [
-          { key: 'tag', operator: '=', value: '' },
-        ];
+        const filters: AdHocVariableFilter[] = [{ key: 'tag', operator: '=', value: '' }];
         expect(renderTraceQLLabelFilters(filters)).toBe('true');
       });
     });
 
     describe('string handling', () => {
       it('should escape quotes and backslashes in queries', () => {
-        const filters: AdHocVariableFilter[] = [
-          { key: 'name', operator: '=', value: 'some "query" \\ ' },
-        ];
+        const filters: AdHocVariableFilter[] = [{ key: 'name', operator: '=', value: 'some "query" \\ ' }];
         expect(renderTraceQLLabelFilters(filters)).toBe('name="some \\"query\\" \\\\ "');
       });
     });
