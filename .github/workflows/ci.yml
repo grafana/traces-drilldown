@@ -33,3 +33,12 @@ jobs:
 
       # Add the git head ref sha to the plugin version as suffix (`+abcdef`). This is required for CD builds.
       plugin-version-suffix: ${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}
+
+      # Playwright
+      run-playwright: false
+      run-playwright-docker: false
+      upload-playwright-artifacts: true # IMPORTANT: we must ensure there are no unmasked secrets in the E2E tests
+      run-playwright-with-skip-grafana-dev-image: true
+      playwright-report-path: e2e/test-reports/
+      playwright-docker-compose-file: docker-compose.yaml
+      playwright-grafana-url: http://localhost:3001
