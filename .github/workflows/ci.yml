@@ -1,29 +1,35 @@
-name: CI
+name: Plugins - CI / CD
 
 on:
-  workflow_dispatch:
-    inputs:
-      skip-grafana-dev-image:
-        description: Skip the grafana dev image e2e test
-        required: false
-        type: boolean
-        default: false
-  pull_request:
+  push:
     branches:
       - main
+  pull_request:
 
-permissions:
-  contents: 'read'
-  id-token: 'write'
+permissions: {}
 
 jobs:
-  CI:
-    uses: grafana/plugin-ci-workflows/.github/workflows/ci.yml@main
+  cd:
+    name: CI / CD
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main # zizmor: ignore[unpinned-uses]
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     with:
-      run-playwright: false
-      run-playwright-docker: false
-      run-playwright-with-skip-grafana-dev-image: ${{ inputs.skip-grafana-dev-image || false }}
-      upload-playwright-artifacts: true
-      playwright-report-path: e2e/test-reports/
-      playwright-docker-compose-file: docker-compose.yaml
-      playwright-grafana-url: http://localhost:3001
+      # Checkout/build PR or main branch, depending on event
+      branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
+
+      # When pushing to "main", publish and deploy to "dev" (CD). For PRs, skip publishing and deploying (run CI only)
+      environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'dev' || 'none' }}
+
+      # Deploy provisioned plugin to Grafana Cloud
+      grafana-cloud-deployment-type: provisioned
+      argo-workflow-slack-channel: '#proj-tracesdrilldown-cd'
+
+      # Scope for the plugin published to the catalog. Setting this to "grafana_cloud" will make it visible only in Grafana Cloud
+      # (and hide it for on-prem). This is required for some provisioned plugins.
+      # scopes: grafana_cloud
+
+      # Add the git head ref sha to the plugin version as suffix (`+abcdef`). This is required for CD builds.
+      plugin-version-suffix: ${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}
