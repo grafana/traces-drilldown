@@ -29,7 +29,7 @@ Select a view by choosing an **Exploration**: **All services**, **Profile types*
 
 <!-- screenshots need to be updated -->
 
-![Select an Exploration type to begin](../images/explore-profiles-view-bar.png)
+![Select an Exploration type to begin](/media/docs/explore-profiles/explore-profiles-view-bar.png)
 
 You can refine any selected views by selecting a Profile type, Label, or Flame graph from one of the charts.
 Click and drag on an area of interest to see more detail.
@@ -142,27 +142,27 @@ Determining which view to use frames the rest of your investigation.
 
 The **All services** view is the default view when you first open Traces Drilldown.
 
-![The All services view](../images/explore-profiles-homescreen.png)
+![The All services view](/media/docs/explore-profiles/explore-profiles-homescreen.png)
 
 ### Profile types
 
 The Profile types shows one chart for each profile available for the selected service.
 You can select to display the charts in a grid or one chart per row.
 
-![Profile types](../images/explore-profiles-profile-types.png)
+![Profile types](/media/docs/explore-profiles/explore-profiles-profile-types.png)
 
 ### Labels
 
 The Labels view lets you navigate and analyze performance data through labels.
 This feature is crucial for identifying performance anomalies and understanding the behavior of different application segments under various conditions.
 
-![Labels view](../images/explore-profiles-labels.png)
+![Labels view](/media/docs/explore-profiles/explore-profiles-labels.png)
 
 ### Flame graphs
 
 The Flame graph view visualizes profiling data of a single service in a flame graph format, allowing easy identification of resource-intensive functions.
 
-![Flame graphs](../images/explore-profiles-flamegraph-2.png)
+![Flame graphs](/media/docs/explore-profiles/explore-profiles-flamegraph-2.png)
 
 ### Diff flame graph
 
