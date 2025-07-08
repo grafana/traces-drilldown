@@ -1,6 +1,6 @@
 import { SelectableValue } from '@grafana/data';
 
-export const DATABASE_CALLS_KEY = 'span.db.name';
+export const DATABASE_CALLS_KEY = 'span.db.system.name';
 
 export const primarySignalOptions: Array<SelectableValue<string>> = [
   {

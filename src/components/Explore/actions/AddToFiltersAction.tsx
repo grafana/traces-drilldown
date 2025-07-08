@@ -55,7 +55,7 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
 export const addToFilters = (variable: AdHocFiltersVariable, label: string, value: string) => {
   // ensure we set the new filter with latest value
   // and remove any existing filter for the same key
-  // and also keep span.db.name as it is a primary filter
+  // and also keep span.db.system.name as it is a primary filter
   const filtersWithoutNew = variable.state.filters.filter((f) => f.key === DATABASE_CALLS_KEY || f.key !== label);
 
   // TODO: Replace it with new API introduced in https://github.com/grafana/scenes/issues/1103
