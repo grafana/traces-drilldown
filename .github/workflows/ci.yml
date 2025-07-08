@@ -21,8 +21,8 @@ jobs:
       branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
 
       # When pushing to "main", publish and deploy to "dev" (CD). For PRs, skip publishing and deploying (run CI only)
-      environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'ops' || 'none' }}
-
+      environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'dev,ops' || 'none' }}
+      auto-merge-environments: dev,ops
       # Deploy provisioned plugin to Grafana Cloud
       grafana-cloud-deployment-type: provisioned
       argo-workflow-slack-channel: '#proj-tracesdrilldown-cd'
