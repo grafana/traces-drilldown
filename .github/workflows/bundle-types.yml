@@ -21,7 +21,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: grafana/plugin-actions/bundle-types@main
+      - uses: grafana/plugin-actions/bundle-types@main # zizmor: ignore[unpinned-uses]
         with:
           entry-point: ./src/exposedComponents/types.ts
           ts-config: ./tsconfig-for-bundle-types.json
