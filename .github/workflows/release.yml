@@ -1,61 +1,65 @@
-# This GitHub Action automates the process of building Grafana plugins.
-# (For more information, see https://github.com/grafana/plugin-actions/blob/main/build-plugin/README.md)
-name: Release
+name: Publish to plugin catalog
+description: Upload new plugin artifact to GCS & publish to plugin catalog
+
+# Version Tag Publishing Process (TODO: Automate this process more):
+# 1. Create your feature branch and make changes
+# 2. Get your feature PR approved
+# 3. Create a separate version bump PR:
+#    - git switch -c bump-version-vX.Y.Z
+#    - update CHANGELOG.md with a link to the forthcoming tag's release notes
+#    - npm version <type>  # this creates the commit and tag (see https://docs.npmjs.com/cli/commands/npm-version for <type> options, e.g. patch, minor, major, prerelease, etc.)
+#    - git push origin bump-version-vX.Y.Z --follow-tags
+# 4. Get version bump PR approved
+# 5. Merge feature PR first
+# 6. Merge version bump PR
+# The workflow will trigger when the version tag lands on main via the merge
 
 on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to publish to
+        required: true
+        type: choice
+        options:
+          - 'dev'
+          - 'ops'
+          - 'prod'
   push:
-    tags:
-      - 'v*' # Run workflow on version tags, e.g. v1.0.0.
+    branches:
+      - main
 
 permissions:
-  contents: write
-  id-token: write
+  contents: 'write'
+  id-token: 'write'
+  attestations: 'write'
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - id: get-secrets
-        name: get secrets
-        uses: grafana/shared-workflows/actions/get-vault-secrets@5d7e361bc7e0a183cde8afe9899fb7b596d2659b
-        with:
-          common_secrets: |
-            GRAFANA_ACCESS_POLICY_TOKEN=plugins/sign-plugin-access-policy-token:token
-            GCP_UPLOAD_ARTIFACTS_KEY=grafana/integration-artifacts-uploader-service-account:'credentials.json'
-      - uses: grafana/plugin-actions/build-plugin@main
-        id: build-release
-        with:
-          policy_token: ${{ env.GRAFANA_ACCESS_POLICY_TOKEN }}
-      - name: Get plugin metadata
-        id: metadata
-        run: |
-          sudo apt-get install jq
+  CD:
+    name: Deploy plugin
+    # Don't run on forks, ensure tag is on main branch, and restrict workflow_dispatch to main/tag branches
+    if: |
+      github.repository == 'grafana/traces-drilldown' &&
+      (
+        (github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'npm version')) ||
+        (github.event_name == 'workflow_dispatch' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')))
+      )
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main
+    with:
+      environment: ${{ inputs.environment || 'ops' }} # publishing to 'prod' will also deploy to 'ops' and 'dev'
+      attestation:
+        true # this guarantees that the plugin was built from
 
-          export GRAFANA_PLUGIN_ID=$(cat src/plugin.json | jq -r .id)
-          export GRAFANA_PLUGIN_ARTIFACT=${GRAFANA_PLUGIN_ID}-latest.zip
 
-          echo "plugin-id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
-          echo "archive=${GRAFANA_PLUGIN_ARTIFACT}" >> $GITHUB_OUTPUT
+        # Deploy provisioned plugin to Grafana Cloud
+      grafana-cloud-deployment-type: provisioned
+      argo-workflow-slack-channel: '#proj-tracesdrilldown-cd'
 
-      - id: 'auth'
-        uses: google-github-actions/auth@6fc4af4b145ae7821d527454aa9bd537d1f2dc5f # v2.1.7
-        with:
-          credentials_json: ${{ env.GCP_UPLOAD_ARTIFACTS_KEY }}
-
-      - id: 'create-latest'
-        run: cp "$SOURCE_ARCHIVE" "$TARGET_ARCHIVE"
-        env:
-          SOURCE_ARCHIVE: ${{ steps.build-release.outputs.archive }}
-          TARGET_ARCHIVE: ${{ steps.metadata.outputs.archive }}
-
-      - id: 'upload-to-gcs'
-        name: 'Upload assets to latest'
-        uses: google-github-actions/upload-cloud-storage@e95a15f226403ed658d3e65f40205649f342ba2c # v1.0.3
-        with:
-          path: ./
-          destination: 'integration-artifacts/grafana-exploretraces-app/'
-          glob: '*.zip'
-          parent: false
+      # Playwright
+      run-playwright: false
+      run-playwright-docker: false
+      upload-playwright-artifacts: true # IMPORTANT: we must ensure there are no unmasked secrets in the E2E tests
+      run-playwright-with-skip-grafana-dev-image: true
+      playwright-report-path: e2e/test-reports/
+      playwright-docker-compose-file: docker-compose.yaml
+      playwright-grafana-url: http://localhost:3001
