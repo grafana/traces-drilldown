@@ -129,7 +129,6 @@ export function getLayoutChild(
       generateMetricsQuery({
         metric,
         extraFilters: `${variable.getValueText()}=${formatLabelValue(getLabelValue(frame))}`,
-        groupByStatus: true,
       })
     );
 
