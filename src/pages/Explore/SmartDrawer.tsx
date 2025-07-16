@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import React from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
-import { Button, Drawer, IconButton, useStyles2 } from '@grafana/ui';
+import { Button, Drawer, useStyles2 } from '@grafana/ui';
 
 interface SmartDrawerProps {
   children: React.ReactNode;
@@ -32,15 +32,7 @@ export const SmartDrawer = ({
 
   if (shouldUseDrawer) {
     return (
-      <Drawer size="lg" onClose={onClose}>
-        {title && (
-          <div className={styles.drawerHeader}>
-            <h4>{title}</h4>
-            <div className={styles.drawerHeaderButtons}>
-              <IconButton name="times" onClick={onClose} tooltip="Close drawer" size="lg" />
-            </div>
-          </div>
-        )}
+      <Drawer size="lg" title={title} onClose={onClose}>
         {children}
       </Drawer>
     );
@@ -81,9 +73,5 @@ const getStyles = (theme: GrafanaTheme2) => ({
     h4: {
       margin: 0,
     },
-  }),
-  drawerHeaderButtons: css({
-    display: 'flex',
-    gap: theme.spacing(1),
   }),
 });
