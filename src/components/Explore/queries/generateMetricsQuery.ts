@@ -4,16 +4,13 @@ interface QueryOptions {
   metric: MetricFunction;
   extraFilters?: string;
   groupByKey?: string;
-  groupByStatus?: boolean;
 }
 
-export function generateMetricsQuery({ metric, groupByKey, extraFilters, groupByStatus }: QueryOptions) {
+export function generateMetricsQuery({ metric, groupByKey, extraFilters}: QueryOptions) {
   // Generate span set filters
   let filters = `${VAR_FILTERS_EXPR}`;
 
-  if (metric === 'rate') {
-    filters += ' && status!=error';
-  } else if (metric === 'errors') {
+  if (metric === 'errors') {
     filters += ' && status=error';
   }
 
@@ -42,10 +39,6 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, groupBy
     groupByAttrs.push(groupByKey);
   }
 
-  if (metric !== 'duration' && groupByStatus) {
-    groupByAttrs.push('status');
-  }
-
   const groupBy = groupByAttrs.length ? `by(${groupByAttrs.join(', ')})` : '';
 
   return `{${filters}} | ${metricFn} ${groupBy}`;
@@ -54,7 +47,7 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, groupBy
 export function metricByWithStatus(metric: MetricFunction, tagKey?: string) {
   return {
     refId: 'A',
-    query: generateMetricsQuery({ metric, groupByKey: tagKey, groupByStatus: false }),
+    query: generateMetricsQuery({ metric, groupByKey: tagKey}),
     queryType: 'traceql',
     tableType: 'spans',
     limit: 100,

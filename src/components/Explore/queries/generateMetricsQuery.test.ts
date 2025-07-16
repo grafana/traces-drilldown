@@ -4,7 +4,7 @@ import { ALL } from '../../../utils/shared';
 describe('generateMetricsQuery', () => {
   it('should generate a basic rate query', () => {
     const result = generateMetricsQuery({ metric: 'rate' });
-    expect(result).toEqual('{${primarySignal} && ${filters} && status!=error} | rate() ');
+    expect(result).toEqual('{${primarySignal} && ${filters}} | rate() ');
   });
 
   it('should generate an errors query', () => {
@@ -22,7 +22,7 @@ describe('generateMetricsQuery', () => {
       metric: 'rate', 
       extraFilters: 'name="test"' 
     });
-    expect(result).toEqual('{${primarySignal} && ${filters} && status!=error && name="test"} | rate() ');
+    expect(result).toEqual('{${primarySignal} && ${filters} && name="test"} | rate() ');
   });
 
   it('should handle groupByKey when provided', () => {
@@ -30,7 +30,7 @@ describe('generateMetricsQuery', () => {
       metric: 'rate', 
       groupByKey: 'serviceName' 
     });
-    expect(result).toEqual('{${primarySignal} && ${filters} && status!=error && serviceName != nil} | rate() by(serviceName)');
+    expect(result).toEqual('{${primarySignal} && ${filters} && serviceName != nil} | rate() by(serviceName)');
   });
 
   it('should not add groupByKey filter when groupByKey is ALL', () => {
@@ -38,33 +38,7 @@ describe('generateMetricsQuery', () => {
       metric: 'rate', 
       groupByKey: ALL 
     });
-    expect(result).toEqual('{${primarySignal} && ${filters} && status!=error} | rate() ');
-  });
-
-  it('should add status to groupBy when groupByStatus is true', () => {
-    const result = generateMetricsQuery({ 
-      metric: 'rate', 
-      groupByStatus: true 
-    });
-    expect(result).toEqual('{${primarySignal} && ${filters} && status!=error} | rate() by(status)');
-  });
-
-  it('should add both groupByKey and status to groupBy when both are provided', () => {
-    const result = generateMetricsQuery({ 
-      metric: 'rate', 
-      groupByKey: 'serviceName',
-      groupByStatus: true 
-    });
-    expect(result).toEqual('{${primarySignal} && ${filters} && status!=error && serviceName != nil} | rate() by(serviceName, status)');
-  });
-
-  it('should not add status to groupBy for duration metric even if groupByStatus is true', () => {
-    const result = generateMetricsQuery({ 
-      metric: 'duration', 
-      groupByKey: 'serviceName',
-      groupByStatus: true 
-    });
-    expect(result).toEqual('{${primarySignal} && ${filters} && serviceName != nil} | quantile_over_time(duration, 0.9) by(serviceName)');
+    expect(result).toEqual('{${primarySignal} && ${filters}} | rate() ');
   });
 });
 
@@ -73,7 +47,7 @@ describe('metricByWithStatus', () => {
     const result = metricByWithStatus('rate');
     expect(result).toEqual({
       refId: 'A',
-      query: '{${primarySignal} && ${filters} && status!=error} | rate() ',
+      query: '{${primarySignal} && ${filters}} | rate() ',
       queryType: 'traceql',
       tableType: 'spans',
       limit: 100,
@@ -112,7 +86,7 @@ describe('metricByWithStatus', () => {
     const result = metricByWithStatus('rate', 'serviceName');
     expect(result).toEqual({
       refId: 'A',
-      query: '{${primarySignal} && ${filters} && status!=error && serviceName != nil} | rate() by(serviceName)',
+      query: '{${primarySignal} && ${filters} && serviceName != nil} | rate() by(serviceName)',
       queryType: 'traceql',
       tableType: 'spans',
       limit: 100,
