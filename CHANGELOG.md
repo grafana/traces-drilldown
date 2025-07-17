@@ -1,5 +1,38 @@
 # Changelog
 
+#### 1.1.2
+
+##### Chores
+
+*  changing input props for exposed component (#462) (0cf77202)
+*  isolate types imports for exposed component (#460) (fdb54e47)
+*  remove extension link from logs drilldown (#421) (9a8efe9e)
+*  update bundle-types.yml (#347) (7403a7ec)
+
+##### Continuous Integration
+
+*  Add conventional commits workflow and improve release (#506) (81897aa4)
+
+##### New Features
+
+*  open in explore traces button (#335) (d7d91db3)
+* **explorations:**  rename to `investigations` (#340) (651373d2)
+
+##### Bug Fixes
+
+* **500:**  Use db.system.name instead of db.name attribute for the "Database calls" filter (#501) (06b298d4)
+* **PanelMenu:**  use `firstValueFrom()` instead of `lastValueFrom()` (#399) (e343d6a9)
+* **open in drilldown button:**  update tempo matcher type (#376) (78aceb98)
+
+##### Other Changes
+
+*  create a new history item when a filter is added from the breakdown (#431) (edb3f1af)
+*  Do not show an empty state while streaming is still in progress (#426) (b877d479)
+*  update error panel y-axis labels (#424) (6236467b)
+*  Add "Go Queryless" hook (#404) (18319c97)
+*  Make extensions compatible with different Grafana versions (#395) (b045de36)
+
+
 ## [1.1.0](https://github.com/grafana/traces-drilldown/compare/v1.0.0...v1.1.0) (2025-06-27)
 
 * Default to all spans when pressing Open in Traces Drilldown button ([#443](https://github.com/grafana/traces-drilldown/pull/443))
