@@ -21,6 +21,8 @@ jobs:
   bump-version:
     # Don't run on forks
     if: github.repository == 'grafana/traces-drilldown'
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Version bump
@@ -32,6 +34,10 @@ jobs:
     name: Deploy plugin
     needs: bump-version
     uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     with:
       environment: prod
       attestation: true
