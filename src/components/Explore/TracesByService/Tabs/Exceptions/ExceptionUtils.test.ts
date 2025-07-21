@@ -112,12 +112,12 @@ describe('ExceptionUtils', () => {
 
       expect(result.messages).toHaveLength(2);
       expect(result.messages[0]).toBe('Database connection failed'); // Most frequent first
-      expect(result.occurences[0]).toBe(2);
+      expect(result.occurrences[0]).toBe(2);
       expect(result.types[0]).toBe('SQLException');
       expect(result.services[0]).toBe('user-service');
       
       expect(result.messages[1]).toBe('Null pointer exception');
-      expect(result.occurences[1]).toBe(1);
+      expect(result.occurrences[1]).toBe(1);
       expect(result.types[1]).toBe('NullPointerException');
       expect(result.services[1]).toBe('payment-service');
     });
@@ -133,7 +133,7 @@ describe('ExceptionUtils', () => {
       expect(result.messages).toEqual(['Error 1', 'Error 2']);
       expect(result.types).toEqual(['', '']);
       expect(result.services).toEqual(['', '']);
-      expect(result.occurences).toEqual([1, 1]);
+      expect(result.occurrences).toEqual([1, 1]);
       expect(result.lastSeenTimes).toEqual(['', '']);
       expect(result.timeSeries).toEqual([[], []]);
     });
@@ -149,9 +149,9 @@ describe('ExceptionUtils', () => {
 
       expect(result.messages).toHaveLength(2);
       expect(result.messages[0]).toBe('Error message'); // Most frequent first
-      expect(result.occurences[0]).toBe(2);
+      expect(result.occurrences[0]).toBe(2);
       expect(result.messages[1]).toBe('Different error');
-      expect(result.occurences[1]).toBe(1);
+      expect(result.occurrences[1]).toBe(1);
     });
 
     it('should sort by occurrence count descending', () => {
@@ -167,7 +167,7 @@ describe('ExceptionUtils', () => {
       const result = aggregateExceptions(messageField);
 
       expect(result.messages).toEqual(['Common error', 'Medium error', 'Rare error']);
-      expect(result.occurences).toEqual([3, 2, 1]);
+      expect(result.occurrences).toEqual([3, 2, 1]);
     });
 
     it('should calculate last seen times correctly', () => {
@@ -227,7 +227,7 @@ describe('ExceptionUtils', () => {
       expect(result.messages).toEqual([]);
       expect(result.types).toEqual([]);
       expect(result.services).toEqual([]);
-      expect(result.occurences).toEqual([]);
+      expect(result.occurrences).toEqual([]);
       expect(result.lastSeenTimes).toEqual([]);
       expect(result.timeSeries).toEqual([]);
     });
@@ -244,7 +244,7 @@ describe('ExceptionUtils', () => {
       const result = aggregateExceptions(messageField);
 
       expect(result.messages).toEqual(['Valid error', 'Another valid error']);
-      expect(result.occurences).toEqual([1, 1]);
+      expect(result.occurrences).toEqual([1, 1]);
     });
   });
 }); 

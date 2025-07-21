@@ -2,7 +2,7 @@ import { Field } from "@grafana/data";
 import { calculateBucketSize } from "utils/dates";
 
 export function aggregateExceptions(messageField: Field<string>, typeField?: Field<string>, timeField?: Field<any>, serviceField?: Field<string>) {
-  const occurences = new Map<string, number>();
+  const occurrences = new Map<string, number>();
   const types = new Map<string, string>();
   const lastSeenTimes = new Map<string, number>();
   const services = new Map<string, string>();
@@ -19,7 +19,7 @@ export function aggregateExceptions(messageField: Field<string>, typeField?: Fie
     
     if (message) {
       const normalizedMessage = normalizeExceptionMessage(message);
-      occurences.set(normalizedMessage, (occurences.get(normalizedMessage) || 0) + 1);
+      occurrences.set(normalizedMessage, (occurrences.get(normalizedMessage) || 0) + 1);
       
       if (!types.has(normalizedMessage) && type) {
         types.set(normalizedMessage, type);
@@ -50,12 +50,12 @@ export function aggregateExceptions(messageField: Field<string>, typeField?: Fie
     timeSeries.set(message, timeSeriesData);
   }
 
-  const sortedEntries = Array.from(occurences.entries()).sort((a, b) => b[1] - a[1]);
+  const sortedEntries = Array.from(occurrences.entries()).sort((a, b) => b[1] - a[1]);
 
   return {
     messages: sortedEntries.map(([message]) => message),
     types: sortedEntries.map(([message]) => types.get(message) || ''),
-    occurences: sortedEntries.map(([, count]) => count),
+    occurrences: sortedEntries.map(([, count]) => count),
     services: sortedEntries.map(([message]) => services.get(message) || ''),
     timeSeries: sortedEntries.map(([message]) => timeSeries.get(message) || []),
     lastSeenTimes: sortedEntries.map(([message]) => {

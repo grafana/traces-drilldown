@@ -110,7 +110,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
                   return builder
                     .matchFieldsWithName('Service')
                     .overrideCustomFieldConfig('width', 200)
-                    .matchFieldsWithName('Occurences')
+                    .matchFieldsWithName('Occurrences')
                     .overrideCustomFieldConfig('width', 120)
                     .matchFieldsWithName('Time Series')
                     .overrideCustomFieldConfig('width', 220)
@@ -138,7 +138,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
 
             let messages: string[] = [];
             let types: string[] = [];
-            let occurences: number[] = [];
+            let occurrences: number[] = [];
             let lastSeenTimes: string[] = [];
             let services: string[] = [];
             let timeSeries: Array<Array<{time: number, count: number}>> = [];
@@ -147,7 +147,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
               const aggregated = aggregateExceptions(messageField, typeField, timeField, serviceField);
               messages = aggregated.messages;
               types = aggregated.types;
-              occurences = aggregated.occurences;
+              occurrences = aggregated.occurrences;
               lastSeenTimes = aggregated.lastSeenTimes;
               services = aggregated.services;
               timeSeries = aggregated.timeSeries;
@@ -186,9 +186,9 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
                   config: {},
                 },
                 {
-                  name: 'Occurences',
+                  name: 'Occurrences',
                   type: FieldType.number,
-                  values: occurences,
+                  values: occurrences,
                   config: {},
                 },
                 {
@@ -228,7 +228,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
       const countValues = seriesData.map(point => point.count);
       const timeValues = seriesData.map(point => point.time);
       
-      if (countValues.length <= 5) {
+      if (countValues.length <= 3) {
         return;
       }
 
@@ -359,10 +359,10 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
   private calculateExceptionsCount(data?: PanelData): number {
     if (!data?.series?.[0]) { return 0 }
     
-    const occurencesField = data.series[0].fields.find(field => field.name === 'Occurences');
-    if (!occurencesField?.values) { return 0 }
+    const occurrencesField = data.series[0].fields.find(field => field.name === 'Occurrences');
+    if (!occurrencesField?.values) { return 0 }
     
-    return occurencesField.values.reduce((total: number, value: number) => total + (value || 0), 0);
+    return occurrencesField.values.reduce((total: number, value: number) => total + (value || 0), 0);
   }
 
   public getExceptionsCount(): number {
