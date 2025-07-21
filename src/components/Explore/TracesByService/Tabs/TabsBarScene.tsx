@@ -2,12 +2,13 @@ import { css } from '@emotion/css';
 import { SceneObjectBase, SceneComponentProps, SceneObject, sceneGraph, SceneObjectState } from '@grafana/scenes';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
 import { useStyles2, Box, Stack, TabsBar, Tab } from '@grafana/ui';
-import React, { useEffect } from 'react';
-import { getTraceExplorationScene, getTraceByServiceScene } from 'utils/utils';
+import React, { useEffect, useState } from 'react';
+import { getTraceExplorationScene, getTraceByServiceScene, getExceptionsScene, getFiltersVariable, getPrimarySignalVariable } from 'utils/utils';
 import { ShareExplorationAction } from '../../actions/ShareExplorationAction';
 import { buildSpansScene } from './Spans/SpansScene';
 import { buildStructureScene } from './Structure/StructureScene';
 import { buildBreakdownScene } from './Breakdown/BreakdownScene';
+import { buildExceptionsScene } from './Exceptions/ExceptionsScene';
 import { MetricFunction } from 'utils/shared';
 import { buildComparisonScene } from './Comparison/ComparisonScene';
 import { useMount } from 'react-use';
@@ -28,6 +29,7 @@ export const actionViewsDefinitions: ActionViewDefinition[] = [
     value: 'traceList',
     getScene: buildSpansScene,
   },
+  { displayName: exceptionsDisplayName, value: 'exceptions', getScene: buildExceptionsScene },
 ];
 
 export interface TabsBarSceneState extends SceneObjectState {}
@@ -35,6 +37,7 @@ export interface TabsBarSceneState extends SceneObjectState {}
 export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
   public static Component = ({ model }: SceneComponentProps<TabsBarScene>) => {
     const styles = useStyles2(getStyles);
+    const [exceptionsCount, setExceptionsCount] = useState(0);
 
     const metricScene = getTraceByServiceScene(model);
     const exploration = getTraceExplorationScene(model);
@@ -45,11 +48,46 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
     const dataState = sceneGraph.getData(model).useState();
     const tracesCount = dataState.data?.series?.[0]?.length;
 
-    let enabledViews = actionViewsDefinitions.filter((view) => allowedActionViews?.includes(view.value));
+    const enabledViews = actionViewsDefinitions.filter((view) => {
+      if (view.value === 'exceptions' && metric !== 'errors') {
+        return false;
+      }
+      // If allowedActionViews is defined and has items, use it for filtering
+      // Otherwise, include all views (except exceptions when metric is not errors, handled above)
+      return !allowedActionViews?.length || allowedActionViews.includes(view.value);
+    });
 
-    if (!allowedActionViews?.length) {
-      enabledViews = actionViewsDefinitions;
-    }
+    // Get state variables that affect exceptions data
+    const filtersVariable = getFiltersVariable(model);
+    const primarySignalVariable = getPrimarySignalVariable(model);
+    const timeRange = sceneGraph.getTimeRange(model);
+    const { filters } = filtersVariable.useState();
+    const { value: primarySignal } = primarySignalVariable.useState();
+    const { value: timeRangeValue } = timeRange.useState();
+    
+    useEffect(() => {
+      if (metric !== 'errors') {
+        setExceptionsCount(0);
+        return;
+      }
+
+      const exceptionsScene = getExceptionsScene(model);
+      if (!exceptionsScene) {
+        setExceptionsCount(0);
+        return;
+      }
+
+      setExceptionsCount(exceptionsScene.getExceptionsCount());
+      const subscription = exceptionsScene.subscribeToState((newState, prevState) => {
+        if (newState.exceptionsCount !== prevState.exceptionsCount) {
+          setExceptionsCount(newState.exceptionsCount || 0);
+        }
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    }, [metric, model, actionView, filters, primarySignal, timeRangeValue]);
 
     useEffect(() => {
       if (metricScene.state.hasSetView) {
@@ -90,7 +128,7 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
                 label={tab.displayName(metric as MetricFunction)}
                 active={actionView === tab.value}
                 onChangeTab={() => metricScene.setActionView(tab.value)}
-                counter={tab.value === 'traceList' ? tracesCount : undefined}
+                counter={tab.value === 'traceList' ? tracesCount : tab.value === 'exceptions' ? exceptionsCount : undefined}
               />
             );
           })}
@@ -121,6 +159,10 @@ export function structureDisplayName(metric: MetricFunction) {
 
 function tracesDisplayName(metric: MetricFunction) {
   return metric === 'errors' ? 'Errored traces' : metric === 'duration' ? 'Slow traces' : 'Traces';
+}
+
+function exceptionsDisplayName(_: MetricFunction) {
+  return 'Exceptions';
 }
 
 function getStyles(theme: GrafanaTheme2) {
