@@ -101,16 +101,16 @@ describe('addToFilters', () => {
     });
   });
 
-  // it('should keep span.db.system.name filter intact', () => {
-  //   variable.state.filters.push({ key: 'span.db.system.name', operator: '=', value: 'value3' });
-  //   addToFilters(variable, 'newKey', 'newValue');
+  it('should keep span.db.system.name filter intact', () => {
+    variable.state.filters.push({ key: 'span.db.system.name', operator: '=', value: 'value3' });
+    addToFilters(variable, 'newKey', 'newValue');
 
-  //   expect(variable.setState).toHaveBeenCalledWith({
-  //     filters: [
-  //       { key: 'otherKey', operator: '=', value: 'value2' },
-  //       { key: 'span.db.system.name', operator: '=', value: 'value3' },
-  //       { key: 'newKey', operator: '=', value: 'newValue' },
-  //     ],
-  //   });
-  // });
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [
+        { key: 'otherKey', operator: '=', value: 'value2' },
+        { key: 'span.db.system.name', operator: '=', value: 'value3' },
+        { key: 'newKey', operator: '=', value: 'newValue' },
+      ],
+    });
+  });
 });
