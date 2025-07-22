@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AttributePanelRow } from './AttributePanelRow';
 import { locationService } from '@grafana/runtime';
 import { HomepagePanelType } from './AttributePanel';
@@ -33,29 +33,43 @@ describe('AttributePanelRow', () => {
     url: '/test-url',
   };
 
-  it('renders correctly with required props', () => {
+  it('renders correctly with required props', async () => {
     render(<AttributePanelRow {...mockProps} />);
 
+    await waitFor(() => {
     expect(screen.getByText(mockProps.labelTitle)).toBeInTheDocument();
-    expect(screen.getByText(mockProps.valueTitle)).toBeInTheDocument();
-    expect(screen.getByText(mockProps.label)).toBeInTheDocument();
-    expect(screen.getByText(mockProps.value)).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(mockProps.valueTitle)).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(mockProps.label)).toBeInTheDocument();
+      expect(screen.getByText(mockProps.value)).toBeInTheDocument();
+    });
   });
 
-  it('navigates to the correct URL on click', () => {
+  it('navigates to the correct URL on click', async () => {
     render(<AttributePanelRow {...mockProps} />);
-    const rowElement = screen.getByText(mockProps.label).closest('div');
-    fireEvent.click(rowElement!);
-    expect(locationService.push).toHaveBeenCalledWith(mockProps.url);
+    await waitFor(() => {
+      const rowElement = screen.getByText(mockProps.label).closest('div');
+      fireEvent.click(rowElement!);
+      expect(locationService.push).toHaveBeenCalledWith(mockProps.url);
+    });
   });
 
-  it('renders the row header only if index is 0', () => {
+  it('renders the row header only if index is 0', async () => {
     render(<AttributePanelRow {...mockProps} />);
-    expect(screen.getByText(mockProps.labelTitle)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(mockProps.labelTitle)).toBeInTheDocument();
+    });
   });
 
-  it('does not render the row header only if index is > 0', () => {
+  it('does not render the row header only if index is > 0', async () => {
     render(<AttributePanelRow {...{ ...mockProps, index: 1 }} />);
-    expect(screen.queryByText(mockProps.labelTitle)).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText(mockProps.labelTitle)).not.toBeInTheDocument();
+    });
   });
 });
