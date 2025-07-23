@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { AttributePanelRows } from './AttributePanelRows';
 import { DataFrame, Field } from '@grafana/data';
 
@@ -38,34 +38,45 @@ describe('AttributePanelRows', () => {
     ]),
   ];
 
-  it('renders message if provided', () => {
+  it('renders message if provided', async () => {
     const msg = 'No data available.';
+
     render(<AttributePanelRows series={[]} type={'errored-services'} message={msg} />);
-    expect(screen.getByText(msg)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(msg)).toBeInTheDocument();
+    });
   });
 
-  it('renders an empty container if no series or message is provided', () => {
+  it('renders an empty container if no series or message is provided', async () => {
     render(<AttributePanelRows series={[]} type={'errored-services'} />);
-    expect(screen.getByText('No series data')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('No series data')).toBeInTheDocument();
+    });
   });
 
-  it('renders error rows sorted by total errors when type is "errors"', () => {
+  it('renders error rows sorted by total errors when type is "errors"', async () => {
     render(<AttributePanelRows series={dummySeries} type={'errored-services'} />);
 
-    expect(screen.getAllByText('Total errors').length).toBe(1);
+    await waitFor(() => {
+      expect(screen.getAllByText('Total errors').length).toBe(1);
+    });
 
     const labels = screen.getAllByText('Test service', { exact: false });
     expect(labels[0].textContent).toContain('Test service 1');
     expect(labels[1].textContent).toContain('Test service 2');
   });
 
-  it('renders duration rows sorted by duration when type is not "errors"', () => {
+  it('renders duration rows sorted by duration when type is not "errors"', async () => {
     render(<AttributePanelRows series={dummyDurationSeries} type={'slowest-traces'} />);
 
-    expect(screen.getAllByText('Duration').length).toBe(1);
+    await waitFor(() => { 
+      expect(screen.getAllByText('Duration').length).toBe(1);
+    });
 
     const labels = screen.getAllByText('Test', { exact: false });
-    expect(labels[0].textContent).toContain('Test service 1: Test name 1');
-    expect(labels[1].textContent).toContain('Test service 2: Test name 2');
+    await waitFor(() => {
+      expect(labels[0].textContent).toContain('Test service 1: Test name 1');
+      expect(labels[1].textContent).toContain('Test service 2: Test name 2');
+    });
   });
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react'; 
+import { render, fireEvent, waitFor } from '@testing-library/react'; 
 import { AddToFiltersAction, addToFilters } from './AddToFiltersAction';
 import { DataFrame } from '@grafana/data';
 import { AdHocFiltersVariable } from '@grafana/scenes';
@@ -33,11 +33,13 @@ describe('AddToFiltersAction', () => {
     mockGetLabelValue.mockReturnValue('value1'); 
   });
 
-  it('should render the button and trigger onClick', () => {
+  it('should render the button and trigger onClick', async () => {
     const { getByRole } = render(<AddToFiltersAction.Component model={{ onClick } as any} />);
-    const button = getByRole('button', { name: /add to filters/i });
-    fireEvent.click(button);
-    expect(onClick).toHaveBeenCalled();
+    await waitFor(() => {
+      const button = getByRole('button', { name: /add to filters/i });
+      fireEvent.click(button);
+      expect(onClick).toHaveBeenCalled();
+    });
   });
 
   it('should add filter when labelKey is provided and exists in labels', () => {

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { SpanListColumnsSelector } from './SpanListColumnsSelector';
@@ -17,23 +17,29 @@ describe('SpanListColumnsSelector', () => {
     jest.clearAllMocks();
   });
 
-  it('should display "Add extra columns" label', () => {
+  it('should display "Add extra columns" label', async () => {
     render(<SpanListColumnsSelector options={mockOptions} onChange={mockOnChange} />);
 
-    expect(screen.getByText('Add extra columns')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Add extra columns')).toBeInTheDocument();
+    });
   });
 
-  it('should show placeholder text when no value is selected', () => {
+  it('should show placeholder text when no value is selected', async () => {
     render(<SpanListColumnsSelector options={mockOptions} onChange={mockOnChange} />);
 
-    expect(screen.getByText('Select an attribute')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Select an attribute')).toBeInTheDocument();
+    });
   });
 
   it('should display pre-selected values', async () => {
     render(<SpanListColumnsSelector options={mockOptions} onChange={mockOnChange} value="Duration,Tags" />);
 
-    expect(screen.getByText('Duration')).toBeInTheDocument();
-    expect(screen.getByText('Tags')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Duration')).toBeInTheDocument();
+      expect(screen.getByText('Tags')).toBeInTheDocument();
+    });
   });
 
   it('should allow selecting multiple options', async () => {
