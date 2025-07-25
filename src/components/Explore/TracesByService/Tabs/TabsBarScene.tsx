@@ -3,7 +3,13 @@ import { SceneObjectBase, SceneComponentProps, SceneObject, sceneGraph, SceneObj
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
 import { useStyles2, Box, Stack, TabsBar, Tab } from '@grafana/ui';
 import React, { useEffect, useState } from 'react';
-import { getTraceExplorationScene, getTraceByServiceScene, getExceptionsScene, getFiltersVariable, getPrimarySignalVariable } from 'utils/utils';
+import {
+  getTraceExplorationScene,
+  getTraceByServiceScene,
+  getExceptionsScene,
+  getFiltersVariable,
+  getPrimarySignalVariable,
+} from 'utils/utils';
 import { ShareExplorationAction } from '../../actions/ShareExplorationAction';
 import { buildSpansScene } from './Spans/SpansScene';
 import { buildStructureScene } from './Structure/StructureScene';
@@ -24,12 +30,12 @@ export const actionViewsDefinitions: ActionViewDefinition[] = [
   { displayName: breakdownDisplayName, value: 'breakdown', getScene: buildBreakdownScene },
   { displayName: structureDisplayName, value: 'structure', getScene: buildStructureScene },
   { displayName: comparisonDisplayName, value: 'comparison', getScene: buildComparisonScene },
+  { displayName: exceptionsDisplayName, value: 'exceptions', getScene: buildExceptionsScene },
   {
     displayName: tracesDisplayName,
     value: 'traceList',
     getScene: buildSpansScene,
   },
-  { displayName: exceptionsDisplayName, value: 'exceptions', getScene: buildExceptionsScene },
 ];
 
 export interface TabsBarSceneState extends SceneObjectState {}
@@ -64,7 +70,7 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
     const { filters } = filtersVariable.useState();
     const { value: primarySignal } = primarySignalVariable.useState();
     const { value: timeRangeValue } = timeRange.useState();
-    
+
     useEffect(() => {
       if (metric !== 'errors') {
         setExceptionsCount(0);
@@ -95,7 +101,12 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
       }
 
       // Set the view to traceList if the data is loaded and the traces count is greater than 20
-      if (exploration.state.embedded && dataState.data?.state === LoadingState.Done && tracesCount !== undefined && tracesCount > 20) {
+      if (
+        exploration.state.embedded &&
+        dataState.data?.state === LoadingState.Done &&
+        tracesCount !== undefined &&
+        tracesCount > 20
+      ) {
         metricScene.setState({ hasSetView: true });
         metricScene.setActionView('traceList');
         return;
@@ -128,7 +139,9 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
                 label={tab.displayName(metric as MetricFunction)}
                 active={actionView === tab.value}
                 onChangeTab={() => metricScene.setActionView(tab.value)}
-                counter={tab.value === 'traceList' ? tracesCount : tab.value === 'exceptions' ? exceptionsCount : undefined}
+                counter={
+                  tab.value === 'traceList' ? tracesCount : tab.value === 'exceptions' ? exceptionsCount : undefined
+                }
               />
             );
           })}

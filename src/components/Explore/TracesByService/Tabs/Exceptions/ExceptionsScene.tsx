@@ -54,7 +54,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
 
     this.addActivationHandler(() => {
       const dataTransformer = this.state.$data as SceneDataTransformer;
-      
+
       this._subs.add(
         dataTransformer.subscribeToState((newState, prevState) => {
           if (newState.data !== prevState.data) {
@@ -66,7 +66,12 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
   }
 
   private updatePanel(data?: PanelData) {
-    if (data?.state === LoadingState.Loading || data?.state === LoadingState.NotStarted || !data?.state || (data?.state === LoadingState.Streaming && !data.series?.[0]?.length)) {      
+    if (
+      data?.state === LoadingState.Loading ||
+      data?.state === LoadingState.NotStarted ||
+      !data?.state ||
+      (data?.state === LoadingState.Streaming && !data.series?.[0]?.length)
+    ) {
       this.setState({
         dataState: 'loading',
         panel: new SceneFlexLayout({
@@ -78,7 +83,10 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
           ],
         }),
       });
-    } else if ((data?.state === LoadingState.Done || data?.state === LoadingState.Streaming) && (data.series.length === 0 || !data.series?.[0]?.length)) {    
+    } else if (
+      (data?.state === LoadingState.Done || data?.state === LoadingState.Streaming) &&
+      (data.series.length === 0 || !data.series?.[0]?.length)
+    ) {
       this.setState({
         dataState: 'empty',
         exceptionsCount: 0,
@@ -94,9 +102,12 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
           ],
         }),
       });
-    } else if ((data?.state === LoadingState.Done || data?.state === LoadingState.Streaming) && data.series.length > 0) {
+    } else if (
+      (data?.state === LoadingState.Done || data?.state === LoadingState.Streaming) &&
+      data.series.length > 0
+    ) {
       const exceptionsCount = this.calculateExceptionsCount(data);
-     
+
       this.setState({
         dataState: 'done',
         exceptionsCount,
@@ -115,7 +126,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
                     .matchFieldsWithName('Time Series')
                     .overrideCustomFieldConfig('width', 220)
                     .matchFieldsWithName('Last Seen')
-                    .overrideCustomFieldConfig('width', 120)
+                    .overrideCustomFieldConfig('width', 120);
                 })
                 .build(),
             }),
@@ -129,7 +140,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
     return () => (source: Observable<DataFrame[]>) => {
       return source.pipe(
         map((data: DataFrame[]) => {
-          return data.map((df: DataFrame) => {          
+          return data.map((df: DataFrame) => {
             const messageField = df.fields.find((f) => f.name === 'exception.message');
             const typeField = df.fields.find((f) => f.name === 'exception.type');
             const serviceField = df.fields.find((f) => f.name === 'service.name');
@@ -141,8 +152,8 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
             let occurrences: number[] = [];
             let lastSeenTimes: string[] = [];
             let services: string[] = [];
-            let timeSeries: Array<Array<{time: number, count: number}>> = [];
-            
+            let timeSeries: Array<Array<{ time: number; count: number }>> = [];
+
             if (!noData) {
               const aggregated = aggregateExceptions(messageField, typeField, timeField, serviceField);
               messages = aggregated.messages;
@@ -156,7 +167,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
             const options: TableCustomCellOptions = {
               type: TableCellDisplayMode.Custom,
               cellComponent: (props) => {
-                const seriesData = props.value as Array<{time: number, count: number}>;
+                const seriesData = props.value as Array<{ time: number; count: number }>;
                 return this.renderSparklineCell(seriesData);
               },
             };
@@ -192,13 +203,13 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
                   config: {},
                 },
                 {
-                  name: 'Time Series',
+                  name: 'Frequency',
                   type: FieldType.other,
                   values: timeSeries,
                   config: {
                     custom: {
-                      cellOptions: options
-                    }
+                      cellOptions: options,
+                    },
                   },
                 },
                 {
@@ -215,42 +226,38 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
     };
   }
 
-  private renderSparklineCell = (seriesData: Array<{time: number, count: number}>) => {
+  private renderSparklineCell = (seriesData: Array<{ time: number; count: number }>) => {
     const styles = useStyles2(getStyles);
-    
+
     const SparklineCell = () => {
       const theme = useTheme2();
-      
+
       if (!seriesData || !seriesData.length) {
         return <div className={styles.sparklineMessage}>No data</div>;
       }
 
-      const countValues = seriesData.map(point => point.count);
-      const timeValues = seriesData.map(point => point.time);
-      
-      if (countValues.length <= 3) {
-        return;
+      const countValues = seriesData.map((point) => point.count);
+      const timeValues = seriesData.map((point) => point.time);
+
+      const validCountValues = countValues.filter((v) => isFinite(v) && !isNaN(v));
+      const validTimeValues = timeValues.filter((v) => isFinite(v) && !isNaN(v));
+      if (validCountValues.length < 2 || validTimeValues.length < 2) {
+        return <div className={styles.sparklineMessage}>Not enough data</div>;
       }
 
-      const validCountValues = countValues.filter(v => isFinite(v) && !isNaN(v));
-      const validTimeValues = timeValues.filter(v => isFinite(v) && !isNaN(v));
-      if (validCountValues.length < 2 || validTimeValues.length < 2) {
-        return <div className={styles.sparklineMessage}>Invalid data</div>;
-      }
-      
       const minCount = Math.min(...validCountValues);
       const maxCount = Math.max(...validCountValues);
       const minTime = Math.min(...validTimeValues);
       const maxTime = Math.max(...validTimeValues);
-      
+
       // Ensure valid ranges
       const countDelta = maxCount - minCount;
       const timeDelta = maxTime - minTime;
-      
+
       // Handle edge cases where all values are the same
       const safeCountDelta = countDelta === 0 ? 1 : countDelta;
       const safeTimeDelta = timeDelta === 0 ? 1 : timeDelta;
-      
+
       const sparklineData = {
         y: {
           name: 'count',
@@ -279,6 +286,8 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
           },
         },
       };
+
+      console.log(sparklineData);
 
       return (
         <div className={styles.sparklineContainer}>
@@ -322,31 +331,32 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
 
   private navigateToTracesWithFilter = (exceptionMessage: string) => {
     const filtersVariable = getFiltersVariable(this);
-    if (!filtersVariable) {return;}
+    if (!filtersVariable) {
+      return;
+    }
 
     const traceByServiceScene = getTraceByServiceScene(this);
     traceByServiceScene?.setActionView('traceList');
 
     const currentFilters = filtersVariable.state.filters || [];
     const escapedMessage = this.escapeFilterValue(exceptionMessage);
-    
-    const existingFilterIndex = currentFilters.findIndex(
-      filter => filter.key === 'event.exception.message'
-    );
-    
+
+    const existingFilterIndex = currentFilters.findIndex((filter) => filter.key === 'event.exception.message');
+
     const newFilter = {
       key: 'event.exception.message',
       operator: '=',
       value: escapedMessage,
     };
 
-    const newFilters = existingFilterIndex >= 0
-      ? currentFilters.map((f, i) => i === existingFilterIndex ? newFilter : f)
-      : [...currentFilters, newFilter];
-    
+    const newFilters =
+      existingFilterIndex >= 0
+        ? currentFilters.map((f, i) => (i === existingFilterIndex ? newFilter : f))
+        : [...currentFilters, newFilter];
+
     filtersVariable.setState({ filters: newFilters });
   };
-  
+
   private escapeFilterValue(value: string): string {
     return value
       .replace(/[\n\r\t]/g, ' ')
@@ -357,11 +367,15 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
   }
 
   private calculateExceptionsCount(data?: PanelData): number {
-    if (!data?.series?.[0]) { return 0 }
-    
-    const occurrencesField = data.series[0].fields.find(field => field.name === 'Occurrences');
-    if (!occurrencesField?.values) { return 0 }
-    
+    if (!data?.series?.[0]) {
+      return 0;
+    }
+
+    const occurrencesField = data.series[0].fields.find((field) => field.name === 'Occurrences');
+    if (!occurrencesField?.values) {
+      return 0;
+    }
+
     return occurrencesField.values.reduce((total: number, value: number) => total + (value || 0), 0);
   }
 

@@ -1,4 +1,4 @@
-import { VAR_FILTERS_EXPR } from "utils/shared";
+import { VAR_FILTERS_EXPR } from 'utils/shared';
 
 export function buildExceptionsQuery() {
   return {
@@ -6,7 +6,7 @@ export function buildExceptionsQuery() {
     query: `{${VAR_FILTERS_EXPR} && status = error} | select(resource.service.name, event.exception.message,event.exception.stacktrace,event.exception.type) with(most_recent=true)`,
     queryType: 'traceql',
     tableType: 'spans',
-    limit: 200,
+    limit: 400,
     spss: 10,
     filters: [],
   };
