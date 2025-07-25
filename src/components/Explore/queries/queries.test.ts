@@ -93,13 +93,14 @@ describe('metricByWithStatus', () => {
 describe('buildExceptionsQuery', () => {
   it('should return correct query structure', () => {
     const query = buildExceptionsQuery();
-    
+
     expect(query).toEqual({
       refId: 'A',
-      query: '{${primarySignal} && ${filters} && status = error} | select(resource.service.name, event.exception.message,event.exception.stacktrace,event.exception.type) with(most_recent=true)',
+      query:
+        '{${primarySignal} && ${filters} && status = error} | select(resource.service.name, event.exception.message,event.exception.stacktrace,event.exception.type) with(most_recent=true)',
       queryType: 'traceql',
       tableType: 'spans',
-      limit: 200,
+      limit: 400,
       spss: 10,
       filters: [],
     });
