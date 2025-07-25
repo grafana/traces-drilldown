@@ -1,12 +1,13 @@
 import {
   PluginExtensionAddedLinkConfig,
   PluginExtensionPanelContext,
-  PluginExtensionPoints, RawTimeRange,
-  toURLRange
+  PluginExtensionPoints,
+  RawTimeRange,
+  toURLRange,
 } from '@grafana/data';
 
-import {DataQuery, DataSourceRef} from '@grafana/schema';
-import {EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC} from './shared';
+import { DataQuery, DataSourceRef } from '@grafana/schema';
+import { EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC } from './shared';
 
 type TempoQuery = {
   filters?: TraceqlFilter[];
@@ -17,7 +18,7 @@ export interface TraceqlFilter {
   scope?: string;
   tag?: string;
   operator?: string;
-  value?: (string | string[]);
+  value?: string | string[];
 }
 
 type PluginExtensionExploreContext = {
@@ -25,21 +26,24 @@ type PluginExtensionExploreContext = {
   timeRange: RawTimeRange;
 };
 
-export const linkConfigs: Array<{ targets: string | string[] } & PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>> = [
+export const linkConfigs: (
+  | PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>
+  | PluginExtensionAddedLinkConfig<PluginExtensionExploreContext>
+)[] = [
   {
     targets: PluginExtensionPoints.DashboardPanelMenu,
     title: 'Open in Traces Drilldown',
     description: 'Open current query in the Traces Drilldown app',
     path: createAppUrl(),
     configure: (context?: PluginExtensionPanelContext) => contextToLink(context),
-  },
+  } as PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>,
   {
     targets: PluginExtensionPoints.ExploreToolbarAction,
-    title: "Open in Grafana Traces Drilldown",
+    title: 'Open in Grafana Traces Drilldown',
     description: 'Try our new queryless experience for traces',
     path: createAppUrl(),
     configure: (context?: PluginExtensionExploreContext) => contextToLink(context),
-  }
+  } as PluginExtensionAddedLinkConfig<PluginExtensionExploreContext>,
 ];
 
 export function contextToLink(context?: PluginExtensionPanelContext | PluginExtensionExploreContext) {
@@ -52,7 +56,9 @@ export function contextToLink(context?: PluginExtensionPanelContext | PluginExte
     return undefined;
   }
 
-  const filters = tempoQuery.filters?.filter((filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length);
+  const filters = tempoQuery.filters?.filter(
+    (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length
+  );
   if (!filters || filters.length === 0) {
     return undefined;
   }
@@ -73,8 +79,8 @@ export function contextToLink(context?: PluginExtensionPanelContext | PluginExte
 
   const getFilters = (filters: TraceqlFilter[]) => {
     return filters
-        .filter((filter) => filter.tag !== 'status')
-        .map((filter) => `${filter.scope}${getScopeSeparator(filter)}${filter.tag}|${filter.operator}|${filter.value}`);
+      .filter((filter) => filter.tag !== 'status')
+      .map((filter) => `${filter.scope}${getScopeSeparator(filter)}${filter.tag}|${filter.operator}|${filter.value}`);
   };
   getFilters(filters).forEach((filter) => params.append(`var-${VAR_FILTERS}`, filter));
 
@@ -105,12 +111,12 @@ const intrinsics = [
   'trace:id',
   'trace:rootName',
   'trace:rootService',
-].map(fullName => {
-    const [scope, tag] = fullName.split(':');
-    return {
-        scope,
-        tag,
-    };
+].map((fullName) => {
+  const [scope, tag] = fullName.split(':');
+  return {
+    scope,
+    tag,
+  };
 });
 
 function isIntrinsic(filter: TraceqlFilter) {
