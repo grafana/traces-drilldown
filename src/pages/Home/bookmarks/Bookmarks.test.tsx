@@ -61,7 +61,10 @@ describe('Bookmarks', () => {
     mockGetBookmarks.mockReturnValue(new Promise(resolve => setTimeout(() => resolve([]), 100)));
     
     render(<Bookmarks />);
-    expect(screen.getByText('Loading bookmarks...')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText('Loading bookmarks...')).toBeInTheDocument();
+    });
   });
 
   test('renders message when no bookmarks exist', async () => {

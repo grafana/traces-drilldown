@@ -48,7 +48,8 @@ To use Traces Drilldown with Grafana open source or Grafana Enterprise, you need
 Traces Drilldown is distributed as a Grafana Plugin.
 You can find it in the official [Grafana Plugin Directory](https://grafana.com/grafana/plugins/grafana-exploretraces-app/).
 
->**NOTE:** All Grafana Cloud instances come with the Traces Drilldown plugin preinstalled.
+> [!NOTE]  
+> All Grafana Cloud instances come with the Traces Drilldown plugin preinstalled.
 
 #### Install in your Grafana instance
 

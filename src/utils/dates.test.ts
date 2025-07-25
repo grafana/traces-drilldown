@@ -27,6 +27,10 @@ describe('formatDuration', () => {
     expect(formatDuration(ONE_SECOND)).toBe('1s');
     expect(formatDuration(ONE_MILLISECOND)).toBe('1ms');
   });
+
+  it('formats durations with a secondary unit that rounds up to a whole primary unit', () => {
+    expect(formatDuration(299898037.75)).toBe('5m');
+  });
 });
 
 describe('getStepForTimeRange', () => {
