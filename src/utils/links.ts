@@ -2,11 +2,10 @@ import {
   PluginExtensionAddedLinkConfig,
   PluginExtensionPanelContext,
   PluginExtensionPoints,
-  RawTimeRange,
   toURLRange,
 } from '@grafana/data';
 
-import { DataQuery, DataSourceRef } from '@grafana/schema';
+import { DataSourceRef } from '@grafana/schema';
 import { EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC } from './shared';
 
 type TempoQuery = {
@@ -21,15 +20,7 @@ export interface TraceqlFilter {
   value?: string | string[];
 }
 
-type PluginExtensionExploreContext = {
-  targets: DataQuery[];
-  timeRange: RawTimeRange;
-};
-
-export const linkConfigs: (
-  | PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>
-  | PluginExtensionAddedLinkConfig<PluginExtensionExploreContext>
-)[] = [
+export const linkConfigs: PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>[] = [
   {
     targets: PluginExtensionPoints.DashboardPanelMenu,
     title: 'Open in Traces Drilldown',
@@ -42,11 +33,11 @@ export const linkConfigs: (
     title: 'Open in Grafana Traces Drilldown',
     description: 'Try our new queryless experience for traces',
     path: createAppUrl(),
-    configure: (context?: PluginExtensionExploreContext) => contextToLink(context),
-  } as PluginExtensionAddedLinkConfig<PluginExtensionExploreContext>,
+    configure: (context?: PluginExtensionPanelContext) => contextToLink(context),
+  } as PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>,
 ];
 
-export function contextToLink(context?: PluginExtensionPanelContext | PluginExtensionExploreContext) {
+export function contextToLink(context?: PluginExtensionPanelContext) {
   if (!context) {
     return undefined;
   }
