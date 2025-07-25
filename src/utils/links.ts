@@ -27,14 +27,14 @@ export const linkConfigs: PluginExtensionAddedLinkConfig<PluginExtensionPanelCon
     description: 'Open current query in the Traces Drilldown app',
     path: createAppUrl(),
     configure: (context?: PluginExtensionPanelContext) => contextToLink(context),
-  } as PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>,
+  } as PluginExtensionAddedLinkConfig,
   {
     targets: PluginExtensionPoints.ExploreToolbarAction,
     title: 'Open in Grafana Traces Drilldown',
     description: 'Try our new queryless experience for traces',
     path: createAppUrl(),
     configure: (context?: PluginExtensionPanelContext) => contextToLink(context),
-  } as PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>,
+  } as PluginExtensionAddedLinkConfig,
 ];
 
 export function contextToLink(context?: PluginExtensionPanelContext) {
