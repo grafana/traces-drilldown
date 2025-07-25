@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 import { AppPlugin } from '@grafana/data';
 
-// @ts-ignore new API that is not yet in stable release
 import { EmbeddedTraceExplorationState, OpenInExploreTracesButtonProps } from 'exposedComponents/types';
 import { SuspendedEmbeddedTraceExploration, SuspendedOpenInExploreTracesButton } from 'exposedComponents';
 import { linkConfigs } from 'utils/links';
