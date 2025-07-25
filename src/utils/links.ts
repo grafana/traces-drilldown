@@ -20,7 +20,7 @@ export interface TraceqlFilter {
   value?: string | string[];
 }
 
-export const linkConfigs: PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>[] = [
+export const linkConfigs: Array<PluginExtensionAddedLinkConfig<PluginExtensionPanelContext>> = [
   {
     targets: PluginExtensionPoints.DashboardPanelMenu,
     title: 'Open in Traces Drilldown',
