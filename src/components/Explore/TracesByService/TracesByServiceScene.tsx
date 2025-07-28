@@ -186,7 +186,13 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
       return;
     }
 
-    ds.getTagKeys?.().then((tagKeys: GetTagResponse | MetricFindValue[]) => {
+    const timeRange = sceneGraph.getTimeRange(this);
+    const options = {
+      timeRange: timeRange.state.value,
+      filters: []
+    };
+
+    ds.getTagKeys?.(options).then((tagKeys: GetTagResponse | MetricFindValue[]) => {
       let keys: MetricFindValue[] = [];
       if ('data' in tagKeys) {
         keys = (tagKeys as GetTagResponse).data;
