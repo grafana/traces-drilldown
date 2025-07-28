@@ -52,6 +52,7 @@ import { css } from '@emotion/css';
 import { getDefaultSelectionForMetric } from '../../../utils/comparison';
 import { map, Observable } from 'rxjs';
 import { ActionViewType } from 'exposedComponents/types';
+import { ExceptionsScene } from './Tabs/Exceptions/ExceptionsScene';
 
 export interface TraceSceneState extends SceneObjectState {
   body: SceneFlexLayout;
@@ -60,6 +61,7 @@ export interface TraceSceneState extends SceneObjectState {
   attributes?: string[];
   selection?: ComparisonSelection;
   hasSetView?: boolean;
+  exceptionsScene?: ExceptionsScene;
 }
 
 export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
@@ -94,10 +96,14 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
             this.setState({ selection });
           }
           this.updateQueryRunner(newState.value as MetricFunction);
+          this.updateExceptionsScene(newState.value as MetricFunction);
           this.updateBody();
         }
       })
     );
+
+    // Initialize exceptions scene for the current metric
+    this.updateExceptionsScene(metricVariable.getValue() as MetricFunction);
 
     this._subs.add(
       this.subscribeToState((newState, prevState) => {
@@ -147,6 +153,29 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
 
     if (this.state.actionView === undefined) {
       this.setActionView('breakdown');
+    }
+  }
+
+    private updateExceptionsScene(metric: MetricFunction) {
+    if (metric === 'errors') {
+      if (!this.state.exceptionsScene) {
+        const exceptionsScene = new ExceptionsScene({});
+        this.setState({
+          exceptionsScene
+        });
+        
+        // Activate the scene after it's been set in state to ensure it starts fetching data
+        setTimeout(() => {
+          exceptionsScene.activate();
+        }, 0);
+      }
+    } else {
+      // Remove exceptions scene if metric is not errors
+      if (this.state.exceptionsScene) {
+        this.setState({
+          exceptionsScene: undefined
+        });
+      }
     }
   }
 
@@ -212,8 +241,18 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
 
     if (body.state.children.length > 1) {
       if (actionViewDef) {
+        let scene: SceneObject;
+        if (actionView === 'exceptions' && this.state.exceptionsScene) {
+          // Use the persistent exceptions scene to maintain data subscription
+          scene = new SceneFlexItem({
+            body: this.state.exceptionsScene,
+          });
+        } else {
+          scene = actionViewDef.getScene(metric as MetricFunction);
+        }
+        
         body.setState({
-          children: [...body.state.children.slice(0, 2), actionViewDef.getScene(metric as MetricFunction)],
+          children: [...body.state.children.slice(0, 2), scene],
         });
         reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.action_view_changed, {
           oldAction: this.state.actionView,

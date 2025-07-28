@@ -63,12 +63,22 @@ export const formatDuration = (duration: number): string => {
   return `${primaryUnitString} ${secondaryUnitString}`;
 }
 
+/**
+ * Calculate bucket size based on time range and desired number of data points
+ * @param timeRangeSeconds - The time range in seconds
+ * @param dataPoints - Desired number of data points (default: 50)
+ * @returns Bucket size in seconds
+ */
+export const calculateBucketSize = (timeRangeSeconds: number, dataPoints = 50): number => {
+  return Math.floor(timeRangeSeconds / dataPoints) || 1;
+};
+
 export const getStepForTimeRange = (scene: SceneObject, dataPoints?: number) => {
   const sceneTimeRange = sceneGraph.getTimeRange(scene);
   const from = sceneTimeRange.state.value.from.unix();
   const to = sceneTimeRange.state.value.to.unix();
 
   const dur = duration(to - from, 's');
-  const finalDur = Math.floor(dur.asSeconds() / (dataPoints ?? 50)) || 1;
-  return `${finalDur}s`;
+  const bucketSizeSeconds = calculateBucketSize(dur.asSeconds(), dataPoints);
+  return `${bucketSizeSeconds}s`;
 }

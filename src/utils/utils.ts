@@ -31,6 +31,7 @@ import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesB
 import { Home } from 'pages/Home/Home';
 import { PrimarySignalVariable } from 'pages/Explore/PrimarySignalVariable';
 import { ActionViewType } from 'exposedComponents/types';
+import { ExceptionsScene } from 'components/Explore/TracesByService/Tabs/Exceptions/ExceptionsScene';
 
 export function getTraceExplorationScene(model: SceneObject): TraceExploration {
   return sceneGraph.getAncestor(model, TraceExploration);
@@ -42,6 +43,11 @@ export function getHomeScene(model: SceneObject): Home {
 
 export function getTraceByServiceScene(model: SceneObject): TracesByServiceScene {
   return sceneGraph.getAncestor(model, TracesByServiceScene);
+}
+
+export function getExceptionsScene(model: SceneObject): ExceptionsScene | undefined {
+  const tracesByServiceScene = getTraceByServiceScene(model);
+  return tracesByServiceScene?.state.exceptionsScene;
 }
 
 export function newTracesExploration(initialDS?: string, initialFilters?: AdHocVariableFilter[]): TraceExploration {
