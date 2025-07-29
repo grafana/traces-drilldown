@@ -288,8 +288,6 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
         },
       };
 
-      console.log(sparklineData);
-
       return (
         <div className={styles.sparklineContainer}>
           <Sparkline
