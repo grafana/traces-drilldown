@@ -363,7 +363,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
       .replace(/[\n\r\t]/g, ' ')
       .replace(/\s+/g, ' ')
       .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\\"')
+      .replace(/"/g, '\"')
       .trim();
   }
 
