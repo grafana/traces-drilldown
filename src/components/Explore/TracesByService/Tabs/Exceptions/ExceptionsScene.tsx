@@ -26,6 +26,7 @@ import {
 import { getTraceByServiceScene, getFiltersVariable } from '../../../../../utils/utils';
 import { buildExceptionsQuery } from 'components/Explore/queries/exceptions';
 import { aggregateExceptions } from './ExceptionUtils';
+import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 
 export interface ExceptionsSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -322,6 +323,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
         if (rowIndex !== undefined) {
           const message = event.origin?.field?.values?.[rowIndex];
           if (message) {
+            reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.exception_message_clicked);
             this.navigateToTracesWithFilter(message);
           }
         }
