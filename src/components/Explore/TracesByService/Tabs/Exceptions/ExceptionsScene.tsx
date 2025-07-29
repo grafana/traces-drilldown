@@ -22,6 +22,7 @@ import {
   EMPTY_STATE_ERROR_MESSAGE,
   EMPTY_STATE_ERROR_REMEDY_MESSAGE,
   explorationDS,
+  filterStreamingProgressTransformations,
 } from '../../../../../utils/shared';
 import { getTraceByServiceScene, getFiltersVariable } from '../../../../../utils/utils';
 import { buildExceptionsQuery } from 'components/Explore/queries/exceptions';
@@ -50,7 +51,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
 
     const dataTransformer = this.state.$data as SceneDataTransformer;
     dataTransformer.setState({
-      transformations: [this.createTransformation()],
+      transformations: [...filterStreamingProgressTransformations, this.createTransformation()],
     });
 
     this.addActivationHandler(() => {
