@@ -70,6 +70,8 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
 
   investigationLink?: PluginExtensionLink;
   addToInvestigationButton?: AddToInvestigationButton;
+  
+  explorationUrl?: string;
 }
 
 const version = process.env.VERSION;
@@ -105,6 +107,8 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
         this.setState({ traceId: event.payload.traceId, spanId: event.payload.spanId });
       })
     );
+
+    this.setupExplorationUrlSubscriptions();
 
     if (this.state.traceId) {
       this.setupInvestigationButton(this.state.traceId);
@@ -167,6 +171,29 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
   public closeDrawer() {
     this.setState({ traceId: undefined, spanId: undefined });
+  }
+
+  private setupExplorationUrlSubscriptions() {
+    const updateUrl = () => {
+      this.setState({ explorationUrl: getUrlForExploration(this) });
+    };
+
+    // set initial url
+    updateUrl();
+
+    if (this.state.$timeRange) {
+      this._subs.add(this.state.$timeRange.subscribeToState(updateUrl));
+    }
+
+    const filtersVariable = getFiltersVariable(this);
+    if (filtersVariable) {
+      this._subs.add(filtersVariable.subscribeToState(updateUrl));
+    }
+
+    const metricVariable = this.getMetricVariable();
+    if (metricVariable) {
+      this._subs.add(metricVariable.subscribeToState(updateUrl));
+    }
   }
 
   private setupInvestigationButton(traceId: string) {
@@ -331,46 +358,13 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const setReturnToPrevious = useReturnToPrevious();
   const styles = useStyles2(getStyles, true);
   const traceExploration = getTraceExplorationScene(model);
-  const { returnToPreviousSource } = traceExploration.useState();
+  const { returnToPreviousSource, explorationUrl } = traceExploration.useState();
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
-  const metricVariable = traceExploration.getMetricVariable();
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
   
-  const [explorationUrl, setExplorationUrl] = React.useState(() => getUrlForExploration(traceExploration));
-
   // Force the primary signal to be 'All Spans'
   primarySignalVariable?.changeValueTo(primarySignalOptions[1].value!);
-
-  useEffect(() => {
-    const subscriptions: Array<{ unsubscribe: () => void }> = [];
-
-    const timeRange = traceExploration.state.$timeRange;
-    if (timeRange) {
-      const timeRangeSub = timeRange.subscribeToState(() => {
-        setExplorationUrl(getUrlForExploration(traceExploration));
-      });
-      subscriptions.push(timeRangeSub);
-    }
-
-    if (filtersVariable) {
-      const filtersSub = filtersVariable.subscribeToState(() => {
-        setExplorationUrl(getUrlForExploration(traceExploration));
-      });
-      subscriptions.push(filtersSub);
-    }
-
-    if (metricVariable) {
-      const metricSub = metricVariable.subscribeToState(() => {
-        setExplorationUrl(getUrlForExploration(traceExploration));
-      });
-      subscriptions.push(metricSub);
-    }
-
-    return () => {
-      subscriptions.forEach(sub => sub.unsubscribe());
-    };
-  }, [traceExploration, filtersVariable, metricVariable]);
 
   return (
     <div className={styles.headerContainer}>
