@@ -274,18 +274,16 @@ export class TraceExplorationScene extends SceneObjectBase {
     };
 
     return (
-      <>
-        <div className={styles.container}>
-          {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
-          {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
-          <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
-        </div>
+      <div className={styles.container} id="trace-exploration">
+        {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
+        {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
+        <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
         <SmartDrawer
           isOpen={!!drawerScene && !!traceId}
           onClose={() => traceExploration.closeDrawer()}
           title={`View trace ${traceId}`}
           embedded={embedded}
-          forceNoDrawer={true}
+          forceNoDrawer={embedded}
           investigationButton={
             addToInvestigationButton &&
             investigationLink && (
@@ -297,7 +295,7 @@ export class TraceExplorationScene extends SceneObjectBase {
         >
           {drawerScene && <drawerScene.Component model={drawerScene} />}
         </SmartDrawer>
-      </>
+      </div>
     );
   };
 }
@@ -308,8 +306,10 @@ const useServiceName = (model: SceneObject) => {
   const filtersVariable = getFiltersVariable(traceExploration);
 
   const getServiceNameFromFilters = (filters: AdHocVariableFilter[]) => {
-    const serviceNameFilter = filters.find(f => f.key === 'resource.service.name');
-    return serviceNameFilter?.operator === '=' || serviceNameFilter?.operator === '=~' ? serviceNameFilter?.value?.replace(/"/g, '') : undefined;
+    const serviceNameFilter = filters.find((f) => f.key === 'resource.service.name');
+    return serviceNameFilter?.operator === '=' || serviceNameFilter?.operator === '=~'
+      ? serviceNameFilter?.value?.replace(/"/g, '')
+      : undefined;
   };
 
   useEffect(() => {
@@ -443,10 +443,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           )}
         </Stack>
         <div className={styles.controls}>
-          <EntityAssertionsWidget
-            serviceName={serviceName || ''}
-            model={model}
-          />
+          <EntityAssertionsWidget serviceName={serviceName || ''} model={model} />
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
             <Button variant="secondary" icon="info-circle">
               Need help
@@ -542,6 +539,7 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
       padding: `0 ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
       overflow: 'auto' /* Needed for sticky positioning */,
       maxHeight: '100%' /* Needed for sticky positioning */,
+      position: 'relative', // Needed for the drawer to be positioned correctly
     }),
     drawerHeader: css({
       display: 'flex',
