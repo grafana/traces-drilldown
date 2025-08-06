@@ -285,6 +285,7 @@ export class TraceExplorationScene extends SceneObjectBase {
           onClose={() => traceExploration.closeDrawer()}
           title={`View trace ${traceId}`}
           embedded={embedded}
+          forceNoDrawer={true}
           investigationButton={
             addToInvestigationButton &&
             investigationLink && (
