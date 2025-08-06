@@ -333,10 +333,43 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const { returnToPreviousSource } = traceExploration.useState();
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
+  const metricVariable = traceExploration.getMetricVariable();
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
+  
+  const [explorationUrl, setExplorationUrl] = React.useState(() => getUrlForExploration(traceExploration));
 
   // Force the primary signal to be 'All Spans'
   primarySignalVariable?.changeValueTo(primarySignalOptions[1].value!);
+
+  useEffect(() => {
+    const subscriptions: Array<{ unsubscribe: () => void }> = [];
+
+    const timeRange = traceExploration.state.$timeRange;
+    if (timeRange) {
+      const timeRangeSub = timeRange.subscribeToState(() => {
+        setExplorationUrl(getUrlForExploration(traceExploration));
+      });
+      subscriptions.push(timeRangeSub);
+    }
+
+    if (filtersVariable) {
+      const filtersSub = filtersVariable.subscribeToState(() => {
+        setExplorationUrl(getUrlForExploration(traceExploration));
+      });
+      subscriptions.push(filtersSub);
+    }
+
+    if (metricVariable) {
+      const metricSub = metricVariable.subscribeToState(() => {
+        setExplorationUrl(getUrlForExploration(traceExploration));
+      });
+      subscriptions.push(metricSub);
+    }
+
+    return () => {
+      subscriptions.forEach(sub => sub.unsubscribe());
+    };
+  }, [traceExploration, filtersVariable, metricVariable]);
 
   return (
     <div className={styles.headerContainer}>
@@ -349,7 +382,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
         )}
         <Stack gap={1} alignItems={'center'}>
           <LinkButton
-            href={getUrlForExploration(traceExploration)}
+            href={explorationUrl}
             variant="secondary"
             icon="arrow-right"
             onClick={() => {
