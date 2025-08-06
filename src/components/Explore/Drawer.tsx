@@ -41,9 +41,9 @@ export interface Props {
 }
 
 const drawerSizes = {
-  sm: { width: '25vw', minWidth: 384 },
-  md: { width: '50vw', minWidth: 568 },
-  lg: { width: '75vw', minWidth: 744 },
+  sm: { width: '25%', minWidth: 384 },
+  md: { width: '50%', minWidth: 568 },
+  lg: { width: '75%', minWidth: 744 },
 };
 
 export function Drawer({
