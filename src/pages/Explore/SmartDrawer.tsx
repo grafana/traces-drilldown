@@ -1,7 +1,8 @@
 import { css } from '@emotion/css';
 import React from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
-import { Button, Drawer, useStyles2 } from '@grafana/ui';
+import { Button, useStyles2 } from '@grafana/ui';
+import { Drawer } from '../../components/Explore/Drawer';
 
 interface SmartDrawerProps {
   children: React.ReactNode;
