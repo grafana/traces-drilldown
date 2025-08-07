@@ -106,8 +106,6 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       })
     );
 
-
-
     if (this.state.traceId) {
       this.setupInvestigationButton(this.state.traceId);
     }
@@ -170,8 +168,6 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   public closeDrawer() {
     this.setState({ traceId: undefined, spanId: undefined });
   }
-
-
 
   private setupInvestigationButton(traceId: string) {
     const traceExploration = getTraceExplorationScene(this);
