@@ -307,8 +307,10 @@ const useServiceName = (model: SceneObject) => {
   const filtersVariable = getFiltersVariable(traceExploration);
 
   const getServiceNameFromFilters = (filters: AdHocVariableFilter[]) => {
-    const serviceNameFilter = filters.find(f => f.key === 'resource.service.name');
-    return serviceNameFilter?.operator === '=' || serviceNameFilter?.operator === '=~' ? serviceNameFilter?.value?.replace(/"/g, '') : undefined;
+    const serviceNameFilter = filters.find((f) => f.key === 'resource.service.name');
+    return serviceNameFilter?.operator === '=' || serviceNameFilter?.operator === '=~'
+      ? serviceNameFilter?.value?.replace(/"/g, '')
+      : undefined;
   };
 
   useEffect(() => {
@@ -433,10 +435,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           )}
         </Stack>
         <div className={styles.controls}>
-          <EntityAssertionsWidget
-            serviceName={serviceName || ''}
-            model={model}
-          />
+          <EntityAssertionsWidget serviceName={serviceName || ''} model={model} />
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
             <Button variant="secondary" icon="info-circle">
               Need help
