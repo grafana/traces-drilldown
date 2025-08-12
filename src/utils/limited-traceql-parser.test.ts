@@ -1,5 +1,4 @@
 import { parseTraceQLQuery } from './limited-traceql-parser';
-import { TraceqlFilter } from './links';
 
 describe('Limited TraceQL Parser', () => {
   describe('parseTraceQLQuery', () => {
