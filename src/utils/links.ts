@@ -7,9 +7,11 @@ import {
 
 import { DataSourceRef } from '@grafana/schema';
 import { EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC } from './shared';
+import { parseTraceQLQuery } from './limited-traceql-parser';
 
 type TempoQuery = {
   filters?: TraceqlFilter[];
+  query?: string; // Raw TraceQL query
   datasource?: DataSourceRef;
 };
 
@@ -35,6 +37,13 @@ export const linkConfigs: Array<PluginExtensionAddedLinkConfig<PluginExtensionPa
     path: createAppUrl(),
     configure: (context?: PluginExtensionPanelContext) => contextToLink(context),
   } as PluginExtensionAddedLinkConfig,
+  {
+    targets: 'grafana-assistant-app/navigateToDrilldown/v1',
+    title: 'Grafana assistant link',
+    description: 'Create a link to the Traces Drilldown app',
+    path: createAppUrl(),
+    configure: (context?: PluginExtensionPanelContext) => contextToLink(context),
+  } as PluginExtensionAddedLinkConfig,
 ];
 
 export function contextToLink(context?: PluginExtensionPanelContext) {
@@ -47,9 +56,21 @@ export function contextToLink(context?: PluginExtensionPanelContext) {
     return undefined;
   }
 
-  const filters = tempoQuery.filters?.filter(
+  // Try to get filters from the structured filters array first
+  let filters = tempoQuery.filters?.filter(
     (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length
   );
+
+  // If no structured filters found, try to parse from raw query
+  if ((!filters || filters.length === 0) && tempoQuery.query) {
+    const parsedFilters = parseTraceQLQuery(tempoQuery.query);
+    if (parsedFilters && parsedFilters.length > 0) {
+      filters = parsedFilters.filter(
+        (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length
+      );
+    }
+  }
+
   if (!filters || filters.length === 0) {
     return undefined;
   }
