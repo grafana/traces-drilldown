@@ -17,9 +17,12 @@ describe('contextToLink', () => {
     expect(getLink(mockContext)).toBeUndefined();
   });
 
-  it('should return undefined if no valid filters are present', () => {
+  it('should return default URL if no valid filters are present', () => {
     const mockContext = createMockContext([{ datasource: { type: 'tempo', uid: 'test-uid' }, filters: [] }]);
-    expect(getLink(mockContext)).toBeUndefined();
+    const result = getLink(mockContext);
+    expect(result).toBeDefined();
+    expect(result?.path).toContain('var-ds=test-uid');
+    expect(result?.path).not.toContain('var-filters');
   });
 
   it('should generate a valid URL with correct params when filters exist', () => {
@@ -151,7 +154,7 @@ describe('contextToLink', () => {
       expect(result?.path).toContain('var-filters=' + encodeURIComponent('resource.service.name|=|fallback'));
     });
 
-    it('should return undefined for invalid raw query', () => {
+    it('should return default URL for invalid raw query', () => {
       const mockContext = createMockContext([
         {
           datasource: { type: 'tempo', uid: 'test-uid' },
@@ -160,10 +163,12 @@ describe('contextToLink', () => {
       ]);
 
       const result = getLink(mockContext);
-      expect(result).toBeUndefined();
+      expect(result).toBeDefined();
+      expect(result?.path).toContain('var-ds=test-uid');
+      expect(result?.path).not.toContain('var-filters');
     });
 
-    it('should return undefined when both filters and query are empty', () => {
+    it('should return default URL when both filters and query are empty', () => {
       const mockContext = createMockContext([
         {
           datasource: { type: 'tempo', uid: 'test-uid' },
@@ -173,7 +178,9 @@ describe('contextToLink', () => {
       ]);
 
       const result = getLink(mockContext);
-      expect(result).toBeUndefined();
+      expect(result).toBeDefined();
+      expect(result?.path).toContain('var-ds=test-uid');
+      expect(result?.path).not.toContain('var-filters');
     });
 
     it('should handle different operators in raw query', () => {
