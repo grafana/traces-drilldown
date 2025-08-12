@@ -89,6 +89,11 @@
         "title": "Open in Grafana Traces Drilldown",
         "description": "Try our new queryless experience for traces",
         "targets": ["grafana/explore/toolbar/action"]
+      },
+      {
+        "targets": ["grafana-assistant-app/navigateToDrilldown/v1"],
+        "title": "Grafana assistant link",
+        "description": "Create a link to the Traces Drilldown app"
       }
     ],
     "extensionPoints": [
