@@ -71,16 +71,23 @@ export function contextToLink(context?: PluginExtensionPanelContext) {
     }
   }
 
-  if (!filters || filters.length === 0) {
-    return undefined;
-  }
-
   const params = new URLSearchParams();
   params.append(`var-${VAR_DATASOURCE}`, tempoQuery.datasource?.uid || '');
 
-  const timeRangeParams = toURLRange(context.timeRange);
-  params.append(`from`, String(timeRangeParams.from));
-  params.append(`to`, String(timeRangeParams.to));
+  // Add time range if available
+  if (context.timeRange) {
+    const timeRangeParams = toURLRange(context.timeRange);
+    params.append(`from`, String(timeRangeParams.from));
+    params.append(`to`, String(timeRangeParams.to));
+  }
+
+  // If no filters, return default URL with just datasource (and optional time range)
+  if (!filters || filters.length === 0) {
+    const url = createAppUrl(params);
+    return {
+      path: `${url}`,
+    };
+  }
 
   const statusFilter = filters.find((filter) => filter.tag === 'status');
   if (statusFilter) {
