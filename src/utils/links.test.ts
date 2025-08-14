@@ -209,6 +209,41 @@ describe('contextToLink', () => {
       // service.name without scope gets parsed as intrinsic scope with service.name tag
       expect(result?.path).toContain('var-filters=intrinsic.service.name%7C%3D%7E%7Capi.*');
     });
+
+    it('should include actionView=traceList when parsing raw query', () => {
+      const mockContext = createMockContext([
+        {
+          datasource: { type: 'tempo', uid: 'test-uid' },
+          query: '{resource.service.name="my-service"}',
+        },
+      ]);
+
+      const result = getLink(mockContext);
+      expect(result).toBeDefined();
+      expect(result?.path).toContain('actionView=traceList');
+      expect(result?.path).toContain('var-filters=' + encodeURIComponent('resource.service.name|=|my-service'));
+    });
+
+    it('should NOT include actionView=traceList when using structured filters', () => {
+      const mockContext = createMockContext([
+        {
+          datasource: { type: 'tempo', uid: 'test-uid' },
+          filters: [
+            {
+              scope: 'resource',
+              tag: 'service.name',
+              operator: '=',
+              value: 'my-service',
+            },
+          ],
+        },
+      ]);
+
+      const result = getLink(mockContext);
+      expect(result).toBeDefined();
+      expect(result?.path).not.toContain('actionView=traceList');
+      expect(result?.path).toContain('var-filters=' + encodeURIComponent('resource.service.name|=|my-service'));
+    });
   });
 });
 
