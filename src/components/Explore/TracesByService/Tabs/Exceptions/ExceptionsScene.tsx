@@ -22,10 +22,12 @@ import {
   EMPTY_STATE_ERROR_MESSAGE,
   EMPTY_STATE_ERROR_REMEDY_MESSAGE,
   explorationDS,
+  filterStreamingProgressTransformations,
 } from '../../../../../utils/shared';
 import { getTraceByServiceScene, getFiltersVariable } from '../../../../../utils/utils';
 import { buildExceptionsQuery } from 'components/Explore/queries/exceptions';
 import { aggregateExceptions } from './ExceptionUtils';
+import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 
 export interface ExceptionsSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -49,7 +51,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
 
     const dataTransformer = this.state.$data as SceneDataTransformer;
     dataTransformer.setState({
-      transformations: [this.createTransformation()],
+      transformations: [...filterStreamingProgressTransformations, this.createTransformation()],
     });
 
     this.addActivationHandler(() => {
@@ -287,8 +289,6 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
         },
       };
 
-      console.log(sparklineData);
-
       return (
         <div className={styles.sparklineContainer}>
           <Sparkline
@@ -322,6 +322,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
         if (rowIndex !== undefined) {
           const message = event.origin?.field?.values?.[rowIndex];
           if (message) {
+            reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.exception_message_clicked);
             this.navigateToTracesWithFilter(message);
           }
         }
@@ -362,7 +363,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
       .replace(/[\n\r\t]/g, ' ')
       .replace(/\s+/g, ' ')
       .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\\"')
+      .replace(/"/g, '\"')
       .trim();
   }
 
