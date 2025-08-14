@@ -19,7 +19,7 @@
     "docker-compose*.yml",
     "devenv"
   ],
-  "ignoreRegExpList": ["import\\s*\\((.|[\r\n])*?\\)", "import\\s*.*\".*?\""],
+  "ignoreRegExpList": ["import\\s*\\((.|[\r\n])*?\\)", "import\\s*.*\".*?\"", "%[0-9A-Fa-f]{2}[a-zA-Z]*"],
   "words": [
     "grafana",
     "datasource",
@@ -62,6 +62,8 @@
     "zizmor",
     "Zizmor",
     "occurrences",
-    "sparkline"
+    "sparkline",
+    "spansets",
+    "healthcheck"
   ]
 }
