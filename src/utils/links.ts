@@ -61,6 +61,9 @@ export function contextToLink(context?: PluginExtensionPanelContext) {
     (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length
   );
 
+  const params = new URLSearchParams();
+  params.append(`var-${VAR_DATASOURCE}`, tempoQuery.datasource?.uid || '');
+
   // If no structured filters found, try to parse from raw query
   if ((!filters || filters.length === 0) && tempoQuery.query) {
     const parsedFilters = parseTraceQLQuery(tempoQuery.query);
@@ -69,10 +72,9 @@ export function contextToLink(context?: PluginExtensionPanelContext) {
         (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length
       );
     }
+    // if we parse the query, we should also set the url param actionView to "traceList"
+    params.append('actionView', 'traceList');
   }
-
-  const params = new URLSearchParams();
-  params.append(`var-${VAR_DATASOURCE}`, tempoQuery.datasource?.uid || '');
 
   // Add time range if available
   if (context.timeRange) {
