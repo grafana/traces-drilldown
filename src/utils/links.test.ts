@@ -207,9 +207,6 @@ describe('contextToLink', () => {
       const result = getLink(mockContext);
       expect(result).toBeDefined();
       // service.name without scope gets parsed as intrinsic scope with service.name tag
-      // bypass the spellcheck for the next line
-      // opt/actions-runner/_work/traces-drilldown/traces-drilldown/src/utils/links.test.ts:210:84 - Unknown word (Capi)
-      // eslint-disable-next-line spellcheck/spell-checker
       expect(result?.path).toContain('var-filters=intrinsic.service.name%7C%3D%7E%7Capi.*');
     });
   });

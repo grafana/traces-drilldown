@@ -75,7 +75,7 @@ describe('Limited TraceQL Parser', () => {
       const queries = [
         '{span.http.status_code>=400}',
         '{duration<=100ms}',
-        '{name!="health-check"}',
+        '{name!="healthcheck"}',
         '{service.name=~"api.*"}',
         '{error!~"timeout.*"}'
       ];
@@ -104,7 +104,7 @@ describe('Limited TraceQL Parser', () => {
       });
     });
 
-    it('should parse multiple span sets', () => {
+    it('should parse multiple spansets', () => {
       const query = '{resource.service.name="api"} && {span.http.status_code=200}';
       const result = parseTraceQLQuery(query);
       
