@@ -10,9 +10,6 @@ Before this app, you would use [TraceQL](https://grafana.com/docs/tempo/latest/t
 
 Note: The Explore Traces app is now called Traces Drilldown. To learn more, read [Grafana Drilldown apps: the improved queryless experience known as the Explore apps](https://grafana.com/blog/2025/02/20/grafana-drilldown-apps-the-improved-queryless-experience-formerly-known-as-the-explore-apps/). 
 
-> [!IMPORTANT]
-> Traces Drilldown is presently undergoing active development and is offered in a preview state. Subsequent updates are likely to incorporate significant changes that may impact existing functionality.
-
 ![Traces Drilldown](docs/sources/explore-traces-homescreen.png)
 
 ## Access or install Traces Drilldown

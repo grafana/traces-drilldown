@@ -1,6 +1,24 @@
 # Changelog
 
-#### 1.1.2
+## 1.1.3
+
+##### Chores
+
+*  Exceptions tab improvements (#535) (7cf574e6)
+*  Update Grafana packages (#511) (b89ef3cb)
+
+##### New Features
+
+*  Trace exploration improvements (#537) (a8704e8d)
+*  Exceptions tab (#509) (c259a96f)
+
+##### Bug Fixes
+
+*  Fix date formatting when rounded (#529) (3593aaa7)
+*  Fix duplicate title and close button in drawer (#507) (6b4527be)
+
+
+## 1.1.2
 
 ##### Chores
 
