@@ -15,7 +15,6 @@ describe('Limited TraceQL Parser', () => {
       
       expect(result).toHaveLength(1);
       expect(result![0]).toEqual({
-        id: 'filter-0',
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
@@ -29,7 +28,7 @@ describe('Limited TraceQL Parser', () => {
       
       expect(result).toHaveLength(1);
       expect(result![0]).toEqual({
-        id: 'filter-0',
+
         scope: 'intrinsic',
         tag: 'status',
         operator: '=',
@@ -43,7 +42,7 @@ describe('Limited TraceQL Parser', () => {
       
       expect(result).toHaveLength(1);
       expect(result![0]).toEqual({
-        id: 'filter-0',
+
         scope: 'span',
         tag: 'duration',
         operator: '>',
@@ -57,14 +56,14 @@ describe('Limited TraceQL Parser', () => {
       
       expect(result).toHaveLength(2);
       expect(result![0]).toEqual({
-        id: 'filter-0',
+
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
         value: 'api'
       });
       expect(result![1]).toEqual({
-        id: 'filter-1',
+
         scope: 'intrinsic',
         tag: 'status',
         operator: '=',
@@ -76,7 +75,7 @@ describe('Limited TraceQL Parser', () => {
       const queries = [
         '{span.http.status_code>=400}',
         '{duration<=100ms}',
-        '{name!="healthcheck"}',
+        '{name!="health-check"}',
         '{service.name=~"api.*"}',
         '{error!~"timeout.*"}'
       ];
@@ -105,20 +104,20 @@ describe('Limited TraceQL Parser', () => {
       });
     });
 
-    it('should parse multiple spansets', () => {
+    it('should parse multiple span sets', () => {
       const query = '{resource.service.name="api"} && {span.http.status_code=200}';
       const result = parseTraceQLQuery(query);
       
       expect(result).toHaveLength(2);
       expect(result![0]).toEqual({
-        id: 'filter-0',
+
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
         value: 'api'
       });
       expect(result![1]).toEqual({
-        id: 'filter-1',
+
         scope: 'span',
         tag: 'http.status_code',
         operator: '=',
@@ -132,14 +131,14 @@ describe('Limited TraceQL Parser', () => {
       
       expect(result).toHaveLength(2);
       expect(result![0]).toEqual({
-        id: 'filter-0',
+
         scope: 'resource',
         tag: 'k8s.pod.name',
         operator: '=',
         value: 'my-pod'
       });
       expect(result![1]).toEqual({
-        id: 'filter-1',
+
         scope: 'span',
         tag: 'http.target',
         operator: '=',
@@ -167,14 +166,14 @@ describe('Limited TraceQL Parser', () => {
       
       expect(result).toHaveLength(2);
       expect(result![0]).toEqual({
-        id: 'filter-0',
+
         scope: 'intrinsic',
         tag: 'status',
         operator: '=',
         value: 'error'
       });
       expect(result![1]).toEqual({
-        id: 'filter-1',
+
         scope: 'intrinsic',
         tag: 'status',
         operator: '=',
@@ -188,7 +187,7 @@ describe('Limited TraceQL Parser', () => {
       
       expect(result).toHaveLength(1);
       expect(result![0]).toEqual({
-        id: 'filter-0',
+
         scope: 'intrinsic',
         tag: 'name',
         operator: '=~',

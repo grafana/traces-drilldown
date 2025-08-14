@@ -288,7 +288,9 @@ function parseValue(value: string): string | string[] | null {
   // Handle quoted strings
   if ((value.startsWith('"') && value.endsWith('"')) || 
       (value.startsWith("'") && value.endsWith("'"))) {
-    return value.slice(1, -1);
+    const unquoted = value.slice(1, -1);
+    // Handle escape sequences
+    return unquoted.replace(/\\"/g, '"').replace(/\\'/g, "'").replace(/\\\\/g, '\\');
   }
   
   // Handle multiple values separated by | (for regex operators)
