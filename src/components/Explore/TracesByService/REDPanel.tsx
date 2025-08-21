@@ -28,6 +28,7 @@ import {
   getMetricVariable,
   getOpenTrace,
   getTraceByServiceScene,
+  getTraceExplorationScene,
   shouldShowSelection,
 } from '../../../utils/utils';
 import { getHistogramVizPanel, yBucketToDuration } from '../panels/histogram';
@@ -37,6 +38,8 @@ import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
+import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
+import { useServiceName } from 'pages/Explore/TraceExploration';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -204,7 +207,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
-    const panel = barsPanelConfig(type).setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(type, 70).setHoverHeader(true).setDisplayMode('transparent');
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
@@ -256,6 +259,8 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const { panel, actions, isStreaming } = model.useState();
     const { value: metric } = getMetricVariable(model).useState();
     const styles = useStyles2(getStyles);
+    const serviceName = useServiceName(model);
+    const exploration = getTraceExplorationScene(model);
 
     if (!panel) {
       return;
@@ -305,6 +310,12 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           </div>
         </div>
         <panel.Component model={panel} />
+        {!exploration.state.embedded && (
+          <InsightsTimelineWidget
+            serviceName={serviceName || ''}
+            model={model}
+          />
+        )}
       </div>
     );
   };
