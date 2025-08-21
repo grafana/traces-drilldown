@@ -1,7 +1,15 @@
 import { css } from '@emotion/css';
 import React, { useEffect } from 'react';
 
-import { GrafanaTheme2, LoadingState, PluginExtensionLink, AdHocVariableFilter } from '@grafana/data';
+import {
+  GrafanaTheme2,
+  LoadingState,
+  PluginExtensionLink,
+  AdHocVariableFilter,
+  DataLinksContext,
+  defaultInternalLinkPostProcessor,
+  TimeRange
+} from '@grafana/data';
 import {
   CustomVariable,
   DataSourceVariable,
@@ -18,7 +26,7 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { config, useReturnToPrevious } from '@grafana/runtime';
+import { config, getDataSourceSrv, usePluginFunctions, useReturnToPrevious } from '@grafana/runtime';
 import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton } from '@grafana/ui';
 
 import {
@@ -41,7 +49,7 @@ import {
   getUrlForExploration,
 } from '../../utils/utils';
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
-import { VariableHide } from '@grafana/schema';
+import { DataQuery, VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { primarySignalOptions } from './primary-signals';
@@ -260,6 +268,8 @@ export class TraceExplorationScene extends SceneObjectBase {
     };
     const styles = useStyles2(getStyles);
 
+    const state = traceExploration.useState();
+
     const addToInvestigationClicked = (e: React.MouseEvent) => {
       if (investigationLink?.onClick) {
         investigationLink.onClick(e);
@@ -274,30 +284,90 @@ export class TraceExplorationScene extends SceneObjectBase {
     };
 
     return (
-      <div className={styles.container} id="trace-exploration">
-        {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
-        {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
-        <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
-        <SmartDrawer
-          isOpen={!!drawerScene && !!traceId}
-          onClose={() => traceExploration.closeDrawer()}
-          title={`View trace ${traceId}`}
-          embedded={embedded}
-          forceNoDrawer={embedded}
-          investigationButton={
-            addToInvestigationButton &&
-            investigationLink && (
-              <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
-                {ADD_TO_INVESTIGATION_MENU_TEXT}
-              </Button>
-            )
-          }
-        >
-          {drawerScene && <drawerScene.Component model={drawerScene} />}
-        </SmartDrawer>
-      </div>
+      <DataLinksCustomContext embedded={embedded} timeRange={state.$timeRange?.state.value}>
+        <div className={styles.container} id="trace-exploration">
+          {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
+          {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
+          <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
+          <SmartDrawer
+            isOpen={!!drawerScene && !!traceId}
+            onClose={() => traceExploration.closeDrawer()}
+            title={`View trace ${traceId}`}
+            embedded={embedded}
+            forceNoDrawer={embedded}
+            investigationButton={
+              addToInvestigationButton &&
+              investigationLink && (
+                <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
+                  {ADD_TO_INVESTIGATION_MENU_TEXT}
+                </Button>
+              )
+            }
+          >
+            {drawerScene && <drawerScene.Component model={drawerScene} />}
+          </SmartDrawer>
+        </div>
+      </DataLinksCustomContext>
     );
   };
+}
+
+type ContextForLinks = {
+  targets: DataQuery[];
+  timeRange: TimeRange;
+}
+
+type ContextForLinksFn = (context: ContextForLinks) => PluginExtensionLink | undefined;
+
+const DataLinksCustomContext = function({ children, embedded, timeRange }: { children: React.ReactNode; embedded?: boolean, timeRange?: TimeRange }) {
+  const { functions: extensions } = usePluginFunctions<ContextForLinksFn>({
+    extensionPointId: "grafana-exploretraces-app/open-logs-drilldown",
+    limitPerPlugin: 1,
+  })
+
+  // Use default context for embedded mode or if there's no extensions or no time range available yet
+  if (embedded || extensions.length === 0 || !timeRange) {
+    return <>
+      {children}
+    </>
+  } else {
+    return <DataLinksContext.Provider value={
+      {
+        dataLinksPostProcessor: (options) => {
+          const defaultLink = defaultInternalLinkPostProcessor(options);
+          const interpolatedInternalLinkData = defaultLink?.meta?.interpolated as { query: DataQuery } | undefined;
+
+          if (defaultLink && interpolatedInternalLinkData) {
+            const dataSourceType = getDataSourceSrv().getInstanceSettings(interpolatedInternalLinkData.query.datasource?.uid)?.type;
+
+            try {
+              for (const extension of extensions) {
+                const extensionLink = extension.fn({
+                  targets: [{
+                    ...interpolatedInternalLinkData.query,
+                    datasource: {
+                      uid: interpolatedInternalLinkData.query.datasource?.uid,
+                      type: dataSourceType,
+                    }
+                  }],
+                  timeRange,
+                })
+                if (extensionLink?.path) {
+                  defaultLink.href = extensionLink.path;
+                }
+              }
+            } catch (e) {
+              // If the post-processor fails, we return the default internal data link
+            }
+          }
+
+          return defaultLink;
+
+        }
+      }}>
+      { children }
+    </DataLinksContext.Provider>
+  }
 }
 
 const useServiceName = (model: SceneObject) => {

@@ -94,6 +94,9 @@
     "extensionPoints": [
       {
         "id": "grafana-exploretraces-app/investigation/v1"
+      },
+      {
+        "id": "grafana-exploretraces-app/open-logs-drilldown"
       }
     ]
   }
