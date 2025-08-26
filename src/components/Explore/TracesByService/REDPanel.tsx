@@ -28,7 +28,6 @@ import {
   getMetricVariable,
   getOpenTrace,
   getTraceByServiceScene,
-  getTraceExplorationScene,
   shouldShowSelection,
 } from '../../../utils/utils';
 import { getHistogramVizPanel, yBucketToDuration } from '../panels/histogram';
@@ -260,7 +259,6 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const { value: metric } = getMetricVariable(model).useState();
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
-    const exploration = getTraceExplorationScene(model);
 
     if (!panel) {
       return;
@@ -310,12 +308,10 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           </div>
         </div>
         <panel.Component model={panel} />
-        {!exploration.state.embedded && (
-          <InsightsTimelineWidget
-            serviceName={serviceName || ''}
-            model={model}
-          />
-        )}
+        <InsightsTimelineWidget
+          serviceName={serviceName || ''}
+          model={model}
+        />
       </div>
     );
   };

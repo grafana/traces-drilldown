@@ -5,7 +5,7 @@ import { usePluginComponent } from '@grafana/runtime';
 import { sceneGraph, SceneObject } from '@grafana/scenes';
 import { css } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
-import { getMetricVariable } from 'utils/utils';
+import { getMetricVariable, getTraceExplorationScene } from 'utils/utils';
 import { MetricFunction } from 'utils/shared';
 
 export type AssertionSeverity = 'warning' | 'critical' | 'info';
@@ -43,6 +43,7 @@ interface InsightsTimelineWidgetProps {
   end: string;
   filterBySeverity?: AssertionSeverity[];
   filterBySummaryKeywords?: string[];
+  isEmbeddedApp?: boolean;
   dataCallback: (data: Record<string, { healthStates: HealthState[], clusters: Cluster[] }>) => void;
 }
 
@@ -61,6 +62,8 @@ export function InsightsTimelineWidget({ serviceName, model }: Props) {
   const [showTitle, setShowTitle] = useState(false);
   const [showInsights, setShowInsights] = useState(true);
   const styles = useStyles2(getStyles);
+  const traceExploration = getTraceExplorationScene(model);
+  const { embedded } = traceExploration.useState();
 
   useEffect(() => {
     const sceneTimeRange = sceneGraph.getTimeRange(model);
@@ -119,6 +122,7 @@ export function InsightsTimelineWidget({ serviceName, model }: Props) {
             filterBySeverity={filterBySeverity}
             filterBySummaryKeywords={filterBySummaryKeywords}
             dataCallback={(data: Record<string, { healthStates: HealthState[], clusters: Cluster[] }>) => checkHasData(data)}
+            isEmbeddedApp={embedded}
           />
         </div>
       )}
