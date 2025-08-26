@@ -133,6 +133,7 @@ function getStyles(theme: GrafanaTheme2) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: '8px',
+      marginBottom: '6px',
     }),
     insightsTitle: css({
       fontSize: '12px',
