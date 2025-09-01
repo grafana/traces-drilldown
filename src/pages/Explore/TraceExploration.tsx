@@ -274,17 +274,16 @@ export class TraceExplorationScene extends SceneObjectBase {
     };
 
     return (
-      <>
-        <div className={styles.container}>
-          {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
-          {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
-          <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
-        </div>
+      <div className={styles.container} id="trace-exploration">
+        {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
+        {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
+        <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
         <SmartDrawer
           isOpen={!!drawerScene && !!traceId}
           onClose={() => traceExploration.closeDrawer()}
           title={`View trace ${traceId}`}
           embedded={embedded}
+          forceNoDrawer={embedded}
           investigationButton={
             addToInvestigationButton &&
             investigationLink && (
@@ -296,7 +295,7 @@ export class TraceExplorationScene extends SceneObjectBase {
         >
           {drawerScene && <drawerScene.Component model={drawerScene} />}
         </SmartDrawer>
-      </>
+      </div>
     );
   };
 }
@@ -337,8 +336,17 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
 
+  const timeRangeState = traceExploration.state.$timeRange?.useState();
+  const filtersVariableState = filtersVariable.useState();
+  const metricVariableState = traceExploration.getMetricVariable().useState();
+  const [explorationUrl, setExplorationUrl] = React.useState(() => getUrlForExploration(traceExploration));
+  
   // Force the primary signal to be 'All Spans'
   primarySignalVariable?.changeValueTo(primarySignalOptions[1].value!);
+
+  useEffect(() => {
+    setExplorationUrl(getUrlForExploration(traceExploration));
+  }, [timeRangeState, filtersVariableState, metricVariableState, traceExploration]);
 
   return (
     <div className={styles.headerContainer}>
@@ -351,7 +359,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
         )}
         <Stack gap={1} alignItems={'center'}>
           <LinkButton
-            href={getUrlForExploration(traceExploration)}
+            href={explorationUrl}
             variant="secondary"
             icon="arrow-right"
             onClick={() => {
@@ -531,6 +539,7 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
       padding: `0 ${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(2)}`,
       overflow: 'auto' /* Needed for sticky positioning */,
       maxHeight: '100%' /* Needed for sticky positioning */,
+      position: 'relative', // Needed for the drawer to be positioned correctly
     }),
     drawerHeader: css({
       display: 'flex',

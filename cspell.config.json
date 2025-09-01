@@ -62,6 +62,9 @@
     "zizmor",
     "Zizmor",
     "occurrences",
-    "sparkline"
+    "sparkline",
+    "behaviour",
+    "Resizeble",
+    "Dismissable"
   ]
 }
