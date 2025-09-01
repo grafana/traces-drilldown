@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint --cache --ignore-path ./.gitignore --ext .js,.jsx,.ts,.tsx .",
     "lint:fix": "yarn run lint --fix && prettier --write --list-different .",
-    "server": "docker compose up --build",
+    "server": "docker compose -f ./devenv/docker-compose.yaml up --build -d",
     "server:ci": "docker compose -f ./devenv/docker-compose.e2e.yaml up --build -d",
     "server:ci:down": "docker compose -f ./devenv/docker-compose.e2e.yaml down",
     "sign": "npx --yes @grafana/sign-plugin@latest",
