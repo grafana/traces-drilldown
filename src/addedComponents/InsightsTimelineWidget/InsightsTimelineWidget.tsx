@@ -10,33 +10,6 @@ import { MetricFunction } from 'utils/shared';
 
 export type AssertionSeverity = 'warning' | 'critical' | 'info';
 
-export interface EntityAssertion {
-  severity?: AssertionSeverity;
-  amend?: boolean;
-  assertions?: Array<{
-    assertionName: string;
-    severity: AssertionSeverity;
-    category: string;
-    entityType: string;
-  }>;
-}
-
-export interface HealthState extends EntityAssertion {
-  start: number;
-  end: number;
-  context: Record<string, string>;
-}
-
-export interface Cluster {
-  start: number;
-  end: number;
-  assertionStates: HealthState[];
-  assertionSummaries: Array<{
-    summary: string;
-    category: string;
-  }>;
-}
-
 interface InsightsTimelineWidgetProps {
   serviceName: string;
   start: string | number;
