@@ -64,20 +64,12 @@ export function InsightsTimelineWidget({ serviceName, model }: Props) {
   const styles = useStyles2(getStyles);
   const traceExploration = getTraceExplorationScene(model);
   const { embedded } = traceExploration.useState();
+  const sceneTimeRange = sceneGraph.getTimeRange(model).useState();
 
   useEffect(() => {
-    const sceneTimeRange = sceneGraph.getTimeRange(model);
-    setTimeRange(sceneTimeRange.state.value);
-
-    const sub = sceneTimeRange.subscribeToState((state) => {
-      setTimeRange(state.value);
-      setShowInsights(true);  // reset to true to show insights, which will call checkHasData()
-    });
-
-    return () => {
-      sub.unsubscribe();
-    };
-  }, [model]);
+    setTimeRange(sceneTimeRange.value);
+    setShowInsights(true);  // reset to true to show insights, which will call checkHasData()
+  }, [sceneTimeRange]);
 
   const checkHasData = (data: Record<string, { healthStates: HealthState[], clusters: Cluster[] }>) => {
     const clustersAndHealthStates = Array.isArray(data) ? data : Object.values(data);
