@@ -103,7 +103,12 @@ export function parseTraceQLQuery(query: string): TraceqlFilter[] | null {
       filters.push(...spansetFilters);
     }
 
-    return filters.length > 0 ? filters : null;
+    // Combine filters with same scope/tag/operator into single filters with array values
+    // This handles Query Builder's OR logic: (field=val1 || field=val2)
+    // See: SearchTraceQLEditor/utils.ts lines 83-84 in filterToQuerySection function
+    const combinedFilters = combineFiltersWithSameField(filters);
+
+    return combinedFilters.length > 0 ? combinedFilters : null;
   } catch (error) {
     // If parsing fails completely, return null to fallback gracefully
     return null;
@@ -492,6 +497,39 @@ function isIntrinsic(filter: TraceqlFilter): boolean {
   });
 
   return intrinsics.some((intrinsic) => intrinsic.tag === filter.tag && intrinsic.scope === filter.scope);
+}
+
+/**
+ * Combine filters with the same scope/tag/operator into single filters with array values.
+ * This recreates the original Query Builder structure where multiple values for the same
+ * field are represented as a single filter with an array value.
+ * 
+ * Based on Tempo's SearchTraceQLEditor/utils.ts lines 83-84 in filterToQuerySection:
+ * if (Array.isArray(f.value) && f.value.length > 1 && !isRegExpOperator(f.operator!)) {
+ *   return `(${f.value.map((v) => `${scopeHelper(f, lp)}${tagHelper(f, filters)}${f.operator}${valueHelper({ ...f, value: v })}`).join(' || ')})`;
+ * }
+ */
+function combineFiltersWithSameField(filters: TraceqlFilter[]): TraceqlFilter[] {
+  const filterMap = new Map<string, TraceqlFilter>();
+
+  for (const filter of filters) {
+    const key = `${filter.scope}:${filter.tag}:${filter.operator}`;
+    
+    if (filterMap.has(key)) {
+      // Combine with existing filter
+      const existing = filterMap.get(key)!;
+      if (Array.isArray(existing.value)) {
+        existing.value.push(filter.value as string);
+      } else {
+        existing.value = [existing.value as string, filter.value as string];
+      }
+    } else {
+      // First occurrence of this field/operator combination
+      filterMap.set(key, { ...filter });
+    }
+  }
+
+  return Array.from(filterMap.values());
 }
 
 /**
