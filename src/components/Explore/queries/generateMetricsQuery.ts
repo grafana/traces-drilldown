@@ -42,9 +42,9 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample 
 
   const groupBy = groupByAttrs.length ? `by(${groupByAttrs.join(', ')})` : '';
 
-  const sampleStr = sample ? 'with(sample=true)' : '';
+  const sampleStr = sample ? ' with(sample=true)' : '';
 
-  return `{${filters}} | ${metricFn} ${groupBy} ${sampleStr}`;
+  return `{${filters}} | ${metricFn} ${groupBy}${sampleStr}`;
 }
 
 export function metricByWithStatus(metric: MetricFunction, tagKey?: string, sample = false) {

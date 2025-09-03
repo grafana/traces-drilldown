@@ -40,7 +40,7 @@ describe('buildHistogramQuery', () => {
     expect(query).toEqual({
       filters: [],
       limit: 1000,
-      query: '{${primarySignal} && ${filters}} | histogram_over_time(duration)',
+      query: '{${primarySignal} && ${filters}} | histogram_over_time(duration) with(sample=true)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -75,6 +75,20 @@ describe('metricByWithStatus', () => {
       tableType: 'spans',
     });
   });
+
+  it('should return correct query with sampling', () => {
+    const query = metricByWithStatus('rate', 'service', true);
+    expect(query).toEqual({
+      filters: [],
+      limit: 100,
+      query: '{${primarySignal} && ${filters} && service != nil} | rate() by(service) with(sample=true)',
+      queryType: 'traceql',
+      refId: 'A',
+      spss: 10,
+      tableType: 'spans',
+    });
+  });
+
 
   it('should return correct query for duration', () => {
     const query = metricByWithStatus('duration', 'service');
