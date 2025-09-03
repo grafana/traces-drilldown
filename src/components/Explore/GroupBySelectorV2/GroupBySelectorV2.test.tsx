@@ -5,7 +5,6 @@ import { createDefaultGroupBySelectorConfig } from './utils';
 
 // Mock the required Grafana UI components
 jest.mock('@grafana/ui', () => ({
-  ...jest.requireActual('@grafana/ui'),
   useTheme2: () => ({
     typography: { fontSize: 14 },
     spacing: (value: number) => `${value * 8}px`,
@@ -15,6 +14,11 @@ jest.mock('@grafana/ui', () => ({
     spacing: (value: number) => `${value * 8}px`,
   }),
   measureText: jest.fn(() => ({ width: 100 })),
+  Field: ({ label, children }: any) => <div><label>{label}</label>{children}</div>,
+  Select: ({ placeholder }: any) => <select><option>{placeholder}</option></select>,
+  RadioButtonGroup: ({ options }: any) => (
+    <div>{options?.map((opt: any) => <span key={opt.value}>{opt.label}</span>)}</div>
+  ),
 }));
 
 jest.mock('@react-aria/utils', () => ({

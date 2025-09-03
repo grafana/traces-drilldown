@@ -12,7 +12,7 @@ import {
 } from '@grafana/scenes';
 import { Field, RadioButtonGroup, useStyles2 } from '@grafana/ui';
 
-import { GroupBySelector } from '../../../GroupBySelector';
+import { GroupBySelectorV2, createGroupBySelectorPropsWithAdapter } from '../../../GroupBySelectorV2';
 import {
   MetricFunction,
   RESOURCE,
@@ -171,12 +171,13 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
               </div>
 
               <div className={styles.groupBy}>
-                <GroupBySelector
-                  options={getAttributesAsOptions(filteredAttributes!)}
-                  radioAttributes={scope === RESOURCE ? radioAttributesResource : radioAttributesSpan}
-                  value={groupBy}
-                  onChange={model.onChange}
-                  model={model}
+                <GroupBySelectorV2
+                  {...createGroupBySelectorPropsWithAdapter({
+                    model,
+                    options: getAttributesAsOptions(filteredAttributes!),
+                    radioAttributes: scope === RESOURCE ? radioAttributesResource : radioAttributesSpan,
+                    value: groupBy,
+                  })}
                 />
               </div>
             </div>

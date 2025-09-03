@@ -16,7 +16,7 @@ import {
 } from '@grafana/scenes';
 import { getTheme, useStyles2 } from '@grafana/ui';
 
-import { GroupBySelector } from '../../../GroupBySelector';
+import { GroupBySelectorV2, createDefaultGroupBySelectorConfig } from '../../../GroupBySelectorV2';
 import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL, radioAttributesSpan } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
@@ -33,6 +33,8 @@ import {
   getPrimarySignalVariable,
   getTraceByServiceScene,
   getTraceExplorationScene,
+  getFiltersVariable,
+  getMetricVariable,
 } from 'utils/utils';
 import { InspectAttributeAction } from 'components/Explore/actions/InspectAttributeAction';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../../../utils/analytics';
@@ -189,6 +191,13 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     const { attributes } = getTraceByServiceScene(model).useState();
     const styles = useStyles2(getStyles);
 
+    // Extract state for direct GroupBySelectorV2 usage
+    const filtersVariable = getFiltersVariable(model);
+    const metricVariable = getMetricVariable(model);
+    const { initialGroupBy } = traceExploration.useState();
+    const { filters } = filtersVariable.useState();
+    const { value: metric } = metricVariable.useState();
+
     return (
       <div className={styles.container}>
         <AttributesDescription
@@ -214,13 +223,16 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
         <div className={styles.controls}>
           {attributes?.length && (
             <div className={styles.controlsLeft}>
-              <GroupBySelector
+              <GroupBySelectorV2
                 options={getAttributesAsOptions(attributes)}
                 radioAttributes={radioAttributesSpan}
                 value={variable.getValueText()}
                 onChange={model.onChange}
                 showAll={true}
-                model={model}
+                filters={filters.map(f => ({ key: f.key, operator: f.operator, value: f.value }))}
+                currentMetric={metric as string}
+                initialGroupBy={initialGroupBy}
+                {...createDefaultGroupBySelectorConfig('traces')}
               />
             </div>
           )}
