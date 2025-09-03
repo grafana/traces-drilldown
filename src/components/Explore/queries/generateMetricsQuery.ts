@@ -4,9 +4,10 @@ interface QueryOptions {
   metric: MetricFunction;
   extraFilters?: string;
   groupByKey?: string;
+  sample?: boolean;
 }
 
-export function generateMetricsQuery({ metric, groupByKey, extraFilters}: QueryOptions) {
+export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample = false}: QueryOptions) {
   // Generate span set filters
   let filters = `${VAR_FILTERS_EXPR}`;
 
@@ -41,13 +42,15 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters}: QueryO
 
   const groupBy = groupByAttrs.length ? `by(${groupByAttrs.join(', ')})` : '';
 
-  return `{${filters}} | ${metricFn} ${groupBy}`;
+  const sampleStr = sample ? 'with(sample=true)' : '';
+
+  return `{${filters}} | ${metricFn} ${groupBy} ${sampleStr}`;
 }
 
-export function metricByWithStatus(metric: MetricFunction, tagKey?: string) {
+export function metricByWithStatus(metric: MetricFunction, tagKey?: string, sample = false) {
   return {
     refId: 'A',
-    query: generateMetricsQuery({ metric, groupByKey: tagKey}),
+    query: generateMetricsQuery({ metric, groupByKey: tagKey, sample}),
     queryType: 'traceql',
     tableType: 'spans',
     limit: 100,

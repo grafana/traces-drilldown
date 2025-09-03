@@ -91,7 +91,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
         $data: new StepQueryRunner({
           maxDataPoints: this.state.metric === 'duration' ? 24 : 64,
           datasource: explorationDS,
-          queries: [this.state.metric === 'duration' ? buildHistogramQuery() : metricByWithStatus(this.state.metric)],
+          queries: [this.state.metric === 'duration' ? buildHistogramQuery() : metricByWithStatus(this.state.metric, undefined, true)],
         }),
         transformations:
           this.state.metric === 'duration'

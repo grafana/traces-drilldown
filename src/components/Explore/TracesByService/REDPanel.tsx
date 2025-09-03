@@ -184,7 +184,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
         $data: new StepQueryRunner({
           maxDataPoints: this.isDuration() ? 24 : 64,
           datasource: explorationDS,
-          queries: [this.isDuration() ? buildHistogramQuery() : metricByWithStatus(metric)],
+          queries: [this.isDuration() ? buildHistogramQuery() : metricByWithStatus(metric, undefined, true)],
         }),
         transformations: this.isDuration()
           ? [...removeExemplarsTransformation()]
