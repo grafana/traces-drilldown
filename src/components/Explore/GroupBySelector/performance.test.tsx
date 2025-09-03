@@ -164,7 +164,7 @@ describe('GroupBySelector Performance Tests', () => {
       expect(radioGroup).toBeInTheDocument();
 
       // Should have calculated visible radio buttons
-      const radioCount = parseInt(radioGroup.getAttribute('data-count') || '0');
+      const radioCount = parseInt(radioGroup.getAttribute('data-count') || '0', 10);
       expect(radioCount).toBeGreaterThan(0);
       expect(radioCount).toBeLessThanOrEqual(20);
     });
@@ -265,13 +265,13 @@ describe('GroupBySelector Performance Tests', () => {
 
       // Should show both radio buttons
       let radioGroup = screen.getByTestId('radio-group');
-      expect(parseInt(radioGroup.getAttribute('data-count') || '0')).toBe(2);
+      expect(parseInt(radioGroup.getAttribute('data-count') || '0', 10)).toBe(2);
 
       // Change metric - should recalculate and exclude status
       rerender(<TestComponent metric="rate" />);
 
       radioGroup = screen.getByTestId('radio-group');
-      expect(parseInt(radioGroup.getAttribute('data-count') || '0')).toBe(1);
+      expect(parseInt(radioGroup.getAttribute('data-count') || '0', 10)).toBe(1);
     });
   });
 

@@ -3,7 +3,7 @@ import { useResizeObserver } from '@react-aria/utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
-import { Select, RadioButtonGroup, useStyles2, useTheme2, Field, InputActionMeta } from '@grafana/ui';
+import { Combobox, RadioButtonGroup, useStyles2, useTheme2, Field } from '@grafana/ui';
 
 import {
   GroupBySelectorProps,
@@ -56,7 +56,6 @@ export function GroupBySelector({
   const { fontSize } = theme.typography;
 
   // Internal state
-  const [selectQuery, setSelectQuery] = useState<string>('');
   const [allowAutoUpdate, setAllowAutoUpdate] = useState<boolean>(true);
   const [availableWidth, setAvailableWidth] = useState<number>(0);
   const controlsContainer = useRef<HTMLDivElement>(null);
@@ -136,8 +135,8 @@ export function GroupBySelector({
     const optionsNotInRadio = options.filter(
       (option) => !radioOptions.find((ro) => ro.value === option.value?.toString())
     );
-    return filteredOptions(optionsNotInRadio, selectQuery, config.searchConfig);
-  }, [options, radioOptions, selectQuery, config.searchConfig]);
+    return filteredOptions(optionsNotInRadio, '', config.searchConfig);
+  }, [options, radioOptions, config.searchConfig]);
 
   // Get modified select options
   const modifiedSelectOptions = useMemo(() =>
@@ -182,23 +181,15 @@ export function GroupBySelector({
             onChange={onChange}
           />
         )}
-        <Select
+        <Combobox
           value={value && modifiedSelectOptions.some((x) => x.value === value) ? value : null}
           placeholder={selectPlaceholder}
-          options={modifiedSelectOptions}
+          options={modifiedSelectOptions.filter(opt => opt.value !== undefined) as Array<{label?: string, value: string}>}
           onChange={(selected) => {
-            const newSelected = selected?.value ?? defaultOnChangeValue;
+            const newSelected = (selected?.value as string) ?? defaultOnChangeValue;
             onChange(newSelected);
           }}
-          className={styles.select}
           isClearable
-          onInputChange={(inputValue: string, { action }: InputActionMeta) => {
-            if (action === 'input-change' && config.searchConfig.enabled) {
-              setSelectQuery(inputValue);
-            }
-          }}
-          onCloseMenu={() => setSelectQuery('')}
-          virtualized={config.virtualizationConfig.enabled}
         />
       </div>
     </Field>
