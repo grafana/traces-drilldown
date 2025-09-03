@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { GroupBySelectorV2, createGroupBySelectorAdapter, createDefaultGroupBySelectorConfig } from './';
+import { GroupBySelector, createGroupBySelectorAdapter, createDefaultGroupBySelectorConfig } from './';
 import { AttributesBreakdownScene } from '../TracesByService/Tabs/Breakdown/AttributesBreakdownScene';
 import { AttributesComparisonScene } from '../TracesByService/Tabs/Comparison/AttributesComparisonScene';
 
@@ -69,7 +69,7 @@ jest.mock('../../../utils/utils', () => ({
   })),
 }));
 
-describe('GroupBySelectorV2 Integration Tests', () => {
+describe('GroupBySelector Integration Tests', () => {
   const defaultOptions = [
     { label: 'Service Name', value: 'resource.service.name' },
     { label: 'Operation Name', value: 'name' },
@@ -89,7 +89,7 @@ describe('GroupBySelectorV2 Integration Tests', () => {
       const tracesConfig = createDefaultGroupBySelectorConfig('traces');
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={defaultOptions}
           radioAttributes={radioAttributes}
           value="resource.service.name"
@@ -111,7 +111,7 @@ describe('GroupBySelectorV2 Integration Tests', () => {
       const mockOnChange = jest.fn();
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={defaultOptions}
           radioAttributes={radioAttributes}
           value="status"
@@ -141,7 +141,7 @@ describe('GroupBySelectorV2 Integration Tests', () => {
       const mockOnChange = jest.fn();
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={[
             { label: 'resource.service.name', value: 'resource.service.name' },
             { label: 'span.http.method', value: 'span.http.method' },
@@ -247,7 +247,7 @@ describe('GroupBySelectorV2 Integration Tests', () => {
       const mockOnChange = jest.fn();
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={defaultOptions}
           radioAttributes={radioAttributes}
           value=""
@@ -265,7 +265,7 @@ describe('GroupBySelectorV2 Integration Tests', () => {
       const mockOnChange = jest.fn();
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={defaultOptions}
           radioAttributes={['resource.service.name']} // Only one radio option
           value=""
@@ -281,7 +281,7 @@ describe('GroupBySelectorV2 Integration Tests', () => {
 
     it('shows "All" option when showAll is true', () => {
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={defaultOptions}
           radioAttributes={radioAttributes}
           value=""
@@ -304,7 +304,7 @@ describe('GroupBySelectorV2 Integration Tests', () => {
       const mockOnChange = jest.fn();
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={largeOptions}
           radioAttributes={['option_0', 'option_1']}
           value=""
@@ -321,7 +321,7 @@ describe('GroupBySelectorV2 Integration Tests', () => {
       const mockOnChange = jest.fn();
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={defaultOptions}
           radioAttributes={radioAttributes}
           value=""

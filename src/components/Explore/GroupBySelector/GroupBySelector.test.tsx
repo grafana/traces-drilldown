@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { GroupBySelectorV2 } from './GroupBySelectorV2';
+import { GroupBySelector } from './GroupBySelector';
 import { createDefaultGroupBySelectorConfig } from './utils';
 
 // Mock the required Grafana UI components
@@ -25,7 +25,7 @@ jest.mock('@react-aria/utils', () => ({
   useResizeObserver: jest.fn(),
 }));
 
-describe('GroupBySelectorV2', () => {
+describe('GroupBySelector', () => {
   const defaultProps = {
     options: [
       { label: 'Service Name', value: 'resource.service.name' },
@@ -41,15 +41,15 @@ describe('GroupBySelectorV2', () => {
   });
 
   it('renders with basic props', () => {
-    render(<GroupBySelectorV2 {...defaultProps} />);
+    render(<GroupBySelector {...defaultProps} />);
 
     expect(screen.getByText('Group by')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Other attributes')).toBeInTheDocument();
   });
 
   it('renders with custom field label', () => {
-    render(
-      <GroupBySelectorV2
+        render(
+      <GroupBySelector
         {...defaultProps}
         fieldLabel="Custom Group By"
       />
@@ -59,7 +59,7 @@ describe('GroupBySelectorV2', () => {
   });
 
   it('renders with showAll option', () => {
-    render(<GroupBySelectorV2 {...defaultProps} showAll />);
+    render(<GroupBySelector {...defaultProps} showAll />);
 
     expect(screen.getByText('All')).toBeInTheDocument();
   });
@@ -79,7 +79,7 @@ describe('GroupBySelectorV2', () => {
 
   it('handles onChange callback', () => {
     const mockOnChange = jest.fn();
-    render(<GroupBySelectorV2 {...defaultProps} onChange={mockOnChange} />);
+    render(<GroupBySelector {...defaultProps} onChange={mockOnChange} />);
 
     // This test would need more setup to actually trigger onChange
     // but verifies the prop is passed correctly
@@ -91,8 +91,8 @@ describe('GroupBySelectorV2', () => {
       { key: 'status', operator: '=', value: 'ok' },
     ];
 
-    render(
-      <GroupBySelectorV2
+        render(
+      <GroupBySelector
         {...defaultProps}
         filters={filters}
         currentMetric="rate"
@@ -109,8 +109,8 @@ describe('GroupBySelectorV2', () => {
       test: 'test.',
     };
 
-    render(
-      <GroupBySelectorV2
+        render(
+      <GroupBySelector
         {...defaultProps}
         attributePrefixes={attributePrefixes}
       />

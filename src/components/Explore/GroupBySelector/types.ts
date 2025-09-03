@@ -103,9 +103,9 @@ export interface ProcessedAttribute {
 }
 
 /**
- * Main props interface for GroupBySelectorV2
+ * Main props interface for GroupBySelector
  */
-export interface GroupBySelectorV2Props {
+export interface GroupBySelectorProps {
   // Core Selection Interface
   /** Available attribute options for selection */
   options: Array<SelectableValue<string>>;

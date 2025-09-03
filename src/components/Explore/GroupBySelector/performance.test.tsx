@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
-import { GroupBySelectorV2 } from './GroupBySelectorV2';
+import { GroupBySelector } from './GroupBySelector';
 import { createDefaultGroupBySelectorConfig } from './utils';
 
 // Mock performance measurement
@@ -55,7 +55,7 @@ jest.mock('@react-aria/utils', () => ({
   },
 }));
 
-describe('GroupBySelectorV2 Performance Tests', () => {
+describe('GroupBySelector Performance Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -72,7 +72,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
       performance.mark('render-start');
 
       const { rerender } = render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={largeOptions}
           radioAttributes={radioAttributes}
           value=""
@@ -92,7 +92,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
       performance.mark('rerender-start');
 
       rerender(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={largeOptions}
           radioAttributes={radioAttributes}
           value="option_5"
@@ -116,7 +116,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
       }));
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={largeOptions}
           radioAttributes={['option_0']}
           value=""
@@ -145,7 +145,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
       performance.mark('responsive-start');
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={options}
           radioAttributes={radioAttributes}
           value=""
@@ -178,7 +178,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
             <button onClick={() => setWidth(w => w + 100)} data-testid="resize-trigger">
               Resize
             </button>
-            <GroupBySelectorV2
+            <GroupBySelector
               options={[
                 { label: 'Service Name', value: 'service.name' },
                 { label: 'Operation Name', value: 'operation.name' },
@@ -218,7 +218,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
       const radioAttributes = Array.from({ length: 10 }, (_, i) => `option_${i}`);
 
       const TestComponent = ({ metric }: { metric: string }) => (
-        <GroupBySelectorV2
+        <GroupBySelector
           options={options}
           radioAttributes={radioAttributes}
           value=""
@@ -247,7 +247,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
       ];
 
       const TestComponent = ({ metric }: { metric: string }) => (
-        <GroupBySelectorV2
+        <GroupBySelector
           options={options}
           radioAttributes={['service.name', 'status']}
           value=""
@@ -286,7 +286,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
       performance.mark('config-start');
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={[{ label: 'Test', value: 'test' }]}
           radioAttributes={['test']}
           value=""
@@ -303,7 +303,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
 
     it('should handle domain configuration switching efficiently', () => {
       const TestComponent = ({ domain }: { domain: 'traces' | 'logs' }) => (
-        <GroupBySelectorV2
+        <GroupBySelector
           options={[{ label: 'Test', value: 'test' }]}
           radioAttributes={['test']}
           value=""
@@ -334,7 +334,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
       const SearchTestComponent = ({ }: { query: string }) => {
 
         return (
-          <GroupBySelectorV2
+          <GroupBySelector
             options={largeOptions}
             radioAttributes={['option_0']}
             value=""
@@ -367,7 +367,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
         }));
 
         return (
-          <GroupBySelectorV2
+          <GroupBySelector
             options={largeOptions}
             radioAttributes={['mem_option_0', 'mem_option_1']}
             value=""
@@ -401,7 +401,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
       const startTime = performance.now();
 
       render(
-        <GroupBySelectorV2
+        <GroupBySelector
           options={options}
           radioAttributes={options.slice(0, 10).map(o => o.value)}
           value=""
@@ -420,7 +420,7 @@ describe('GroupBySelectorV2 Performance Tests', () => {
 
     it('should handle rapid prop changes efficiently', () => {
       const TestComponent = ({ value }: { value: string }) => (
-        <GroupBySelectorV2
+        <GroupBySelector
           options={[
             { label: 'Option 1', value: 'opt1' },
             { label: 'Option 2', value: 'opt2' },

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { SelectableValue } from '@grafana/data';
 import {
-  GroupBySelectorV2,
+  GroupBySelector,
   createDefaultGroupBySelectorConfig,
   FilterConfig,
   DomainType,
 } from './';
 
 /**
- * Comprehensive examples showing GroupBySelectorV2 with different domain configurations
+ * Comprehensive examples showing GroupBySelector with different domain configurations
  */
 export const DomainExamples: React.FC = () => {
   const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
@@ -122,7 +122,7 @@ const TracesExample: React.FC<{
     <div>
       <div style={{ marginBottom: '20px' }}>
         <h4>Standard Configuration</h4>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={traceOptions}
           radioAttributes={radioAttributes}
           value={selectedAttribute}
@@ -136,7 +136,7 @@ const TracesExample: React.FC<{
 
       <div style={{ marginBottom: '20px' }}>
         <h4>With Rate Metric (excludes status from radio buttons)</h4>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={traceOptions}
           radioAttributes={radioAttributes}
           value={selectedAttribute}
@@ -181,7 +181,7 @@ const LogsExample: React.FC<{
   return (
     <div>
       <div style={{ marginBottom: '20px' }}>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={logOptions}
           radioAttributes={radioAttributes}
           value={selectedAttribute}
@@ -223,7 +223,7 @@ const MetricsExample: React.FC<{
   return (
     <div>
       <div style={{ marginBottom: '20px' }}>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={metricOptions}
           radioAttributes={radioAttributes}
           value={selectedAttribute}
@@ -263,7 +263,7 @@ const CustomExample: React.FC<{
     <div>
       <div style={{ marginBottom: '20px' }}>
         <h4>Custom Domain with Business Logic</h4>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={customOptions}
           radioAttributes={radioAttributes}
           value={selectedAttribute}
@@ -279,9 +279,9 @@ const CustomExample: React.FC<{
           }}
           filteringRules={{
             excludeFilteredFromRadio: true,
-            customAttributeFilter: (attribute, context) => {
+            customAttributeFilter: (attribute: string, context: any) => {
               // Custom business logic: exclude sensitive attributes in production
-              if (context.filters.some(f => f.key === 'environment' && f.value === 'production')) {
+              if (context.filters.some((f: any) => f.key === 'environment' && f.value === 'production')) {
                 return !['user.type', 'feature.flag'].includes(attribute);
               }
               return true;

@@ -6,7 +6,7 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Select, RadioButtonGroup, useStyles2, useTheme2, Field, InputActionMeta } from '@grafana/ui';
 
 import {
-  GroupBySelectorV2Props,
+  GroupBySelectorProps,
   FilterContext,
   DomainConfig,
 } from './types';
@@ -22,7 +22,7 @@ const DEFAULT_ADDITIONAL_WIDTH_PER_ITEM = 40;
 const DEFAULT_WIDTH_OF_OTHER_ATTRIBUTES = 180;
 const DEFAULT_ALL_OPTION = 'All';
 
-export function GroupBySelectorV2({
+export function GroupBySelector({
   // Core props
   options,
   radioAttributes,
@@ -50,7 +50,7 @@ export function GroupBySelectorV2({
   // Advanced options
   searchConfig = {},
   virtualizationConfig = {},
-}: GroupBySelectorV2Props) {
+}: GroupBySelectorProps) {
   const styles = useStyles2(getStyles);
   const theme = useTheme2();
   const { fontSize } = theme.typography;

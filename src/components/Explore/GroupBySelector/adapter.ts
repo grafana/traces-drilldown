@@ -2,7 +2,7 @@ import { SceneObject } from '@grafana/scenes';
 import { AttributesBreakdownScene } from '../TracesByService/Tabs/Breakdown/AttributesBreakdownScene';
 import { AttributesComparisonScene } from '../TracesByService/Tabs/Comparison/AttributesComparisonScene';
 import { getFiltersVariable, getMetricVariable, getTraceExplorationScene } from '../../../utils/utils';
-import { GroupBySelectorV2Props, createDefaultGroupBySelectorConfig } from './';
+import { GroupBySelectorProps, createDefaultGroupBySelectorConfig } from './';
 
 /**
  * Legacy model type for backward compatibility
@@ -10,12 +10,12 @@ import { GroupBySelectorV2Props, createDefaultGroupBySelectorConfig } from './';
 export type LegacyModel = AttributesBreakdownScene | AttributesComparisonScene;
 
 /**
- * Creates adapter configuration for GroupBySelectorV2 from legacy scene models
+ * Creates adapter configuration for GroupBySelector from legacy scene models
  * This allows gradual migration from the old component to the new one
  */
 export const createGroupBySelectorAdapter = (
   model: LegacyModel
-): Partial<GroupBySelectorV2Props> => {
+): Partial<GroupBySelectorProps> => {
   try {
     // Extract state from scene graph
     const traceExploration = getTraceExplorationScene(model);
@@ -60,17 +60,17 @@ export const createGroupBySelectorAdapter = (
  */
 export interface GroupBySelectorAdapterProps {
   model: LegacyModel;
-  options: GroupBySelectorV2Props['options'];
-  radioAttributes: GroupBySelectorV2Props['radioAttributes'];
-  value?: GroupBySelectorV2Props['value'];
-  showAll?: GroupBySelectorV2Props['showAll'];
+  options: GroupBySelectorProps['options'];
+  radioAttributes: GroupBySelectorProps['radioAttributes'];
+  value?: GroupBySelectorProps['value'];
+  showAll?: GroupBySelectorProps['showAll'];
 
   // Allow overriding any adapter configuration
-  overrides?: Partial<GroupBySelectorV2Props>;
+  overrides?: Partial<GroupBySelectorProps>;
 }
 
 /**
- * Creates complete props for GroupBySelectorV2 using the adapter
+ * Creates complete props for GroupBySelector using the adapter
  */
 export const createGroupBySelectorPropsWithAdapter = ({
   model,
@@ -79,7 +79,7 @@ export const createGroupBySelectorPropsWithAdapter = ({
   value,
   showAll = false,
   overrides = {},
-}: GroupBySelectorAdapterProps): GroupBySelectorV2Props => {
+}: GroupBySelectorAdapterProps): GroupBySelectorProps => {
   const adapterConfig = createGroupBySelectorAdapter(model);
 
   return {

@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { SelectableValue } from '@grafana/data';
 import {
-  GroupBySelectorV2,
+  GroupBySelector,
   createDefaultGroupBySelectorConfig,
   FilterConfig,
 } from './';
 
 /**
- * Example usage of GroupBySelectorV2 component
+ * Example usage of GroupBySelector component
  * This demonstrates how to use the new stateless component
  */
-export const GroupBySelectorV2Example: React.FC = () => {
+export const GroupBySelectorExample: React.FC = () => {
   const [selectedAttribute, setSelectedAttribute] = useState<string>('');
   const [currentFilters] = useState<FilterConfig[]>([
     { key: 'status', operator: '=', value: 'error' },
@@ -43,11 +43,11 @@ export const GroupBySelectorV2Example: React.FC = () => {
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px' }}>
-      <h2>GroupBySelectorV2 Examples</h2>
+      <h2>GroupBySelector Examples</h2>
 
       <div style={{ marginBottom: '40px' }}>
         <h3>Basic Usage</h3>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={attributeOptions}
           radioAttributes={radioAttributes}
           value={selectedAttribute}
@@ -57,7 +57,7 @@ export const GroupBySelectorV2Example: React.FC = () => {
 
       <div style={{ marginBottom: '40px' }}>
         <h3>With Show All Option</h3>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={attributeOptions}
           radioAttributes={radioAttributes}
           value={selectedAttribute}
@@ -68,7 +68,7 @@ export const GroupBySelectorV2Example: React.FC = () => {
 
       <div style={{ marginBottom: '40px' }}>
         <h3>With Traces Domain Configuration</h3>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={attributeOptions}
           radioAttributes={radioAttributes}
           value={selectedAttribute}
@@ -81,7 +81,7 @@ export const GroupBySelectorV2Example: React.FC = () => {
 
       <div style={{ marginBottom: '40px' }}>
         <h3>Custom Configuration</h3>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={attributeOptions}
           radioAttributes={radioAttributes}
           value={selectedAttribute}
@@ -106,7 +106,7 @@ export const GroupBySelectorV2Example: React.FC = () => {
 
       <div style={{ marginBottom: '40px' }}>
         <h3>Logs Domain Example</h3>
-        <GroupBySelectorV2
+        <GroupBySelector
           options={[
             { label: 'Log Level', value: 'log.level' },
             { label: 'Service Name', value: 'resource.service.name' },
@@ -127,4 +127,4 @@ export const GroupBySelectorV2Example: React.FC = () => {
   );
 };
 
-export default GroupBySelectorV2Example;
+export default GroupBySelectorExample;

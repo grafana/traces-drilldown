@@ -16,7 +16,7 @@ import {
 } from '@grafana/scenes';
 import { getTheme, useStyles2 } from '@grafana/ui';
 
-import { GroupBySelectorV2, createDefaultGroupBySelectorConfig } from '../../../GroupBySelectorV2';
+import { GroupBySelector, createDefaultGroupBySelectorConfig } from '../../../GroupBySelector';
 import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL, radioAttributesSpan } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
@@ -223,7 +223,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
         <div className={styles.controls}>
           {attributes?.length && (
             <div className={styles.controlsLeft}>
-              <GroupBySelectorV2
+              <GroupBySelector
                 options={getAttributesAsOptions(attributes)}
                 radioAttributes={radioAttributesSpan}
                 value={variable.getValueText()}

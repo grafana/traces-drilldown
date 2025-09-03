@@ -1,6 +1,6 @@
-export { GroupBySelectorV2 } from './GroupBySelectorV2';
+export { GroupBySelector } from './GroupBySelector';
 export type {
-  GroupBySelectorV2Props,
+  GroupBySelectorProps,
   FilterConfig,
   AttributePrefixConfig,
   FilterContext,
