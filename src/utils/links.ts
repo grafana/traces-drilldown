@@ -7,7 +7,7 @@ import {
 
 import { DataSourceRef } from '@grafana/schema';
 import { EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC } from './shared';
-import { parseTraceQLQuery } from './limited-traceql-parser';
+import { parseTraceQLQuery } from './lezer-traceql-parser';
 
 type TempoQuery = {
   filters?: TraceqlFilter[];
@@ -75,6 +75,20 @@ export function contextToLink(context?: PluginExtensionPanelContext) {
     // if we parse the query, we should also set the url param actionView to "traceList"
     params.append('actionView', 'traceList');
   }
+
+  // NOTE: TraceQL OR operators between spansets (e.g., {service="A"} || {service="B"}) 
+  // are not supported in URL generation because:
+  // 1. The traces-drilldown app uses AND logic to combine filters (see FILTER_SEPARATOR = ' && ')
+  // 2. OR logic represents "either trace type" which doesn't map to the app's filter model
+  // 3. URL parameters assume additive filtering, not alternative selection
+  // 4. Complex spanset relationships are beyond the scope of simple drill-down links
+  // 
+  // IMPORTANT: These limitations match the Tempo Query Builder's design:
+  // - The Query Builder (SearchTraceQLEditor) only creates individual TraceqlFilter objects
+  // - It combines filters with AND logic via generateQueryFromFilters()
+  // - OR operators only exist within single filters for multiple values: (field=val1 || field=val2)
+  // - No UI exists for structural operators, pipelines, or complex spanset relationships
+  // This parser's scope aligns with what users can actually create in Tempo's UI.
 
   // Add time range if available
   if (context.timeRange) {
