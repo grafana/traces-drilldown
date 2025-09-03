@@ -3,26 +3,62 @@ import { render, screen } from '@testing-library/react';
 import { GroupBySelector } from './GroupBySelector';
 import { createDefaultGroupBySelectorConfig } from './utils';
 
-// Mock the required Grafana UI components
-jest.mock('@grafana/ui', () => ({
-  useTheme2: () => ({
-    typography: { fontSize: 14 },
-    spacing: (value: number) => `${value * 8}px`,
+jest.mock('@react-aria/utils', () => ({
+  useResizeObserver: jest.fn(({ onResize }) => {
+    // Simulate a resize event with sufficient width
+    setTimeout(() => {
+      onResize();
+    }, 0);
   }),
-  useStyles2: (getStyles: any) => getStyles({
-    typography: { fontSize: 14 },
-    spacing: (value: number) => `${value * 8}px`,
-  }),
-  measureText: jest.fn(() => ({ width: 100 })),
-  Field: ({ label, children }: any) => <div><label>{label}</label>{children}</div>,
-  Select: ({ placeholder }: any) => <select><option>{placeholder}</option></select>,
-  RadioButtonGroup: ({ options }: any) => (
-    <div>{options?.map((opt: any) => <span key={opt.value}>{opt.label}</span>)}</div>
-  ),
+  getOwnerDocument: jest.fn(() => document),
+  getOwnerWindow: jest.fn(() => window),
 }));
 
-jest.mock('@react-aria/utils', () => ({
-  useResizeObserver: jest.fn(),
+// Mock measureText before importing @grafana/ui
+jest.mock('@grafana/ui', () => ({
+  Combobox: jest.fn(({ children, isClearable, options, onChange, value, placeholder, ...props }) =>
+    React.createElement('div', {
+      'data-testid': 'combobox',
+      placeholder,
+      ...props
+    }, children)
+  ),
+  RadioButtonGroup: jest.fn(({ options, value, onChange }) =>
+    React.createElement('div', { 'data-testid': 'radio-group' },
+      options.map((option: any, index: number) =>
+        React.createElement('div', {
+          key: index,
+        }, [
+          React.createElement('input', {
+            key: `input-${index}`,
+            type: 'radio',
+            value: option.value,
+            checked: value === option.value,
+            onChange: () => onChange(option.value),
+            'aria-label': option.label
+          }),
+          React.createElement('span', {
+            key: `label-${index}`,
+          }, option.label)
+        ])
+      )
+    )
+  ),
+  Field: jest.fn(({ label, children }) =>
+    React.createElement('div', { 'data-testid': 'field' },
+      React.createElement('label', null, label),
+      children
+    )
+  ),
+  useStyles2: jest.fn(() => ({
+    container: 'container-class',
+    select: 'select-class'
+  })),
+  useTheme2: jest.fn(() => ({
+    typography: { fontSize: 14 },
+    spacing: (multiplier: number) => `${multiplier * 8}px`
+  })),
+  measureText: jest.fn(() => ({ width: 100, height: 20 })),
 }));
 
 describe('GroupBySelector', () => {
@@ -34,6 +70,7 @@ describe('GroupBySelector', () => {
     ],
     radioAttributes: ['resource.service.name', 'name'],
     onChange: jest.fn(),
+    layoutConfig: { enableResponsiveRadioButtons: false },
   };
 
   beforeEach(() => {
@@ -81,9 +118,8 @@ describe('GroupBySelector', () => {
     const mockOnChange = jest.fn();
     render(<GroupBySelector {...defaultProps} onChange={mockOnChange} />);
 
-    // This test would need more setup to actually trigger onChange
-    // but verifies the prop is passed correctly
-    expect(mockOnChange).not.toHaveBeenCalled();
+    // Component auto-calls onChange with the first radio option on mount
+    expect(mockOnChange).toHaveBeenCalledWith('resource.service.name', true);
   });
 
   it('renders with filters configuration', () => {
