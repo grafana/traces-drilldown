@@ -67,6 +67,10 @@
     "Resizeble",
     "Dismissable",
     "spansets",
-    "healthcheck"
+    "healthcheck",
+    "lezer",
+    "Lezer",
+    "quoteservice",
+    "cartservice"
   ]
 }
