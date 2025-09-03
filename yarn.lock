@@ -1643,9 +1643,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/scenes@npm:^6.24.0":
-  version: 6.28.1
-  resolution: "@grafana/scenes@npm:6.28.1"
+"@grafana/scenes@npm:^6.30.3":
+  version: 6.34.0
+  resolution: "@grafana/scenes@npm:6.34.0"
   dependencies:
     "@floating-ui/react": "npm:^0.26.16"
     "@leeoniya/ufuzzy": "npm:^1.0.16"
@@ -1665,7 +1665,7 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
     react-router-dom: ^6.28.0
-  checksum: 10/603cb2b421e59a51ee36af6f1d6554e6f328db3aea42da7960e33c14de4ce298b2c261affa6dd651fe8d4ffb4a58e7825958a3b66d00daa3410e91f5f1fb185f
+  checksum: 10/16e3c0309b2af0d655215ef7b73a254667bad7b2e3e40af9480a70b1610cd50fa48927bb81b477ea9f543791b7aed6e6e21189e608feadf64cc29b96d10d9de5
   languageName: node
   linkType: hard
 
@@ -2271,6 +2271,22 @@ __metadata:
   version: 1.0.18
   resolution: "@leeoniya/ufuzzy@npm:1.0.18"
   checksum: 10/3d7e160a3a21cdcdf0c0b78893340b3231b905ab4787e63d39068ee0ad75cc71ae99572c2117cd3466e3d32bfe0290b97d4ccda9e522f7998b24a04c2c466a31
+  languageName: node
+  linkType: hard
+
+"@lezer/common@npm:^1.0.0, @lezer/common@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "@lezer/common@npm:1.2.3"
+  checksum: 10/dad24e353e4e67d88b203191361ca1dff26c01c2b7b4ae829b668a1d115929334d077217367683e39180c0556510ed2066ea8ddba2b079be7c08a7152208cc87
+  languageName: node
+  linkType: hard
+
+"@lezer/lr@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "@lezer/lr@npm:1.4.2"
+  dependencies:
+    "@lezer/common": "npm:^1.0.0"
+  checksum: 10/f7b505906c8d8df14c07866553cf3dae1e065b1da8b28fbb4193fd67ab8d187eb45f92759e29a2cfe4283296f0aa864b38a0a91708ecfc3e24b8f662d626e0c6
   languageName: node
   linkType: hard
 
@@ -7033,10 +7049,12 @@ __metadata:
     "@grafana/lezer-traceql": "npm:^0.0.23"
     "@grafana/plugin-e2e": "npm:^2.0.2"
     "@grafana/runtime": "npm:12.1.0"
-    "@grafana/scenes": "npm:^6.24.0"
+    "@grafana/scenes": "npm:^6.30.3"
     "@grafana/schema": "npm:12.1.0"
     "@grafana/tsconfig": "npm:^1.2.0-rc1"
     "@grafana/ui": "npm:12.1.0"
+    "@lezer/common": "npm:^1.2.3"
+    "@lezer/lr": "npm:^1.4.2"
     "@playwright/test": "npm:^1.48.2"
     "@stylistic/eslint-plugin-ts": "npm:^4.2.0"
     "@swc/core": "npm:^1.9.2"

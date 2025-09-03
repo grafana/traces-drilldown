@@ -38,7 +38,7 @@
  * basic filter components that can be meaningfully represented in URLs.
  */
 
-import { SyntaxNode } from '@lezer/common';
+import { SyntaxNode, SyntaxNodeRef } from '@lezer/common';
 import {
   AttributeField,
   FieldExpression,
@@ -90,7 +90,7 @@ export function parseTraceQLQuery(query: string): TraceqlFilter[] | null {
     // Walk the syntax tree to find ALL SpansetFilter nodes
     const allSpansetFilters: SyntaxNode[] = [];
     tree.iterate({
-      enter: (nodeRef) => {
+      enter: (nodeRef: SyntaxNodeRef) => {
         if (nodeRef.type.id === SpansetFilter) {
           allSpansetFilters.push(nodeRef.node);
         }
