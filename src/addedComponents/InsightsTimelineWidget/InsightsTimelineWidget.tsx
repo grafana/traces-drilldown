@@ -48,27 +48,21 @@ export function InsightsTimelineWidget({ serviceName, model }: Props) {
   if (metric === 'duration') {
     filterBySummaryKeywords = ['latency'];
   }
-  
+
   if (isLoading || !InsightsTimelineWidgetExternal || !sceneTimeRange) {
     return null;
   }
 
-  const element = <InsightsTimelineWidgetExternal
-    serviceName={serviceName}
-    start={sceneTimeRange.from.valueOf()}
-    end={sceneTimeRange.to.valueOf()}
-    filterBySeverity={filterBySeverity}
-    filterBySummaryKeywords={filterBySummaryKeywords}
-    label={<div className={styles.label}>Insights</div>}
-    isEmbeddedApp={embedded}
-  />
-
-  if (element === null) {
-    return null;
-  }
-
   return (
-    <>{element}</>
+    <InsightsTimelineWidgetExternal
+      serviceName={serviceName}
+      start={sceneTimeRange.from.valueOf()}
+      end={sceneTimeRange.to.valueOf()}
+      filterBySeverity={filterBySeverity}
+      filterBySummaryKeywords={filterBySummaryKeywords}
+      label={<div className={styles.label}>Insights</div>}
+      isEmbeddedApp={embedded}
+    />
   );
 }
 
