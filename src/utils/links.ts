@@ -66,7 +66,8 @@ export function contextToLink(context?: PluginExtensionPanelContext) {
 
   // If no structured filters found, try to parse from raw query
   if ((!filters || filters.length === 0) && tempoQuery.query) {
-    const parseResult = parseTraceQLQuery(tempoQuery.query);
+    const query = tempoQuery.query;
+    const parseResult = parseTraceQLQuery(query);
     if (parseResult && parseResult.filters.length > 0) {
       filters = parseResult.filters.filter(
         (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length

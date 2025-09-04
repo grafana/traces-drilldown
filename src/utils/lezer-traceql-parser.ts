@@ -56,6 +56,7 @@ import {
   FieldExpression,
   FieldOp,
   IntrinsicField,
+  Or,
   parser,
   SpansetFilter,
   Static,
@@ -121,32 +122,38 @@ export function parseTraceQLQuery(query: string): TraceQLParseResult | null {
       },
     });
 
-    // Check for OR between different spansets (unsupported pattern)
-    if (allSpansetFilters.length > 1) {
-      // Check if this is an OR pattern by looking for OR operators between spansets
-      const hasOrBetweenSpansets = checkForOrBetweenSpansets(tree, cleanQuery);
-      if (hasOrBetweenSpansets) {
-        errors.push({
-          type: 'unsupported_or_between_fields',
-          message: 'OR between different spansets is not supported. Using first spanset only. Original query semantics (OR) will be lost and converted to AND logic.',
-          query: cleanQuery
-        });
-        
-        // Extract only the first spanset to avoid changing OR to AND
+    // Check for OR operators anywhere in the query
+    const hasOrOperator = checkForOrBetweenSpansets(tree, cleanQuery);
+
+    if (hasOrOperator) {
+      // OR detected - not supported in traces-drilldown URL parameters
+      errors.push({
+        type: 'unsupported_or_between_fields',
+        message: 'OR operators are not supported in traces-drilldown. Using first filter only. Subsequent filters after || could not be applied because traces-drilldown does not support || operators.',
+        query: cleanQuery
+      });
+      
+      // Extract only the first filter from the first spanset
+      if (allSpansetFilters.length > 0) {
         const firstSpansetFilters = extractFiltersFromSpanset(allSpansetFilters[0], cleanQuery);
-        filters.push(...firstSpansetFilters);
-      } else {
-        // This is AND between spansets (Query Builder pattern) - process all
+        if (firstSpansetFilters.length > 0) {
+          filters.push(firstSpansetFilters[0]); // Take only the first filter
+        }
+      }
+    } else {
+      // No OR operators - process all spansets normally
+      if (allSpansetFilters.length > 1) {
+        // Multiple spansets with AND (Query Builder pattern) - process all
         for (const spansetNode of allSpansetFilters) {
           const spansetFilters = extractFiltersFromSpanset(spansetNode, cleanQuery);
           filters.push(...spansetFilters);
         }
-      }
-    } else {
-      // Single spanset - process normally
-      for (const spansetNode of allSpansetFilters) {
-        const spansetFilters = extractFiltersFromSpanset(spansetNode, cleanQuery);
-        filters.push(...spansetFilters);
+      } else {
+        // Single spanset - process normally
+        for (const spansetNode of allSpansetFilters) {
+          const spansetFilters = extractFiltersFromSpanset(spansetNode, cleanQuery);
+          filters.push(...spansetFilters);
+        }
       }
     }
 
@@ -598,8 +605,8 @@ function checkForOrBetweenSpansets(tree: any, query: string): boolean {
   
   tree.iterate({
     enter: (nodeRef: SyntaxNodeRef) => {
-      // Look for Or node type (this would be between spansets)
-      if (nodeRef.type.name === 'Or') {
+      // Look for Or node type using the numeric ID
+      if (nodeRef.type.id === Or) {
         hasOrOperator = true;
       }
     },
