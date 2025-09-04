@@ -13,8 +13,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{resource.service.name="my-service"}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
@@ -26,8 +28,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{status=error}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'intrinsic',
         tag: 'status',
         operator: '=',
@@ -39,8 +43,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{span:duration>100ms}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'span',
         tag: 'duration',
         operator: '>',
@@ -52,14 +58,16 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{resource.service.name="api" && status=error}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(2);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(2);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
         value: 'api'
       });
-      expect(result![1]).toEqual({
+      expect(result!.filters[1]).toEqual({
         scope: 'intrinsic',
         tag: 'status',
         operator: '=',
@@ -80,8 +88,9 @@ describe('Lezer TraceQL Parser', () => {
       
       queries.forEach((query, index) => {
         const result = parseTraceQLQuery(query);
-        expect(result).toHaveLength(1);
-        expect(result![0].operator).toBe(expectedOperators[index]);
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.filters[0].operator).toBe(expectedOperators[index]);
       });
     });
 
@@ -95,8 +104,9 @@ describe('Lezer TraceQL Parser', () => {
       
       testCases.forEach(({ query, expected }) => {
         const result = parseTraceQLQuery(query);
-        expect(result).toHaveLength(1);
-        expect(result![0].value).toBe(expected);
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.filters[0].value).toBe(expected);
       });
     });
 
@@ -104,14 +114,16 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{resource.service.name="api"} && {span.http.status_code=200}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(2);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(2);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
         value: 'api'
       });
-      expect(result![1]).toEqual({
+      expect(result!.filters[1]).toEqual({
         scope: 'span',
         tag: 'http.status_code',
         operator: '=',
@@ -123,14 +135,16 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{resource.k8s.pod.name="my-pod" && span.http.target="/api/v1/users"}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(2);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(2);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'k8s.pod.name',
         operator: '=',
         value: 'my-pod'
       });
-      expect(result![1]).toEqual({
+      expect(result!.filters[1]).toEqual({
         scope: 'span',
         tag: 'http.target',
         operator: '=',
@@ -147,40 +161,68 @@ describe('Lezer TraceQL Parser', () => {
       }`;
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(2);
-      expect(result![0].tag).toBe('service.name');
-      expect(result![1].tag).toBe('status');
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(2);
+      expect(result!.filters[0].tag).toBe('service.name');
+      expect(result!.filters[1].tag).toBe('status');
     });
 
-    // NOTE: OR operators between spansets - parser currently extracts only first spanset
-    // This aligns with Tempo Query Builder limitations: the Query Builder cannot create
-    // OR relationships between different fields, only within single filters for multiple values
-    it('should extract first filter from OR operators (matches Query Builder limitations)', () => {
-      const query = '{status=error} || {status=timeout}';
-      const result = parseTraceQLQuery(query);
-      
-      // Parser extracts only the first filter, which aligns with Query Builder design
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
-        scope: 'intrinsic',
-        tag: 'status',
-        operator: '=',
-        value: 'error'
+    // Tests for features that Query Builder CANNOT generate
+    describe('TraceQL features beyond Query Builder scope', () => {
+      it('should extract first spanset from OR between different fields and report error', () => {
+        // This pattern cannot be generated by Query Builder - it only supports AND between filters
+        const query = '{service.name="frontend"} || {status=error}';
+        const result = parseTraceQLQuery(query);
+        
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.errors).toHaveLength(1);
+        
+        // Parser extracts only the first spanset to avoid changing OR to AND
+        expect(result!.filters[0]).toEqual({
+          scope: 'intrinsic',
+          tag: 'service.name',
+          operator: '=',
+          value: 'frontend'
+        });
+        
+        // Parser reports the limitation as an error
+        expect(result!.errors[0]).toEqual({
+          type: 'unsupported_or_between_fields',
+          message: 'OR between different spansets is not supported. Using first spanset only. Original query semantics (OR) will be lost and converted to AND logic.',
+          query
+        });
       });
-      
-      // DESIGN ALIGNMENT: This limitation matches Tempo Query Builder:
-      // - Query Builder only creates individual TraceqlFilter objects
-      // - OR only exists within single filters: (field=val1 || field=val2)
-      // - No UI exists for OR between different spansets
-      // - Taking the first condition provides a reasonable drill-down starting point
+
+      it('should extract first spanset from OR between same fields in different spansets', () => {
+        // This is different from Query Builder's (field=val1 || field=val2) pattern
+        const query = '{status=error} || {status=timeout}';
+        const result = parseTraceQLQuery(query);
+        
+        // Parser extracts only the first spanset
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.errors).toHaveLength(1);
+        expect(result!.filters[0]).toEqual({
+          scope: 'intrinsic',
+          tag: 'status',
+          operator: '=',
+          value: 'error'
+        });
+        
+        // NOTE: Query Builder would generate this as: {(status=error || status=timeout)}
+        // The above pattern with separate spansets cannot be created by Query Builder UI
+      });
     });
 
     it('should handle values with pipes for regex operators', () => {
       const query = '{name=~"api|web|service"}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'intrinsic',
         tag: 'name',
         operator: '=~',
@@ -201,8 +243,9 @@ describe('Lezer TraceQL Parser', () => {
       
       queries.forEach((query, index) => {
         const result = parseTraceQLQuery(query);
-        expect(result).toHaveLength(1);
-        expect(result![0].scope).toBe(expectedScopes[index]);
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.filters[0].scope).toBe(expectedScopes[index]);
       });
     });
 
@@ -215,9 +258,10 @@ describe('Lezer TraceQL Parser', () => {
       intrinsicFields.forEach(field => {
         const query = `{${field}="test"}`;
         const result = parseTraceQLQuery(query);
-        expect(result).toHaveLength(1);
-        expect(result![0].scope).toBe('intrinsic');
-        expect(result![0].tag).toBe(field);
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.filters[0].scope).toBe('intrinsic');
+        expect(result!.filters[0].tag).toBe(field);
       });
     });
 
@@ -225,8 +269,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{service.name="my-service"}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'intrinsic',
         tag: 'service.name',
         operator: '=',
@@ -238,8 +284,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{.service.name=~"api.*"}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'intrinsic', 
         tag: 'service.name',
         operator: '=~',
@@ -251,20 +299,22 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{resource.service.name="api" && span:duration>100ms && status=error}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(3);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(3);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
         value: 'api'
       });
-      expect(result![1]).toEqual({
+      expect(result!.filters[1]).toEqual({
         scope: 'span',
         tag: 'duration',
         operator: '>',
         value: '100ms'
       });
-      expect(result![2]).toEqual({
+      expect(result!.filters[2]).toEqual({
         scope: 'intrinsic',
         tag: 'status',
         operator: '=',
@@ -276,8 +326,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{span.http.status_code=200}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'span',
         tag: 'http.status_code',
         operator: '=',
@@ -289,8 +341,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{span:duration>=500ms}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'span',
         tag: 'duration',
         operator: '>=',
@@ -302,8 +356,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{resource.service.name="my\\"quoted\\"service"}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
@@ -330,8 +386,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{ resource.service.name = "my-service" }';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
@@ -344,8 +402,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{.http.status_code = 200}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'intrinsic',
         tag: 'http.status_code',
         operator: '=',
@@ -357,14 +417,16 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{.http.status_code >= 400 && .http.status_code < 500}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(2);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(2);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'intrinsic',
         tag: 'http.status_code',
         operator: '>=',
         value: '400'
       });
-      expect(result![1]).toEqual({
+      expect(result!.filters[1]).toEqual({
         scope: 'intrinsic',
         tag: 'http.status_code',
         operator: '<',
@@ -376,8 +438,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{.http.url =~ "/api/v2/.*"}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'intrinsic',
         tag: 'http.url',
         operator: '=~',
@@ -389,8 +453,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{duration > 10ms}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'intrinsic',
         tag: 'duration',
         operator: '>',
@@ -402,8 +468,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{span.flags.sampled=true}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'span',
         tag: 'flags.sampled',
         operator: '=',
@@ -415,14 +483,16 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{.service.name = "app" && name = "HTTP GET - root"}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(2);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(2);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'intrinsic',
         tag: 'service.name',
         operator: '=',
         value: 'app'
       });
-      expect(result![1]).toEqual({
+      expect(result!.filters[1]).toEqual({
         scope: 'intrinsic',
         tag: 'name',
         operator: '=',
@@ -435,8 +505,10 @@ describe('Lezer TraceQL Parser', () => {
       const query = '{(resource.service.name="quoteservice" || resource.service.name="cartservice")}';
       const result = parseTraceQLQuery(query);
       
-      expect(result).toHaveLength(1);
-      expect(result![0]).toEqual({
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
@@ -449,26 +521,99 @@ describe('Lezer TraceQL Parser', () => {
       // - Allows links.ts to properly encode as: field|operator|val1,val2
     });
 
-    // Tests demonstrating how parser handles complex TraceQL features
-    // These features are valid TraceQL but not supported by Tempo Query Builder
-    describe('Complex TraceQL features - extracts basic filters', () => {
-      it('should extract basic filters from structural operators (ignores relationships)', () => {
-        // Structural operators are valid TraceQL but Tempo Query Builder has no UI for them
+    it('should handle multiple string values with quotes (Query Builder pattern)', () => {
+      // Query Builder generates this for multiple string values
+      const query = '{(span.http.method="GET" || span.http.method="POST")}';
+      const result = parseTraceQLQuery(query);
+      
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
+        scope: 'span',
+        tag: 'http.method',
+        operator: '=',
+        value: ['GET', 'POST']
+      });
+    });
+
+    it('should handle multiple numeric values (Query Builder pattern)', () => {
+      // Query Builder generates this for multiple numeric values
+      const query = '{(span.http.status_code=200 || span.http.status_code=404)}';
+      const result = parseTraceQLQuery(query);
+      
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
+        scope: 'span',
+        tag: 'http.status_code',
+        operator: '=',
+        value: ['200', '404']
+      });
+    });
+
+    it('should handle regex with multiple values (Query Builder pattern)', () => {
+      // Query Builder generates this for regex operators with multiple values
+      const query = '{service.name=~"frontend|backend"}';
+      const result = parseTraceQLQuery(query);
+      
+      expect(result).not.toBeNull();
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(0);
+      expect(result!.filters[0]).toEqual({
+        scope: 'intrinsic',
+        tag: 'service.name',
+        operator: '=~',
+        value: 'frontend|backend'
+      });
+    });
+
+    // Tests for all scopes that Query Builder supports
+    describe('All supported scopes (Query Builder generates these)', () => {
+      it('should handle all TraceqlSearchScope enum values', () => {
+        const testCases = [
+          { query: '{resource.cluster="prod"}', expectedScope: 'resource' },
+          { query: '{span.http.method="GET"}', expectedScope: 'span' },
+          { query: '{event.name="exception"}', expectedScope: 'event' },
+          { query: '{instrumentation.name="jaeger"}', expectedScope: 'instrumentation' },
+          { query: '{link.traceID="abc123"}', expectedScope: 'link' },
+          { query: '{duration>100ms}', expectedScope: 'intrinsic' }, // intrinsic without prefix
+          { query: '{.custom.field="value"}', expectedScope: 'intrinsic' }, // unscoped treated as intrinsic
+        ];
+        
+        testCases.forEach(({ query, expectedScope }) => {
+          const result = parseTraceQLQuery(query);
+                  expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.filters[0].scope).toBe(expectedScope);
+        });
+      });
+    });
+
+    // Tests demonstrating parser behavior with TraceQL features that Query Builder cannot generate
+    describe('TraceQL features beyond Query Builder scope', () => {
+      it('should extract basic filters from structural operators and report error', () => {
+        // Structural operators are valid TraceQL but Query Builder has no UI for them
         const query = '{span.name="parent"} > {span.name="child"}';
         const result = parseTraceQLQuery(query);
         
-        // Parser combines filters with same field into array values (like Query Builder)
-        expect(result).toHaveLength(1);
-        expect(result![0]).toEqual({
+        expect(result).not.toBeNull();
+        expect(result!.errors).toHaveLength(1);
+        
+        // Parser combines filters with same field into array values
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.filters[0]).toEqual({
           scope: 'span',
           tag: 'name',
           operator: '=',
           value: ['parent', 'child']
         });
         
-        // DESIGN ALIGNMENT: Parser treats multiple values for same field as Query Builder would
-        // The > (parent-child) relationship is lost, but values are combined into array
-        // This matches Query Builder's multiple-value pattern from SearchTraceQLEditor/utils.ts
+        // Parser reports the structural operator as an error
+        expect(result!.errors[0].type).toBe('unsupported_structural_operator');
+        expect(result!.errors[0].message).toContain('Structural operator');
+        expect(result!.errors[0].message).toContain('relationships will be ignored');
       });
 
       it('should extract basic filters from pipeline aggregations (ignores pipeline)', () => {
@@ -477,16 +622,17 @@ describe('Lezer TraceQL Parser', () => {
         const result = parseTraceQLQuery(query);
         
         // Parser extracts the basic filter, ignoring the aggregation pipeline
-        expect(result).toHaveLength(1);
-        expect(result![0]).toEqual({
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.errors).toHaveLength(1);
+        expect(result!.filters[0]).toEqual({
           scope: 'intrinsic',
           tag: 'db.operation',
           operator: '=',
           value: 'SELECT'
         });
         
-        // DESIGN ALIGNMENT: Tempo Query Builder has no UI for pipeline aggregations
-        // The | count() > 3 pipeline is ignored, matching Query Builder capabilities
+        // The | count() > 3 pipeline is ignored since Query Builder has no UI for aggregations
       });
 
       it('should extract basic filters from descendant operators (ignores relationships)', () => {
@@ -494,18 +640,18 @@ describe('Lezer TraceQL Parser', () => {
         const query = '{.region = "eu-west-0"} >> {.region = "eu-west-1"}';
         const result = parseTraceQLQuery(query);
         
-        // Parser combines filters with same field into array values (like Query Builder)
-        expect(result).toHaveLength(1);
-        expect(result![0]).toEqual({
+        // Parser combines filters with same field into array values
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.errors).toHaveLength(1);
+        expect(result!.filters[0]).toEqual({
           scope: 'intrinsic',
           tag: 'region',
           operator: '=',
           value: ['eu-west-0', 'eu-west-1']
         });
         
-        // DESIGN ALIGNMENT: Parser treats multiple values for same field as Query Builder would
         // The >> (descendant) relationship is lost, but values are combined into array
-        // This matches Query Builder's multiple-value pattern from SearchTraceQLEditor/utils.ts
       });
     });
 
@@ -516,9 +662,11 @@ describe('Lezer TraceQL Parser', () => {
         const query = '{resource.service.name="api" && span.http.status_code=200}';
         const result = parseTraceQLQuery(query);
         
-        expect(result).toHaveLength(2);
-        expect(result![0].scope).toBe('resource');
-        expect(result![1].scope).toBe('span');
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(2);
+        expect(result!.errors).toHaveLength(0);
+        expect(result!.filters[0].scope).toBe('resource');
+        expect(result!.filters[1].scope).toBe('span');
       });
 
       it('should ignore unsupported TraceQL syntax gracefully', () => {
@@ -527,8 +675,10 @@ describe('Lezer TraceQL Parser', () => {
         const result = parseTraceQLQuery(query);
         
         // Should extract the basic filter and ignore the aggregation
-        expect(result).toHaveLength(1);
-        expect(result![0]).toEqual({
+        expect(result).not.toBeNull();
+        expect(result!.filters).toHaveLength(1);
+        expect(result!.errors).toHaveLength(1);
+        expect(result!.filters[0]).toEqual({
           scope: 'resource',
           tag: 'service.name',
           operator: '=',

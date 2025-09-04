@@ -66,29 +66,23 @@ export function contextToLink(context?: PluginExtensionPanelContext) {
 
   // If no structured filters found, try to parse from raw query
   if ((!filters || filters.length === 0) && tempoQuery.query) {
-    const parsedFilters = parseTraceQLQuery(tempoQuery.query);
-    if (parsedFilters && parsedFilters.length > 0) {
-      filters = parsedFilters.filter(
+    const parseResult = parseTraceQLQuery(tempoQuery.query);
+    if (parseResult && parseResult.filters.length > 0) {
+      filters = parseResult.filters.filter(
         (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length
       );
+      
+      // Log any parsing errors to console for debugging
+      if (parseResult.errors.length > 0) {
+        console.warn('TraceQL parsing warnings for query:', tempoQuery.query);
+        parseResult.errors.forEach(error => {
+          console.warn(`- ${error.type}: ${error.message}`);
+        });
+      }
     }
     // if we parse the query, we should also set the url param actionView to "traceList"
     params.append('actionView', 'traceList');
   }
-
-  // NOTE: TraceQL OR operators between spansets (e.g., {service="A"} || {service="B"}) 
-  // are not supported in URL generation because:
-  // 1. The traces-drilldown app uses AND logic to combine filters (see FILTER_SEPARATOR = ' && ')
-  // 2. OR logic represents "either trace type" which doesn't map to the app's filter model
-  // 3. URL parameters assume additive filtering, not alternative selection
-  // 4. Complex spanset relationships are beyond the scope of simple drill-down links
-  // 
-  // IMPORTANT: These limitations match the Tempo Query Builder's design:
-  // - The Query Builder (SearchTraceQLEditor) only creates individual TraceqlFilter objects
-  // - It combines filters with AND logic via generateQueryFromFilters()
-  // - OR operators only exist within single filters for multiple values: (field=val1 || field=val2)
-  // - No UI exists for structural operators, pipelines, or complex spanset relationships
-  // This parser's scope aligns with what users can actually create in Tempo's UI.
 
   // Add time range if available
   if (context.timeRange) {
