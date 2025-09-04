@@ -70,61 +70,6 @@ describe('Domain Configuration Tests', () => {
       });
     });
 
-    describe('Logs Domain', () => {
-      let logsConfig: Partial<DomainConfig>;
-
-      beforeEach(() => {
-        logsConfig = createDefaultGroupBySelectorConfig('logs');
-      });
-
-      it('should have logs-specific attribute prefixes', () => {
-        expect(logsConfig.attributePrefixes).toEqual({
-          log: 'log.',
-          resource: 'resource.',
-        });
-      });
-
-      it('should have basic filtering rules', () => {
-        expect(logsConfig.filteringRules?.excludeFilteredFromRadio).toBe(true);
-        expect(logsConfig.filteringRules?.excludeAttributesForMetrics).toBeUndefined();
-      });
-
-      it('should have logs-specific ignored attributes', () => {
-        expect(logsConfig.ignoredAttributes).toEqual(['timestamp', 'log:id']);
-      });
-
-      it('should have standard layout configuration', () => {
-        expect(logsConfig.layoutConfig).toEqual({
-          additionalWidthPerItem: 40,
-          widthOfOtherAttributes: 180,
-          enableResponsiveRadioButtons: true,
-        });
-      });
-    });
-
-    describe('Metrics Domain', () => {
-      let metricsConfig: Partial<DomainConfig>;
-
-      beforeEach(() => {
-        metricsConfig = createDefaultGroupBySelectorConfig('metrics');
-      });
-
-      it('should have metrics-specific attribute prefixes', () => {
-        expect(metricsConfig.attributePrefixes).toEqual({
-          metric: 'metric.',
-          resource: 'resource.',
-        });
-      });
-
-      it('should have metrics-specific ignored attributes', () => {
-        expect(metricsConfig.ignoredAttributes).toEqual(['__name__', 'timestamp']);
-      });
-
-      it('should have basic filtering rules', () => {
-        expect(metricsConfig.filteringRules?.excludeFilteredFromRadio).toBe(true);
-      });
-    });
-
     describe('Custom Domain', () => {
       let customConfig: Partial<DomainConfig>;
 
@@ -152,7 +97,7 @@ describe('Domain Configuration Tests', () => {
     });
 
     describe('Domain Type Validation', () => {
-      const validDomains: DomainType[] = ['traces', 'logs', 'metrics', 'custom'];
+      const validDomains: DomainType[] = ['traces', 'custom'];
 
       it.each(validDomains)('should handle %s domain', (domain) => {
         const config = createDefaultGroupBySelectorConfig(domain);
@@ -213,7 +158,7 @@ describe('Domain Configuration Tests', () => {
     });
 
     it('should handle partial user configurations', () => {
-      const domainConfig = createDefaultGroupBySelectorConfig('logs');
+      const domainConfig = createDefaultGroupBySelectorConfig('traces');
       const partialUserConfig = {
         searchConfig: {
           maxOptions: 500,
@@ -236,7 +181,7 @@ describe('Domain Configuration Tests', () => {
     });
 
     it('should handle empty user configuration', () => {
-      const domainConfig = createDefaultGroupBySelectorConfig('metrics');
+      const domainConfig = createDefaultGroupBySelectorConfig('traces');
       const merged = mergeConfigurations(domainConfig, {});
 
       expect(merged).toEqual(domainConfig);
@@ -259,9 +204,9 @@ describe('Domain Configuration Tests', () => {
     });
   });
 
-  describe('Configuration Consistency', () => {
-    it('should maintain consistent structure across all domains', () => {
-      const domains: DomainType[] = ['traces', 'logs', 'metrics', 'custom'];
+      describe('Configuration Consistency', () => {
+      it('should maintain consistent structure across all domains', () => {
+        const domains: DomainType[] = ['traces', 'custom'];
       const requiredKeys = [
         'attributePrefixes',
         'filteringRules',
@@ -280,8 +225,8 @@ describe('Domain Configuration Tests', () => {
       });
     });
 
-    it('should have consistent layout configurations', () => {
-      const domains: DomainType[] = ['traces', 'logs', 'metrics', 'custom'];
+          it('should have consistent layout configurations', () => {
+        const domains: DomainType[] = ['traces', 'custom'];
 
       domains.forEach(domain => {
         const config = createDefaultGroupBySelectorConfig(domain);
@@ -292,8 +237,8 @@ describe('Domain Configuration Tests', () => {
       });
     });
 
-    it('should have consistent search configurations', () => {
-      const domains: DomainType[] = ['traces', 'logs', 'metrics', 'custom'];
+          it('should have consistent search configurations', () => {
+        const domains: DomainType[] = ['traces', 'custom'];
 
       domains.forEach(domain => {
         const config = createDefaultGroupBySelectorConfig(domain);
@@ -305,8 +250,8 @@ describe('Domain Configuration Tests', () => {
       });
     });
 
-    it('should have consistent virtualization configurations', () => {
-      const domains: DomainType[] = ['traces', 'logs', 'metrics', 'custom'];
+          it('should have consistent virtualization configurations', () => {
+        const domains: DomainType[] = ['traces', 'custom'];
 
       domains.forEach(domain => {
         const config = createDefaultGroupBySelectorConfig(domain);

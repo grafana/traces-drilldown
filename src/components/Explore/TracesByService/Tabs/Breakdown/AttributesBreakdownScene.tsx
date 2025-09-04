@@ -12,7 +12,7 @@ import {
 } from '@grafana/scenes';
 import { Field, RadioButtonGroup, useStyles2 } from '@grafana/ui';
 
-import { GroupBySelector, createGroupBySelectorPropsWithAdapter } from '../../../GroupBySelector';
+import { GroupBySelector, createDefaultGroupBySelectorConfig } from '../../../GroupBySelector';
 import {
   MetricFunction,
   RESOURCE,
@@ -33,6 +33,7 @@ import {
   getGroupByVariable,
   getTraceByServiceScene,
   getTraceExplorationScene,
+  getFiltersVariable,
 } from 'utils/utils';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../../../utils/analytics';
 import { AttributesDescription } from './AttributesDescription';
@@ -123,6 +124,12 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
     const exploration = getTraceExplorationScene(model);
     const { value: metric } = exploration.getMetricVariable().useState();
+
+    // Extract state for direct GroupBySelector usage
+    const filtersVariable = getFiltersVariable(model);
+    const { initialGroupBy } = exploration.useState();
+    const { filters } = filtersVariable.useState();
+
     const getDescription = (metric: MetricFunction) => {
       switch (metric) {
         case 'rate':
@@ -172,12 +179,14 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
               <div className={styles.groupBy}>
                 <GroupBySelector
-                  {...createGroupBySelectorPropsWithAdapter({
-                    model,
-                    options: getAttributesAsOptions(filteredAttributes!),
-                    radioAttributes: scope === RESOURCE ? radioAttributesResource : radioAttributesSpan,
-                    value: groupBy,
-                  })}
+                  options={getAttributesAsOptions(filteredAttributes!)}
+                  radioAttributes={scope === RESOURCE ? radioAttributesResource : radioAttributesSpan}
+                  value={groupBy}
+                  onChange={model.onChange}
+                  filters={filters.map(f => ({ key: f.key, operator: f.operator, value: f.value }))}
+                  currentMetric={metric as string}
+                  initialGroupBy={initialGroupBy}
+                  {...createDefaultGroupBySelectorConfig('traces')}
                 />
               </div>
             </div>

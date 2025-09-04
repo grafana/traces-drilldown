@@ -21,14 +21,3 @@ export {
   createDefaultGroupBySelectorConfig,
   mergeConfigurations,
 } from './utils';
-export {
-  createGroupBySelectorAdapter,
-  createGroupBySelectorPropsWithAdapter,
-  isLegacyModel,
-  isAttributesBreakdownScene,
-  isAttributesComparisonScene,
-} from './adapter';
-export type {
-  LegacyModel,
-  GroupBySelectorAdapterProps,
-} from './adapter';

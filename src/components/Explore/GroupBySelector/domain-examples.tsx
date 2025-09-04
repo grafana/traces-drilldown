@@ -33,27 +33,6 @@ export const DomainExamples: React.FC = () => {
         />
       </section>
 
-      {/* Logs Domain */}
-      <section style={{ marginBottom: '60px', border: '1px solid #e1e4e8', padding: '20px', borderRadius: '8px' }}>
-        <h2>📝 Logs Domain</h2>
-        <p>Configured for log analysis with structured logging attributes</p>
-
-        <LogsExample
-          selectedAttribute={selectedAttributes.logs || ''}
-          onAttributeChange={handleAttributeChange('logs')}
-        />
-      </section>
-
-      {/* Metrics Domain */}
-      <section style={{ marginBottom: '60px', border: '1px solid #e1e4e8', padding: '20px', borderRadius: '8px' }}>
-        <h2>📊 Metrics Domain</h2>
-        <p>Designed for Prometheus-style metrics with labels</p>
-
-        <MetricsExample
-          selectedAttribute={selectedAttributes.metrics || ''}
-          onAttributeChange={handleAttributeChange('metrics')}
-        />
-      </section>
 
       {/* Custom Domain */}
       <section style={{ marginBottom: '60px', border: '1px solid #e1e4e8', padding: '20px', borderRadius: '8px' }}>
@@ -152,92 +131,6 @@ const TracesExample: React.FC<{
   );
 };
 
-const LogsExample: React.FC<{
-  selectedAttribute: string;
-  onAttributeChange: (attribute: string, ignore?: boolean) => void;
-}> = ({ selectedAttribute, onAttributeChange }) => {
-  const logOptions: Array<SelectableValue<string>> = [
-    { label: 'Log Level', value: 'log.level' },
-    { label: 'Logger Name', value: 'log.logger' },
-    { label: 'Service Name', value: 'resource.service.name' },
-    { label: 'Service Version', value: 'resource.service.version' },
-    { label: 'Environment', value: 'resource.deployment.environment' },
-    { label: 'Container Name', value: 'resource.container.name' },
-    { label: 'Host Name', value: 'resource.host.name' },
-    { label: 'Source File', value: 'log.file.name' },
-    { label: 'Timestamp', value: 'timestamp' }, // Will be ignored
-  ];
-
-  const radioAttributes = [
-    'log.level',
-    'resource.service.name',
-    'resource.deployment.environment',
-  ];
-
-  const activeFilters: FilterConfig[] = [
-    { key: 'log.level', operator: '=', value: 'ERROR' },
-  ];
-
-  return (
-    <div>
-      <div style={{ marginBottom: '20px' }}>
-        <GroupBySelector
-          options={logOptions}
-          radioAttributes={radioAttributes}
-          value={selectedAttribute}
-          onChange={onAttributeChange}
-          filters={activeFilters}
-          fieldLabel="Group logs by"
-          selectPlaceholder="Select log attribute"
-          {...createDefaultGroupBySelectorConfig('logs')}
-        />
-      </div>
-
-      <ConfigurationDisplay domain="logs" />
-    </div>
-  );
-};
-
-const MetricsExample: React.FC<{
-  selectedAttribute: string;
-  onAttributeChange: (attribute: string, ignore?: boolean) => void;
-}> = ({ selectedAttribute, onAttributeChange }) => {
-  const metricOptions: Array<SelectableValue<string>> = [
-    { label: 'Job', value: 'job' },
-    { label: 'Instance', value: 'instance' },
-    { label: 'Service Name', value: 'resource.service.name' },
-    { label: 'Environment', value: 'resource.deployment.environment' },
-    { label: 'HTTP Method', value: 'method' },
-    { label: 'HTTP Status Code', value: 'status_code' },
-    { label: 'Handler', value: 'handler' },
-    { label: 'Metric Name', value: '__name__' }, // Will be ignored
-  ];
-
-  const radioAttributes = [
-    'job',
-    'instance',
-    'method',
-    'status_code',
-  ];
-
-  return (
-    <div>
-      <div style={{ marginBottom: '20px' }}>
-        <GroupBySelector
-          options={metricOptions}
-          radioAttributes={radioAttributes}
-          value={selectedAttribute}
-          onChange={onAttributeChange}
-          fieldLabel="Group metrics by"
-          selectPlaceholder="Select metric label"
-          {...createDefaultGroupBySelectorConfig('metrics')}
-        />
-      </div>
-
-      <ConfigurationDisplay domain="metrics" />
-    </div>
-  );
-};
 
 const CustomExample: React.FC<{
   selectedAttribute: string;
@@ -328,7 +221,7 @@ const ConfigurationDisplay: React.FC<{ domain: DomainType }> = ({ domain }) => {
 };
 
 const ConfigurationComparison: React.FC = () => {
-  const domains: DomainType[] = ['traces', 'logs', 'metrics', 'custom'];
+  const domains: DomainType[] = ['traces', 'custom'];
   const configs = domains.map(domain => ({
     domain,
     config: createDefaultGroupBySelectorConfig(domain)

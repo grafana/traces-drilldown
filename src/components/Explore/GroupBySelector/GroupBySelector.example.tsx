@@ -104,21 +104,6 @@ export const GroupBySelectorExample: React.FC = () => {
         />
       </div>
 
-      <div style={{ marginBottom: '40px' }}>
-        <h3>Logs Domain Example</h3>
-        <GroupBySelector
-          options={[
-            { label: 'Log Level', value: 'log.level' },
-            { label: 'Service Name', value: 'resource.service.name' },
-            { label: 'Message', value: 'log.message' },
-            { label: 'Source', value: 'log.source' },
-          ]}
-          radioAttributes={['log.level', 'resource.service.name']}
-          value={selectedAttribute}
-          onChange={handleAttributeChange}
-          {...createDefaultGroupBySelectorConfig('logs')}
-        />
-      </div>
 
       <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f5f5f5' }}>
         <strong>Selected Attribute:</strong> {selectedAttribute || 'None'}

@@ -219,59 +219,6 @@ export const createDefaultGroupBySelectorConfig = (domain: DomainType): Partial<
           enabled: true,
         },
       };
-
-    case 'logs':
-      return {
-        attributePrefixes: {
-          log: 'log.',
-          resource: 'resource.',
-        },
-        filteringRules: {
-          excludeFilteredFromRadio: true,
-        },
-        ignoredAttributes: ['timestamp', 'log:id'],
-        layoutConfig: {
-          additionalWidthPerItem: 40,
-          widthOfOtherAttributes: 180,
-          enableResponsiveRadioButtons: true,
-        },
-        searchConfig: {
-          enabled: true,
-          maxOptions: 1000,
-          caseSensitive: false,
-          searchFields: ['label', 'value'],
-        },
-        virtualizationConfig: {
-          enabled: true,
-        },
-      };
-
-    case 'metrics':
-      return {
-        attributePrefixes: {
-          metric: 'metric.',
-          resource: 'resource.',
-        },
-        filteringRules: {
-          excludeFilteredFromRadio: true,
-        },
-        ignoredAttributes: ['__name__', 'timestamp'],
-        layoutConfig: {
-          additionalWidthPerItem: 40,
-          widthOfOtherAttributes: 180,
-          enableResponsiveRadioButtons: true,
-        },
-        searchConfig: {
-          enabled: true,
-          maxOptions: 1000,
-          caseSensitive: false,
-          searchFields: ['label', 'value'],
-        },
-        virtualizationConfig: {
-          enabled: true,
-        },
-      };
-
     case 'custom':
     default:
       return {

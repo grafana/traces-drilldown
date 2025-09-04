@@ -164,7 +164,7 @@ export interface GroupBySelectorProps {
 /**
  * Domain-specific configuration type
  */
-export type DomainType = 'traces' | 'logs' | 'metrics' | 'custom';
+export type DomainType = 'traces' | 'custom';
 
 /**
  * Default configuration for different domains
