@@ -8,7 +8,6 @@ import {
   AttributePrefixConfig,
   SearchConfig,
   DomainConfig,
-  DomainType,
 } from './types';
 
 /**
@@ -171,76 +170,52 @@ export const getModifiedSelectOptions = (
 };
 
 /**
- * Creates default configuration for different domains
+ * Creates default configuration for traces domain
  */
-export const createDefaultGroupBySelectorConfig = (domain: DomainType): Partial<DomainConfig> => {
-  switch (domain) {
-    case 'traces':
-      return {
-        attributePrefixes: {
-          span: 'span.',
-          resource: 'resource.',
-          event: 'event.',
-        },
-        filteringRules: {
-          excludeFilteredFromRadio: true,
-          excludeAttributesForMetrics: {
-            'rate': ['status'],
-            'errors': ['status'],
-          },
-          excludeAttributesForFilters: {
-            'nestedSetParent': ['rootName', 'rootServiceName'],
-          },
-        },
-        ignoredAttributes: [
-          'duration',
-          'event:name',
-          'nestedSetLeft',
-          'nestedSetParent',
-          'nestedSetRight',
-          'span:duration',
-          'span:id',
-          'trace:duration',
-          'trace:id',
-          'traceDuration',
-        ],
-        layoutConfig: {
-          additionalWidthPerItem: 40,
-          widthOfOtherAttributes: 180,
-          enableResponsiveRadioButtons: true,
-        },
-        searchConfig: {
-          enabled: true,
-          maxOptions: 1000,
-          caseSensitive: false,
-          searchFields: ['label', 'value'],
-        },
-        virtualizationConfig: {
-          enabled: true,
-        },
-      };
-    case 'custom':
-    default:
-      return {
-        attributePrefixes: {},
-        filteringRules: {},
-        ignoredAttributes: [],
-        layoutConfig: {
-          additionalWidthPerItem: 40,
-          widthOfOtherAttributes: 180,
-          enableResponsiveRadioButtons: true,
-        },
-        searchConfig: {
-          enabled: true,
-          maxOptions: 1000,
-          caseSensitive: false,
-          searchFields: ['label', 'value'],
-        },
-        virtualizationConfig: {
-          enabled: true,
-        },
-      };
-  }
+export const createDefaultGroupBySelectorConfig = (): Partial<DomainConfig> => {
+  return {
+    attributePrefixes: {
+      span: 'span.',
+      resource: 'resource.',
+      event: 'event.',
+    },
+    filteringRules: {
+      excludeFilteredFromRadio: true,
+      excludeAttributesForMetrics: {
+        'rate': ['status'],
+        'errors': ['status'],
+      },
+      excludeAttributesForFilters: {
+        'nestedSetParent': ['rootName', 'rootServiceName'],
+      },
+    },
+    ignoredAttributes: [
+      'duration',
+      'event:name',
+      'nestedSetLeft',
+      'nestedSetParent',
+      'nestedSetRight',
+      'span:duration',
+      'span:id',
+      'trace:duration',
+      'trace:id',
+      'traceDuration',
+    ],
+    layoutConfig: {
+      additionalWidthPerItem: 40,
+      widthOfOtherAttributes: 180,
+      enableResponsiveRadioButtons: true,
+    },
+    searchConfig: {
+      enabled: true,
+      maxOptions: 1000,
+      caseSensitive: false,
+      searchFields: ['label', 'value'],
+    },
+    virtualizationConfig: {
+      enabled: true,
+    },
+  };
 };
 
 /**

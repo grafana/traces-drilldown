@@ -10,7 +10,6 @@ export type {
   VirtualizationConfig,
   ProcessedAttribute,
   DomainConfig,
-  DomainType,
 } from './types';
 export {
   createAttributeFilter,

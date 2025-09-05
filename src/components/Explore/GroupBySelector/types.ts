@@ -161,10 +161,6 @@ export interface GroupBySelectorProps {
   virtualizationConfig?: VirtualizationConfig;
 }
 
-/**
- * Domain-specific configuration type
- */
-export type DomainType = 'traces' | 'custom';
 
 /**
  * Default configuration for different domains

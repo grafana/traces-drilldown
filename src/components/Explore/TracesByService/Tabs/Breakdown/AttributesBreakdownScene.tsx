@@ -186,7 +186,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
                   filters={filters.map(f => ({ key: f.key, operator: f.operator, value: f.value }))}
                   currentMetric={metric as string}
                   initialGroupBy={initialGroupBy}
-                  {...createDefaultGroupBySelectorConfig('traces')}
+                  {...createDefaultGroupBySelectorConfig()}
                 />
               </div>
             </div>

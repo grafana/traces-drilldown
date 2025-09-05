@@ -1,5 +1,5 @@
 import { createDefaultGroupBySelectorConfig, mergeConfigurations } from './utils';
-import { DomainType, DomainConfig } from './types';
+import { DomainConfig } from './types';
 
 describe('Domain Configuration Tests', () => {
   describe('createDefaultGroupBySelectorConfig', () => {
@@ -7,7 +7,7 @@ describe('Domain Configuration Tests', () => {
       let tracesConfig: Partial<DomainConfig>;
 
       beforeEach(() => {
-        tracesConfig = createDefaultGroupBySelectorConfig('traces');
+        tracesConfig = createDefaultGroupBySelectorConfig();
       });
 
       it('should have correct attribute prefixes', () => {
@@ -70,59 +70,23 @@ describe('Domain Configuration Tests', () => {
       });
     });
 
-    describe('Custom Domain', () => {
-      let customConfig: Partial<DomainConfig>;
 
-      beforeEach(() => {
-        customConfig = createDefaultGroupBySelectorConfig('custom');
-      });
+    it('should return traces configuration by default', () => {
+      const config = createDefaultGroupBySelectorConfig();
 
-      it('should have empty attribute prefixes', () => {
-        expect(customConfig.attributePrefixes).toEqual({});
-      });
-
-      it('should have empty ignored attributes', () => {
-        expect(customConfig.ignoredAttributes).toEqual([]);
-      });
-
-      it('should have minimal filtering rules', () => {
-        expect(customConfig.filteringRules).toEqual({});
-      });
-
-      it('should have standard configurations for other settings', () => {
-        expect(customConfig.layoutConfig?.enableResponsiveRadioButtons).toBe(true);
-        expect(customConfig.searchConfig?.enabled).toBe(true);
-        expect(customConfig.virtualizationConfig?.enabled).toBe(true);
-      });
-    });
-
-    describe('Domain Type Validation', () => {
-      const validDomains: DomainType[] = ['traces', 'custom'];
-
-      it.each(validDomains)('should handle %s domain', (domain) => {
-        const config = createDefaultGroupBySelectorConfig(domain);
-
-        expect(config).toBeDefined();
-        expect(config.attributePrefixes).toBeDefined();
-        expect(config.filteringRules).toBeDefined();
-        expect(config.ignoredAttributes).toBeDefined();
-        expect(config.layoutConfig).toBeDefined();
-        expect(config.searchConfig).toBeDefined();
-        expect(config.virtualizationConfig).toBeDefined();
-      });
-
-      it('should default to custom domain for unknown types', () => {
-        const unknownConfig = createDefaultGroupBySelectorConfig('unknown' as DomainType);
-        const customConfig = createDefaultGroupBySelectorConfig('custom');
-
-        expect(unknownConfig).toEqual(customConfig);
-      });
+      expect(config).toBeDefined();
+      expect(config.attributePrefixes).toBeDefined();
+      expect(config.filteringRules).toBeDefined();
+      expect(config.ignoredAttributes).toBeDefined();
+      expect(config.layoutConfig).toBeDefined();
+      expect(config.searchConfig).toBeDefined();
+      expect(config.virtualizationConfig).toBeDefined();
     });
   });
 
   describe('mergeConfigurations', () => {
     it('should merge domain config with user config', () => {
-      const domainConfig = createDefaultGroupBySelectorConfig('traces');
+      const domainConfig = createDefaultGroupBySelectorConfig();
       const userConfig = {
         attributePrefixes: {
           custom: 'custom.',
@@ -158,7 +122,7 @@ describe('Domain Configuration Tests', () => {
     });
 
     it('should handle partial user configurations', () => {
-      const domainConfig = createDefaultGroupBySelectorConfig('traces');
+      const domainConfig = createDefaultGroupBySelectorConfig();
       const partialUserConfig = {
         searchConfig: {
           maxOptions: 500,
@@ -181,7 +145,7 @@ describe('Domain Configuration Tests', () => {
     });
 
     it('should handle empty user configuration', () => {
-      const domainConfig = createDefaultGroupBySelectorConfig('traces');
+      const domainConfig = createDefaultGroupBySelectorConfig();
       const merged = mergeConfigurations(domainConfig, {});
 
       expect(merged).toEqual(domainConfig);
@@ -204,9 +168,9 @@ describe('Domain Configuration Tests', () => {
     });
   });
 
-      describe('Configuration Consistency', () => {
-      it('should maintain consistent structure across all domains', () => {
-        const domains: DomainType[] = ['traces', 'custom'];
+  describe('Configuration Consistency', () => {
+    it('should maintain consistent structure for traces domain', () => {
+      const config = createDefaultGroupBySelectorConfig();
       const requiredKeys = [
         'attributePrefixes',
         'filteringRules',
@@ -216,48 +180,32 @@ describe('Domain Configuration Tests', () => {
         'virtualizationConfig',
       ];
 
-      domains.forEach(domain => {
-        const config = createDefaultGroupBySelectorConfig(domain);
-
-        requiredKeys.forEach(key => {
-          expect(config).toHaveProperty(key);
-        });
+      requiredKeys.forEach(key => {
+        expect(config).toHaveProperty(key);
       });
     });
 
-          it('should have consistent layout configurations', () => {
-        const domains: DomainType[] = ['traces', 'custom'];
+    it('should have expected layout configuration', () => {
+      const config = createDefaultGroupBySelectorConfig();
 
-      domains.forEach(domain => {
-        const config = createDefaultGroupBySelectorConfig(domain);
-
-        expect(config.layoutConfig?.additionalWidthPerItem).toBe(40);
-        expect(config.layoutConfig?.widthOfOtherAttributes).toBe(180);
-        expect(config.layoutConfig?.enableResponsiveRadioButtons).toBe(true);
-      });
+      expect(config.layoutConfig?.additionalWidthPerItem).toBe(40);
+      expect(config.layoutConfig?.widthOfOtherAttributes).toBe(180);
+      expect(config.layoutConfig?.enableResponsiveRadioButtons).toBe(true);
     });
 
-          it('should have consistent search configurations', () => {
-        const domains: DomainType[] = ['traces', 'custom'];
+    it('should have expected search configuration', () => {
+      const config = createDefaultGroupBySelectorConfig();
 
-      domains.forEach(domain => {
-        const config = createDefaultGroupBySelectorConfig(domain);
-
-        expect(config.searchConfig?.enabled).toBe(true);
-        expect(config.searchConfig?.maxOptions).toBe(1000);
-        expect(config.searchConfig?.caseSensitive).toBe(false);
-        expect(config.searchConfig?.searchFields).toEqual(['label', 'value']);
-      });
+      expect(config.searchConfig?.enabled).toBe(true);
+      expect(config.searchConfig?.maxOptions).toBe(1000);
+      expect(config.searchConfig?.caseSensitive).toBe(false);
+      expect(config.searchConfig?.searchFields).toEqual(['label', 'value']);
     });
 
-          it('should have consistent virtualization configurations', () => {
-        const domains: DomainType[] = ['traces', 'custom'];
+    it('should have expected virtualization configuration', () => {
+      const config = createDefaultGroupBySelectorConfig();
 
-      domains.forEach(domain => {
-        const config = createDefaultGroupBySelectorConfig(domain);
-
-        expect(config.virtualizationConfig?.enabled).toBe(true);
-      });
+      expect(config.virtualizationConfig?.enabled).toBe(true);
     });
   });
 });

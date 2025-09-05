@@ -61,7 +61,7 @@ export function GroupBySelector({
   const controlsContainer = useRef<HTMLDivElement>(null);
 
   // Merge configurations with defaults
-  const domainDefaults = createDefaultGroupBySelectorConfig('traces');
+  const domainDefaults = createDefaultGroupBySelectorConfig();
   const config: DomainConfig = useMemo(() =>
     mergeConfigurations(domainDefaults, {
       attributePrefixes,

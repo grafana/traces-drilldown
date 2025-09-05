@@ -102,7 +102,7 @@ describe('GroupBySelector', () => {
   });
 
   it('applies traces domain configuration', () => {
-    const tracesConfig = createDefaultGroupBySelectorConfig('traces');
+    const tracesConfig = createDefaultGroupBySelectorConfig();
 
     expect(tracesConfig.attributePrefixes).toEqual({
       span: 'span.',
