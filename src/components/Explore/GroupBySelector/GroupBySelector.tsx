@@ -181,16 +181,18 @@ export function GroupBySelector({
             onChange={onChange}
           />
         )}
-        <Combobox
-          value={value && modifiedSelectOptions.some((x) => x.value === value) ? value : null}
-          placeholder={selectPlaceholder}
-          options={modifiedSelectOptions.filter(opt => opt.value !== undefined) as Array<{label?: string, value: string}>}
-          onChange={(selected) => {
-            const newSelected = (selected?.value as string) ?? defaultOnChangeValue;
-            onChange(newSelected);
-          }}
-          isClearable
-        />
+        {modifiedSelectOptions.length > 0 && (
+          <Combobox
+            value={value && modifiedSelectOptions.some((x) => x.value === value) ? value : null}
+            placeholder={selectPlaceholder}
+            options={modifiedSelectOptions.filter(opt => opt.value !== undefined) as Array<{label?: string, value: string}>}
+            onChange={(selected) => {
+              const newSelected = (selected?.value as string) ?? defaultOnChangeValue;
+              onChange(newSelected);
+            }}
+            isClearable
+          />
+        )}
       </div>
     </Field>
   );
