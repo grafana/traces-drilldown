@@ -7,7 +7,7 @@ interface QueryOptions {
   sample?: boolean;
 }
 
-export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample = false}: QueryOptions) {
+export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample = false }: QueryOptions) {
   // Generate span set filters
   let filters = `${VAR_FILTERS_EXPR}`;
 
