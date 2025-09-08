@@ -7,7 +7,7 @@ services:
       context: ../.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana-dev}
-        grafana_version: ${GRAFANA_VERSION:-11.3.0-196950}
+        grafana_version: ${GRAFANA_VERSION:-12.2.0-17432607250}
     ports:
       - 3000:3000/tcp
     volumes:

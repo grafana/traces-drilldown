@@ -16,7 +16,7 @@ import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';
 import { barsPanelConfig } from '../panels/barsPanel';
-import { metricByWithStatus } from '../queries/generateMetricsQuery';
+import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { css } from '@emotion/css';
 import { RadioButtonList, useStyles2 } from '@grafana/ui';
@@ -184,7 +184,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
         $data: new StepQueryRunner({
           maxDataPoints: this.isDuration() ? 24 : 64,
           datasource: explorationDS,
-          queries: [this.isDuration() ? buildHistogramQuery() : metricByWithStatus(metric)],
+          queries: [this.isDuration() ? buildHistogramQuery() : getMetricsTempoQuery({ metric, sample: true })],
         }),
         transformations: this.isDuration()
           ? [...removeExemplarsTransformation()]

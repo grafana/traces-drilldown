@@ -1,4 +1,4 @@
-import { generateMetricsQuery, metricByWithStatus } from './generateMetricsQuery';
+import { generateMetricsQuery, getMetricsTempoQuery } from './generateMetricsQuery';
 import { ALL } from '../../../utils/shared';
 
 describe('generateMetricsQuery', () => {
@@ -42,9 +42,9 @@ describe('generateMetricsQuery', () => {
   });
 });
 
-describe('metricByWithStatus', () => {
+describe('getMetricsTempoQuery', () => {
   it('should return correct configuration for rate metric', () => {
-    const result = metricByWithStatus('rate');
+    const result = getMetricsTempoQuery({ metric: 'rate' });
     expect(result).toEqual({
       refId: 'A',
       query: '{${primarySignal} && ${filters}} | rate() ',
@@ -57,7 +57,7 @@ describe('metricByWithStatus', () => {
   });
 
   it('should return correct configuration for errors metric', () => {
-    const result = metricByWithStatus('errors');
+    const result = getMetricsTempoQuery({ metric: 'errors' });
     expect(result).toEqual({
       refId: 'A',
       query: '{${primarySignal} && ${filters} && status=error} | rate() ',
@@ -70,7 +70,7 @@ describe('metricByWithStatus', () => {
   });
 
   it('should return correct configuration for duration metric', () => {
-    const result = metricByWithStatus('duration');
+    const result = getMetricsTempoQuery({ metric: 'duration' });
     expect(result).toEqual({
       refId: 'A',
       query: '{${primarySignal} && ${filters}} | quantile_over_time(duration, 0.9) ',
@@ -83,7 +83,7 @@ describe('metricByWithStatus', () => {
   });
 
   it('should include tagKey in the query when provided', () => {
-    const result = metricByWithStatus('rate', 'serviceName');
+    const result = getMetricsTempoQuery({ metric: 'rate', groupByKey: 'serviceName' });
     expect(result).toEqual({
       refId: 'A',
       query: '{${primarySignal} && ${filters} && serviceName != nil} | rate() by(serviceName)',
