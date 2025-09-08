@@ -47,10 +47,10 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample 
   return `{${filters}} | ${metricFn} ${groupBy}${sampleStr}`;
 }
 
-export function metricByWithStatus(metric: MetricFunction, tagKey?: string, sample = false) {
+export function getMetricsTempoQuery(options: QueryOptions) {
   return {
     refId: 'A',
-    query: generateMetricsQuery({ metric, groupByKey: tagKey, sample}),
+    query: generateMetricsQuery(options),
     queryType: 'traceql',
     tableType: 'spans',
     limit: 100,

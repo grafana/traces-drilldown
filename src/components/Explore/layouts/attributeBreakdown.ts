@@ -16,7 +16,7 @@ import { ByFrameRepeater } from '../ByFrameRepeater';
 import { formatLabelValue, getLabelValue, getOpenTrace, getTraceExplorationScene } from '../../../utils/utils';
 import { map, Observable } from 'rxjs';
 import { DataFrame, PanelData, reduceField, ReducerID } from '@grafana/data';
-import { generateMetricsQuery, metricByWithStatus } from '../queries/generateMetricsQuery';
+import { generateMetricsQuery, getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { barsPanelConfig } from '../panels/barsPanel';
 import { linesPanelConfig } from '../panels/linesPanel';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
@@ -31,7 +31,7 @@ export function buildNormalLayout(
 ) {
   const traceExploration = getTraceExplorationScene(scene);
   const metric = traceExploration.getMetricVariable().getValue() as MetricFunction;
-  const query = metricByWithStatus(metric, variable.getValueText());
+  const query = getMetricsTempoQuery({ metric, groupByKey: variable.getValueText() });
   const panels: Record<string, SceneCSSGridItem> = {};
 
   return new LayoutSwitcher({

@@ -1,6 +1,6 @@
 import { comparisonQuery } from './comparisonQuery';
 import { buildHistogramQuery } from './histogram';
-import { metricByWithStatus } from './generateMetricsQuery';
+import { getMetricsTempoQuery } from './generateMetricsQuery';
 import { buildExceptionsQuery } from './exceptions';
 
 describe('comparisonQuery', () => {
@@ -49,9 +49,9 @@ describe('buildHistogramQuery', () => {
   });
 });
 
-describe('metricByWithStatus', () => {
+describe('getMetricsTempoQuery', () => {
   it('should return correct query for no tag', () => {
-    const query = metricByWithStatus('errors');
+    const query = getMetricsTempoQuery({ metric: 'errors' });
     expect(query).toEqual({
       filters: [],
       limit: 100,
@@ -64,7 +64,7 @@ describe('metricByWithStatus', () => {
   });
 
   it('should return correct query for errors', () => {
-    const query = metricByWithStatus('errors', 'service');
+    const query = getMetricsTempoQuery({ metric: 'errors', groupByKey: 'service' });
     expect(query).toEqual({
       filters: [],
       limit: 100,
@@ -77,7 +77,7 @@ describe('metricByWithStatus', () => {
   });
 
   it('should return correct query with sampling', () => {
-    const query = metricByWithStatus('rate', 'service', true);
+    const query = getMetricsTempoQuery({ metric: 'rate', groupByKey: 'service', sample: true });
     expect(query).toEqual({
       filters: [],
       limit: 100,
@@ -91,7 +91,7 @@ describe('metricByWithStatus', () => {
 
 
   it('should return correct query for duration', () => {
-    const query = metricByWithStatus('duration', 'service');
+    const query = getMetricsTempoQuery({ metric: 'duration', groupByKey: 'service' });
     expect(query).toEqual({
       filters: [],
       limit: 100,
