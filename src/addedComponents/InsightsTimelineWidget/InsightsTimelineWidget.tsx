@@ -46,11 +46,7 @@ export function InsightsTimelineWidget({ serviceName, model }: Props) {
     filterBySummaryKeywords = ['latency'];
   }
 
-  if (isLoading || !InsightsTimelineWidgetExternal || !sceneTimeRange) {
-    return null;
-  }
-
-  if (!serviceName) {
+  if (isLoading || !InsightsTimelineWidgetExternal || !sceneTimeRange || !serviceName) {
     return null;
   }
 
