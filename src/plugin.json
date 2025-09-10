@@ -56,7 +56,7 @@
     "grafanaDependency": ">=11.5.0",
     "plugins": [],
     "extensions": {
-      "exposedComponents": ["grafana-asserts-app/entity-assertions-widget/v1"]
+      "exposedComponents": ["grafana-asserts-app/entity-assertions-widget/v1", "grafana-asserts-app/insights-timeline-widget/v1"]
     }
   },
   "extensions": {
@@ -77,6 +77,11 @@
         "targets": ["grafana-asserts-app/entity-assertions-widget/v1"],
         "title": "Asserts widget",
         "description": "A block with assertions for a given service"
+      },
+      {
+        "targets": ["grafana-asserts-app/insights-timeline-widget/v1"],
+        "title": "Insights Timeline Widget",
+        "description": "Widget for displaying insights timeline in other apps"
       }
     ],
     "addedLinks": [

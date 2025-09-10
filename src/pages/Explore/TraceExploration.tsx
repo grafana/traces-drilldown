@@ -300,7 +300,7 @@ export class TraceExplorationScene extends SceneObjectBase {
   };
 }
 
-const useServiceName = (model: SceneObject) => {
+export const useServiceName = (model: SceneObject) => {
   const [serviceName, setServiceName] = React.useState<string>();
   const traceExploration = getTraceExplorationScene(model);
   const filtersVariable = getFiltersVariable(traceExploration);

@@ -1,6 +1,6 @@
 import { comparisonQuery } from './comparisonQuery';
 import { buildHistogramQuery } from './histogram';
-import { metricByWithStatus } from './generateMetricsQuery';
+import { getMetricsTempoQuery } from './generateMetricsQuery';
 import { buildExceptionsQuery } from './exceptions';
 
 describe('comparisonQuery', () => {
@@ -40,7 +40,7 @@ describe('buildHistogramQuery', () => {
     expect(query).toEqual({
       filters: [],
       limit: 1000,
-      query: '{${primarySignal} && ${filters}} | histogram_over_time(duration)',
+      query: '{${primarySignal} && ${filters}} | histogram_over_time(duration) with(sample=true)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -49,9 +49,9 @@ describe('buildHistogramQuery', () => {
   });
 });
 
-describe('metricByWithStatus', () => {
+describe('getMetricsTempoQuery', () => {
   it('should return correct query for no tag', () => {
-    const query = metricByWithStatus('errors');
+    const query = getMetricsTempoQuery({ metric: 'errors' });
     expect(query).toEqual({
       filters: [],
       limit: 100,
@@ -64,7 +64,7 @@ describe('metricByWithStatus', () => {
   });
 
   it('should return correct query for errors', () => {
-    const query = metricByWithStatus('errors', 'service');
+    const query = getMetricsTempoQuery({ metric: 'errors', groupByKey: 'service' });
     expect(query).toEqual({
       filters: [],
       limit: 100,
@@ -76,8 +76,22 @@ describe('metricByWithStatus', () => {
     });
   });
 
+  it('should return correct query with sampling', () => {
+    const query = getMetricsTempoQuery({ metric: 'rate', groupByKey: 'service', sample: true });
+    expect(query).toEqual({
+      filters: [],
+      limit: 100,
+      query: '{${primarySignal} && ${filters} && service != nil} | rate() by(service) with(sample=true)',
+      queryType: 'traceql',
+      refId: 'A',
+      spss: 10,
+      tableType: 'spans',
+    });
+  });
+
+
   it('should return correct query for duration', () => {
-    const query = metricByWithStatus('duration', 'service');
+    const query = getMetricsTempoQuery({ metric: 'duration', groupByKey: 'service' });
     expect(query).toEqual({
       filters: [],
       limit: 100,

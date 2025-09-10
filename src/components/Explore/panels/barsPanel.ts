@@ -2,7 +2,7 @@ import { PanelBuilders } from '@grafana/scenes';
 import { DrawStyle, StackingMode, TooltipDisplayMode } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 
-export const barsPanelConfig = (metric: MetricFunction) => {
+export const barsPanelConfig = (metric: MetricFunction, axisWidth?: number) => {
   const isErrorsMetric = metric === 'errors' || false;
   
   const builder = PanelBuilders.timeseries()
@@ -20,6 +20,10 @@ export const barsPanelConfig = (metric: MetricFunction) => {
       });
     })
     .setOption('tooltip', { mode: TooltipDisplayMode.Multi });
+
+  if (axisWidth !== undefined) {
+    builder.setCustomFieldConfig('axisWidth', axisWidth);
+  }
 
   return builder;
 };

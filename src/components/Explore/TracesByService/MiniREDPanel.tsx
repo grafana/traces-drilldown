@@ -15,7 +15,7 @@ import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';
 import { barsPanelConfig } from '../panels/barsPanel';
-import { metricByWithStatus } from '../queries/generateMetricsQuery';
+import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { RadioButtonList, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
@@ -91,7 +91,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
         $data: new StepQueryRunner({
           maxDataPoints: this.state.metric === 'duration' ? 24 : 64,
           datasource: explorationDS,
-          queries: [this.state.metric === 'duration' ? buildHistogramQuery() : metricByWithStatus(this.state.metric)],
+          queries: [this.state.metric === 'duration' ? buildHistogramQuery() : getMetricsTempoQuery({ metric: this.state.metric, sample: true })],
         }),
         transformations:
           this.state.metric === 'duration'

@@ -16,7 +16,7 @@ import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';
 import { barsPanelConfig } from '../panels/barsPanel';
-import { metricByWithStatus } from '../queries/generateMetricsQuery';
+import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { css } from '@emotion/css';
 import { RadioButtonList, useStyles2 } from '@grafana/ui';
@@ -37,6 +37,8 @@ import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
+import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
+import { useServiceName } from 'pages/Explore/TraceExploration';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -184,7 +186,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
         $data: new StepQueryRunner({
           maxDataPoints: this.isDuration() ? 24 : 64,
           datasource: explorationDS,
-          queries: [this.isDuration() ? buildHistogramQuery() : metricByWithStatus(metric)],
+          queries: [this.isDuration() ? buildHistogramQuery() : getMetricsTempoQuery({ metric, sample: true })],
         }),
         transformations: this.isDuration()
           ? [...removeExemplarsTransformation()]
@@ -204,7 +206,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
-    const panel = barsPanelConfig(type).setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(type, 70).setHoverHeader(true).setDisplayMode('transparent');
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
@@ -256,6 +258,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const { panel, actions, isStreaming } = model.useState();
     const { value: metric } = getMetricVariable(model).useState();
     const styles = useStyles2(getStyles);
+    const serviceName = useServiceName(model);
 
     if (!panel) {
       return;
@@ -305,6 +308,10 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           </div>
         </div>
         <panel.Component model={panel} />
+        <InsightsTimelineWidget
+          serviceName={serviceName || ''}
+          model={model}
+        />
       </div>
     );
   };
