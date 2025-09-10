@@ -43,5 +43,5 @@ function isNumber(value?: string | number): boolean {
 }
 
 function isQuotedNumericString(value: string): boolean {
-  return typeof value === 'string' && value.length >= 2 && isNumber(value.slice(1, -1)) && (value.startsWith('"') || value.startsWith("'")) && (value.endsWith('"') || value.endsWith("'"));
+  return typeof value === 'string' && value.length >= 2 && isNumber(value.slice(1, -1)) && ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")));
 }
