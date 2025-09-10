@@ -108,6 +108,18 @@ describe('filters-renderer', () => {
       });
     });
 
+    describe('quoted numeric handling', () => {
+      it('should not double-quote numeric values already wrapped in double quotes', () => {
+        const filters: AdHocVariableFilter[] = [{ key: 'service.id', operator: '=', value: '"12345"' }];
+        expect(renderTraceQLLabelFilters(filters)).toBe('service.id="12345"');
+      });
+
+      it('should not double-quote numeric values already wrapped in single quotes', () => {
+        const filters: AdHocVariableFilter[] = [{ key: 'service.id', operator: '=', value: "'123.45'" }];
+        expect(renderTraceQLLabelFilters(filters)).toBe("service.id='123.45'");
+      });
+    });
+
     describe('string handling', () => {
       it('should escape quotes and backslashes in queries', () => {
         const filters: AdHocVariableFilter[] = [{ key: 'name', operator: '=', value: 'some "query" \\ ' }];

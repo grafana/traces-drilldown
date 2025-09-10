@@ -25,7 +25,8 @@ function renderFilter(filter: AdHocVariableFilter) {
         'trace:duration',
         'event:timeSinceStart',
       ].includes(filter.key) &&
-      !['true', 'false'].includes(val))
+      !['true', 'false'].includes(val)) &&
+      !isQuotedNumericString(val)
   ) {
     if (typeof val === 'string') {
       // Escape " and \ to \" and \\ respectively
@@ -39,4 +40,8 @@ function renderFilter(filter: AdHocVariableFilter) {
 
 function isNumber(value?: string | number): boolean {
   return value != null && value !== '' && !isNaN(Number(value.toString().trim()));
+}
+
+function isQuotedNumericString(value: string): boolean {
+  return typeof value === 'string' && isNumber(value.slice(1, -1)) && (value.startsWith('"') || value.startsWith("'")) && (value.endsWith('"') || value.endsWith("'"));
 }
