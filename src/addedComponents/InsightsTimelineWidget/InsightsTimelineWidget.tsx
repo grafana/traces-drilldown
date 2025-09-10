@@ -50,6 +50,10 @@ export function InsightsTimelineWidget({ serviceName, model }: Props) {
     return null;
   }
 
+  if (!serviceName) {
+    return null;
+  }
+
   return (
     <InsightsTimelineWidgetExternal
       serviceName={serviceName}
