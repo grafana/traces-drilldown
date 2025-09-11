@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.4
+
+##### Chores
+
+*  Support quoted numeric strings (#552) (c9120937)
+*  Update create-plugin (#539) (b540db0e)
+*  updates readme to reflect GA status. (#540) (4c928873)
+
+##### New Features
+
+*  Integrate Insights Timeline widget (#543) (8853aa3a)
+
+##### Performance Improvements
+
+*  Use new TraceQL sampling hint for RED panels (#547) (b68d6c64)
+
+
 ## 1.1.3
 
 ##### Chores
