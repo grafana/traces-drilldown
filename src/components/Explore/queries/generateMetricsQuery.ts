@@ -1,4 +1,4 @@
-import { ALL, MetricFunction, VAR_FILTERS_EXPR } from '../../../utils/shared';
+import { ALL, MetricFunction, VAR_FILTERS_EXPR, VAR_DURATION_QUANTILES_EXPR } from '../../../utils/shared';
 
 interface QueryOptions {
   metric: MetricFunction;
@@ -30,7 +30,7 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample 
       metricFn = 'rate()';
       break;
     case 'duration':
-      metricFn = 'quantile_over_time(duration, 0.9)';
+      metricFn = `quantile_over_time(duration, ${VAR_DURATION_QUANTILES_EXPR})`;
       break;
   }
 
