@@ -26,6 +26,7 @@ import {
   VAR_METRIC,
   VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
+  VAR_DURATION_QUANTILES,
 } from './shared';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { Home } from 'pages/Home/Home';
@@ -125,6 +126,14 @@ export function getLabelValue(frame: DataFrame, labelName?: string) {
   return labels[labelName || keys[0]].replace(/"/g, '');
 }
 
+export function getQuantilesVariable(scene: SceneObject): CustomVariable {
+  const variable = sceneGraph.lookupVariable(VAR_DURATION_QUANTILES, scene);
+  if (!(variable instanceof CustomVariable)) {
+    throw new Error('Quantiles variable not found');
+  }
+  return variable;
+}
+
 export function getGroupByVariable(scene: SceneObject): CustomVariable {
   const variable = sceneGraph.lookupVariable(VAR_GROUPBY, scene);
   if (!(variable instanceof CustomVariable)) {
@@ -169,6 +178,14 @@ export function getFiltersVariable(scene: SceneObject): AdHocFiltersVariable {
   const variable = sceneGraph.lookupVariable(VAR_FILTERS, scene);
   if (!(variable instanceof AdHocFiltersVariable)) {
     throw new Error('Filters variable not found');
+  }
+  return variable;
+}
+
+export function getDurationQuantilesVariable(scene: SceneObject): CustomVariable {
+  const variable = sceneGraph.lookupVariable(VAR_DURATION_QUANTILES, scene);
+  if (!(variable instanceof CustomVariable)) {
+    throw new Error('Duration quantiles variable not found');
   }
   return variable;
 }

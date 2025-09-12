@@ -31,11 +31,13 @@ import { buildNormalLayout } from '../../../layouts/attributeBreakdown';
 import {
   getAttributesAsOptions,
   getGroupByVariable,
+  getQuantilesVariable,
   getTraceByServiceScene,
   getTraceExplorationScene,
 } from 'utils/utils';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../../../utils/analytics';
 import { AttributesDescription } from './AttributesDescription';
+import { QuantilesSelect } from './QuantilesSelect';
 
 export interface AttributesBreakdownSceneState extends SceneObjectState {
   body?: SceneObject;
@@ -107,6 +109,8 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
   };
 
   public static Component = ({ model }: SceneComponentProps<AttributesBreakdownScene>) => {
+    const quantilesVariable = getQuantilesVariable(model);
+
     const { value: groupByValue } = getGroupByVariable(model).useState();
     const groupBy = groupByValue as string;
     const defaultScope = groupBy.includes(SPAN_ATTR) || radioAttributesSpan.includes(groupBy) ? SPAN : RESOURCE;
@@ -183,6 +187,11 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
           )}
           {body instanceof LayoutSwitcher && (
             <div className={styles.controlsRight}>
+              {metric === 'duration' && (
+                <div className={styles.quantiles}>
+                  <QuantilesSelect quantilesVariable={quantilesVariable} />
+                </div>
+              )}
               <body.Selector model={body} />
             </div>
           )}
@@ -209,13 +218,16 @@ function getStyles(theme: GrafanaTheme2) {
     controls: css({
       flexGrow: 0,
       display: 'flex',
-      alignItems: 'top',
+      alignItems: 'flex-end',
       gap: theme.spacing(2),
     }),
     controlsRight: css({
-      flexGrow: 0,
+      flexGrow: 2,
       display: 'flex',
       justifyContent: 'flex-end',
+      alignItems: 'flex-end',
+      gap: theme.spacing(2),
+      flex: '1 0 auto',
     }),
     scope: css({
       marginRight: theme.spacing(2),
@@ -229,6 +241,11 @@ function getStyles(theme: GrafanaTheme2) {
       justifyItems: 'left',
       width: '100%',
       flexDirection: 'row',
+    }),
+    quantiles: css({
+      display: 'flex',
+      height: 'fit-content',
+      justifyContent: 'flex-end',
     }),
   };
 }

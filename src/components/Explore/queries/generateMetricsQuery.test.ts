@@ -14,29 +14,29 @@ describe('generateMetricsQuery', () => {
 
   it('should generate a duration query', () => {
     const result = generateMetricsQuery({ metric: 'duration' });
-    expect(result).toEqual('{${primarySignal} && ${filters}} | quantile_over_time(duration, 0.9) ');
+    expect(result).toEqual('{${primarySignal} && ${filters}} | quantile_over_time(duration, ${durationQuantiles}) ');
   });
 
   it('should add extra filters if provided', () => {
-    const result = generateMetricsQuery({ 
-      metric: 'rate', 
-      extraFilters: 'name="test"' 
+    const result = generateMetricsQuery({
+      metric: 'rate',
+      extraFilters: 'name="test"',
     });
     expect(result).toEqual('{${primarySignal} && ${filters} && name="test"} | rate() ');
   });
 
   it('should handle groupByKey when provided', () => {
-    const result = generateMetricsQuery({ 
-      metric: 'rate', 
-      groupByKey: 'serviceName' 
+    const result = generateMetricsQuery({
+      metric: 'rate',
+      groupByKey: 'serviceName',
     });
     expect(result).toEqual('{${primarySignal} && ${filters} && serviceName != nil} | rate() by(serviceName)');
   });
 
   it('should not add groupByKey filter when groupByKey is ALL', () => {
-    const result = generateMetricsQuery({ 
-      metric: 'rate', 
-      groupByKey: ALL 
+    const result = generateMetricsQuery({
+      metric: 'rate',
+      groupByKey: ALL,
     });
     expect(result).toEqual('{${primarySignal} && ${filters}} | rate() ');
   });
@@ -73,7 +73,7 @@ describe('getMetricsTempoQuery', () => {
     const result = getMetricsTempoQuery({ metric: 'duration' });
     expect(result).toEqual({
       refId: 'A',
-      query: '{${primarySignal} && ${filters}} | quantile_over_time(duration, 0.9) ',
+      query: '{${primarySignal} && ${filters}} | quantile_over_time(duration, ${durationQuantiles}) ',
       queryType: 'traceql',
       tableType: 'spans',
       limit: 100,
@@ -94,4 +94,4 @@ describe('getMetricsTempoQuery', () => {
       filters: [],
     });
   });
-}); 
+});
