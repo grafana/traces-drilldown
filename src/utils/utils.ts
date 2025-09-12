@@ -182,14 +182,6 @@ export function getFiltersVariable(scene: SceneObject): AdHocFiltersVariable {
   return variable;
 }
 
-export function getDurationQuantilesVariable(scene: SceneObject): CustomVariable {
-  const variable = sceneGraph.lookupVariable(VAR_DURATION_QUANTILES, scene);
-  if (!(variable instanceof CustomVariable)) {
-    throw new Error('Duration quantiles variable not found');
-  }
-  return variable;
-}
-
 export function getPrimarySignalVariable(scene: SceneObject): PrimarySignalVariable {
   const variable = sceneGraph.lookupVariable(VAR_PRIMARY_SIGNAL, scene);
   if (!(variable instanceof PrimarySignalVariable)) {
