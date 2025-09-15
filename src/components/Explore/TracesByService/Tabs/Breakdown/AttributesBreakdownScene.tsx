@@ -188,7 +188,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
           {body instanceof LayoutSwitcher && (
             <div className={styles.controlsRight}>
               {metric === 'duration' && (
-                <div className={styles.quantiles}>
+                <div className={styles.percentiles}>
                   <PercentilesSelect percentilesVariable={percentilesVariable} />
                 </div>
               )}
@@ -242,7 +242,7 @@ function getStyles(theme: GrafanaTheme2) {
       width: '100%',
       flexDirection: 'row',
     }),
-    quantiles: css({
+    percentiles: css({
       display: 'flex',
       height: 'fit-content',
       justifyContent: 'flex-end',
