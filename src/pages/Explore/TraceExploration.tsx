@@ -32,7 +32,7 @@ import {
   VAR_METRIC,
   VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
-  VAR_DURATION_QUANTILES,
+  VAR_DURATION_PERCENTILES,
 } from '../../utils/shared';
 import {
   getTraceExplorationScene,
@@ -518,8 +518,8 @@ function getVariableSet(state: TraceExplorationState) {
         hide: VariableHide.hideVariable,
       }),
       new CustomVariable({
-        name: VAR_DURATION_QUANTILES,
-        label: 'Duration Quantiles',
+        name: VAR_DURATION_PERCENTILES,
+        label: 'Duration Percentiles',
         value: ['0.9'], // Default to 90th percentile
         isMulti: true,
         includeAll: false,

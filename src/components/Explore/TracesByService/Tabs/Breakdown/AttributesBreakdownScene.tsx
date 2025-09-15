@@ -31,13 +31,13 @@ import { buildNormalLayout } from '../../../layouts/attributeBreakdown';
 import {
   getAttributesAsOptions,
   getGroupByVariable,
-  getQuantilesVariable,
+  getPercentilesVariable,
   getTraceByServiceScene,
   getTraceExplorationScene,
 } from 'utils/utils';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../../../utils/analytics';
 import { AttributesDescription } from './AttributesDescription';
-import { QuantilesSelect } from './QuantilesSelect';
+import { PercentilesSelect } from './PercentilesSelect';
 
 export interface AttributesBreakdownSceneState extends SceneObjectState {
   body?: SceneObject;
@@ -109,7 +109,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
   };
 
   public static Component = ({ model }: SceneComponentProps<AttributesBreakdownScene>) => {
-    const quantilesVariable = getQuantilesVariable(model);
+    const percentilesVariable = getPercentilesVariable(model);
 
     const { value: groupByValue } = getGroupByVariable(model).useState();
     const groupBy = groupByValue as string;
@@ -189,7 +189,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
             <div className={styles.controlsRight}>
               {metric === 'duration' && (
                 <div className={styles.quantiles}>
-                  <QuantilesSelect quantilesVariable={quantilesVariable} />
+                  <PercentilesSelect percentilesVariable={percentilesVariable} />
                 </div>
               )}
               <body.Selector model={body} />

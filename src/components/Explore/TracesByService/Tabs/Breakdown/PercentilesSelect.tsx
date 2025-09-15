@@ -2,8 +2,8 @@ import { CustomVariable } from '@grafana/scenes';
 import { Field, MultiCombobox } from '@grafana/ui';
 import React, { useEffect } from 'react';
 
-export const QuantilesSelect = ({ quantilesVariable }: { quantilesVariable: CustomVariable }) => {
-  const { value: quantilesValue } = quantilesVariable.useState();
+export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable: CustomVariable }) => {
+  const { value: percentilesValue } = percentilesVariable.useState();
 
   const options = [
     { label: 'p50', value: '0.5' },
@@ -14,10 +14,10 @@ export const QuantilesSelect = ({ quantilesVariable }: { quantilesVariable: Cust
   ];
 
   useEffect(() => {
-    if (!quantilesValue || (Array.isArray(quantilesValue) && quantilesValue.length === 0)) {
-      quantilesVariable.changeValueTo(['0.9']);
+    if (!percentilesValue || (Array.isArray(percentilesValue) && percentilesValue.length === 0)) {
+      percentilesVariable.changeValueTo(['0.9']);
     }
-  }, [quantilesValue, quantilesVariable]);
+  }, [percentilesValue, percentilesVariable]);
 
   return (
     <Field label="Percentiles">
@@ -26,10 +26,10 @@ export const QuantilesSelect = ({ quantilesVariable }: { quantilesVariable: Cust
         minWidth={20}
         isClearable={false}
         options={options}
-        value={quantilesValue as string[]}
+        value={percentilesValue as string[]}
         onChange={(value) => {
           if (Array.isArray(value)) {
-            quantilesVariable.changeValueTo(value.map((v) => v.value));
+            percentilesVariable.changeValueTo(value.map((v) => v.value));
           }
         }}
       />

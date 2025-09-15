@@ -14,7 +14,9 @@ describe('generateMetricsQuery', () => {
 
   it('should generate a duration query', () => {
     const result = generateMetricsQuery({ metric: 'duration' });
-    expect(result).toEqual('{${primarySignal} && ${filters}} | quantile_over_time(duration, ${durationQuantiles}) ');
+    expect(result).toEqual(
+      '{${primarySignal} && ${filters}} | quantile_over_time(duration, ${durationPercentiles:csv}) '
+    );
   });
 
   it('should add extra filters if provided', () => {
@@ -73,7 +75,7 @@ describe('getMetricsTempoQuery', () => {
     const result = getMetricsTempoQuery({ metric: 'duration' });
     expect(result).toEqual({
       refId: 'A',
-      query: '{${primarySignal} && ${filters}} | quantile_over_time(duration, ${durationQuantiles}) ',
+      query: '{${primarySignal} && ${filters}} | quantile_over_time(duration, ${durationPercentiles:csv}) ',
       queryType: 'traceql',
       tableType: 'spans',
       limit: 100,
