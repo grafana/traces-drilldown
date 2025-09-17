@@ -3,7 +3,7 @@ import { useResizeObserver } from '@react-aria/utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { Select, RadioButtonGroup, useStyles2, useTheme2, measureText, Field, InputActionMeta } from '@grafana/ui';
+import { RadioButtonGroup, useStyles2, useTheme2, measureText, Field, Combobox } from '@grafana/ui';
 import { ALL, ignoredAttributes, maxOptions, MetricFunction, RESOURCE_ATTR, SPAN_ATTR } from 'utils/shared';
 import { AttributesBreakdownScene } from './TracesByService/Tabs/Breakdown/AttributesBreakdownScene';
 import { AttributesComparisonScene } from './TracesByService/Tabs/Comparison/AttributesComparisonScene';
@@ -26,7 +26,6 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
   const theme = useTheme2();
   const { fontSize } = theme.typography;
 
-  const [selectQuery, setSelectQuery] = useState<string>('');
   const [allowAutoUpdate, setAllowAutoUpdate] = useState<boolean>(true);
 
   const [availableWidth, setAvailableWidth] = useState<number>(0);
@@ -91,14 +90,13 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
   }, [radioAttributes, options, filters, metricValue, fontSize, availableWidth]);
 
   const otherAttrOptions = useMemo(() => {
-    const ops = options.filter((op) => !radioOptions.find((ro) => ro.value === op.value?.toString()));
-    return filteredOptions(ops, selectQuery);
-  }, [selectQuery, options, radioOptions]);
+    return options.filter((op) => !radioOptions.find((ro) => ro.value === op.value?.toString()));
+  }, [options, radioOptions]);
 
   const getModifiedSelectOptions = (options: Array<SelectableValue<string>>) => {
     return options
-      .filter((op) => !ignoredAttributes.includes(op.value?.toString()!))
-      .map((op) => ({ label: op.label?.replace(SPAN_ATTR, '').replace(RESOURCE_ATTR, ''), value: op.value }));
+      .filter((op) => op.value && !ignoredAttributes.includes(op.value.toString()))
+      .map((op) => ({ label: op.label?.replace(SPAN_ATTR, '').replace(RESOURCE_ATTR, ''), value: op.value! }));
   };
 
   const defaultValue = initialGroupBy ?? radioOptions[0]?.value ?? otherAttrOptions[0]?.value;
@@ -132,7 +130,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
         {radioOptions.length > 0 && (
           <RadioButtonGroup options={[...showAllOption, ...radioOptions]} value={value} onChange={onChange} />
         )}
-        <Select
+        <Combobox
           value={value && getModifiedSelectOptions(otherAttrOptions).some((x) => x.value === value) ? value : null} // remove value from select when radio button clicked
           placeholder={'Other attributes'}
           options={getModifiedSelectOptions(otherAttrOptions)}
@@ -140,15 +138,7 @@ export function GroupBySelector({ options, radioAttributes, value, onChange, sho
             const newSelected = selected?.value ?? defaultOnChangeValue;
             onChange(newSelected);
           }}
-          className={styles.select}
           isClearable
-          onInputChange={(value: string, { action }: InputActionMeta) => {
-            if (action === 'input-change') {
-              setSelectQuery(value);
-            }
-          }}
-          onCloseMenu={() => setSelectQuery('')}
-          virtualized
         />
       </div>
     </Field>

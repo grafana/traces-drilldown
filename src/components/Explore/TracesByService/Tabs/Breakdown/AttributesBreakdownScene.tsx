@@ -10,13 +10,11 @@ import {
   SceneObjectState,
   VariableDependencyConfig,
 } from '@grafana/scenes';
-import { Field, RadioButtonGroup, useStyles2 } from '@grafana/ui';
+import { Stack, useStyles2 } from '@grafana/ui';
 
-import { GroupBySelector } from '../../../GroupBySelector';
 import {
   MetricFunction,
   RESOURCE,
-  RESOURCE_ATTR,
   SPAN,
   SPAN_ATTR,
   VAR_FILTERS,
@@ -38,6 +36,7 @@ import {
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../../../utils/analytics';
 import { AttributesDescription } from './AttributesDescription';
 import { PercentilesSelect } from './PercentilesSelect';
+import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 
 export interface AttributesBreakdownSceneState extends SceneObjectState {
   body?: SceneObject;
@@ -119,11 +118,6 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
     const styles = useStyles2(getStyles);
 
     const { attributes } = getTraceByServiceScene(model).useState();
-    const filterType = scope === RESOURCE ? RESOURCE_ATTR : SPAN_ATTR;
-    let filteredAttributes = attributes?.filter((attr) => attr.includes(filterType));
-    if (scope === SPAN) {
-      filteredAttributes = filteredAttributes?.concat(radioAttributesSpan);
-    }
 
     const exploration = getTraceExplorationScene(model);
     const { value: metric } = exploration.getMetricVariable().useState();
@@ -149,42 +143,18 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
     return (
       <div className={styles.container}>
-        <AttributesDescription
-          description={description}
-          tags={
-            metric === 'duration'
-              ? []
-              : [
-                  { label: 'Rate', color: 'green' },
-                  { label: 'Error', color: 'red' },
-                ]
-          }
-        />
-
         <div className={styles.controls}>
-          {filteredAttributes?.length && (
-            <div className={styles.controlsLeft}>
-              <div className={styles.scope}>
-                <Field label="Scope">
-                  <RadioButtonGroup
-                    options={getAttributesAsOptions([RESOURCE, SPAN])}
-                    value={scope}
-                    onChange={setScope}
-                  />
-                </Field>
-              </div>
-
-              <div className={styles.groupBy}>
-                <GroupBySelector
-                  options={getAttributesAsOptions(filteredAttributes!)}
-                  radioAttributes={scope === RESOURCE ? radioAttributesResource : radioAttributesSpan}
-                  value={groupBy}
-                  onChange={model.onChange}
-                  model={model}
-                />
-              </div>
-            </div>
-          )}
+          <AttributesDescription
+            description={description}
+            tags={
+              metric === 'duration'
+                ? []
+                : [
+                    { label: 'Rate', color: 'green' },
+                    { label: 'Error', color: 'red' },
+                  ]
+            }
+          />
           {body instanceof LayoutSwitcher && (
             <div className={styles.controlsRight}>
               {metric === 'duration' && (
@@ -196,7 +166,16 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
             </div>
           )}
         </div>
-        <div className={styles.content}>{body && <body.Component model={body} />}</div>
+        <div className={styles.content}>
+          <Stack direction="row" gap={2} width="100%">
+            <AttributesSidebar
+              options={getAttributesAsOptions(attributes ?? [])}
+              selectedAttribute={groupBy}
+              onAttributeChange={(attribute) => model.onChange(attribute ?? '')}
+            />
+            {body && <body.Component model={body} />}
+          </Stack>
+        </div>
       </div>
     );
   };
@@ -218,7 +197,7 @@ function getStyles(theme: GrafanaTheme2) {
     controls: css({
       flexGrow: 0,
       display: 'flex',
-      alignItems: 'flex-end',
+      alignItems: 'flex-start',
       gap: theme.spacing(2),
     }),
     controlsRight: css({
