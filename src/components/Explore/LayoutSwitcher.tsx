@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { SelectableValue } from '@grafana/data';
+import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Field, RadioButtonGroup } from '@grafana/ui';
+import { Label, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../utils/analytics';
+import { css } from '@emotion/css';
 
 export interface LayoutSwitcherState extends SceneObjectState {
   active: LayoutType;
@@ -16,11 +17,13 @@ export type LayoutType = 'single' | 'grid' | 'rows';
 export class LayoutSwitcher extends SceneObjectBase<LayoutSwitcherState> {
   public Selector({ model }: { model: LayoutSwitcher }) {
     const { active, options } = model.useState();
+    const styles = useStyles2(getStyles);
 
     return (
-      <Field label="View">
+      <Stack>
+        <Label className={styles.label}>View</Label>
         <RadioButtonGroup options={options} value={active} onChange={model.onLayoutChange} />
-      </Field>
+      </Stack>
     );
   }
 
@@ -42,5 +45,15 @@ export class LayoutSwitcher extends SceneObjectBase<LayoutSwitcherState> {
     const layout = layouts[index];
 
     return <layout.Component model={layout} />;
+  };
+}
+
+function getStyles(theme: GrafanaTheme2) {
+  return {
+    label: css({
+      marginBottom: theme.spacing(0),
+      display: 'flex',
+      alignItems: 'center',
+    }),
   };
 }

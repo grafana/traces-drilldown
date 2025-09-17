@@ -178,6 +178,8 @@ function getStyles() {
       display: 'flex',
       flexDirection: 'column',
       flexGrow: 1,
+      overflowX: 'auto',
+      height: '100%',
     }),
   };
 }

@@ -1,9 +1,12 @@
+import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 import { CustomVariable } from '@grafana/scenes';
-import { Field, MultiCombobox } from '@grafana/ui';
+import { Label, MultiCombobox, Stack, useStyles2 } from '@grafana/ui';
 import React, { useEffect } from 'react';
 
 export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable: CustomVariable }) => {
   const { value: percentilesValue } = percentilesVariable.useState();
+  const styles = useStyles2(getStyles);
 
   const options = [
     { label: 'p50', value: '0.5' },
@@ -20,7 +23,8 @@ export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable
   }, [percentilesValue, percentilesVariable]);
 
   return (
-    <Field label="Percentiles">
+    <Stack>
+      <Label className={styles.label}>Percentiles</Label>
       <MultiCombobox<string>
         width={'auto'}
         minWidth={20}
@@ -33,6 +37,16 @@ export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable
           }
         }}
       />
-    </Field>
+    </Stack>
   );
 };
+
+function getStyles(theme: GrafanaTheme2) {
+  return {
+    label: css({
+      marginBottom: theme.spacing(0),
+      display: 'flex',
+      alignItems: 'center',
+    }),
+  };
+}

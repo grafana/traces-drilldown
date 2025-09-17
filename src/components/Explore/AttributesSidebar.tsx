@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import React, { useMemo, useState } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { ButtonGroup, ToolbarButton, Input, Icon, IconButton, useStyles2, Badge, Stack } from '@grafana/ui';
+import { ButtonGroup, ToolbarButton, Input, Icon, IconButton, useStyles2, Badge } from '@grafana/ui';
 import { RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
 
 type ScopeType = 'All' | 'Resource' | 'Span';
@@ -102,6 +102,12 @@ export function AttributesSidebar({
         {/* Title */}
         <div className={styles.title}>{title}</div>
 
+        <div className={styles.selectedAttributeContainer}>
+          <div className={styles.selectedAttributeLabel}>
+            <strong>Selected:</strong> {selectedAttribute}
+          </div>
+        </div>
+
         {/* Search Input */}
         <div className={styles.searchContainer}>
           <Input
@@ -177,31 +183,42 @@ function getStyles(theme: GrafanaTheme2) {
     container: css({
       display: 'flex',
       flexDirection: 'column',
-      height: 'calc(100vh - 550px)',
       backgroundColor: theme.colors.background.primary,
       width: '280px',
       minWidth: '280px',
+      position: 'sticky',
     }),
     header: css({
       display: 'flex',
       flexDirection: 'column',
       width: '100%',
+      gap: theme.spacing(1),
       padding: theme.spacing(1),
     }),
     title: css({
       fontSize: theme.typography.h5.fontSize,
       fontWeight: theme.typography.h5.fontWeight,
-      marginBottom: theme.spacing(2),
       color: theme.colors.text.primary,
+      borderBottom: `1px solid ${theme.colors.border.medium}`,
     }),
-    searchContainer: css({
-      marginBottom: theme.spacing(2),
+    selectedAttributeContainer: css({
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: theme.spacing(0.5, 1),
     }),
+    selectedAttributeLabel: css({
+      fontSize: theme.typography.bodySmall.fontSize,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    }),
+    searchContainer: css({}),
     searchInput: css({
       width: '100%',
     }),
     scopeContainer: css({
-      marginBottom: theme.spacing(2),
       '& > div': {
         width: '100%',
       },

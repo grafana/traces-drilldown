@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import {
@@ -12,16 +12,7 @@ import {
 } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 
-import {
-  MetricFunction,
-  RESOURCE,
-  SPAN,
-  SPAN_ATTR,
-  VAR_FILTERS,
-  VAR_METRIC,
-  radioAttributesResource,
-  radioAttributesSpan,
-} from '../../../../../utils/shared';
+import { MetricFunction, VAR_FILTERS, VAR_METRIC, radioAttributesResource } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -112,8 +103,6 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
     const { value: groupByValue } = getGroupByVariable(model).useState();
     const groupBy = groupByValue as string;
-    const defaultScope = groupBy.includes(SPAN_ATTR) || radioAttributesSpan.includes(groupBy) ? SPAN : RESOURCE;
-    const [scope, setScope] = useState(defaultScope);
     const { body } = model.useState();
     const styles = useStyles2(getStyles);
 
@@ -136,8 +125,8 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
     const description = getDescription(metric as MetricFunction);
 
     useEffect(() => {
-      if (scope !== defaultScope) {
-        setScope(defaultScope);
+      if (!groupBy || groupBy === 'All' || groupBy === '') {
+        model.onChange(radioAttributesResource[0]);
       }
     }, [groupBy]);
 
@@ -193,11 +182,12 @@ function getStyles(theme: GrafanaTheme2) {
       flexGrow: 1,
       display: 'flex',
       paddingTop: theme.spacing(0),
+      height: 'calc(100vh - 550px)',
     }),
     controls: css({
       flexGrow: 0,
       display: 'flex',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       gap: theme.spacing(2),
     }),
     controlsRight: css({
