@@ -484,8 +484,8 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
             value={localTraceId ?? ''}
             suffix={
               <Stack direction="row" alignItems="center" gap={1}>
-                <Icon name="times" onClick={() => setLocalTraceId('')} />
-                <Icon name="enter" onClick={onTraceIdSubmit} />
+                <Icon name="times" onClick={() => setLocalTraceId('')} cursor="pointer" />
+                <Icon name="enter" onClick={onTraceIdSubmit} cursor="pointer" />
               </Stack>
             }
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
