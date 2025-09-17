@@ -8,7 +8,7 @@ export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable
   const options = [
     { label: 'p50', value: '0.5' },
     { label: 'p75', value: '0.75' },
-    { label: 'p90', value: '0.9' },
+    { label: 'p90', value: '0.9', description: 'Default' },
     { label: 'p95', value: '0.95' },
     { label: 'p99', value: '0.99' },
   ];
