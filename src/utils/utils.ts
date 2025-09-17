@@ -26,6 +26,7 @@ import {
   VAR_METRIC,
   VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
+  VAR_DURATION_PERCENTILES,
 } from './shared';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { Home } from 'pages/Home/Home';
@@ -123,6 +124,14 @@ export function getLabelValue(frame: DataFrame, labelName?: string) {
   }
 
   return labels[labelName || keys[0]].replace(/"/g, '');
+}
+
+export function getPercentilesVariable(scene: SceneObject): CustomVariable {
+  const variable = sceneGraph.lookupVariable(VAR_DURATION_PERCENTILES, scene);
+  if (!(variable instanceof CustomVariable)) {
+    throw new Error('Percentiles variable not found');
+  }
+  return variable;
 }
 
 export function getGroupByVariable(scene: SceneObject): CustomVariable {
