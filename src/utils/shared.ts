@@ -36,6 +36,8 @@ export const VAR_LATENCY_THRESHOLD = 'latencyThreshold';
 export const VAR_LATENCY_THRESHOLD_EXPR = '${latencyThreshold}';
 export const VAR_LATENCY_PARTIAL_THRESHOLD = 'partialLatencyThreshold';
 export const VAR_LATENCY_PARTIAL_THRESHOLD_EXPR = '${partialLatencyThreshold}';
+export const VAR_DURATION_PERCENTILES = 'durationPercentiles';
+export const VAR_DURATION_PERCENTILES_EXPR = '${durationPercentiles:csv}';
 export const explorationDS = { uid: VAR_DATASOURCE_EXPR };
 
 export const ACTION_VIEW = 'actionView';
