@@ -1,11 +1,24 @@
 import { css } from '@emotion/css';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { ButtonGroup, ToolbarButton, Input, Icon, IconButton, useStyles2, Badge } from '@grafana/ui';
-import { RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
+import {
+  RESOURCE_ATTR,
+  SPAN_ATTR,
+  ignoredAttributes,
+  radioAttributesResource,
+  radioAttributesSpan,
+} from 'utils/shared';
 
-type ScopeType = 'All' | 'Resource' | 'Span';
+type ScopeType = 'All' | 'Resource' | 'Span' | 'Favorites';
+
+const FAVORITES_ATTRIBUTES_STORAGE_KEY = 'grafana.traces.drilldown.favorites.attributes';
+
+// Default favorites attributes from radioAttributesResource and radioAttributesSpan
+const getDefaultFavoritesAttributes = (): string[] => {
+  return [...radioAttributesResource, ...radioAttributesSpan];
+};
 
 interface AttributesSidebarProps {
   /** Array of available attribute options */
@@ -32,7 +45,36 @@ export function AttributesSidebar({
 }: AttributesSidebarProps) {
   const styles = useStyles2(getStyles);
   const [searchValue, setSearchValue] = useState('');
-  const [selectedScope, setSelectedScope] = useState<ScopeType>('All');
+  const [selectedScope, setSelectedScope] = useState<ScopeType>('Favorites');
+  const [favoritesAttributes, setFavoritesAttributes] = useState<string[]>([]);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+
+  // Load favorites attributes from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(FAVORITES_ATTRIBUTES_STORAGE_KEY);
+    if (stored) {
+      try {
+        setFavoritesAttributes(JSON.parse(stored));
+      } catch {
+        // If parsing fails, use defaults
+        const defaults = getDefaultFavoritesAttributes();
+        const filteredDefaults = defaults.filter((attr) => options.some((option) => option.value === attr));
+        setFavoritesAttributes(filteredDefaults);
+      }
+    } else {
+      // Initialize with defaults
+      const defaults = getDefaultFavoritesAttributes();
+      setFavoritesAttributes(defaults);
+      localStorage.setItem(FAVORITES_ATTRIBUTES_STORAGE_KEY, JSON.stringify(defaults));
+    }
+  }, []);
+
+  // Save favorites attributes to localStorage whenever they change
+  useEffect(() => {
+    if (favoritesAttributes.length > 0) {
+      localStorage.setItem(FAVORITES_ATTRIBUTES_STORAGE_KEY, JSON.stringify(favoritesAttributes));
+    }
+  }, [favoritesAttributes]);
 
   // Transform options into AttributeItem format with scope information
   const attributeItems: AttributeItem[] = useMemo(() => {
@@ -60,8 +102,59 @@ export function AttributesSidebar({
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [options]);
 
+  // Toggle star status for an attribute
+  const toggleStar = useCallback((attributeValue: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent triggering attribute selection
+    setFavoritesAttributes((prev) => {
+      const isFavorites = prev.includes(attributeValue);
+      if (isFavorites) {
+        return prev.filter((attr) => attr !== attributeValue);
+      } else {
+        return [...prev, attributeValue];
+      }
+    });
+  }, []);
+
+  // Handle drag and drop for favorites attributes
+  const handleDragStart = useCallback((index: number) => {
+    setDraggedIndex(index);
+  }, []);
+
+  const handleDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+  }, []);
+
+  const handleDrop = useCallback(
+    (dropIndex: number) => {
+      if (draggedIndex === null) {
+        return;
+      }
+
+      setFavoritesAttributes((prev) => {
+        const newOrder = [...prev];
+        const draggedItem = newOrder[draggedIndex];
+        newOrder.splice(draggedIndex, 1);
+        newOrder.splice(dropIndex, 0, draggedItem);
+        return newOrder;
+      });
+
+      setDraggedIndex(null);
+    },
+    [draggedIndex]
+  );
+
   // Filter attributes based on search and scope
   const filteredAttributes = useMemo(() => {
+    if (selectedScope === 'Favorites') {
+      // For favorites scope, show favorites attributes in their custom order
+      const favoritesItems = favoritesAttributes
+        .map((attrValue) => attributeItems.find((item) => item.value === attrValue))
+        .filter(Boolean) as AttributeItem[];
+
+      // Apply search filter
+      return favoritesItems.filter((item) => item.label.toLowerCase().includes(searchValue.toLowerCase()));
+    }
+
     return attributeItems.filter((item) => {
       // Filter by search text
       const matchesSearch = item.label.toLowerCase().includes(searchValue.toLowerCase());
@@ -71,7 +164,7 @@ export function AttributesSidebar({
 
       return matchesSearch && matchesScope;
     });
-  }, [attributeItems, searchValue, selectedScope]);
+  }, [attributeItems, searchValue, selectedScope, favoritesAttributes]);
 
   const handleScopeChange = (scope: ScopeType) => {
     setSelectedScope(scope);
@@ -91,6 +184,10 @@ export function AttributesSidebar({
   };
 
   const scopeButtons = [
+    {
+      label: 'Favorites',
+      value: 'Favorites' as ScopeType,
+    },
     { label: 'All', value: 'All' as ScopeType },
     { label: 'Resource', value: 'Resource' as ScopeType },
     { label: 'Span', value: 'Span' as ScopeType },
@@ -137,6 +234,7 @@ export function AttributesSidebar({
               <ToolbarButton
                 key={button.value}
                 variant={selectedScope === button.value ? 'active' : 'default'}
+                className={styles.scopeButton}
                 onClick={() => handleScopeChange(button.value)}
               >
                 {button.label}
@@ -153,25 +251,45 @@ export function AttributesSidebar({
             {searchValue || selectedScope !== 'All' ? 'No attributes match your criteria' : 'No attributes available'}
           </div>
         ) : (
-          filteredAttributes.map((attribute) => (
-            <li
-              key={attribute.value}
-              title={attribute.label}
-              className={`${styles.attributeItem} ${
-                selectedAttribute === attribute.value ? styles.attributeItemSelected : ''
-              }`}
-              onClick={() => handleAttributeSelect(attribute.value)}
-            >
-              {selectedScope === 'All' && (
-                <Badge
-                  color={'darkgrey'}
-                  text={attribute.scope.toLowerCase() + '.'}
-                  className={styles.attributeScope}
+          filteredAttributes.map((attribute, index) => {
+            const isFavorites = favoritesAttributes.includes(attribute.value);
+            const isFavoritesScope = selectedScope === 'Favorites';
+
+            return (
+              <li
+                key={attribute.value}
+                title={attribute.label}
+                className={`${styles.attributeItem} ${
+                  selectedAttribute === attribute.value ? styles.attributeItemSelected : ''
+                } ${isFavoritesScope ? styles.draggableItem : ''}`}
+                onClick={() => handleAttributeSelect(attribute.value)}
+                draggable={isFavoritesScope}
+                onDragStart={() => handleDragStart(index)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(index)}
+              >
+                {isFavoritesScope && (
+                  <Icon name="draggabledots" className={styles.dragHandle} title="Drag to reorder" />
+                )}
+                {(selectedScope === 'All' || selectedScope === 'Favorites') && (
+                  <Badge
+                    color={'darkgrey'}
+                    text={attribute.scope.toLowerCase() + '.'}
+                    className={styles.attributeScope}
+                  />
+                )}
+                <div className={styles.attributeLabel}>{attribute.label}</div>
+                <IconButton
+                  name={isFavorites ? 'favorite' : 'star'}
+                  variant="secondary"
+                  size="sm"
+                  className={`${styles.starButton} ${isFavorites ? styles.starButtonActive : ''}`}
+                  tooltip={isFavorites ? 'Remove from favorites' : 'Add to favorites'}
+                  onClick={(event) => toggleStar(attribute.value, event)}
                 />
-              )}
-              <div className={styles.attributeLabel}>{attribute.label}</div>
-            </li>
-          ))
+              </li>
+            );
+          })
         )}
       </ul>
     </div>
@@ -184,9 +302,8 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       flexDirection: 'column',
       backgroundColor: theme.colors.background.primary,
-      width: '280px',
-      minWidth: '280px',
-      position: 'sticky',
+      width: '300px',
+      minWidth: '300px',
     }),
     header: css({
       display: 'flex',
@@ -222,8 +339,15 @@ function getStyles(theme: GrafanaTheme2) {
       '& > div': {
         width: '100%',
       },
-      '& button': {
-        flex: 1,
+    }),
+    scopeButton: css({
+      fontSize: theme.typography.bodySmall.fontSize,
+      flex: 1,
+      justifyContent: 'center',
+
+      '& div': {
+        width: '100%',
+        justifyContent: 'center',
       },
     }),
     attributesList: css({
@@ -267,6 +391,28 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     attributeScope: css({
       fontSize: theme.typography.bodySmall.fontSize,
+    }),
+    draggableItem: css({
+      cursor: 'grab',
+      '&:active': {
+        cursor: 'grabbing',
+      },
+    }),
+    dragHandle: css({
+      color: theme.colors.text.secondary,
+      cursor: 'grab',
+      '&:hover': {
+        color: theme.colors.text.primary,
+      },
+    }),
+    starButton: css({
+      marginLeft: 'auto',
+      '&:hover': {
+        color: theme.colors.text.primary,
+      },
+    }),
+    starButtonActive: css({
+      color: theme.colors.text.primary,
     }),
     emptyState: css({
       display: 'flex',
