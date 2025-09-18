@@ -143,9 +143,10 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
           <Stack direction="row" gap={2} width="100%">
             <AttributesSidebar
               options={getAttributesAsOptions(attributes ?? [])}
-              selectedAttribute={groupBy}
+              selected={groupBy}
               onAttributeChange={(attribute) => model.onChange(attribute ?? '')}
               model={model}
+              showFavorites={true}
             />
             {body && <body.Component model={body} />}
           </Stack>

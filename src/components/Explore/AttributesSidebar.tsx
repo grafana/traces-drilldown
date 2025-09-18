@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { ButtonGroup, ToolbarButton, Input, Icon, IconButton, useStyles2, Badge } from '@grafana/ui';
+import { ButtonGroup, ToolbarButton, Input, Icon, IconButton, useStyles2, Badge, Checkbox } from '@grafana/ui';
 import { RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
 import { getFiltersVariable } from 'utils/utils';
 import { SceneObject } from '@grafana/scenes';
@@ -10,17 +10,33 @@ import { useFavoriteAttributes } from 'hooks';
 
 type ScopeType = 'All' | 'Resource' | 'Span' | 'Favorites';
 
-interface AttributesSidebarProps {
+interface BaseAttributesSidebarProps {
   /** Array of available attribute options */
   options: Array<SelectableValue<string>>;
-  /** Currently selected attribute value */
-  selectedAttribute?: string;
-  /** Callback when attribute selection changes */
-  onAttributeChange: (attribute: string | undefined) => void;
   /** Optional title for the sidebar */
   title?: string;
   /** Scene object to access variables */
   model: SceneObject;
+
+  showFavorites?: boolean;
+}
+
+interface SingleAttributesSidebarProps extends BaseAttributesSidebarProps {
+  /** Currently selected attribute value(s) - string for single mode, string[] for multi mode */
+  selected?: string;
+  /** Callback when attribute selection changes - receives string | undefined for single mode, string[] for multi mode */
+  onAttributeChange: (attribute: string | undefined) => void;
+
+  isMulti?: false;
+}
+
+interface MultiAttributesSidebarProps extends BaseAttributesSidebarProps {
+  /** Currently selected attribute value(s) - string for single mode, string[] for multi mode */
+  selected?: string[];
+  /** Callback when attribute selection changes - receives string | undefined for single mode, string[] for multi mode */
+  onAttributeChange: (attribute: string[] | undefined) => void;
+
+  isMulti: true;
 }
 
 interface AttributeItem {
@@ -31,14 +47,16 @@ interface AttributeItem {
 
 export function AttributesSidebar({
   options,
-  selectedAttribute,
+  selected,
   onAttributeChange,
   title = 'Attributes',
   model,
-}: AttributesSidebarProps) {
+  showFavorites,
+  isMulti,
+}: SingleAttributesSidebarProps | MultiAttributesSidebarProps) {
   const styles = useStyles2(getStyles);
   const [searchValue, setSearchValue] = useState('');
-  const [selectedScope, setSelectedScope] = useState<ScopeType>('Favorites');
+  const [selectedScope, setSelectedScope] = useState<ScopeType>(showFavorites ? 'Favorites' : 'All');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -49,18 +67,18 @@ export function AttributesSidebar({
 
   const currentFilters = filters.map((filter) => filter.key);
 
-  // Select the next favorite attribute if the selected attribute is in the filters
-  useEffect(() => {
-    if (selectedAttribute && currentFilters.includes(selectedAttribute)) {
-      const currentIndex = filteredAttributes.findIndex((item) => item.value === selectedAttribute);
-      const nextIndex = currentIndex + 1;
-
-      if (nextIndex < filteredAttributes.length) {
-        onAttributeChange(filteredAttributes[nextIndex].value);
-        return;
-      }
+  // Helper functions for handling selection modes
+  const getSelectedAttributes = (): string[] => {
+    if (isMulti) {
+      return Array.isArray(selected) ? selected : [];
     }
-  }, [selectedAttribute, currentFilters]);
+    return selected && typeof selected === 'string' ? [selected] : [];
+  };
+
+  const isAttributeSelected = (attribute: string): boolean => {
+    const selected = getSelectedAttributes();
+    return selected.includes(attribute);
+  };
 
   // Transform options into AttributeItem format with scope information
   const attributeItems: AttributeItem[] = useMemo(() => {
@@ -87,6 +105,42 @@ export function AttributesSidebar({
       })
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [options]);
+
+  // Filter attributes based on search and scope
+  const filteredAttributes = useMemo(() => {
+    if (selectedScope === 'Favorites') {
+      // For favorites scope, show favorites attributes in their custom order
+      const favoritesItems = favoriteAttributes
+        .map((attrValue) => attributeItems.find((item) => item.value === attrValue))
+        .filter(Boolean) as AttributeItem[];
+
+      // Apply search filter
+      return favoritesItems.filter((item) => item.label.toLowerCase().includes(searchValue.toLowerCase()));
+    }
+
+    return attributeItems.filter((item) => {
+      // Filter by search text
+      const matchesSearch = item.label.toLowerCase().includes(searchValue.toLowerCase());
+
+      // Filter by scope
+      const matchesScope = selectedScope === 'All' || item.scope === selectedScope;
+
+      return matchesSearch && matchesScope;
+    });
+  }, [attributeItems, searchValue, selectedScope, favoriteAttributes]);
+
+  // Select the next favorite attribute if the selected attribute is in the filters (single mode only)
+  useEffect(() => {
+    if (!isMulti && selected && typeof selected === 'string' && currentFilters.includes(selected)) {
+      const currentIndex = filteredAttributes.findIndex((item) => item.value === selected);
+      const nextIndex = currentIndex + 1;
+
+      if (nextIndex < filteredAttributes.length) {
+        onAttributeChange(filteredAttributes[nextIndex].value);
+        return;
+      }
+    }
+  }, [selected, currentFilters, isMulti, filteredAttributes, onAttributeChange]);
 
   // Toggle star status for an attribute
   const toggleStar = useCallback(
@@ -149,29 +203,6 @@ export function AttributesSidebar({
     }
   }, []);
 
-  // Filter attributes based on search and scope
-  const filteredAttributes = useMemo(() => {
-    if (selectedScope === 'Favorites') {
-      // For favorites scope, show favorites attributes in their custom order
-      const favoritesItems = favoriteAttributes
-        .map((attrValue) => attributeItems.find((item) => item.value === attrValue))
-        .filter(Boolean) as AttributeItem[];
-
-      // Apply search filter
-      return favoritesItems.filter((item) => item.label.toLowerCase().includes(searchValue.toLowerCase()));
-    }
-
-    return attributeItems.filter((item) => {
-      // Filter by search text
-      const matchesSearch = item.label.toLowerCase().includes(searchValue.toLowerCase());
-
-      // Filter by scope
-      const matchesScope = selectedScope === 'All' || item.scope === selectedScope;
-
-      return matchesSearch && matchesScope;
-    });
-  }, [attributeItems, searchValue, selectedScope, favoriteAttributes]);
-
   const handleDrop = useCallback(
     (dropIndex: number) => {
       if (draggedIndex === null) {
@@ -201,9 +232,19 @@ export function AttributesSidebar({
   };
 
   const handleAttributeSelect = (attribute: string) => {
-    // Toggle selection - if already selected, deselect it
-    const newSelection = selectedAttribute === attribute ? undefined : attribute;
-    onAttributeChange(newSelection);
+    if (isMulti === true) {
+      // Multiple selection mode
+      const currentSelected = getSelectedAttributes();
+      const isSelected = currentSelected.includes(attribute);
+      const newSelection = isSelected
+        ? currentSelected.filter((attr) => attr !== attribute) // Remove if selected
+        : [...currentSelected, attribute]; // Add if not selected
+      onAttributeChange(newSelection);
+    } else {
+      // Single selection mode
+      const newSelection = selected === attribute ? undefined : attribute;
+      onAttributeChange(newSelection);
+    }
   };
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -214,14 +255,14 @@ export function AttributesSidebar({
   };
 
   const scopeButtons = [
-    {
-      label: 'Favorites',
-      value: 'Favorites' as ScopeType,
-    },
     { label: 'All', value: 'All' as ScopeType },
     { label: 'Resource', value: 'Resource' as ScopeType },
     { label: 'Span', value: 'Span' as ScopeType },
   ];
+
+  if (showFavorites) {
+    scopeButtons.unshift({ label: 'Favorites', value: 'Favorites' as ScopeType });
+  }
 
   return (
     <div className={styles.container}>
@@ -231,7 +272,16 @@ export function AttributesSidebar({
 
         <div className={styles.selectedAttributeContainer}>
           <div className={styles.selectedAttributeLabel}>
-            <strong>Selected:</strong> {selectedAttribute}
+            {isMulti ? (
+              <>
+                <strong>Selected ({getSelectedAttributes().length}):</strong>{' '}
+                {getSelectedAttributes().length > 0 ? getSelectedAttributes().join(', ') : 'None'}
+              </>
+            ) : (
+              <>
+                <strong>Selected:</strong> {selected}
+              </>
+            )}
           </div>
         </div>
 
@@ -286,6 +336,7 @@ export function AttributesSidebar({
             const isFavoritesScope = selectedScope === 'Favorites';
             const isDragging = draggedIndex === index;
             const isFiltered = currentFilters.includes(attribute.value);
+            const isSelected = isAttributeSelected(attribute.value);
             const showGhostAbove = dragOverIndex === index && draggedIndex !== null && draggedIndex > index;
             const showGhostBelow = dragOverIndex === index && draggedIndex !== null && draggedIndex < index;
 
@@ -301,9 +352,9 @@ export function AttributesSidebar({
                 <li
                   title={attribute.label}
                   className={`${styles.attributeItem} ${
-                    selectedAttribute === attribute.value ? styles.attributeItemSelected : ''
+                    !isMulti && isSelected ? styles.attributeItemSelected : ''
                   } ${isFavoritesScope ? styles.draggableItem : ''} ${isDragging ? styles.dragging : ''}`}
-                  onClick={() => handleAttributeSelect(attribute.value)}
+                  onClick={!isMulti ? () => handleAttributeSelect(attribute.value) : undefined}
                   draggable={isFavoritesScope}
                   onDragStart={() => handleDragStart(index)}
                   onDragEnd={handleDragEnd}
@@ -312,27 +363,35 @@ export function AttributesSidebar({
                   onDragLeave={handleItemDragLeave}
                   onDrop={() => handleDrop(index)}
                 >
-                  {isFavoritesScope && (
-                    <Icon name="draggabledots" className={styles.dragHandle} title="Drag to reorder" />
-                  )}
-                  {(selectedScope === 'All' || selectedScope === 'Favorites') && (
-                    <Badge
-                      color={'darkgrey'}
-                      text={attribute.scope.toLowerCase() + '.'}
-                      className={styles.attributeScope}
+                  {isMulti && (
+                    <Checkbox
+                      value={isSelected}
+                      onChange={() => handleAttributeSelect(attribute.value)}
+                      className={styles.checkbox}
                     />
                   )}
-                  <div className={`${styles.attributeLabel} ${isFiltered ? styles.attributeLabelFiltered : ''}`}>
-                    {attribute.label}
+                  <div className={styles.attributeContent}>
+                    {(selectedScope === 'All' || selectedScope === 'Favorites') && (
+                      <Badge
+                        color={'darkgrey'}
+                        text={attribute.scope.toLowerCase() + '.'}
+                        className={styles.attributeScope}
+                      />
+                    )}
+                    <div className={`${styles.attributeLabel} ${isFiltered ? styles.attributeLabelFiltered : ''}`}>
+                      {attribute.label}
+                    </div>
                   </div>
-                  <IconButton
-                    name={isFavorites ? 'favorite' : 'star'}
-                    variant="secondary"
-                    size="sm"
-                    className={`${styles.starButton} ${isFavorites ? styles.starButtonActive : ''}`}
-                    tooltip={isFavorites ? 'Remove from favorites' : 'Add to favorites'}
-                    onClick={(event) => toggleStar(attribute.value, event)}
-                  />
+                  {showFavorites && (
+                    <IconButton
+                      name={isFavorites ? 'favorite' : 'star'}
+                      variant="secondary"
+                      size="sm"
+                      className={`${styles.starButton} ${isFavorites ? styles.starButtonActive : ''}`}
+                      tooltip={isFavorites ? 'Remove from favorites' : 'Add to favorites'}
+                      onClick={(event) => toggleStar(attribute.value, event)}
+                    />
+                  )}
                 </li>
 
                 {/* Ghost element below */}
@@ -434,6 +493,17 @@ function getStyles(theme: GrafanaTheme2) {
         backgroundColor: theme.colors.primary.transparent,
         border: `1px solid ${theme.colors.primary.border}`,
       },
+    }),
+    checkbox: css({
+      flexShrink: 0,
+      marginRight: theme.spacing(1),
+    }),
+    attributeContent: css({
+      display: 'flex',
+      alignItems: 'center',
+      gap: theme.spacing(1),
+      flex: 1,
+      minWidth: 0, // Allow content to shrink
     }),
     attributeLabel: css({
       fontSize: theme.typography.bodySmall.fontSize,

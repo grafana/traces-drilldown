@@ -14,7 +14,7 @@ import {
   VariableDependencyConfig,
   VariableValue,
 } from '@grafana/scenes';
-import { getTheme, useStyles2 } from '@grafana/ui';
+import { getTheme, Stack, useStyles2 } from '@grafana/ui';
 
 import { GroupBySelector } from '../../../GroupBySelector';
 import {
@@ -46,6 +46,7 @@ import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '..
 import { computeHighestDifference } from '../../../../../utils/comparison';
 import { AttributesDescription } from '../Breakdown/AttributesDescription';
 import { isEqual } from 'lodash';
+import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 
 export interface AttributesComparisonSceneState extends SceneObjectState {
   body?: SceneObject;
@@ -237,7 +238,18 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
             </div>
           )}
         </div>
-        <div className={styles.content}>{body && <body.Component model={body} />}</div>
+        <div className={styles.content}>
+          <Stack direction="row" gap={2} width="100%">
+            <AttributesSidebar
+              options={getAttributesAsOptions(attributes ?? [])}
+              selected={variable.getValueText()}
+              onAttributeChange={(attribute) => model.onChange(attribute ?? '')}
+              model={model}
+              showFavorites={true}
+            />
+            {body && <body.Component model={body} />}
+          </Stack>
+        </div>
       </div>
     );
   };
