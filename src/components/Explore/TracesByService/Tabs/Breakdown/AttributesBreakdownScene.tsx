@@ -2,17 +2,10 @@ import { css } from '@emotion/css';
 import React, { useEffect } from 'react';
 
 import { DataFrame, GrafanaTheme2 } from '@grafana/data';
-import {
-  CustomVariable,
-  SceneComponentProps,
-  SceneObject,
-  SceneObjectBase,
-  SceneObjectState,
-  VariableDependencyConfig,
-} from '@grafana/scenes';
+import { CustomVariable, SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 
-import { MetricFunction, VAR_FILTERS, VAR_METRIC, radioAttributesResource } from '../../../../../utils/shared';
+import { MetricFunction, radioAttributesResource } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -34,11 +27,6 @@ export interface AttributesBreakdownSceneState extends SceneObjectState {
 }
 
 export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdownSceneState> {
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: [VAR_FILTERS, VAR_METRIC],
-    onReferencedVariableValueChanged: this.onReferencedVariableValueChanged.bind(this),
-  });
-
   constructor(state: Partial<AttributesBreakdownSceneState>) {
     super({
       ...state,
@@ -58,12 +46,6 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
       this.setBody(variable);
     });
 
-    this.setBody(variable);
-  }
-
-  private onReferencedVariableValueChanged() {
-    const variable = getGroupByVariable(this);
-    variable.changeValueTo(radioAttributesResource[0]);
     this.setBody(variable);
   }
 
@@ -161,6 +143,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
               options={getAttributesAsOptions(attributes ?? [])}
               selectedAttribute={groupBy}
               onAttributeChange={(attribute) => model.onChange(attribute ?? '')}
+              model={model}
             />
             {body && <body.Component model={body} />}
           </Stack>

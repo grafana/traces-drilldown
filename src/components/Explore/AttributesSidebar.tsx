@@ -10,6 +10,8 @@ import {
   radioAttributesResource,
   radioAttributesSpan,
 } from 'utils/shared';
+import { getFiltersVariable } from 'utils/utils';
+import { SceneObject } from '@grafana/scenes';
 
 type ScopeType = 'All' | 'Resource' | 'Span' | 'Favorites';
 
@@ -29,6 +31,8 @@ interface AttributesSidebarProps {
   onAttributeChange: (attribute: string | undefined) => void;
   /** Optional title for the sidebar */
   title?: string;
+  /** Scene object to access variables */
+  model: SceneObject;
 }
 
 interface AttributeItem {
@@ -42,6 +46,7 @@ export function AttributesSidebar({
   selectedAttribute,
   onAttributeChange,
   title = 'Attributes',
+  model,
 }: AttributesSidebarProps) {
   const styles = useStyles2(getStyles);
   const [searchValue, setSearchValue] = useState('');
@@ -49,6 +54,11 @@ export function AttributesSidebar({
   const [favoritesAttributes, setFavoritesAttributes] = useState<string[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const filtersVariable = getFiltersVariable(model);
+  const { filters } = filtersVariable.useState();
+
+  const currentFilters = filters.map((filter) => filter.key);
 
   // Load favorites attributes from localStorage on mount
   useEffect(() => {
@@ -76,6 +86,19 @@ export function AttributesSidebar({
       localStorage.setItem(FAVORITES_ATTRIBUTES_STORAGE_KEY, JSON.stringify(favoritesAttributes));
     }
   }, [favoritesAttributes]);
+
+  // Select the next favorite attribute if the selected attribute is in the filters
+  useEffect(() => {
+    if (selectedAttribute && currentFilters.includes(selectedAttribute)) {
+      const currentIndex = filteredAttributes.findIndex((item) => item.value === selectedAttribute);
+      const nextIndex = currentIndex + 1;
+
+      if (nextIndex < filteredAttributes.length) {
+        onAttributeChange(filteredAttributes[nextIndex].value);
+        return;
+      }
+    }
+  }, [selectedAttribute, currentFilters]);
 
   // Transform options into AttributeItem format with scope information
   const attributeItems: AttributeItem[] = useMemo(() => {
@@ -306,6 +329,7 @@ export function AttributesSidebar({
             const isFavorites = favoritesAttributes.includes(attribute.value);
             const isFavoritesScope = selectedScope === 'Favorites';
             const isDragging = draggedIndex === index;
+            const isFiltered = currentFilters.includes(attribute.value);
             const showGhostAbove = dragOverIndex === index && draggedIndex !== null && draggedIndex > index;
             const showGhostBelow = dragOverIndex === index && draggedIndex !== null && draggedIndex < index;
 
@@ -342,7 +366,9 @@ export function AttributesSidebar({
                       className={styles.attributeScope}
                     />
                   )}
-                  <div className={styles.attributeLabel}>{attribute.label}</div>
+                  <div className={`${styles.attributeLabel} ${isFiltered ? styles.attributeLabelFiltered : ''}`}>
+                    {attribute.label}
+                  </div>
                   <IconButton
                     name={isFavorites ? 'favorite' : 'star'}
                     variant="secondary"
@@ -460,6 +486,10 @@ function getStyles(theme: GrafanaTheme2) {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
+    }),
+    attributeLabelFiltered: css({
+      fontWeight: theme.typography.fontWeightRegular,
+      textDecoration: 'underline',
     }),
     attributeScope: css({
       fontSize: theme.typography.bodySmall.fontSize,
