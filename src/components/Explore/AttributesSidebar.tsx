@@ -436,7 +436,7 @@ function getStyles(theme: GrafanaTheme2) {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: theme.spacing(0.5, 1),
+      padding: theme.spacing(0.5, 0),
     }),
     selectedAttributeLabel: css({
       fontSize: theme.typography.bodySmall.fontSize,

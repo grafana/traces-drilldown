@@ -307,6 +307,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       flexGrow: 1,
       display: 'flex',
       paddingTop: theme.spacing(0),
+      height: 'calc(100vh - 550px)',
     }),
   };
 };
