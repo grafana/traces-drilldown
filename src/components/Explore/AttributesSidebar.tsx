@@ -3,24 +3,12 @@ import React, { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { ButtonGroup, ToolbarButton, Input, Icon, IconButton, useStyles2, Badge } from '@grafana/ui';
-import {
-  RESOURCE_ATTR,
-  SPAN_ATTR,
-  ignoredAttributes,
-  radioAttributesResource,
-  radioAttributesSpan,
-} from 'utils/shared';
+import { RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
 import { getFiltersVariable } from 'utils/utils';
 import { SceneObject } from '@grafana/scenes';
+import { useFavoriteAttributes } from 'hooks';
 
 type ScopeType = 'All' | 'Resource' | 'Span' | 'Favorites';
-
-const FAVORITES_ATTRIBUTES_STORAGE_KEY = 'grafana.traces.drilldown.favorites.attributes';
-
-// Default favorites attributes from radioAttributesResource and radioAttributesSpan
-const getDefaultFavoritesAttributes = (): string[] => {
-  return [...radioAttributesResource, ...radioAttributesSpan];
-};
 
 interface AttributesSidebarProps {
   /** Array of available attribute options */
@@ -51,41 +39,15 @@ export function AttributesSidebar({
   const styles = useStyles2(getStyles);
   const [searchValue, setSearchValue] = useState('');
   const [selectedScope, setSelectedScope] = useState<ScopeType>('Favorites');
-  const [favoritesAttributes, setFavoritesAttributes] = useState<string[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const { favoriteAttributes, toggleFavorite, reorderFavorites } = useFavoriteAttributes({ scene: model });
 
   const filtersVariable = getFiltersVariable(model);
   const { filters } = filtersVariable.useState();
 
   const currentFilters = filters.map((filter) => filter.key);
-
-  // Load favorites attributes from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(FAVORITES_ATTRIBUTES_STORAGE_KEY);
-    if (stored) {
-      try {
-        setFavoritesAttributes(JSON.parse(stored));
-      } catch {
-        // If parsing fails, use defaults
-        const defaults = getDefaultFavoritesAttributes();
-        const filteredDefaults = defaults.filter((attr) => options.some((option) => option.value === attr));
-        setFavoritesAttributes(filteredDefaults);
-      }
-    } else {
-      // Initialize with defaults
-      const defaults = getDefaultFavoritesAttributes();
-      setFavoritesAttributes(defaults);
-      localStorage.setItem(FAVORITES_ATTRIBUTES_STORAGE_KEY, JSON.stringify(defaults));
-    }
-  }, []);
-
-  // Save favorites attributes to localStorage whenever they change
-  useEffect(() => {
-    if (favoritesAttributes.length > 0) {
-      localStorage.setItem(FAVORITES_ATTRIBUTES_STORAGE_KEY, JSON.stringify(favoritesAttributes));
-    }
-  }, [favoritesAttributes]);
 
   // Select the next favorite attribute if the selected attribute is in the filters
   useEffect(() => {
@@ -127,17 +89,13 @@ export function AttributesSidebar({
   }, [options]);
 
   // Toggle star status for an attribute
-  const toggleStar = useCallback((attributeValue: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent triggering attribute selection
-    setFavoritesAttributes((prev) => {
-      const isFavorites = prev.includes(attributeValue);
-      if (isFavorites) {
-        return prev.filter((attr) => attr !== attributeValue);
-      } else {
-        return [...prev, attributeValue];
-      }
-    });
-  }, []);
+  const toggleStar = useCallback(
+    (attributeValue: string, event: React.MouseEvent) => {
+      event.stopPropagation(); // Prevent triggering attribute selection
+      toggleFavorite(attributeValue);
+    },
+    [toggleFavorite]
+  );
 
   // Handle drag and drop for favorites attributes
   const handleDragStart = useCallback((index: number) => {
@@ -191,37 +149,11 @@ export function AttributesSidebar({
     }
   }, []);
 
-  const handleDrop = useCallback(
-    (dropIndex: number) => {
-      if (draggedIndex === null) {
-        return;
-      }
-
-      setFavoritesAttributes((prev) => {
-        // Since the list of favorites may not match the rendered list,
-        // we need to map the dragged/drop indexes (from the rendered list) to the favorites list
-        const filteredAttributesAtDropIndex = filteredAttributes[dropIndex];
-        const filteredAttributesAtDraggedIndex = filteredAttributes[draggedIndex];
-        const favoritesIndexOfDroppedItem = prev.findIndex((item) => item === filteredAttributesAtDropIndex.value);
-        const favoritesIndexOfDraggedItem = prev.findIndex((item) => item === filteredAttributesAtDraggedIndex.value);
-
-        const newOrder = [...prev];
-        newOrder.splice(favoritesIndexOfDraggedItem, 1);
-        newOrder.splice(favoritesIndexOfDroppedItem, 0, filteredAttributesAtDraggedIndex.value);
-        return newOrder;
-      });
-
-      setDraggedIndex(null);
-      setDragOverIndex(null);
-    },
-    [draggedIndex]
-  );
-
   // Filter attributes based on search and scope
   const filteredAttributes = useMemo(() => {
     if (selectedScope === 'Favorites') {
       // For favorites scope, show favorites attributes in their custom order
-      const favoritesItems = favoritesAttributes
+      const favoritesItems = favoriteAttributes
         .map((attrValue) => attributeItems.find((item) => item.value === attrValue))
         .filter(Boolean) as AttributeItem[];
 
@@ -238,7 +170,31 @@ export function AttributesSidebar({
 
       return matchesSearch && matchesScope;
     });
-  }, [attributeItems, searchValue, selectedScope, favoritesAttributes]);
+  }, [attributeItems, searchValue, selectedScope, favoriteAttributes]);
+
+  const handleDrop = useCallback(
+    (dropIndex: number) => {
+      if (draggedIndex === null) {
+        return;
+      }
+      // Since the list of favorites may not match the rendered list,
+      // we need to map the dragged/drop indexes (from the rendered list) to the favorites list
+      const filteredAttributesAtDropIndex = filteredAttributes[dropIndex];
+      const filteredAttributesAtDraggedIndex = filteredAttributes[draggedIndex];
+      const favoritesIndexOfDroppedItem = favoriteAttributes.findIndex(
+        (item) => item === filteredAttributesAtDropIndex.value
+      );
+      const favoritesIndexOfDraggedItem = favoriteAttributes.findIndex(
+        (item) => item === filteredAttributesAtDraggedIndex.value
+      );
+
+      reorderFavorites(favoritesIndexOfDraggedItem, favoritesIndexOfDroppedItem);
+
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+    },
+    [draggedIndex, reorderFavorites, filteredAttributes]
+  );
 
   const handleScopeChange = (scope: ScopeType) => {
     setSelectedScope(scope);
@@ -326,7 +282,7 @@ export function AttributesSidebar({
           </div>
         ) : (
           filteredAttributes.map((attribute, index) => {
-            const isFavorites = favoritesAttributes.includes(attribute.value);
+            const isFavorites = favoriteAttributes.includes(attribute.value);
             const isFavoritesScope = selectedScope === 'Favorites';
             const isDragging = draggedIndex === index;
             const isFiltered = currentFilters.includes(attribute.value);

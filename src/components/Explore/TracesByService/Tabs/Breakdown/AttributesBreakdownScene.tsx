@@ -5,7 +5,7 @@ import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { CustomVariable, SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 
-import { MetricFunction, radioAttributesResource } from '../../../../../utils/shared';
+import { MetricFunction } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -21,6 +21,7 @@ import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '..
 import { AttributesDescription } from './AttributesDescription';
 import { PercentilesSelect } from './PercentilesSelect';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
+import { useFavoriteAttributes } from 'hooks/useFavoriteAttributes';
 
 export interface AttributesBreakdownSceneState extends SceneObjectState {
   body?: SceneObject;
@@ -89,6 +90,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
     const styles = useStyles2(getStyles);
 
     const { attributes } = getTraceByServiceScene(model).useState();
+    const { favoriteAttributes } = useFavoriteAttributes({ scene: model });
 
     const exploration = getTraceExplorationScene(model);
     const { value: metric } = exploration.getMetricVariable().useState();
@@ -108,7 +110,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
     useEffect(() => {
       if (!groupBy || groupBy === 'All' || groupBy === '') {
-        model.onChange(radioAttributesResource[0]);
+        model.onChange(favoriteAttributes[0]);
       }
     }, [groupBy]);
 
