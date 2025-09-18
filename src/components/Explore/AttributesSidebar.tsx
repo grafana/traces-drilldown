@@ -48,6 +48,7 @@ export function AttributesSidebar({
   const [selectedScope, setSelectedScope] = useState<ScopeType>('Favorites');
   const [favoritesAttributes, setFavoritesAttributes] = useState<string[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   // Load favorites attributes from localStorage on mount
   useEffect(() => {
@@ -120,8 +121,51 @@ export function AttributesSidebar({
     setDraggedIndex(index);
   }, []);
 
-  const handleDragOver = useCallback((event: React.DragEvent) => {
+  const handleDragEnd = useCallback(() => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  }, []);
+
+  const handleDragOver = useCallback(
+    (event: React.DragEvent, index: number) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (draggedIndex !== null && draggedIndex !== index && dragOverIndex !== index) {
+        setDragOverIndex(index);
+      }
+    },
+    [draggedIndex, dragOverIndex]
+  );
+
+  const handleDragEnter = useCallback(
+    (event: React.DragEvent, index: number) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (draggedIndex !== null && draggedIndex !== index) {
+        setDragOverIndex(index);
+      }
+    },
+    [draggedIndex]
+  );
+
+  const handleItemDragLeave = useCallback((event: React.DragEvent) => {
+    event.stopPropagation();
+    // Don't clear dragOverIndex here - let the container handle it
+  }, []);
+
+  const handleListDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
+  }, []);
+
+  const handleListDragLeave = useCallback((event: React.DragEvent) => {
+    // Only clear if we're leaving the entire list container
+    const target = event.currentTarget as HTMLElement;
+    const related = event.relatedTarget as HTMLElement;
+
+    // If the related target is not a child of the list, we're leaving
+    if (!target.contains(related)) {
+      setDragOverIndex(null);
+    }
   }, []);
 
   const handleDrop = useCallback(
@@ -131,14 +175,21 @@ export function AttributesSidebar({
       }
 
       setFavoritesAttributes((prev) => {
+        // Since the list of favorites may not match the rendered list,
+        // we need to map the dragged/drop indexes (from the rendered list) to the favorites list
+        const filteredAttributesAtDropIndex = filteredAttributes[dropIndex];
+        const filteredAttributesAtDraggedIndex = filteredAttributes[draggedIndex];
+        const favoritesIndexOfDroppedItem = prev.findIndex((item) => item === filteredAttributesAtDropIndex.value);
+        const favoritesIndexOfDraggedItem = prev.findIndex((item) => item === filteredAttributesAtDraggedIndex.value);
+
         const newOrder = [...prev];
-        const draggedItem = newOrder[draggedIndex];
-        newOrder.splice(draggedIndex, 1);
-        newOrder.splice(dropIndex, 0, draggedItem);
+        newOrder.splice(favoritesIndexOfDraggedItem, 1);
+        newOrder.splice(favoritesIndexOfDroppedItem, 0, filteredAttributesAtDraggedIndex.value);
         return newOrder;
       });
 
       setDraggedIndex(null);
+      setDragOverIndex(null);
     },
     [draggedIndex]
   );
@@ -245,7 +296,7 @@ export function AttributesSidebar({
       </div>
 
       {/* Attributes List */}
-      <ul className={styles.attributesList}>
+      <ul className={styles.attributesList} onDragOver={handleListDragOver} onDragLeave={handleListDragLeave}>
         {filteredAttributes.length === 0 ? (
           <div className={styles.emptyState}>
             {searchValue || selectedScope !== 'All' ? 'No attributes match your criteria' : 'No attributes available'}
@@ -254,40 +305,61 @@ export function AttributesSidebar({
           filteredAttributes.map((attribute, index) => {
             const isFavorites = favoritesAttributes.includes(attribute.value);
             const isFavoritesScope = selectedScope === 'Favorites';
+            const isDragging = draggedIndex === index;
+            const showGhostAbove = dragOverIndex === index && draggedIndex !== null && draggedIndex > index;
+            const showGhostBelow = dragOverIndex === index && draggedIndex !== null && draggedIndex < index;
 
             return (
-              <li
-                key={attribute.value}
-                title={attribute.label}
-                className={`${styles.attributeItem} ${
-                  selectedAttribute === attribute.value ? styles.attributeItemSelected : ''
-                } ${isFavoritesScope ? styles.draggableItem : ''}`}
-                onClick={() => handleAttributeSelect(attribute.value)}
-                draggable={isFavoritesScope}
-                onDragStart={() => handleDragStart(index)}
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(index)}
-              >
-                {isFavoritesScope && (
-                  <Icon name="draggabledots" className={styles.dragHandle} title="Drag to reorder" />
+              <React.Fragment key={attribute.value}>
+                {/* Ghost element above */}
+                {showGhostAbove && (
+                  <li className={styles.ghostElement} onDrop={() => handleDrop(index)}>
+                    <div className={styles.ghostContent}>Drop here</div>
+                  </li>
                 )}
-                {(selectedScope === 'All' || selectedScope === 'Favorites') && (
-                  <Badge
-                    color={'darkgrey'}
-                    text={attribute.scope.toLowerCase() + '.'}
-                    className={styles.attributeScope}
+
+                <li
+                  title={attribute.label}
+                  className={`${styles.attributeItem} ${
+                    selectedAttribute === attribute.value ? styles.attributeItemSelected : ''
+                  } ${isFavoritesScope ? styles.draggableItem : ''} ${isDragging ? styles.dragging : ''}`}
+                  onClick={() => handleAttributeSelect(attribute.value)}
+                  draggable={isFavoritesScope}
+                  onDragStart={() => handleDragStart(index)}
+                  onDragEnd={handleDragEnd}
+                  onDragEnter={(e) => handleDragEnter(e, index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragLeave={handleItemDragLeave}
+                  onDrop={() => handleDrop(index)}
+                >
+                  {isFavoritesScope && (
+                    <Icon name="draggabledots" className={styles.dragHandle} title="Drag to reorder" />
+                  )}
+                  {(selectedScope === 'All' || selectedScope === 'Favorites') && (
+                    <Badge
+                      color={'darkgrey'}
+                      text={attribute.scope.toLowerCase() + '.'}
+                      className={styles.attributeScope}
+                    />
+                  )}
+                  <div className={styles.attributeLabel}>{attribute.label}</div>
+                  <IconButton
+                    name={isFavorites ? 'favorite' : 'star'}
+                    variant="secondary"
+                    size="sm"
+                    className={`${styles.starButton} ${isFavorites ? styles.starButtonActive : ''}`}
+                    tooltip={isFavorites ? 'Remove from favorites' : 'Add to favorites'}
+                    onClick={(event) => toggleStar(attribute.value, event)}
                   />
+                </li>
+
+                {/* Ghost element below */}
+                {showGhostBelow && (
+                  <li className={styles.ghostElement} onDrop={() => handleDrop(index)}>
+                    <div className={styles.ghostContent}>Drop here</div>
+                  </li>
                 )}
-                <div className={styles.attributeLabel}>{attribute.label}</div>
-                <IconButton
-                  name={isFavorites ? 'favorite' : 'star'}
-                  variant="secondary"
-                  size="sm"
-                  className={`${styles.starButton} ${isFavorites ? styles.starButtonActive : ''}`}
-                  tooltip={isFavorites ? 'Remove from favorites' : 'Add to favorites'}
-                  onClick={(event) => toggleStar(attribute.value, event)}
-                />
-              </li>
+              </React.Fragment>
             );
           })
         )}
@@ -413,6 +485,32 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     starButtonActive: css({
       color: theme.colors.text.primary,
+    }),
+    dragging: css({
+      opacity: 0.5,
+      transform: 'scale(0.95)',
+      transition: 'all 0.2s ease-in-out',
+    }),
+    ghostElement: css({
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: theme.spacing(4),
+      margin: theme.spacing(0.25, 0),
+      border: `2px dashed ${theme.colors.primary.main}`,
+      borderRadius: theme.shape.radius.default,
+      backgroundColor: theme.colors.primary.transparent,
+      animation: 'pulse 1s ease-in-out infinite alternate',
+      '@keyframes pulse': {
+        from: { opacity: 0.6 },
+        to: { opacity: 1 },
+      },
+    }),
+    ghostContent: css({
+      fontSize: theme.typography.bodySmall.fontSize,
+      color: theme.colors.primary.text,
+      fontWeight: theme.typography.fontWeightMedium,
+      textAlign: 'center',
     }),
     emptyState: css({
       display: 'flex',
