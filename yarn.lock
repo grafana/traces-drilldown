@@ -1195,6 +1195,11 @@
     uuid "^11.0.2"
     yaml "^2.3.4"
 
+"@grafana/plugin-types@0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@grafana/plugin-types/-/plugin-types-0.0.39.tgz#ef76e2f2bc27e3ab9e66d66dc60eff80bdbaab91"
+  integrity sha512-OeSTqFFPQtdGdeRWbTMlvGz2J6VWEhOdv+WiqMTaa7AjHWahmEE3aB6AJL6zlDd8MqFW7M8qNGkui/s1tnlUFQ==
+
 "@grafana/runtime@^12.1.0":
   version "12.1.0"
   resolved "https://registry.yarnpkg.com/@grafana/runtime/-/runtime-12.1.0.tgz#f8c28fc508a286a1425a0c38bc827cf8fe29baee"
