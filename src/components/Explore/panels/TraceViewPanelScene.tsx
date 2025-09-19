@@ -12,6 +12,7 @@ import {
 import { LoadingState, GrafanaTheme2 } from '@grafana/data';
 import { explorationDS } from 'utils/shared';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
+import { ErrorStateScene } from 'components/states/ErrorState/ErrorStateScene';
 import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
 import { useStyles2 } from '@grafana/ui';
@@ -23,6 +24,18 @@ export interface TracePanelState extends SceneObjectState {
 }
 
 export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
+  private getTraceErrorMessage(error: any, traceId: string): string {
+    const errorMessage = error?.message || '';
+    const status = error?.status;
+
+    // Check if it's a 404 error or contains "Not Found"
+    if (status === 404 || errorMessage.toLowerCase().includes('not found')) {
+      return `Trace with ID "${traceId}" couldn't be found.`;
+    }
+
+    // Return the original error message for other errors
+    return errorMessage || 'An error occurred while loading the trace.';
+  }
   constructor(state: TracePanelState) {
     super({
       $data: new SceneQueryRunner({
@@ -45,6 +58,13 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
             this.setState({
               panel: new LoadingStateScene({
                 component: SkeletonComponent,
+              }),
+            });
+          } else if (data.data?.state === LoadingState.Error) {
+            const errorMessage = this.getTraceErrorMessage(data.data?.error, this.state.traceId);
+            this.setState({
+              panel: new ErrorStateScene({
+                message: errorMessage,
               }),
             });
           }
