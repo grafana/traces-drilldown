@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { ButtonGroup, ToolbarButton, Input, Icon, IconButton, useStyles2, Badge, Checkbox } from '@grafana/ui';
+import { ButtonGroup, ToolbarButton, Input, Icon, IconButton, useStyles2, Badge, Checkbox, Button } from '@grafana/ui';
 import { RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
 import { getFiltersVariable } from 'utils/utils';
 import { SceneObject } from '@grafana/scenes';
@@ -19,6 +19,7 @@ interface BaseAttributesSidebarProps {
   model: SceneObject;
 
   showFavorites?: boolean;
+  allowAllOption?: boolean;
 }
 
 interface SingleAttributesSidebarProps extends BaseAttributesSidebarProps {
@@ -53,6 +54,7 @@ export function AttributesSidebar({
   model,
   showFavorites,
   isMulti,
+  allowAllOption,
 }: SingleAttributesSidebarProps | MultiAttributesSidebarProps) {
   const styles = useStyles2(getStyles);
   const [searchValue, setSearchValue] = useState('');
@@ -283,6 +285,11 @@ export function AttributesSidebar({
               </>
             )}
           </div>
+          {allowAllOption && selected !== 'All' && (
+            <Button variant="secondary" size="sm" onClick={() => handleAttributeSelect('All')}>
+              All
+            </Button>
+          )}
         </div>
 
         {/* Search Input */}
@@ -437,6 +444,8 @@ function getStyles(theme: GrafanaTheme2) {
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: theme.spacing(0.5, 0),
+      gap: theme.spacing(1),
+      height: '32px',
     }),
     selectedAttributeLabel: css({
       fontSize: theme.typography.bodySmall.fontSize,

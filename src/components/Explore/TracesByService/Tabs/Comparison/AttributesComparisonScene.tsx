@@ -16,15 +16,7 @@ import {
 } from '@grafana/scenes';
 import { getTheme, Stack, useStyles2 } from '@grafana/ui';
 
-import { GroupBySelector } from '../../../GroupBySelector';
-import {
-  VAR_FILTERS,
-  VAR_PRIMARY_SIGNAL,
-  explorationDS,
-  VAR_FILTERS_EXPR,
-  ALL,
-  defaultFavoriteSpanAttributes,
-} from '../../../../../utils/shared';
+import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -199,39 +191,26 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
 
     return (
       <div className={styles.container}>
-        <AttributesDescription
-          description="Attributes are ordered by the difference between the baseline and selection values for each value."
-          tags={[
-            {
-              label: 'Baseline',
-              color:
-                traceExploration.getMetricFunction() === 'duration'
-                  ? BaselineColor
-                  : getTheme().visualization.getColorByName('semi-dark-green'),
-            },
-            {
-              label: 'Selection',
-              color:
-                traceExploration.getMetricFunction() === 'duration'
-                  ? SelectionColor
-                  : getTheme().visualization.getColorByName('semi-dark-red'),
-            },
-          ]}
-        />
-
         <div className={styles.controls}>
-          {attributes?.length && (
-            <div className={styles.controlsLeft}>
-              <GroupBySelector
-                options={getAttributesAsOptions(attributes)}
-                radioAttributes={defaultFavoriteSpanAttributes}
-                value={variable.getValueText()}
-                onChange={model.onChange}
-                showAll={true}
-                model={model}
-              />
-            </div>
-          )}
+          <AttributesDescription
+            description="Attributes are ordered by the difference between the baseline and selection values for each value."
+            tags={[
+              {
+                label: 'Baseline',
+                color:
+                  traceExploration.getMetricFunction() === 'duration'
+                    ? BaselineColor
+                    : getTheme().visualization.getColorByName('semi-dark-green'),
+              },
+              {
+                label: 'Selection',
+                color:
+                  traceExploration.getMetricFunction() === 'duration'
+                    ? SelectionColor
+                    : getTheme().visualization.getColorByName('semi-dark-red'),
+              },
+            ]}
+          />
           {body instanceof LayoutSwitcher && (
             <div className={styles.controlsRight}>
               <body.Selector model={body} />
@@ -246,6 +225,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
               onAttributeChange={(attribute) => model.onChange(attribute ?? '')}
               model={model}
               showFavorites={true}
+              allowAllOption={true}
             />
             {body && <body.Component model={body} />}
           </Stack>
