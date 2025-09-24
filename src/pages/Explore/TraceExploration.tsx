@@ -491,8 +491,6 @@ function getVariableSet(state: TraceExplorationState) {
       }),
       new AttributeFiltersVariable({
         initialFilters: state.initialFilters,
-        embedderName: state.embedderName,
-        embedded: state.embedded,
       }),
       new CustomVariable({
         name: VAR_METRIC,
