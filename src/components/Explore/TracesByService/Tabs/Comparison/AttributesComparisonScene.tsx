@@ -14,10 +14,9 @@ import {
   VariableDependencyConfig,
   VariableValue,
 } from '@grafana/scenes';
-import { getTheme, useStyles2 } from '@grafana/ui';
+import { getTheme, Stack, useStyles2 } from '@grafana/ui';
 
-import { GroupBySelector } from '../../../GroupBySelector';
-import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL, radioAttributesSpan } from '../../../../../utils/shared';
+import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -39,6 +38,7 @@ import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '..
 import { computeHighestDifference } from '../../../../../utils/comparison';
 import { AttributesDescription } from '../Breakdown/AttributesDescription';
 import { isEqual } from 'lodash';
+import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 
 export interface AttributesComparisonSceneState extends SceneObjectState {
   body?: SceneObject;
@@ -191,46 +191,45 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
 
     return (
       <div className={styles.container}>
-        <AttributesDescription
-          description="Attributes are ordered by the difference between the baseline and selection values for each value."
-          tags={[
-            {
-              label: 'Baseline',
-              color:
-                traceExploration.getMetricFunction() === 'duration'
-                  ? BaselineColor
-                  : getTheme().visualization.getColorByName('semi-dark-green'),
-            },
-            {
-              label: 'Selection',
-              color:
-                traceExploration.getMetricFunction() === 'duration'
-                  ? SelectionColor
-                  : getTheme().visualization.getColorByName('semi-dark-red'),
-            },
-          ]}
-        />
-
         <div className={styles.controls}>
-          {attributes?.length && (
-            <div className={styles.controlsLeft}>
-              <GroupBySelector
-                options={getAttributesAsOptions(attributes)}
-                radioAttributes={radioAttributesSpan}
-                value={variable.getValueText()}
-                onChange={model.onChange}
-                showAll={true}
-                model={model}
-              />
-            </div>
-          )}
+          <AttributesDescription
+            description="Attributes are ordered by the difference between the baseline and selection values for each value."
+            tags={[
+              {
+                label: 'Baseline',
+                color:
+                  traceExploration.getMetricFunction() === 'duration'
+                    ? BaselineColor
+                    : getTheme().visualization.getColorByName('semi-dark-green'),
+              },
+              {
+                label: 'Selection',
+                color:
+                  traceExploration.getMetricFunction() === 'duration'
+                    ? SelectionColor
+                    : getTheme().visualization.getColorByName('semi-dark-red'),
+              },
+            ]}
+          />
           {body instanceof LayoutSwitcher && (
             <div className={styles.controlsRight}>
               <body.Selector model={body} />
             </div>
           )}
         </div>
-        <div className={styles.content}>{body && <body.Component model={body} />}</div>
+        <div className={styles.content}>
+          <Stack direction="row" gap={2} width="100%">
+            <AttributesSidebar
+              options={getAttributesAsOptions(attributes ?? [])}
+              selected={variable.getValueText()}
+              onAttributeChange={(attribute) => model.onChange(attribute ?? '')}
+              model={model}
+              showFavorites={true}
+              allowAllOption={true}
+            />
+            {body && <body.Component model={body} />}
+          </Stack>
+        </div>
       </div>
     );
   };
@@ -362,6 +361,7 @@ function getStyles(theme: GrafanaTheme2) {
       flexGrow: 1,
       display: 'flex',
       paddingTop: theme.spacing(0),
+      height: 'calc(100vh - 550px)',
     }),
     controls: css({
       flexGrow: 0,
