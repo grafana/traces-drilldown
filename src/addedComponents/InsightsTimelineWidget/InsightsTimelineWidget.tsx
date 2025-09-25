@@ -3,21 +3,13 @@ import React, { ReactElement } from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
 import { usePluginComponent } from '@grafana/runtime';
 import { sceneGraph, SceneObject } from '@grafana/scenes';
+import { InsightsTimelineWidgetProps } from "@grafana/plugin-types/grafana-asserts-app/"
 import { css } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
 import { getMetricVariable } from 'utils/utils';
 import { MetricFunction } from 'utils/shared';
 
 export type AssertionSeverity = 'warning' | 'critical' | 'info';
-
-interface InsightsTimelineWidgetProps {
-  serviceName: string;
-  start: string | number;
-  end: string | number;
-  filterBySeverity?: AssertionSeverity[];
-  filterBySummaryKeywords?: string[];
-  label?: ReactElement;
-}
 
 export type InsightsTimelineWidgetExternal = (props: InsightsTimelineWidgetProps) => ReactElement | null;
 
