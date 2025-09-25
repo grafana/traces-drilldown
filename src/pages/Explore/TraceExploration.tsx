@@ -19,7 +19,7 @@ import {
   SceneVariableSet,
 } from '@grafana/scenes';
 import { config, useReturnToPrevious } from '@grafana/runtime';
-import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton } from '@grafana/ui';
+import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
 
 import {
   DATASOURCE_LS_KEY,
@@ -388,6 +388,10 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   const serviceName = useServiceName(model);
   const traceExploration = getTraceExplorationScene(model);
 
+  const { traceId } = traceExploration.useState();
+
+  const [localTraceId, setLocalTraceId] = React.useState(traceId ?? '');
+
   const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
@@ -432,6 +436,12 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
     </Menu>
   );
 
+  const onTraceIdSubmit = () => {
+    if (localTraceId !== traceId) {
+      traceExploration.setState({ traceId: localTraceId });
+    }
+  };
+
   return (
     <div className={styles.headerContainer}>
       <Stack gap={1} justifyContent={'space-between'} wrap={'wrap'}>
@@ -456,16 +466,43 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           ))}
         </div>
       </Stack>
-      <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
-        <Stack gap={0} alignItems={'center'}>
-          <div className={styles.datasourceLabel}>Filters</div>
-          {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
+      <Stack gap={1} alignItems={'flex-start'} justifyContent={'space-between'}>
+        <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
+          <Stack gap={0} alignItems={'center'}>
+            <div className={styles.datasourceLabel}>Filters</div>
+            {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
+          </Stack>
+          {filtersVariable && (
+            <div>
+              <filtersVariable.Component model={filtersVariable} />
+            </div>
+          )}
         </Stack>
-        {filtersVariable && (
-          <div>
-            <filtersVariable.Component model={filtersVariable} />
-          </div>
-        )}
+        <Stack gap={0} alignItems={'center'}>
+          <div className={styles.datasourceLabel}>Trace ID</div>
+          <Input
+            placeholder="Enter an ID and press Enter"
+            value={localTraceId ?? ''}
+            suffix={
+              <Stack direction="row" alignItems="center" gap={1}>
+                <Icon name="times" onClick={() => setLocalTraceId('')} cursor="pointer" />
+                <Icon name="enter" onClick={onTraceIdSubmit} cursor="pointer" />
+              </Stack>
+            }
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setLocalTraceId(e.currentTarget.value);
+            }}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === 'Enter') {
+                e.stopPropagation();
+                e.preventDefault();
+                e.currentTarget.blur();
+
+                onTraceIdSubmit();
+              }
+            }}
+          />
+        </Stack>
       </Stack>
     </div>
   );

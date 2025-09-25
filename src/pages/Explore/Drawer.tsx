@@ -211,9 +211,15 @@ function useResizebleDrawer(): [
 }
 
 function getCustomDrawerWidth(clientX: number) {
-  let offsetRight = document.body.offsetWidth - (clientX - document.body.offsetLeft);
-  let widthPercent = Math.min((offsetRight / document.body.clientWidth) * 100, 98).toFixed(2);
-  return `${widthPercent}vw`;
+  const traceExploration = document.getElementById('trace-exploration');
+  if (traceExploration) {
+    const traceExplorationWidth = traceExploration.offsetWidth;
+    const offsetLeft = traceExploration.offsetLeft;
+    const offsetRight = traceExplorationWidth - (clientX - offsetLeft);
+    const widthPercent = Math.min((offsetRight / traceExplorationWidth) * 100, 98).toFixed(2);
+    return `${widthPercent}%`;
+  }
+  return '50%';
 }
 
 function useBodyClassWhileOpen() {

@@ -9,12 +9,15 @@ import {
   sceneGraph,
   SceneObject,
 } from '@grafana/scenes';
-import { LoadingState, GrafanaTheme2 } from '@grafana/data';
+import { LoadingState, GrafanaTheme2, dateTimeFormat } from '@grafana/data';
+import { getDataSourceSrv } from '@grafana/runtime';
 import { explorationDS } from 'utils/shared';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
+import { ErrorStateScene } from 'components/states/ErrorState/ErrorStateScene';
 import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
 import { useStyles2 } from '@grafana/ui';
+import { getDataSource, getTraceExplorationScene } from 'utils/utils';
 
 export interface TracePanelState extends SceneObjectState {
   panel?: SceneObject;
@@ -23,6 +26,43 @@ export interface TracePanelState extends SceneObjectState {
 }
 
 export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
+  private async getTraceErrorMessage(error: any, traceId: string): Promise<string> {
+    const errorMessage = error?.message || '';
+    const status = error?.status;
+
+    if (status === 404 || errorMessage.toLowerCase().includes('not found')) {
+      try {
+        // Get the datasource to check timeShiftEnabled configuration
+        // Ideally this error would be returned by the datasource, but it's not currently supported.
+        const datasourceUid = getDataSource(getTraceExplorationScene(this));
+        const datasource = await getDataSourceSrv().get(datasourceUid);
+
+        // Check if the datasource has traceQuery.timeShiftEnabled set to true
+        if (datasource && (datasource as any).traceQuery?.timeShiftEnabled) {
+          const timeRange = sceneGraph.getTimeRange(this).state.value;
+
+          // Get timeshift values from datasource configuration
+          const spanStartTimeShift = (datasource as any).spanStartTimeShift || 0;
+          const spanEndTimeShift = (datasource as any).spanEndTimeShift || 0;
+
+          // Apply timeshift to the time range
+          const adjustedFromTime = timeRange.from.valueOf() - spanStartTimeShift;
+          const adjustedToTime = timeRange.to.valueOf() + spanEndTimeShift;
+
+          const formattedFromTime = dateTimeFormat(adjustedFromTime);
+          const formattedToTime = dateTimeFormat(adjustedToTime);
+
+          return `Trace with ID "${traceId}" couldn't be found. The data source is configured to use the selected time range when searching for traces and the trace might exist but not be within the selected time range of ${formattedFromTime} to ${formattedToTime}.`;
+        }
+      } catch (dsError) {
+        console.warn('Failed to check datasource configuration:', dsError);
+      }
+
+      return `Trace with ID "${traceId}" couldn't be found.`;
+    }
+
+    return errorMessage || 'An error occurred while loading the trace.';
+  }
   constructor(state: TracePanelState) {
     super({
       $data: new SceneQueryRunner({
@@ -47,6 +87,23 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
                 component: SkeletonComponent,
               }),
             });
+          } else if (data.data?.state === LoadingState.Error) {
+            this.getTraceErrorMessage(data.data?.error, this.state.traceId)
+              .then((errorMessage) => {
+                this.setState({
+                  panel: new ErrorStateScene({
+                    message: errorMessage,
+                  }),
+                });
+              })
+              .catch((err) => {
+                console.error('Failed to generate error message:', err);
+                this.setState({
+                  panel: new ErrorStateScene({
+                    message: `Trace with ID "${this.state.traceId}" couldn't be found.`,
+                  }),
+                });
+              });
           }
         })
       );
