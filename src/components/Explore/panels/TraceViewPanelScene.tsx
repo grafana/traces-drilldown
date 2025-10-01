@@ -45,11 +45,11 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
           if (tempoDatasource.traceQuery?.timeShiftEnabled) {
             const timeRange = sceneGraph.getTimeRange(this).state.value;
 
-            // Get timeshift values from datasource configuration
+            // Get time shift values from datasource configuration
             const spanStartTimeShift = tempoDatasource.traceQuery?.spanStartTimeShift;
             const spanEndTimeShift = tempoDatasource.traceQuery?.spanEndTimeShift;
 
-            // Apply timeshift to the time range
+            // Apply time shift to the time range
             const adjustedFromTime = timeRange.from.valueOf() - parseInt(spanStartTimeShift || '0');
             const adjustedToTime = timeRange.to.valueOf() + parseInt(spanEndTimeShift || '0');
 
