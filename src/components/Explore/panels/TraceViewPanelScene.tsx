@@ -50,8 +50,8 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
             const spanEndTimeShift = tempoDatasource.traceQuery?.spanEndTimeShift;
 
             // Apply time shift to the time range
-            const adjustedFromTime = timeRange.from.valueOf() - parseInt(spanStartTimeShift || '0');
-            const adjustedToTime = timeRange.to.valueOf() + parseInt(spanEndTimeShift || '0');
+            const adjustedFromTime = timeRange.from.valueOf() - parseInt(spanStartTimeShift || '0', 10);
+            const adjustedToTime = timeRange.to.valueOf() + parseInt(spanEndTimeShift || '0', 10);
 
             const formattedFromTime = dateTimeFormat(adjustedFromTime);
             const formattedToTime = dateTimeFormat(adjustedToTime);
