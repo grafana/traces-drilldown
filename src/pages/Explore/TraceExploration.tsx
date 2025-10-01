@@ -396,6 +396,10 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
 
+  useEffect(() => {
+    setLocalTraceId(traceId ?? '');
+  }, [traceId]);
+
   function VersionHeader() {
     const styles = useStyles2(getStyles);
 
@@ -484,9 +488,13 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
             placeholder="Enter an ID and press Enter"
             value={localTraceId ?? ''}
             suffix={
-              <Stack direction="row" alignItems="center" gap={1}>
-                <Icon name="times" onClick={() => setLocalTraceId('')} cursor="pointer" />
-                <Icon name="enter" onClick={onTraceIdSubmit} cursor="pointer" />
+              <Stack direction="row" alignItems="center" gap={1} width="40px">
+                {localTraceId && (
+                  <>
+                    <Icon name="times" onClick={() => setLocalTraceId('')} cursor="pointer" />
+                    <Icon name="enter" onClick={onTraceIdSubmit} cursor="pointer" />
+                  </>
+                )}
               </Stack>
             }
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
