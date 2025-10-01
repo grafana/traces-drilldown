@@ -9,7 +9,7 @@ import {
   sceneGraph,
   SceneObject,
 } from '@grafana/scenes';
-import { LoadingState, GrafanaTheme2, dateTimeFormat } from '@grafana/data';
+import { LoadingState, GrafanaTheme2, dateTimeFormat, DataQueryError } from '@grafana/data';
 import { getDataSourceSrv } from '@grafana/runtime';
 import { explorationDS } from 'utils/shared';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
@@ -18,6 +18,7 @@ import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
 import { useStyles2 } from '@grafana/ui';
 import { getDataSource, getTraceExplorationScene } from 'utils/utils';
+import { TempoDatasource } from 'types';
 
 export interface TracePanelState extends SceneObjectState {
   panel?: SceneObject;
@@ -26,9 +27,9 @@ export interface TracePanelState extends SceneObjectState {
 }
 
 export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
-  private async getTraceErrorMessage(error: any, traceId: string): Promise<string> {
-    const errorMessage = error?.message || '';
-    const status = error?.status;
+  private async getTraceErrorMessage(errors: DataQueryError[], traceId: string): Promise<string> {
+    const errorMessage = errors?.[0]?.message || '';
+    const status = errors?.[0]?.status;
 
     if (status === 404 || errorMessage.toLowerCase().includes('not found')) {
       try {
@@ -38,21 +39,25 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
         const datasource = await getDataSourceSrv().get(datasourceUid);
 
         // Check if the datasource has traceQuery.timeShiftEnabled set to true
-        if (datasource && (datasource as any).traceQuery?.timeShiftEnabled) {
-          const timeRange = sceneGraph.getTimeRange(this).state.value;
+        if (datasource) {
+          const tempoDatasource = datasource as unknown as TempoDatasource;
 
-          // Get timeshift values from datasource configuration
-          const spanStartTimeShift = (datasource as any).spanStartTimeShift || 0;
-          const spanEndTimeShift = (datasource as any).spanEndTimeShift || 0;
+          if (tempoDatasource.traceQuery?.timeShiftEnabled) {
+            const timeRange = sceneGraph.getTimeRange(this).state.value;
 
-          // Apply timeshift to the time range
-          const adjustedFromTime = timeRange.from.valueOf() - spanStartTimeShift;
-          const adjustedToTime = timeRange.to.valueOf() + spanEndTimeShift;
+            // Get timeshift values from datasource configuration
+            const spanStartTimeShift = tempoDatasource.traceQuery?.spanStartTimeShift;
+            const spanEndTimeShift = tempoDatasource.traceQuery?.spanEndTimeShift;
 
-          const formattedFromTime = dateTimeFormat(adjustedFromTime);
-          const formattedToTime = dateTimeFormat(adjustedToTime);
+            // Apply timeshift to the time range
+            const adjustedFromTime = timeRange.from.valueOf() - parseInt(spanStartTimeShift || '0');
+            const adjustedToTime = timeRange.to.valueOf() + parseInt(spanEndTimeShift || '0');
 
-          return `Trace with ID "${traceId}" couldn't be found. The data source is configured to use the selected time range when searching for traces and the trace might exist but not be within the selected time range of ${formattedFromTime} to ${formattedToTime}.`;
+            const formattedFromTime = dateTimeFormat(adjustedFromTime);
+            const formattedToTime = dateTimeFormat(adjustedToTime);
+
+            return `Trace with ID "${traceId}" couldn't be found. The data source is configured to use the selected time range when searching for traces and the trace might exist but not be within the selected time range of ${formattedFromTime} to ${formattedToTime}.`;
+          }
         }
       } catch (dsError) {
         console.warn('Failed to check datasource configuration:', dsError);
@@ -88,7 +93,7 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
               }),
             });
           } else if (data.data?.state === LoadingState.Error) {
-            this.getTraceErrorMessage(data.data?.error, this.state.traceId)
+            this.getTraceErrorMessage(data.data?.errors || [], this.state.traceId)
               .then((errorMessage) => {
                 this.setState({
                   panel: new ErrorStateScene({
