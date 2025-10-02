@@ -69,6 +69,22 @@ export function AttributesSidebar({
 
   const currentFilters = filters.map((filter) => filter.key);
 
+  // Helper function to test if a label matches the search value (supports regex)
+  const matchesSearchValue = useCallback((label: string, search: string): boolean => {
+    if (!search) {
+      return true;
+    }
+
+    try {
+      // Try to use the search value as a regex pattern (case-insensitive)
+      const regex = new RegExp(search, 'i');
+      return regex.test(label);
+    } catch (error) {
+      // If regex is invalid, fall back to simple case-insensitive string matching
+      return label.toLowerCase().includes(search.toLowerCase());
+    }
+  }, []);
+
   // Helper functions for handling selection modes
   const getSelectedAttributes = (): string[] => {
     if (isMulti) {
@@ -117,19 +133,19 @@ export function AttributesSidebar({
         .filter(Boolean) as AttributeItem[];
 
       // Apply search filter
-      return favoritesItems.filter((item) => item.label.toLowerCase().includes(searchValue.toLowerCase()));
+      return favoritesItems.filter((item) => matchesSearchValue(item.label, searchValue));
     }
 
     return attributeItems.filter((item) => {
       // Filter by search text
-      const matchesSearch = item.label.toLowerCase().includes(searchValue.toLowerCase());
+      const matchesSearch = matchesSearchValue(item.label, searchValue);
 
       // Filter by scope
       const matchesScope = selectedScope === 'All' || item.scope === selectedScope;
 
       return matchesSearch && matchesScope;
     });
-  }, [attributeItems, searchValue, selectedScope, favoriteAttributes]);
+  }, [attributeItems, searchValue, selectedScope, favoriteAttributes, matchesSearchValue]);
 
   // Select the next favorite attribute if the selected attribute is in the filters (single mode only)
   useEffect(() => {
