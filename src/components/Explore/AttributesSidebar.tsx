@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { ButtonGroup, ToolbarButton, Input, Icon, IconButton, useStyles2, Badge, Checkbox, Button } from '@grafana/ui';
+import { TabsBar, Tab, Input, Icon, IconButton, useStyles2, Badge, Checkbox, Button } from '@grafana/ui';
 import { RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
 import { getFiltersVariable } from 'utils/utils';
 import { SceneObject } from '@grafana/scenes';
@@ -316,18 +316,17 @@ export function AttributesSidebar({
 
         {/* Scope Selector */}
         <div className={styles.scopeContainer}>
-          <ButtonGroup>
+          <TabsBar>
             {scopeButtons.map((button) => (
-              <ToolbarButton
+              <Tab
                 key={button.value}
-                variant={selectedScope === button.value ? 'active' : 'default'}
-                className={styles.scopeButton}
-                onClick={() => handleScopeChange(button.value)}
-              >
-                {button.label}
-              </ToolbarButton>
+                label={button.label}
+                className={styles.scopeTab}
+                active={selectedScope === button.value}
+                onChangeTab={() => handleScopeChange(button.value)}
+              />
             ))}
-          </ButtonGroup>
+          </TabsBar>
         </div>
       </div>
 
@@ -462,14 +461,9 @@ function getStyles(theme: GrafanaTheme2) {
         width: '100%',
       },
     }),
-    scopeButton: css({
-      fontSize: theme.typography.bodySmall.fontSize,
-      flex: 1,
-      justifyContent: 'center',
-
-      '& div': {
-        width: '100%',
-        justifyContent: 'center',
+    scopeTab: css({
+      '& button': {
+        fontSize: theme.typography.bodySmall.fontSize,
       },
     }),
     attributesList: css({
