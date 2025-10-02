@@ -101,3 +101,11 @@ export type MetricsSeriesSample = {
   timestampMs: string;
   value: number;
 };
+
+export interface TempoDatasource {
+  traceQuery?: {
+    timeShiftEnabled?: boolean;
+    spanStartTimeShift?: string;
+    spanEndTimeShift?: string;
+  };
+}

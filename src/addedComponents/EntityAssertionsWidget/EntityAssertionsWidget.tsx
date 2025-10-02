@@ -1,21 +1,9 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 
 import { TimeRange } from '@grafana/data';
-import { ComponentSize } from '@grafana/ui';
+import { EntityAssertionsWidgetProps } from "@grafana/plugin-types/grafana-asserts-app/"
 import { usePluginComponent } from '@grafana/runtime';
 import { sceneGraph, SceneObject } from '@grafana/scenes';
-
-interface EntityAssertionsWidgetProps {
-  query: {
-    entityName?: string;
-    entityType?: string;
-    start: number;
-    end: number;
-  };
-  size: ComponentSize;
-  source?: string;
-  returnToPrevious?: boolean;
-}
 
 export type EntityAssertionsWidgetExternal = (props: EntityAssertionsWidgetProps) => ReactElement | null;
 
@@ -56,6 +44,7 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
         end: timeRange.to.valueOf(),
         entityName: serviceName,
         entityType: 'Service',
+        enabled: true,
       }}
       returnToPrevious={true}
     />
