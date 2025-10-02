@@ -105,6 +105,12 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
               if (nameField?.config?.custom) {
                 nameField.config.custom.cellOptions = options;
               }
+
+              const spanIDField = fields.find((f) => f.name === 'spanID');
+              if (spanIDField?.config?.custom) {
+                spanIDField.config.custom.hideFrom = { viz: true };
+              }
+
               return {
                 ...df,
                 fields,
@@ -190,8 +196,6 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
                   .setHoverHeader(true)
                   .setOverrides((builder) => {
                     return builder
-                      .matchFieldsWithName('spanID')
-                      .overrideCustomFieldConfig('hidden', true)
                       .matchFieldsWithName('traceService')
                       .overrideCustomFieldConfig('width', 350)
                       .matchFieldsWithName('traceName')
