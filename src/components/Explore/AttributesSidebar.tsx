@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { TabsBar, Tab, Input, Icon, IconButton, useStyles2, Badge, Checkbox, Button } from '@grafana/ui';
+import { TabsBar, Tab, Input, Icon, IconButton, useStyles2, Badge, Checkbox, Button, useTheme2 } from '@grafana/ui';
 import { RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
 import { getFiltersVariable } from 'utils/utils';
 import { SceneObject } from '@grafana/scenes';
@@ -57,6 +57,7 @@ export function AttributesSidebar({
   allowAllOption,
 }: SingleAttributesSidebarProps | MultiAttributesSidebarProps) {
   const styles = useStyles2(getStyles);
+  const theme = useTheme2();
   const [searchValue, setSearchValue] = useState('');
   const [selectedScope, setSelectedScope] = useState<ScopeType>(showFavorites ? 'Favorites' : 'All');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -372,7 +373,7 @@ export function AttributesSidebar({
                 )}
 
                 <li
-                  title={attribute.label}
+                  title={isFiltered ? `Filtered: ${attribute.label}` : attribute.label}
                   className={`${styles.attributeItem} ${
                     !isMulti && isSelected ? styles.attributeItemSelected : ''
                   } ${isFavoritesScope ? styles.draggableItem : ''} ${isDragging ? styles.dragging : ''}`}
@@ -400,9 +401,8 @@ export function AttributesSidebar({
                         className={styles.attributeScope}
                       />
                     )}
-                    <div className={`${styles.attributeLabel} ${isFiltered ? styles.attributeLabelFiltered : ''}`}>
-                      {attribute.label}
-                    </div>
+                    {isFiltered && <Icon name="filter" color={theme.colors.text.disabled} />}
+                    <div className={styles.attributeLabel}>{attribute.label}</div>
                   </div>
                   {showFavorites && (
                     <IconButton
@@ -534,10 +534,6 @@ function getStyles(theme: GrafanaTheme2) {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-    }),
-    attributeLabelFiltered: css({
-      fontWeight: theme.typography.fontWeightRegular,
-      textDecoration: 'underline',
     }),
     attributeScope: css({
       fontSize: theme.typography.bodySmall.fontSize,
