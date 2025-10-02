@@ -9,12 +9,16 @@ import {
   sceneGraph,
   SceneObject,
 } from '@grafana/scenes';
-import { LoadingState, GrafanaTheme2 } from '@grafana/data';
+import { LoadingState, GrafanaTheme2, dateTimeFormat, DataQueryError } from '@grafana/data';
+import { getDataSourceSrv } from '@grafana/runtime';
 import { explorationDS } from 'utils/shared';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
+import { ErrorStateScene } from 'components/states/ErrorState/ErrorStateScene';
 import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
 import { useStyles2 } from '@grafana/ui';
+import { getDataSource, getTraceExplorationScene } from 'utils/utils';
+import { TempoDatasource } from 'types';
 
 export interface TracePanelState extends SceneObjectState {
   panel?: SceneObject;
@@ -23,6 +27,47 @@ export interface TracePanelState extends SceneObjectState {
 }
 
 export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
+  private async getTraceErrorMessage(errors: DataQueryError[], traceId: string): Promise<string> {
+    const errorMessage = errors?.[0]?.message || '';
+    const status = errors?.[0]?.status;
+
+    if (status === 404 || errorMessage.toLowerCase().includes('not found')) {
+      try {
+        // Get the datasource to check timeShiftEnabled configuration
+        // Ideally this error would be returned by the datasource, but it's not currently supported.
+        const datasourceUid = getDataSource(getTraceExplorationScene(this));
+        const datasource = await getDataSourceSrv().get(datasourceUid);
+
+        // Check if the datasource has traceQuery.timeShiftEnabled set to true
+        if (datasource) {
+          const tempoDatasource = datasource as unknown as TempoDatasource;
+
+          if (tempoDatasource.traceQuery?.timeShiftEnabled) {
+            const timeRange = sceneGraph.getTimeRange(this).state.value;
+
+            // Get time shift values from datasource configuration
+            const spanStartTimeShift = tempoDatasource.traceQuery?.spanStartTimeShift;
+            const spanEndTimeShift = tempoDatasource.traceQuery?.spanEndTimeShift;
+
+            // Apply time shift to the time range
+            const adjustedFromTime = timeRange.from.valueOf() - parseInt(spanStartTimeShift || '0', 10);
+            const adjustedToTime = timeRange.to.valueOf() + parseInt(spanEndTimeShift || '0', 10);
+
+            const formattedFromTime = dateTimeFormat(adjustedFromTime);
+            const formattedToTime = dateTimeFormat(adjustedToTime);
+
+            return `Trace with ID "${traceId}" couldn't be found. The data source is configured to use the selected time range when searching for traces and the trace might exist but not be within the selected time range of ${formattedFromTime} to ${formattedToTime}.`;
+          }
+        }
+      } catch (dsError) {
+        console.warn('Failed to check datasource configuration:', dsError);
+      }
+
+      return `Trace with ID "${traceId}" couldn't be found.`;
+    }
+
+    return errorMessage || 'An error occurred while loading the trace.';
+  }
   constructor(state: TracePanelState) {
     super({
       $data: new SceneQueryRunner({
@@ -47,6 +92,23 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
                 component: SkeletonComponent,
               }),
             });
+          } else if (data.data?.state === LoadingState.Error) {
+            this.getTraceErrorMessage(data.data?.errors || [], this.state.traceId)
+              .then((errorMessage) => {
+                this.setState({
+                  panel: new ErrorStateScene({
+                    message: errorMessage,
+                  }),
+                });
+              })
+              .catch((err) => {
+                console.error('Failed to generate error message:', err);
+                this.setState({
+                  panel: new ErrorStateScene({
+                    message: `Trace with ID "${this.state.traceId}" couldn't be found.`,
+                  }),
+                });
+              });
           }
         })
       );
