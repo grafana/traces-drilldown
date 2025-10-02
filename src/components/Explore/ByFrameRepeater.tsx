@@ -16,6 +16,8 @@ import { useStyles2 } from '@grafana/ui';
 import Skeleton from 'react-loading-skeleton';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { ErrorStateScene } from 'components/states/ErrorState/ErrorStateScene';
+import { debounce } from 'lodash';
+import { Search } from './Search';
 import { getGroupByVariable } from 'utils/utils';
 import {
   EMPTY_STATE_ERROR_MESSAGE,
@@ -30,6 +32,8 @@ interface ByFrameRepeaterState extends SceneObjectState {
   groupBy?: boolean;
 
   getLayoutChild(data: PanelData, frame: DataFrame, frameIndex: number): SceneFlexItem;
+
+  searchQuery?: string;
 }
 
 export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
@@ -55,7 +59,11 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
                 ],
               });
             } else if (data.data?.state === LoadingState.Done) {
-              this.renderFilteredData(data.data as PanelData);
+              const filtered = {
+                ...data.data,
+                series: data.data?.series.filter(doesQueryMatchDataFrameLabels(this.state.searchQuery)),
+              };
+              this.renderFilteredData(filtered as PanelData);
               this.publishEvent(new EventTimeseriesDataReceived({ series: data.data.series }), true);
             }
           } else if (data.data?.state === LoadingState.Error) {
@@ -86,11 +94,30 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
         })
       );
 
+      this.subscribeToState((newState, prevState) => {
+        if (newState.searchQuery !== prevState.searchQuery) {
+          this.onSearchQueryChangeDebounced(newState.searchQuery ?? '');
+        }
+      });
+
       if (data.state.data) {
         this.performRepeat(data.state.data);
       }
     });
   }
+
+  private onSearchQueryChange = (evt: React.SyntheticEvent<HTMLInputElement>) => {
+    this.setState({ searchQuery: evt.currentTarget.value });
+  };
+
+  private onSearchQueryChangeDebounced = debounce((searchQuery: string) => {
+    const data = sceneGraph.getData(this);
+    const filtered = {
+      ...data.state.data,
+      series: data.state.data?.series.filter(doesQueryMatchDataFrameLabels(searchQuery)),
+    };
+    this.renderFilteredData(filtered as PanelData);
+  }, 250);
 
   private renderFilteredData(filtered: PanelData) {
     if (filtered.series && filtered.series.length > 0) {
@@ -161,11 +188,12 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<ByFrameRepeater>) => {
-    const { body } = model.useState();
+    const { body, searchQuery } = model.useState();
     const styles = useStyles2(getStyles);
 
     return (
       <div className={styles.container}>
+        <Search searchQuery={searchQuery ?? ''} onSearchQueryChange={model.onSearchQueryChange} />
         <body.Component model={body} />
       </div>
     );
@@ -178,8 +206,6 @@ function getStyles() {
       display: 'flex',
       flexDirection: 'column',
       flexGrow: 1,
-      overflowX: 'auto',
-      height: '100%',
     }),
   };
 }
