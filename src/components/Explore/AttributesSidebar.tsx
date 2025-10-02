@@ -243,7 +243,7 @@ export function AttributesSidebar({
       setDraggedIndex(null);
       setDragOverIndex(null);
     },
-    [draggedIndex, reorderFavorites, filteredAttributes]
+    [draggedIndex, reorderFavorites, filteredAttributes, favoriteAttributes]
   );
 
   const handleScopeChange = (scope: ScopeType) => {

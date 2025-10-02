@@ -3,8 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AttributesSidebar } from './AttributesSidebar';
 import { SelectableValue } from '@grafana/data';
-import { SceneObject } from '@grafana/scenes';
-import { AdHocFiltersVariable } from '@grafana/scenes';
+import { AdHocFiltersVariable, SceneObject } from '@grafana/scenes';
 
 // Mock the hooks and utilities
 jest.mock('hooks', () => ({

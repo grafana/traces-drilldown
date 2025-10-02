@@ -112,6 +112,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
       if (!groupBy || groupBy === 'All' || groupBy === '') {
         model.onChange(favoriteAttributes[0]);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupBy]);
 
     return (

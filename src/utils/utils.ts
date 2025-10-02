@@ -68,7 +68,7 @@ export function newHome(initialFilters: AdHocVariableFilter[], initialDS?: strin
 }
 
 export function getErrorMessage(data: SceneDataState) {
-  return data?.data?.error?.message ?? 'There are no Tempo data sources';
+  return data?.data?.errors?.[0]?.message ?? 'There are no Tempo data sources';
 }
 
 export function getNoDataMessage(context: string) {
