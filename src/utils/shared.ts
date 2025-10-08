@@ -52,7 +52,7 @@ export const SPAN_ATTR = 'span.';
 export const EVENT_ATTR = 'event.';
 export const EVENT_INTRINSIC = 'event:';
 
-export const radioAttributesResource = [
+export const defaultFavoriteResourceAttributes = [
   // https://opentelemetry.io/docs/specs/semconv/resource/
   'resource.service.name',
   'resource.service.namespace',
@@ -69,7 +69,7 @@ export const radioAttributesResource = [
   'resource.k8s.container.name',
   'resource.k8s.node.name',
 ];
-export const radioAttributesSpan = [
+export const defaultFavoriteSpanAttributes = [
   'name',
   'kind',
   'rootName',

@@ -1,0 +1,1 @@
+export { useFavoriteAttributes } from './useFavoriteAttributes';
