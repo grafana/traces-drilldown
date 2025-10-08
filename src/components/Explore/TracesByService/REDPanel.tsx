@@ -10,17 +10,17 @@ import {
   SceneObjectBase,
   SceneObjectState,
 } from '@grafana/scenes';
-import { arrayToDataFrame, DataFrame, GrafanaTheme2, LoadingState } from '@grafana/data';
-import { ComparisonSelection, EMPTY_STATE_ERROR_MESSAGE, explorationDS, MetricFunction } from 'utils/shared';
-import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
-import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
-import { SkeletonComponent } from '../ByFrameRepeater';
-import { barsPanelConfig } from '../panels/barsPanel';
-import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
-import { StepQueryRunner } from '../queries/StepQueryRunner';
-import { css } from '@emotion/css';
-import { RadioButtonList, useStyles2 } from '@grafana/ui';
-import { StreamingIndicator } from '../StreamingIndicator';
+import {arrayToDataFrame, DataFrame, DataTopic, GrafanaTheme2, LoadingState} from '@grafana/data';
+import {ComparisonSelection, EMPTY_STATE_ERROR_MESSAGE, explorationDS, MetricFunction} from 'utils/shared';
+import {EmptyStateScene} from 'components/states/EmptyState/EmptyStateScene';
+import {LoadingStateScene} from 'components/states/LoadingState/LoadingStateScene';
+import {SkeletonComponent} from '../ByFrameRepeater';
+import {barsPanelConfig} from '../panels/barsPanel';
+import {getMetricsTempoQuery} from '../queries/generateMetricsQuery';
+import {StepQueryRunner} from '../queries/StepQueryRunner';
+import {css} from '@emotion/css';
+import {RadioButtonList, useStyles2} from '@grafana/ui';
+import {StreamingIndicator} from '../StreamingIndicator';
 import {
   fieldHasEmptyValues,
   getLatencyPartialThresholdVariable,
@@ -30,15 +30,15 @@ import {
   getTraceByServiceScene,
   shouldShowSelection,
 } from '../../../utils/utils';
-import { getHistogramVizPanel, yBucketToDuration } from '../panels/histogram';
-import { TraceSceneState } from './TracesByServiceScene';
-import { SelectionColor } from '../layouts/allComparison';
-import { buildHistogramQuery } from '../queries/histogram';
-import { isEqual } from 'lodash';
-import { DurationComparisonControl } from './DurationComparisonControl';
-import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
-import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
-import { useServiceName } from 'pages/Explore/TraceExploration';
+import {getHistogramVizPanel, yBucketToDuration} from '../panels/histogram';
+import {TraceSceneState} from './TracesByServiceScene';
+import {SelectionColor} from '../layouts/allComparison';
+import {buildHistogramQuery} from '../queries/histogram';
+import {isEqual} from 'lodash';
+import {DurationComparisonControl} from './DurationComparisonControl';
+import {exemplarsTransformations, removeExemplarsTransformation} from '../../../utils/exemplars';
+import {InsightsTimelineWidget} from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
+import {useServiceName} from 'pages/Explore/TraceExploration';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -250,6 +250,10 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
       },
     ]);
     frame.name = 'xymark';
+    frame.meta = {
+      ...frame.meta,
+      dataTopic: DataTopic.Annotations
+    }
 
     return [frame];
   }
