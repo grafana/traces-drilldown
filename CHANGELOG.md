@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.0
+
+##### Chores
+
+*  add annotation topic to annotation frame (#560) (e9856325)
+
+##### New Features
+
+*  Attributes sidebar (#558) (7ed0f3c8)
+*  View trace by ID input (#555) (6a8d0cfe)
+*  Percentiles variable for duration breakdown (#554) (69e3ab05)
+
+
 ## 1.1.4
 
 ##### Chores
