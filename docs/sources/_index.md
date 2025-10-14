@@ -50,8 +50,13 @@ cards:
 
 # Traces Drilldown
 
+<!-- Content used in the Traces Drilldown learning journey -->
+{{< shared id="traces-intro-1" >}}
+
 Distributed traces provide a way to monitor applications by tracking requests across services.
 Traces record the details of a request to help understand why an issue is or was happening.
+
+{{< /shared >}}
 
 Grafana Traces Drilldown helps you visualize insights from your Tempo traces data.
 Using the app, you can:
