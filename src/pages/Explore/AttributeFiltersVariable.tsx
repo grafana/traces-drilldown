@@ -1,7 +1,8 @@
 import { AdHocFiltersVariable } from '@grafana/scenes';
-import { AdHocVariableFilter, VariableHide } from '@grafana/data';
+import { AdHocVariableFilter } from '@grafana/data';
 import { VAR_FILTERS, explorationDS } from 'utils/shared';
 import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
+import { VariableHide } from '@grafana/schema';
 
 export interface AttributeFiltersVariableProps {
   initialFilters?: AdHocVariableFilter[];

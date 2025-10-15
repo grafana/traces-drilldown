@@ -54,6 +54,7 @@ import { SharedExplorationState } from 'exposedComponents/types';
 import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWidget/EntityAssertionsWidget';
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
+import { DataLinksCustomContext } from './DataLinksCustomContext';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -274,28 +275,33 @@ export class TraceExplorationScene extends SceneObjectBase {
       setTimeout(() => traceExploration.closeDrawer(), 100);
     };
 
+    const state = traceExploration.useState();
+    const timeRangeState = state.$timeRange?.useState();
+
     return (
       <div className={styles.container} id="trace-exploration">
         {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
         {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
         <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
-        <SmartDrawer
-          isOpen={!!drawerScene && !!traceId}
-          onClose={() => traceExploration.closeDrawer()}
-          title={`View trace ${traceId}`}
-          embedded={embedded}
-          forceNoDrawer={embedded}
-          investigationButton={
-            addToInvestigationButton &&
-            investigationLink && (
-              <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
-                {ADD_TO_INVESTIGATION_MENU_TEXT}
-              </Button>
-            )
-          }
-        >
-          {drawerScene && <drawerScene.Component model={drawerScene} />}
-        </SmartDrawer>
+        <DataLinksCustomContext embedded={embedded} timeRange={timeRangeState?.value}>
+          <SmartDrawer
+            isOpen={!!drawerScene && !!traceId}
+            onClose={() => traceExploration.closeDrawer()}
+            title={`View trace ${traceId}`}
+            embedded={embedded}
+            forceNoDrawer={embedded}
+            investigationButton={
+              addToInvestigationButton &&
+              investigationLink && (
+                <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
+                  {ADD_TO_INVESTIGATION_MENU_TEXT}
+                </Button>
+              )
+            }
+          >
+            {drawerScene && <drawerScene.Component model={drawerScene} />}
+          </SmartDrawer>
+        </DataLinksCustomContext>
       </div>
     );
   };

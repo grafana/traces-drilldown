@@ -80,7 +80,8 @@ export const Bookmarks = () => {
                 <BookmarkItem bookmark={bookmark} />
               </div>
               <div className={styles.remove}>
-                <Button 
+                <Button
+                  aria-label="Remove bookmark"
                   variant='secondary' 
                   fill='text' 
                   icon='trash-alt'
