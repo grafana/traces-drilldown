@@ -25,7 +25,10 @@ type Props = {
 export function DataLinksCustomContext(props: Props) {
   const dataLinksContext = useDataLinksContext?.();
 
-  // @ts-ignore
+
+  // @ts-expect-error: TS2774 This condition will always return true since this function is always defined. Did you mean to call it instead?
+  // We expect the TS error because the function is not always defined if the DataLinksContext or useDataLinksContext are
+  // not available during runtime (before Grafana 12.3.0)
   const postProcessingSupported = DataLinksContext?.Provider && dataLinksContext;
 
   const { children, embedded, timeRange } = props;
