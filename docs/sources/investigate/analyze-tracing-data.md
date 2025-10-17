@@ -131,9 +131,8 @@ Use the header’s Trace ID input to open a specific trace:
 1. Press Enter or click **Submit** to open the trace in the drawer.
 1. Click **Clear** to remove the current value.
 
-The Clear and Submit buttons appear only when the input contains text. When you open a trace from the results list, the Trace ID input clears to avoid stale values.
+The **Clear** and **Submit** buttons appear only when the input contains text. When you open a trace from the results list, the Trace ID input clears to avoid stale values.
 
-If the Tempo data source is configured to send the time range to Tempo, Traces Drilldown searches within the currently selected time range. Otherwise, it searches across all time.
+If a time range is selected, Traces Drilldown searches within the currently selected time range. Otherwise, it searches across all time.
 If a trace isn't found, an error message appears—verify the ID and widen the time range if necessary.
-For data source configuration, refer to [Configure the Tempo data source](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/).
 
