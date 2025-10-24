@@ -32,6 +32,7 @@ The list of filters expands as you investigate and explore your tracing data usi
 1. Choose filters to hone in on the problem areas. Each filter that you select adds to the **Filter** bar at the top of the page. You can select filters on the **Comparison** and **Breakdown** tabs in the following ways:
     * Select **Add to filters**.
     * Use the **Filter** bar near the top.
+    * Attributes shown with a filter icon in the **Attributes** sidebar are already applied in your current **Filters**. The **Attributes** sidebar helps you pick and favorite attributes used for grouping, comparison, and **Trace list** columns. Refer to the [UI reference](../ui-reference/).
 
 ![Change filters for your investigation](/media/docs/explore-traces/traces-drilldown-filters-ga-1.png)
 
