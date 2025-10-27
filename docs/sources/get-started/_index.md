@@ -21,7 +21,8 @@ To learn more, refer to [Concepts](../concepts/).
 Expand your observability journey and learn about [the Drilldown apps suite](../../).
 {{< /admonition >}}
 
-{{< youtube id="a3uB1C2oHA4" >}}
+<!-- Commenting out this video until we can replace it with a new one -->
+<!-- {{< youtube id="a3uB1C2oHA4" >}} -->
 
 ## Before you begin
 
@@ -59,33 +60,59 @@ Here's how this works.
 To identify the trouble spot, you want to use raw tracing data instead of just the root span, which is the first span of every trace.
 Select **All spans** in the Filters, then choose the **Errors** metric.
 
-![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors-red.png)
+![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors-red-v1.2.png "Select All spans to view all raw span data and Errors as your metric")
 
 ### Correlate attributes
 
-To correlate attribute values with errors, use the **Comparison** tab.
-This tab surfaces attributes values that heavily correlate with erroring spans.
-The results are ordered by the difference in those attributes by the highest ones first. This helps
+Use the **Comparison** tab to correlate attributes values with errors. The results are ordered by the difference in those attributes by the highest ones first. This helps
 you see what's causing the errors immediately.
-You can see here that 99.34% of the time, the span name was equal to `HTTP GET /api/datasources/proxy/uid/:uid/*` the span was also erroring.
+The **Comparison** tab analyzes the difference between two sets of traces:
 
-![Errors are immediately visible by the large red bars](/media/docs/explore-traces/explore-traces-errors-metric-flow.png)
+- Green bars (Baseline): Normal/healthy trace behavior
+- Red bars (Selection): Current selection with status = error filter
+
+The view compares your selection (red) to the baseline (green) and ranks attributes by the largest difference.
+This indicates a significant spike in `HTTP 500` (Internal Server Error) responses during your selected time range.
+The visualization highlights that:
+
+- 500 errors aren't normal for this system, they don't appear in the baseline comparison
+- There were 500 traces containing HTTP 500 status codes during the error period
+- This represents a 100% deviation from normal behavior
+
+Click **Add to filters** to narrow the investigation to these values, or choose **Inspect** to explore the full distribution.
+
+![Errors are immediately visible by the large red bars](/media/docs/explore-traces/traces-drilldown-errors-comparison-http-status-code-v1.2.png "Errors are immediately visible by the large red bars")
+
+Hovering over any of the bars shows a tooltip with information about the value and the percentage of the total.
+
+![Tooltip showing the value and the percentage of the total](/media/docs/explore-traces/traces-drilldown-errors-hover-tooltip.png "Tooltip showing the value and the percentage of the total")
 
 ### Inspect the problem
 
-To dig deeper, select **Inspect** to focus in on the problem.
-It's easy to spot the problem: the tall, red bar indicates that the problems are happening with `HTTP GET /api/datasources/proxy/uid/:uid/*`.
-Next, use **Add to filters** to focus just on the erroring API call.
+Select **Inspect** on a card to drill into the distribution for that attribute.
+In this example, selecting **Inspect** on `span.http.status_code` shows the distribution by value. Using this view shows the following:
 
-![Add to filters to focus on the API call](/media/docs/explore-traces/explore-traces-errors-add-filters-flow.png)
+- Normal state: All requests completed successfully (200/201)
+- Error state: Significant portion return 500 errors
+- Root cause: something caused the internal server errors during the selected time frame.
+
+Use **Add to filters** on the `500` card to keep only error spans and continue the investigation.
+
+![Inspect the HTTP 500 errors](/media/docs/explore-traces/traces-drilldown-errors-comparison-http-status-attr-selected-v1.2.png "Inspect the HTTP 500 errors")
 
 ### Use Root cause errors
 
 Select **Root cause errors** for an aggregated view of all of the traces that have errors in them.
-To view additional details, right-click on a line and select **HTTP Outgoing Request**.
+This screen provides critical insights into where and how the `HTTP 500` error occurred in your distributed system.
 
-![Contextual menu available in the Root cause errors tab](/media/docs/explore-traces/explore-traces-errors-rcause-menu.png)
+Using this view, you can see that the Frontend > recommendations services have problems. Specifically, that the `/api/pizza` endpoint chain is failing.
 
-To examine a single example transaction, click on an entry to open one of the individual traces used to construct that aggregate view.
+![Root cause errors tab](/media/docs/explore-traces/traces-drilldown-root-cause-errors-v1.2.png "Root cause errors tab")
 
-![Link to span data from Root cause errors](/media/docs/explore-traces/explore-traces-errors-root-cause.png)
+To view additional details, click the link icon and select **View linked span** to open the trace drawer.
+
+![View linked spans to see details of errors](/media/docs/explore-traces/traces-drilldown-root-cause-trace-drawer-v1.2.png "View linked spans to see details of errors")
+
+Errors spans have a red icon next to them. Select the down arrow next to the errored span to see details.
+
+![Select the down arrow next to the errored span to see details](/media/docs/explore-traces/traces-drilldown-root-cause-trace-expanded-v1.2.png "Select the down arrow next to the errored span to see details")
