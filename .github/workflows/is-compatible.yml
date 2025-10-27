@@ -5,18 +5,18 @@ jobs:
   compatibilitycheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
         with:
           persist-credentials: false
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '20'
           cache: 'yarn'
 
       - name: Restore npm cache
         id: restore-npm-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
             node_modules
@@ -29,7 +29,7 @@ jobs:
       - name: Save npm cache
         id: save-npm-cache
         if: steps.restore-npm-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
             node_modules
