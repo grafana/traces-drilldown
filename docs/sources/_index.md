@@ -72,7 +72,8 @@ To learn more, read:
 * [From multi-line queries to no-code investigations: meeting Grafana users where they are](https://grafana.com/blog/2024/10/22/from-multi-line-queries-to-no-code-investigations-meeting-grafana-users-where-they-are/)
 * [A queryless experience for exploring metrics, logs, traces, and profiles: Introducing the Explore apps suite for Grafana](https://grafana.com/blog/2024/09/24/queryless-metrics-logs-traces-profiles/).
 
-{{< youtube id="a3uB1C2oHA4" >}}
+<!-- Commenting out this video until we can replace it with a new one -->
+<!-- {{< youtube id="a3uB1C2oHA4" >}} -->
 
 ## Explore
 
