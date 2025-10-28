@@ -21,7 +21,7 @@ Grafana Traces Drilldown helps you focus your tracing data exploration.
 Some sections change based on the metric you choose.
 For details on workflows, refer to [Analyze tracing data](../investigate/analyze-tracing-data).
 
-![Numbered sections of the Traces Drilldown app](/media/docs/explore-traces/traces-drilldown-screen-ui-oct25.png)
+![Numbered sections of the Traces Drilldown app](/media/docs/explore-traces/traces-drilldown-screen-parts-numbered-v1.2.png)
 
 1. **Data source selection**:
    At the top left, you select the data source for your traces. In this example, the data source is set to `grafanacloud-traces`.
