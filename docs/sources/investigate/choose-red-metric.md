@@ -23,7 +23,7 @@ For example, selecting **Duration** displays **Root cause latency** and **Slow t
 Choosing **Errors** changes the tabs to **Root cause errors** and **Errored traces**. Rate provides **Service structure**, and **Traces** tabs.
 These tabs are used when you [analyze tracing data](../analyze-tracing-data).
 
-{{< video-embed src="/media/docs/explore-traces/traces-drilldown-select-metric-type.mp4" >}}
+{{< video-embed src="/media/docs/explore-traces/traces-drilldown-select-metric-type-v1.2.mp4" >}}
 
 To choose a RED metric:
 
