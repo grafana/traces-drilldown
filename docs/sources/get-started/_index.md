@@ -92,9 +92,9 @@ Hovering over any of the bars shows a tooltip with information about the value a
 Select **Inspect** on a card to drill into the distribution for that attribute.
 In this example, selecting **Inspect** on `span.http.status_code` shows the distribution by value. Using this view shows the following:
 
-- Normal state: All requests completed successfully (200/201)
-- Error state: Significant portion return 500 errors
-- Root cause: something caused the internal server errors during the selected time frame.
+- Normal state: All requests completed successfully (`200`/`201`)
+- Error state: Significant portion return `500` errors
+- Root cause: something caused the internal server errors during the selected time frame
 
 Use **Add to filters** on the `500` card to keep only error spans and continue the investigation.
 
@@ -105,7 +105,7 @@ Use **Add to filters** on the `500` card to keep only error spans and continue t
 Select **Root cause errors** for an aggregated view of all of the traces that have errors in them.
 This screen provides critical insights into where and how the `HTTP 500` error occurred in your distributed system.
 
-Using this view, you can see that the Frontend > recommendations services have problems. Specifically, that the `/api/pizza` endpoint chain is failing.
+Using this view, you can see that the Frontend > Recommendations services have problems. Specifically, that the `/api/pizza` endpoint chain is failing.
 
 ![Root cause errors tab](/media/docs/explore-traces/traces-drilldown-root-cause-errors-v1.2.png "Root cause errors tab")
 
