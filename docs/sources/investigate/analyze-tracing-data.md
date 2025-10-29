@@ -11,7 +11,7 @@ weight: 500
 
 # Analyze tracing data
 
-To further analyze the filtered spans, use the dynamically changing tabs, **Comparison**, **Structure**, **Root cause analysis**, and **Trace list**.
+To further analyze the filtered spans, use the dynamically changing tabs, **Comparison**, **Structure**, **Root cause analysis**, **Exceptions** (Errors only), and **Trace list**.
 
 When you select a RED metric, the tabs change to match the context.
 
@@ -52,7 +52,7 @@ The **Comparison** tab helps you surface and rank which span attributes are mos
 Upon selecting a metric, the tab computes, for each resource or span attribute, how strongly that attribute value differs between the selected subset (**selection**) and all other spans (**baseline**).
 It lists attribute‑value pairs in descending order of that difference, so the top entries are those most uniquely associated with your signal of interest.
 
-- If you're viewing the **Span rate** or **Errors** metrics, the **selection** contains all erroring spans, while the **baseline** contains all non-erroring spans.
+- If you're viewing the **Span rate** or **Errors** metrics, the **selection** contains all spans with errors, while the **baseline** contains all spans without errors.
 
 - If you're viewing the **Duration** metric, by default the **selection** contains the slowest spans above the 90th percentile, while the **baseline** contains all other spans. You can manually adjust the selection on the duration heatmap.
 
@@ -78,9 +78,9 @@ When selecting **Inspect**, the app shows only one attribute, `span.app.product.
 The Structure tab lets you extract and view aggregate data from your traces.
 The name of the tab differs depending on the metric you are viewing:
 
-* Rate provides **Service structure**
-* Errors provides **Root cause errors**
-* Duration metrics provides **Root cause latency**
+- Rate provides **Service structure**
+- Errors provides **Root cause errors**
+- Duration metrics provides **Root cause latency**
 
 For **Rate**, the **Service structure** tab shows you how your applications talk to each other to fulfill requests.
 Use this tab to analyze the service structure of the traces that match the current filters.
@@ -97,13 +97,42 @@ The pictured spans are an aggregated view compiled using spans from multiple tra
 
 ![Duration metric showing root cause latency](/media/docs/explore-traces/traces-drilldown-traces-view-v1.2.png)
 
+## Use the Exceptions tab (Errors metric only)
+
+Use the **Exceptions** tab to see which exception messages are occurring within your current filters and time range. Exceptions are grouped by message so you can identify the most frequent failures and access the affected traces.
+
+Examples:
+- Inspect individual exceptions by clicking a message to open the **Trace list** pre-filtered for that message, so you can inspect individual traces immediately.
+- Narrow exceptions by service, environment, namespace, or any span/resource attribute by combining with the **Filters** bar.
+
+![Exceptions tab](/media/docs/explore-traces/traces-drilldown-error-exceptions-v1.2.png)
+
+The Exceptions tab has a table with the following columns:
+- **Message**: Exception text grouped by unique message
+- **Type**: Exception class or code when available
+- **Trace service**: Service emitting the exception most recently
+- **Occurrences**: Count of matching exceptions for the selected range
+- **Time series**: Sparkline of occurrences over time
+- **Last seen**: The most recent occurrence
+
+The **Exceptions** tab is available when the **Errors** metric is selected and respects the current time range and filters.
+It works with both **Root spans** and **All spans** selections. The results reflect the data in scope.
+
+If you notice a rise in the Errors metric, you can use the **Exceptions** tab to investigate the issue.
+
+1. Select **Errors** as the metric.
+2. Open the **Exceptions** tab.
+3. The top row shows `Payment request failed. Too many requests (error code 429)` with rising occurrences and a spiky sparkline.
+4. Click the message to jump to the Trace list pre-filtered by that exception.
+5. Sort by Duration to find the most impacted requests, then open a trace to inspect retries and upstream dependencies.
+
 ## Use the Trace list tab
 
 Each RED metric has a trace list:
 
-* **Rate** provides a tab that lists **Traces**.
-* **Errors** provides a list of **Errored traces**.
-* **Duration** (**spans**) lists **Slow traces**.
+- **Rate** provides a tab that lists **Traces**.
+- **Errors** provides a list of traces with errors.
+- **Duration** (**spans**) lists **Slow traces**.
 
 From this view, you can add additional attributes to new columns using **Add extra columns**.
 
@@ -122,7 +151,7 @@ For more information about the time range picker, refer to [Use dashboards](http
 
 ## Open a trace by ID
 
-Use the header’s Trace ID input to open a specific trace:
+Use the header's Trace ID input to open a specific trace:
 
 1. Paste a trace ID into the Trace ID input in the header.
 1. Press Enter or click **Submit** to open the trace in the drawer.
@@ -134,4 +163,3 @@ If a time range is selected, Traces Drilldown searches within the currently sele
 If a trace isn't found, an error message appears—verify the ID and widen the time range if necessary.
 
 This behavior depends on the Tempo data source configuration. Refer to [Tempo data source configuration](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/datasources/tempo/configure-tempo-data-source/) for more information.
-
