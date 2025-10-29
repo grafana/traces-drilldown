@@ -66,14 +66,21 @@ Using the app, you can:
 * Browse automatic visualizations of your data based on its characteristics
 * Do all of this without writing TraceQL queries
 
-{{< docs/shared source="grafana" lookup="plugins/rename-note.md" version="<GRAFANA_VERSION>" >}}
+{{< docs/learning-journeys title="Explore traces using Traces Drilldown" url="https://grafana.com/docs/learning-journeys/drilldown-traces/" >}}
 
 To learn more, read:
 * [From multi-line queries to no-code investigations: meeting Grafana users where they are](https://grafana.com/blog/2024/10/22/from-multi-line-queries-to-no-code-investigations-meeting-grafana-users-where-they-are/)
 * [A queryless experience for exploring metrics, logs, traces, and profiles: Introducing the Explore apps suite for Grafana](https://grafana.com/blog/2024/09/24/queryless-metrics-logs-traces-profiles/).
 
-<!-- Commenting out this video until we can replace it with a new one -->
-<!-- {{< youtube id="a3uB1C2oHA4" >}} -->
+{{< docs/play title="Grafana Traces Drilldown" url="https://play.grafana.org/a/grafana-exploretraces-app/explore" >}}
+
+## Who is Grafana Traces Drilldown for?
+
+Grafana Traces Drilldown is for engineers of all levels of operational expertise. You no longer need to be an SRE wizard to get value from your traces.
+
+Traditionally, you'd need a deep understanding of your systems and the tracing query language, TraceQL, to get the most out of your tracing data.
+
+With Grafana Traces Drilldown, you get the same powerful insights, by just viewing and clicking in visualizations which are automatically generated from your tracing data.
 
 ## Explore
 
