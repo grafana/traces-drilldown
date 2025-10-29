@@ -28,11 +28,16 @@ You can change the **Scope** to show **Resource** or **Span**.
 Using the **Group by** selector, you can group the selected metric by different attributes.
 For example, if you have selected **Errors** as a metric type and then choose the `service.name` attribute, the displayed results show the number of errors sorted by the `service.name` with the most matches.
 
-Use the **Attributes** sidebar to choose the attribute for **Group by**. You can search, scope by **Resource** or **Span**, and use **Favorites** for quick access. Attributes already in your **Filters** are listed at the top of the Attribute sidebar.
+Use the **Attributes** sidebar to select the attribute for **Group by**.
+You can search, scope by **Resource** or **Span**, and use **Favorites** for quick access.
+Attributes already in your **Filters** are listed at the top of the Attribute sidebar.
 
 ![Errors metric showing the **Breakdown** tab without filters](/media/docs/explore-traces/traces-drilldown-breakdown-tab-v1.2.png)
 
-The app defaults to `service.name` and displays other commonly used resource level attributes such as `cluster`, `environment`, and `namespace`.
+By default, the selected attribute is your first **Favorite** or `resource.service.name`.
+You can reorder **Favorites** to change this default.
+The **Attributes** sidebar displays other commonly used resource level attributes such as `cluster`, `environment`, and `namespace`.
+
 
 ### Choose percentiles (Duration only)
 
