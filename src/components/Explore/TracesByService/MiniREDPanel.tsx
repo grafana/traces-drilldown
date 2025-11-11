@@ -10,16 +10,17 @@ import {
   SceneObjectState,
 } from '@grafana/scenes';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
+import { locationService } from '@grafana/runtime';
 import { explorationDS, MetricFunction } from 'utils/shared';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';
 import { barsPanelConfig } from '../panels/barsPanel';
-import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
+import { getMetricsTempoQuery, getQuerySample } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { RadioButtonList, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
-import { fieldHasEmptyValues, getOpenTrace, getTraceExplorationScene } from '../../../utils/utils';
+import { fieldHasEmptyValues, getOpenTrace, getTraceExplorationScene, getUrlForExploration } from '../../../utils/utils';
 import { MINI_PANEL_HEIGHT } from './TracesByServiceScene';
 import { buildHistogramQuery } from '../queries/histogram';
 import { histogramPanelConfig } from '../panels/histogram';
@@ -31,12 +32,14 @@ export interface MiniREDPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
   metric: MetricFunction;
   isStreaming?: boolean;
+  embeddedMini?: boolean;
 }
 
 export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
   constructor(state: MiniREDPanelState) {
     super({
       isStreaming: false,
+      embeddedMini: state.embeddedMini ?? false,
       ...state,
     });
 
@@ -86,15 +89,17 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
   }
 
   private _onActivate() {
+    const sample = getQuerySample(this);
+
     this.setState({
       $data: new SceneDataTransformer({
         $data: new StepQueryRunner({
           maxDataPoints: this.state.metric === 'duration' ? 24 : 64,
           datasource: explorationDS,
-          queries: [this.state.metric === 'duration' ? buildHistogramQuery() : getMetricsTempoQuery({ metric: this.state.metric, sample: true })],
+          queries: [this.state.metric === 'duration' ? buildHistogramQuery() : getMetricsTempoQuery({ metric: this.state.metric, sample })],
         }),
         transformations:
-          this.state.metric === 'duration'
+          this.state.metric === 'duration' || this.state.embeddedMini
             ? [...removeExemplarsTransformation()]
             : [...exemplarsTransformations(getOpenTrace(this))],
       }),
@@ -136,16 +141,21 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<MiniREDPanel>) => {
-    const { panel, isStreaming } = model.useState();
+    const { panel, isStreaming, embeddedMini } = model.useState();
     const styles = useStyles2(getStyles);
     const traceExploration = getTraceExplorationScene(model);
 
-    const selectMetric = () => {
+    const selectMetric = (embeddedMini?: boolean) => {
       reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.metric_changed, {
         metric: model.state.metric,
         location: 'panel',
       });
       traceExploration.onChangeMetricFunction(model.state.metric);
+
+      if (embeddedMini) {
+        const url = getUrlForExploration(traceExploration);
+        locationService.push(url);
+      }
     };
 
     if (!panel) {
@@ -153,16 +163,18 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
     }
 
     return (
-      <div className={css([styles.container, styles.clickable])} onClick={selectMetric}>
-        <div className={styles.headerWrapper}>
-          <RadioButtonList
-            className={styles.radioButton}
-            name={`metric-${model.state.metric}`}
-            options={[{ title: '', value: 'selected' }]}
-            onChange={() => selectMetric()}
-            value={'not-selected'}
-          />
-        </div>
+      <div className={css([styles.container, styles.clickable])} onClick={() => selectMetric(embeddedMini)}>
+        {!embeddedMini && (
+          <div className={styles.headerWrapper}>
+            <RadioButtonList
+              className={styles.radioButton}
+              name={`metric-${model.state.metric}`}
+              options={[{ title: '', value: 'selected' }]}
+              onChange={() => selectMetric(embeddedMini)}
+              value={'not-selected'}
+            />
+          </div>
+        )}
         {isStreaming && (
           <div className={styles.indicatorWrapper}>
             <StreamingIndicator isStreaming={true} iconSize={10} />

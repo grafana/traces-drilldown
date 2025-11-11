@@ -23,8 +23,13 @@ function buildTraceExplorationFromState({
 
   const exploration = new TraceExploration({ $timeRange, embedded: true, initialMetric: state.initialMetric ?? 'rate', ...state });
 
-  const params = new URLSearchParams(window.location.search);
-  sceneUtils.syncStateFromSearchParams(exploration, params);
+  // Otherwise, we'll sync with the URL when in embedded mini mode,
+  // and this conflicts the embedded mini mode query when Traces Drilldown is also opened
+  // because the URL is already synced with Traces Drilldown
+  if (!state.embeddedMini) {
+    const params = new URLSearchParams(window.location.search);
+    sceneUtils.syncStateFromSearchParams(exploration, params);
+  }
 
   return exploration;
 }

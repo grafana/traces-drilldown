@@ -1,13 +1,15 @@
+import { getTraceExplorationScene } from 'utils/utils';
 import { ALL, MetricFunction, VAR_FILTERS_EXPR, VAR_DURATION_PERCENTILES_EXPR } from '../../../utils/shared';
+import { SceneObject } from '@grafana/scenes';
 
 interface QueryOptions {
   metric: MetricFunction;
   extraFilters?: string;
   groupByKey?: string;
-  sample?: boolean;
+  sample?: string;
 }
 
-export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample = false }: QueryOptions) {
+export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample = '' }: QueryOptions) {
   // Generate span set filters
   let filters = `${VAR_FILTERS_EXPR}`;
 
@@ -42,9 +44,12 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample 
 
   const groupBy = groupByAttrs.length ? `by(${groupByAttrs.join(', ')})` : '';
 
-  const sampleStr = sample ? ' with(sample=true)' : '';
+  return `{${filters}} | ${metricFn} ${groupBy}${sample}`;
+}
 
-  return `{${filters}} | ${metricFn} ${groupBy}${sampleStr}`;
+export function getQuerySample(model: SceneObject): string {
+  const traceExploration = getTraceExplorationScene(model);
+  return traceExploration?.state?.embeddedMini ? ' with(span_sample=0.1)' : ' with(sample=true)';
 }
 
 export function getMetricsTempoQuery(options: QueryOptions) {

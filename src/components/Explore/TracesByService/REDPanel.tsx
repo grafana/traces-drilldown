@@ -16,7 +16,7 @@ import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';
 import { barsPanelConfig } from '../panels/barsPanel';
-import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
+import { getMetricsTempoQuery, getQuerySample } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { css } from '@emotion/css';
 import { RadioButtonList, useStyles2 } from '@grafana/ui';
@@ -28,6 +28,8 @@ import {
   getMetricVariable,
   getOpenTrace,
   getTraceByServiceScene,
+  getTraceExplorationScene,
+  getUrlForExploration,
   shouldShowSelection,
 } from '../../../utils/utils';
 import { getHistogramVizPanel, yBucketToDuration } from '../panels/histogram';
@@ -37,14 +39,16 @@ import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
-import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 import { useServiceName } from 'pages/Explore/TraceExploration';
+import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
+import { locationService } from '@grafana/runtime';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
   actions?: SceneObject[];
   yBuckets?: number[];
   isStreaming?: boolean;
+  embeddedMini?: boolean;
 }
 
 export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
@@ -142,7 +146,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           } else if (newData.data?.state === LoadingState.Loading) {
             this.setState({
               panel: new SceneFlexLayout({
-                direction: 'column',
+                direction: 'row',
                 children: [
                   new LoadingStateScene({
                     component: () => SkeletonComponent(1),
@@ -180,15 +184,16 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
 
   private _onActivate() {
     const metric = getMetricVariable(this).state.value as MetricFunction;
+    const sample = getQuerySample(this);
 
     this.setState({
       $data: new SceneDataTransformer({
         $data: new StepQueryRunner({
           maxDataPoints: this.isDuration() ? 24 : 64,
           datasource: explorationDS,
-          queries: [this.isDuration() ? buildHistogramQuery() : getMetricsTempoQuery({ metric, sample: true })],
+          queries: [this.isDuration() ? buildHistogramQuery() : getMetricsTempoQuery({ metric, sample })],
         }),
-        transformations: this.isDuration()
+        transformations: this.isDuration() || this.state.embeddedMini
           ? [...removeExemplarsTransformation()]
           : [...exemplarsTransformations(getOpenTrace(this))],
       }),
@@ -206,7 +211,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
-    const panel = barsPanelConfig(type, 70).setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(type, this.state.embeddedMini ? undefined : 70).setHoverHeader(true).setDisplayMode('transparent');
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
@@ -259,10 +264,12 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<REDPanel>) => {
-    const { panel, actions, isStreaming } = model.useState();
+    const { panel, actions, isStreaming, embeddedMini } = model.useState();
     const { value: metric } = getMetricVariable(model).useState();
+    const traceExploration = getTraceExplorationScene(model);
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
+    const timeRange = sceneGraph.getTimeRange(model).useState();
 
     if (!panel) {
       return;
@@ -292,30 +299,43 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
 
     const subtitle = getSubtitle();
 
+    const selectMetric = (embeddedMini?: boolean) => {
+      if (embeddedMini) {
+        const url = getUrlForExploration(traceExploration);
+        locationService.push(url);
+      }
+    };
+
     return (
-      <div className={styles.container}>
-        <div className={styles.headerContainer}>
-          <div className={styles.titleContainer}>
-            <div className={styles.titleRadioWrapper}>
-              <RadioButtonList
-                name={`metric-${metric}`}
-                options={[{ title: '', value: 'selected' }]}
-                value={'selected'}
-              />
-              <span>{getTitle()}</span>
+      <div className={styles.container} onClick={() => selectMetric(embeddedMini)}>
+        {!embeddedMini && (
+          <div className={styles.headerContainer}>
+            <div className={styles.titleContainer}>
+              <div className={styles.titleRadioWrapper}>
+                <RadioButtonList
+                  name={`metric-${metric}`}
+                  options={[{ title: '', value: 'selected' }]}
+                  value={'selected'}
+                />
+                <span>{getTitle()}</span>
+              </div>
+              {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
             </div>
-            {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
+            <div className={styles.actions}>
+              {isStreaming && <StreamingIndicator isStreaming={true} iconSize={10} />}
+              {actions?.map((action) => <action.Component model={action} key={action.state.key} />)}
+            </div>
           </div>
-          <div className={styles.actions}>
-            {isStreaming && <StreamingIndicator isStreaming={true} iconSize={10} />}
-            {actions?.map((action) => <action.Component model={action} key={action.state.key} />)}
-          </div>
-        </div>
-        <panel.Component model={panel} />
-        <InsightsTimelineWidget
-          serviceName={serviceName || ''}
-          model={model}
-        />
+        )}
+        <panel.Component model={panel}  />
+        {!embeddedMini && timeRange && (
+          <InsightsTimelineWidget
+            serviceName={serviceName || ''}
+            metric={metric as MetricFunction}
+            startTime={timeRange.from.valueOf()}
+            endTime={timeRange.to.valueOf()}
+          />
+        )}
       </div>
     );
   };
@@ -341,6 +361,8 @@ export const getMinimumsForDuration = (yBuckets: number[]) => {
 function getStyles(theme: GrafanaTheme2) {
   return {
     container: css({
+      flex: 1,
+      cursor: 'pointer',
       width: '100%',
       display: 'flex',
       flexDirection: 'column',

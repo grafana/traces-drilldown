@@ -77,7 +77,7 @@ describe('getMetricsTempoQuery', () => {
   });
 
   it('should return correct query with sampling', () => {
-    const query = getMetricsTempoQuery({ metric: 'rate', groupByKey: 'service', sample: true });
+    const query = getMetricsTempoQuery({ metric: 'rate', groupByKey: 'service', sample: ' with(sample=true)' });
     expect(query).toEqual({
       filters: [],
       limit: 100,
