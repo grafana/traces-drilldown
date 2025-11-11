@@ -110,9 +110,9 @@ Examples:
 The Exceptions tab has a table with the following columns:
 - **Message**: Exception text grouped by unique message
 - **Type**: Exception class or code when available
-- **Trace service**: Service emitting the exception most recently
+- **Trace service**: Service emitting the exception
 - **Occurrences**: Count of matching exceptions for the selected range
-- **Time series**: Sparkline of occurrences over time
+- **Frequency**: Sparkline of occurrences over time
 - **Last seen**: The most recent occurrence
 
 The **Exceptions** tab is available when the **Errors** metric is selected and respects the current time range and filters.
