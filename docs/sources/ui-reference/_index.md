@@ -39,6 +39,7 @@ For details on workflows, refer to [Analyze tracing data](../investigate/analyze
 1. **Investigation-focused tabs**:
    Each metric type has its own set of tabs that help you explore your tracing data. These tabs differ depending on the metric type you've selected.
    For example, when you use Span rate, then the Investigation type tabs show **Breakdown**, **Service structure**, **Comparison**, and **Traces**.
+   - **Exceptions** (**Errors** only): Group exception messages with counts, trend sparkline, emitting service, and last-seen.
     - Percentiles (Duration only): Choose `p50`, `p75`, `p90`, `p95`, `p99` for Duration views. Default: `p90`. If you clear all, `p90` applies automatically.
 
 1. **Add to filters**:
