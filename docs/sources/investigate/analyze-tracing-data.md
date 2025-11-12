@@ -115,8 +115,9 @@ The Exceptions tab has a table with the following columns:
 - **Frequency**: Sparkline of occurrences over time
 - **Last seen**: The most recent occurrence
 
-The **Exceptions** tab is available when the **Errors** metric is selected and respects the current time range and filters.
-It works with both **Root spans** and **All spans** selections. The results reflect the data in scope.
+The **Exceptions** tab is available when the **Errors** metics is selected and exceptions are present. 
+The tab respects the current time range and filters.
+For example, when Errors are selected, **Exceptions** works with both **Root spans** and **All spans** selections. The results reflect the data in scope.
 
 If you notice a rise in the Errors metric, you can use the **Exceptions** tab to investigate the issue.
 
