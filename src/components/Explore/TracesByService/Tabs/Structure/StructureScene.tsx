@@ -366,9 +366,17 @@ function buildQuery(metric: MetricFunction) {
     selectionQuery.length ? `&& ${selectionQuery}` : ''
   }`;
 
+  // For errors and duration:
+  // ({${rootSelectors}} &>> { ${metricQuery} }) # finds trees of spans in error or with high duration
+  //    || ({${rootSelectors}})                  # finds single spans in error or with high duration
+  let query = `({${rootSelectors}} &>> { ${metricQuery} }) || ({${rootSelectors}}) | select(status, resource.service.name, name, nestedSetParent, nestedSetLeft, nestedSetRight)`;
+  if (metric === 'rate') {
+    query = `{${rootSelectors}} &>> { ${metricQuery} } | select(status, resource.service.name, name, nestedSetParent, nestedSetLeft, nestedSetRight)`;
+  } 
+
   return {
     refId: 'A',
-    query: `({${rootSelectors}} &>> { ${metricQuery} }) || ({${rootSelectors}}) | select(status, resource.service.name, name, nestedSetParent, nestedSetLeft, nestedSetRight)`,
+    query: query,
     queryType: 'traceql',
     tableType: 'raw',
     limit: 200,

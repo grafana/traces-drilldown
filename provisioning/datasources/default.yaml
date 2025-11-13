@@ -16,3 +16,19 @@ datasources:
     editable: false
     apiVersion: 1
     uid: tempo
+
+  - name: Tempo (Local Port Forward)
+    type: tempo
+    access: proxy
+    orgId: 1
+    url: http://host.docker.internal:3100/tempo
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: false
+    apiVersion: 1
+    uid: tempo-local
+    jsonData:
+      httpHeaderName1: 'X-Scope-OrgID'
+    secureJsonData:
+      httpHeaderValue1: '6121'
