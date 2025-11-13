@@ -362,11 +362,13 @@ function buildQuery(metric: MetricFunction) {
       break;
   }
 
+  const rootSelectors = `${VAR_FILTERS_EXPR} ${
+    selectionQuery.length ? `&& ${selectionQuery}` : ''
+  }`;
+
   return {
     refId: 'A',
-    query: `{${VAR_FILTERS_EXPR} ${
-      selectionQuery.length ? `&& ${selectionQuery}` : ''
-    }} &>> { ${metricQuery} } | select(status, resource.service.name, name, nestedSetParent, nestedSetLeft, nestedSetRight)`,
+    query: `({${rootSelectors}} &>> { ${metricQuery} }) || ({${rootSelectors}}) | select(status, resource.service.name, name, nestedSetParent, nestedSetLeft, nestedSetRight)`,
     queryType: 'traceql',
     tableType: 'raw',
     limit: 200,
