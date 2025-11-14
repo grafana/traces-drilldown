@@ -24,6 +24,7 @@ export interface EmbeddedTraceExplorationState extends SharedExplorationState {
 
 export interface SharedExplorationState {
   embedded?: boolean;
+  embeddedMini?: boolean;
   embedderName?: string;
   returnToPreviousSource?: string;
 
