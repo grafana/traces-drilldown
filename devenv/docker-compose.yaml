@@ -13,6 +13,8 @@ services:
     volumes:
       - ../dist:/var/lib/grafana/plugins/grafana-explore-traces
       - ../provisioning:/etc/grafana/provisioning
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   tempo:
     image: grafana/tempo:latest@sha256:009af35797ad7169d264436e3d06e1173afa6c3848bfd8f09d5e914b310a4819
