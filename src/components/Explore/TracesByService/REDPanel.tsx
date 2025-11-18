@@ -263,6 +263,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const { value: metric } = getMetricVariable(model).useState();
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
+    const timeRange = sceneGraph.getTimeRange(model).useState();
 
     if (!panel) {
       return;
@@ -312,10 +313,14 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           </div>
         </div>
         <panel.Component model={panel} />
-        <InsightsTimelineWidget
-          serviceName={serviceName || ''}
-          model={model}
-        />
+        {timeRange && (
+          <InsightsTimelineWidget
+            serviceName={serviceName || ''}           
+            metric={metric as MetricFunction}
+            startTime={timeRange.from.valueOf()}
+            endTime={timeRange.to.valueOf()}
+          />
+        )}
       </div>
     );
   };
