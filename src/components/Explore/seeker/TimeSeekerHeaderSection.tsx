@@ -168,7 +168,7 @@ export const TimeSeekerHeaderSection: React.FC<Props> = ({ traceExploration }) =
       datasource: { uid: String(datasourceUid) },
       queries: [query],
       $timeRange,
-      maxDataPoints: 400,
+      maxDataPoints: 800,
     });
 
     runner.runQueries();
@@ -226,7 +226,13 @@ export const TimeSeekerHeaderSection: React.FC<Props> = ({ traceExploration }) =
         </div>
       )}
       {loadingState !== LoadingState.Error && seekerData && width > 0 && (
-        <TimeSeeker data={seekerData} width={width} height={SEEKER_HEIGHT} onChangeTimeRange={onRangeChange} />
+        <TimeSeeker
+          data={seekerData}
+          width={width}
+          height={SEEKER_HEIGHT}
+          metric={metricValue as MetricFunction}
+          onChangeTimeRange={onRangeChange}
+        />
       )}
     </div>
   );
@@ -277,6 +283,7 @@ function buildTimeSeekerQuery(metric: MetricFunction, filterExpression: string, 
     tableType: 'spans' as const,
     limit: 200,
     spss: 10,
+    step: '30s',
     filters: [],
   };
 }

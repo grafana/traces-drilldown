@@ -1,7 +1,17 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { AbsoluteTimeRange, durationToMilliseconds, parseDuration, PanelData, FieldConfigSource } from '@grafana/data';
+import { MetricFunction } from 'utils/shared';
 import { css, cx } from '@emotion/css';
-import { AxisPlacement, UPlotChart, UPlotConfigBuilder, useStyles2, useTheme2, IconButton, Popover } from '@grafana/ui';
+import {
+  AxisPlacement,
+  UPlotChart,
+  UPlotConfigBuilder,
+  useStyles2,
+  useTheme2,
+  IconButton,
+  Popover,
+  DrawStyle,
+} from '@grafana/ui';
 import { PanelDataErrorView } from '@grafana/runtime';
 import { ContextWindowSelector } from './ContextWindowSelector';
 
@@ -19,6 +29,7 @@ interface TimeSeekerProps {
   height: number;
   id?: number;
   fieldConfig?: FieldConfigSource;
+  metric?: MetricFunction;
   onChangeTimeRange: (range: AbsoluteTimeRange) => void;
 }
 
@@ -56,7 +67,15 @@ const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
   `,
 });
 
-export const TimeSeeker: React.FC<TimeSeekerProps> = ({ data, width, height, fieldConfig, id, onChangeTimeRange }) => {
+export const TimeSeeker: React.FC<TimeSeekerProps> = ({
+  data,
+  width,
+  height,
+  fieldConfig,
+  id,
+  metric,
+  onChangeTimeRange,
+}) => {
   const theme = useTheme2();
   const styles = useStyles2(() => getStyles(theme));
   const now = Date.now();
@@ -307,6 +326,37 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({ data, width, height, fie
       theme,
     });
 
+    b.addAxis({
+      placement: AxisPlacement.Left,
+      scaleKey: 'y',
+      theme,
+      show: false,
+      size: 0,
+    });
+
+    // Add the bar series with metric-specific color
+    const isErrorsMetric = metric === 'errors';
+
+    b.addSeries({
+      scaleKey: 'y',
+      lineWidth: 0,
+      show: true,
+      theme,
+      drawStyle: DrawStyle.Bars,
+      fillOpacity: 50,
+    });
+
+    // Apply color override for the series
+    const internalConfig = b.getConfig();
+    if (internalConfig.series && internalConfig.series[1]) {
+      internalConfig.series[1].stroke = isErrorsMetric
+        ? theme.visualization.getColorByName('semi-dark-red')
+        : theme.visualization.getColorByName('green');
+      internalConfig.series[1].fill = isErrorsMetric
+        ? theme.visualization.getColorByName('semi-dark-red')
+        : theme.visualization.getColorByName('green');
+    }
+
     b.addHook('setSelect', (u: uPlot) => {
       if (isProgrammaticSelect.current || skipNextSelectUpdate.current) {
         isProgrammaticSelect.current = false;
@@ -402,16 +452,17 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({ data, width, height, fie
       }
     });
 
-    const internalConfig = b.getConfig();
-    internalConfig.scales = internalConfig.scales ?? {};
-    internalConfig.scales.x = {
-      ...internalConfig.scales.x,
+    const finalConfig = b.getConfig();
+    finalConfig.scales = finalConfig.scales ?? {};
+    finalConfig.scales.x = {
+      ...finalConfig.scales.x,
       range: [visibleRange.from, visibleRange.to],
     };
 
     return b;
   }, [
     theme,
+    metric,
     visibleRange.from,
     visibleRange.to,
     timelineRange.from,
