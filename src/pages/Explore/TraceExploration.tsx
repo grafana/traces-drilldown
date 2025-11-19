@@ -55,6 +55,7 @@ import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWi
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
 import { DataLinksCustomContext } from './DataLinksCustomContext';
+import { TimeSeekerHeaderSection } from 'components/Explore/seeker/TimeSeekerHeaderSection';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -518,6 +519,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           />
         </Stack>
       </Stack>
+      <TimeSeekerHeaderSection traceExploration={traceExploration} />
     </div>
   );
 };
@@ -683,6 +685,14 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
       marginTop: theme.spacing(1),
       display: 'flex',
       gap: theme.spacing(1),
+    }),
+    filtersColumn: css({
+      label: 'filtersColumn',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: theme.spacing(1),
+      flex: 1,
+      minWidth: 0,
     }),
   };
 }
