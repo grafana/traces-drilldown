@@ -2,16 +2,7 @@ import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { AbsoluteTimeRange, durationToMilliseconds, parseDuration, PanelData, FieldConfigSource } from '@grafana/data';
 import { MetricFunction } from 'utils/shared';
 import { css, cx } from '@emotion/css';
-import {
-  AxisPlacement,
-  UPlotChart,
-  UPlotConfigBuilder,
-  useStyles2,
-  useTheme2,
-  IconButton,
-  Popover,
-  DrawStyle,
-} from '@grafana/ui';
+import { AxisPlacement, UPlotChart, UPlotConfigBuilder, useStyles2, useTheme2, Popover, DrawStyle } from '@grafana/ui';
 import { PanelDataErrorView } from '@grafana/runtime';
 import { ContextWindowSelector } from './ContextWindowSelector';
 
@@ -26,11 +17,18 @@ export interface SimpleOptions {
 interface TimeSeekerProps {
   data: PanelData;
   width: number;
-  height: number;
   id?: number;
   fieldConfig?: FieldConfigSource;
   metric?: MetricFunction;
   onChangeTimeRange: (range: AbsoluteTimeRange) => void;
+  renderControls?: (controls: {
+    onPanLeft: () => void;
+    onPanRight: () => void;
+    onZoomIn: () => void;
+    onZoomOut: () => void;
+    onReset: () => void;
+    onOpenContextSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  }) => React.ReactNode;
 }
 
 const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
@@ -70,11 +68,11 @@ const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
 export const TimeSeeker: React.FC<TimeSeekerProps> = ({
   data,
   width,
-  height,
   fieldConfig,
   id,
   metric,
   onChangeTimeRange,
+  renderControls,
 }) => {
   const theme = useTheme2();
   const styles = useStyles2(() => getStyles(theme));
@@ -560,64 +558,66 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
     return <PanelDataErrorView fieldConfig={fieldConfig} panelId={id ?? 0} data={data} needsStringField />;
   }
 
+  const controlHandlers = {
+    onPanLeft: () => panContextWindow('left'),
+    onPanRight: () => panContextWindow('right'),
+    onZoomIn: () => zoomContextWindow(0.5),
+    onZoomOut: () => zoomContextWindow(2),
+    onReset: resetContextWindow,
+    onOpenContextSelector: (e: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(e.currentTarget),
+  };
+
   return (
-    <div className={cx(styles.wrapper)} style={{ width, height }}>
-      <div className={styles.controlRow}>
-        <IconButton name="calendar-alt" tooltip="Set context window" onClick={(e) => setAnchorEl(e.currentTarget)} />
-        {anchorEl && (
-          <Popover
-            referenceElement={anchorEl}
-            show={true}
-            content={
-              <div className={styles.popoverContent}>
-                <ContextWindowSelector
-                  dashboardFrom={dashboardFrom}
-                  dashboardTo={dashboardTo}
-                  now={now}
-                  uplotRef={uplotRef}
-                  timelineRange={timelineRange}
-                  visibleRange={visibleRange}
-                  setVisibleRange={(r) => {
-                    const oldVisibleFrom = visibleRange.from;
-                    const oldVisibleTo = visibleRange.to;
-                    const visibleSpan = oldVisibleTo - oldVisibleFrom;
+    <div className={cx(styles.wrapper)}>
+      {renderControls && <div className={styles.controlRow}>{renderControls(controlHandlers)}</div>}
+      {anchorEl && (
+        <Popover
+          referenceElement={anchorEl}
+          show={true}
+          content={
+            <div className={styles.popoverContent}>
+              <ContextWindowSelector
+                dashboardFrom={dashboardFrom}
+                dashboardTo={dashboardTo}
+                now={now}
+                uplotRef={uplotRef}
+                timelineRange={timelineRange}
+                visibleRange={visibleRange}
+                setVisibleRange={(r) => {
+                  const oldVisibleFrom = visibleRange.from;
+                  const oldVisibleTo = visibleRange.to;
+                  const visibleSpan = oldVisibleTo - oldVisibleFrom;
 
-                    const relFrom = (timelineRange.from - oldVisibleFrom) / visibleSpan;
-                    const relTo = (timelineRange.to - oldVisibleFrom) / visibleSpan;
+                  const relFrom = (timelineRange.from - oldVisibleFrom) / visibleSpan;
+                  const relTo = (timelineRange.to - oldVisibleFrom) / visibleSpan;
 
-                    const newVisibleFrom = r.from;
-                    const newVisibleTo = r.to;
+                  const newVisibleFrom = r.from;
+                  const newVisibleTo = r.to;
 
-                    const newTimelineFrom = newVisibleFrom + relFrom * (newVisibleTo - newVisibleFrom);
-                    const newTimelineTo = newVisibleFrom + relTo * (newVisibleTo - newVisibleFrom);
+                  const newTimelineFrom = newVisibleFrom + relFrom * (newVisibleTo - newVisibleFrom);
+                  const newTimelineTo = newVisibleFrom + relTo * (newVisibleTo - newVisibleFrom);
 
-                    setVisibleRange(r, true);
-                    requestAnimationFrame(() => {
-                      suppressNextDashboardUpdate.current = true;
-                      setTimelineRange({ from: newTimelineFrom, to: newTimelineTo });
+                  setVisibleRange(r, true);
+                  requestAnimationFrame(() => {
+                    suppressNextDashboardUpdate.current = true;
+                    setTimelineRange({ from: newTimelineFrom, to: newTimelineTo });
 
-                      const u = uplotRef.current;
-                      if (u) {
-                        u.setSelect({ left: 0, top: 0, width: 0, height: 0 });
-                      }
-                    });
-                  }}
-                  setRelativeContextDuration={(d) => {
-                    applyRelativeContextWindow.current = d;
-                  }}
-                  setTimelineRange={setTimelineRange}
-                  onClose={() => setAnchorEl(null)}
-                />
-              </div>
-            }
-          />
-        )}
-        <IconButton tooltip="Pan left" name="arrow-left" onClick={() => panContextWindow('left')} />
-        <IconButton tooltip="Zoom out context" name="search-minus" onClick={() => zoomContextWindow(2)} />
-        <IconButton tooltip="Zoom in context" name="search-plus" onClick={() => zoomContextWindow(0.5)} />
-        <IconButton tooltip="Pan right" name="arrow-right" onClick={() => panContextWindow('right')} />
-        <IconButton tooltip="Reset context window" name="crosshair" onClick={resetContextWindow} />
-      </div>
+                    const u = uplotRef.current;
+                    if (u) {
+                      u.setSelect({ left: 0, top: 0, width: 0, height: 0 });
+                    }
+                  });
+                }}
+                setRelativeContextDuration={(d) => {
+                  applyRelativeContextWindow.current = d;
+                }}
+                setTimelineRange={setTimelineRange}
+                onClose={() => setAnchorEl(null)}
+              />
+            </div>
+          }
+        />
+      )}
       <div style={{ position: 'relative', width: width, height: 50 }}>
         <UPlotChart data={[timeValues, valueValues]} width={width} height={50} config={builder} />
         {dragStyles.dragOverlayStyle && (

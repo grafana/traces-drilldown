@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AbsoluteTimeRange, GrafanaTheme2, LoadingState, PanelData, TimeRange, dateTime } from '@grafana/data';
 import { SceneQueryRunner, SceneTimeRange } from '@grafana/scenes';
-import { Alert, Spinner, Text, useStyles2 } from '@grafana/ui';
+import { Alert, Spinner, Text, useStyles2, IconButton } from '@grafana/ui';
 import { css } from '@emotion/css';
 
 import { TimeSeeker } from './TimeSeeker';
@@ -17,7 +17,6 @@ import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { MetricFunction } from 'utils/shared';
 
 const DEFAULT_WINDOW_MS = 24 * 60 * 60 * 1000;
-const SEEKER_HEIGHT = 90;
 
 interface Props {
   traceExploration: TraceExploration;
@@ -31,6 +30,15 @@ export const TimeSeekerHeaderSection: React.FC<Props> = ({ traceExploration }) =
   const [panelData, setPanelData] = useState<PanelData | null>(null);
   const [loadingState, setLoadingState] = useState<LoadingState>(LoadingState.NotStarted);
   const [width, setWidth] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const controlHandlersRef = useRef<{
+    onPanLeft: () => void;
+    onPanRight: () => void;
+    onZoomIn: () => void;
+    onZoomOut: () => void;
+    onReset: () => void;
+    onOpenContextSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  } | null>(null);
 
   const datasourceVar = getDatasourceVariable(traceExploration);
   const { value: datasourceUid } = datasourceVar.useState();
@@ -205,27 +213,93 @@ export const TimeSeekerHeaderSection: React.FC<Props> = ({ traceExploration }) =
 
   return (
     <div className={styles.container} ref={containerRef}>
-      {loadingState === LoadingState.Error && (
-        <Alert severity="error" title="Unable to load context data">
-          Check your data source configuration or adjust your filters.
-        </Alert>
-      )}
-      {loadingState !== LoadingState.Error && (!seekerData || width === 0) && (
-        <div className={styles.placeholder}>
-          <Spinner size={16} />
-          <Text variant="bodySmall" color="secondary">
-            Loading sparkline…
-          </Text>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <IconButton
+            name={isCollapsed ? 'angle-right' : 'angle-down'}
+            tooltip={isCollapsed ? 'Expand time range seeker' : 'Collapse time range seeker'}
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            size="sm"
+            variant="secondary"
+          />
+          <Text weight="medium">Time range seeker</Text>
+          {loadingState === LoadingState.Loading && <Spinner size={12} inline />}
         </div>
-      )}
-      {loadingState !== LoadingState.Error && seekerData && width > 0 && (
-        <TimeSeeker
-          data={seekerData}
-          width={width}
-          height={SEEKER_HEIGHT}
-          metric={metricValue as MetricFunction}
-          onChangeTimeRange={onRangeChange}
-        />
+        {!isCollapsed && seekerData && controlHandlersRef.current && (
+          <div className={styles.headerRight}>
+            <IconButton
+              tooltip="Pan left"
+              name="arrow-left"
+              onClick={controlHandlersRef.current.onPanLeft}
+              size="sm"
+              variant="secondary"
+            />
+            <IconButton
+              tooltip="Zoom out context"
+              name="search-minus"
+              onClick={controlHandlersRef.current.onZoomOut}
+              size="sm"
+              variant="secondary"
+            />
+            <IconButton
+              tooltip="Zoom in context"
+              name="search-plus"
+              onClick={controlHandlersRef.current.onZoomIn}
+              size="sm"
+              variant="secondary"
+            />
+            <IconButton
+              tooltip="Pan right"
+              name="arrow-right"
+              onClick={controlHandlersRef.current.onPanRight}
+              size="sm"
+              variant="secondary"
+            />
+            <IconButton
+              tooltip="Reset context window"
+              name="crosshair"
+              onClick={controlHandlersRef.current.onReset}
+              size="sm"
+              variant="secondary"
+            />
+            <IconButton
+              name="calendar-alt"
+              tooltip="Set context window"
+              onClick={controlHandlersRef.current.onOpenContextSelector}
+              size="sm"
+              variant="secondary"
+            />
+          </div>
+        )}
+      </div>
+      {!isCollapsed && (
+        <>
+          {loadingState === LoadingState.Error && (
+            <Alert severity="error" title="Unable to load context data">
+              Check your data source configuration or adjust your filters.
+            </Alert>
+          )}
+          {loadingState !== LoadingState.Error && (!seekerData || width === 0) && (
+            <div className={styles.placeholder}>
+              <Spinner size={16} />
+              <Text variant="bodySmall" color="secondary">
+                Loading sparkline…
+              </Text>
+            </div>
+          )}
+          {loadingState !== LoadingState.Error && seekerData && width > 0 && (
+            <TimeSeeker
+              data={seekerData}
+              width={width}
+              metric={metricValue as MetricFunction}
+              onChangeTimeRange={onRangeChange}
+              renderControls={(handlers) => {
+                controlHandlersRef.current = handlers;
+                return null;
+              }}
+            />
+          )}
+        </>
       )}
     </div>
   );
@@ -286,7 +360,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     width: '100%',
     border: `1px solid ${theme.colors.border.weak}`,
     borderRadius: 4,
-    padding: `${theme.spacing(1)} ${theme.spacing(1.5)} ${theme.spacing(0)}`,
+    padding: `${theme.spacing(1)} ${theme.spacing(1.5)} ${theme.spacing(1)}`,
     background: theme.colors.background.primary,
     display: 'flex',
     flexDirection: 'column',
@@ -294,14 +368,23 @@ const getStyles = (theme: GrafanaTheme2) => ({
   }),
   header: css({
     display: 'flex',
-    flexDirection: 'column',
-    gap: theme.spacing(0.25),
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  }),
+  headerLeft: css({
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+  }),
+  headerRight: css({
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(0.5),
   }),
   placeholder: css({
     display: 'flex',
     alignItems: 'center',
     gap: theme.spacing(1),
-    minHeight: SEEKER_HEIGHT,
     color: theme.colors.text.secondary,
   }),
 });
