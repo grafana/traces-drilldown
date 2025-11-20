@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AbsoluteTimeRange, GrafanaTheme2, LoadingState, PanelData, TimeRange, dateTime } from '@grafana/data';
 import { SceneQueryRunner, SceneTimeRange } from '@grafana/scenes';
-import { Alert, Spinner, Text, useStyles2, IconButton } from '@grafana/ui';
+import { Alert, Text, useStyles2, IconButton, Spinner } from '@grafana/ui';
 import { css } from '@emotion/css';
 
 import { TimeSeeker } from './TimeSeeker';
@@ -15,6 +15,7 @@ import {
 } from 'utils/utils';
 import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { MetricFunction } from 'utils/shared';
+import { StreamingIndicator } from '../StreamingIndicator';
 
 const DEFAULT_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -223,7 +224,10 @@ export const TimeSeekerHeaderSection: React.FC<Props> = ({ traceExploration }) =
             variant="secondary"
           />
           <Text weight="medium">Time range seeker</Text>
-          {loadingState === LoadingState.Loading && <Spinner size={12} inline />}
+          <StreamingIndicator
+            isStreaming={loadingState === LoadingState.Loading || loadingState === LoadingState.Streaming}
+            iconSize={10}
+          />
         </div>
         {!isCollapsed && seekerData && controlHandlersRef.current && (
           <div className={styles.headerRight}>
