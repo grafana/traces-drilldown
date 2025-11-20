@@ -334,27 +334,33 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
       size: 0,
     });
 
-    // Add the bar series with metric-specific color
+    // Add series with metric-specific style and color
     const isErrorsMetric = metric === 'errors';
+    const isDurationMetric = metric === 'duration';
 
     b.addSeries({
       scaleKey: 'y',
-      lineWidth: 0,
+      lineWidth: isDurationMetric ? 1 : 0,
       show: true,
       theme,
-      drawStyle: DrawStyle.Bars,
-      fillOpacity: 50,
+      drawStyle: isDurationMetric ? DrawStyle.Line : DrawStyle.Bars,
+      fillOpacity: isDurationMetric ? 30 : 50,
     });
 
     // Apply color override for the series
     const internalConfig = b.getConfig();
     if (internalConfig.series && internalConfig.series[1]) {
-      internalConfig.series[1].stroke = isErrorsMetric
-        ? theme.visualization.getColorByName('semi-dark-red')
-        : theme.visualization.getColorByName('green');
-      internalConfig.series[1].fill = isErrorsMetric
-        ? theme.visualization.getColorByName('semi-dark-red')
-        : theme.visualization.getColorByName('green');
+      let seriesColor: string;
+      if (isDurationMetric) {
+        seriesColor = theme.visualization.getColorByName('blue');
+      } else if (isErrorsMetric) {
+        seriesColor = theme.visualization.getColorByName('semi-dark-red');
+      } else {
+        seriesColor = theme.visualization.getColorByName('green');
+      }
+
+      internalConfig.series[1].stroke = seriesColor;
+      internalConfig.series[1].fill = seriesColor;
     }
 
     b.addHook('setSelect', (u: uPlot) => {

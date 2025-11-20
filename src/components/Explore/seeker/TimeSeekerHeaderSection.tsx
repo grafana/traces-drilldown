@@ -141,15 +141,8 @@ export const TimeSeekerHeaderSection: React.FC<Props> = ({ traceExploration }) =
   }, [primarySignal, filtersSignature]);
 
   const queryKey = useMemo(() => {
-    return [
-      metricValue ?? '',
-      filterExpression,
-      percentilesCsv,
-      contextRange.from,
-      contextRange.to,
-      datasourceUid ?? '',
-    ].join('|');
-  }, [metricValue, filterExpression, percentilesCsv, contextRange, datasourceUid]);
+    return [metricValue ?? '', filterExpression, percentilesCsv, datasourceUid ?? ''].join('|');
+  }, [metricValue, filterExpression, percentilesCsv, datasourceUid]);
 
   useEffect(() => {
     const runner = runnerRef.current;
