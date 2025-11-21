@@ -19,8 +19,8 @@ In this context, RED metrics mean:
 * **Duration** displays the amount of time those spans take; represented as a heat map that shows response time and latency.
 
 When you select a RED metric, the tabs underneath the metrics selection changes match the context.
-For example, selecting **Duration** displays **Root cause latency** and **Slow traces tabs**.
-Choosing **Errors** changes the tabs to **Root cause errors** and **Errored traces**. Rate provides **Service structure**, and **Traces** tabs.
+For example, selecting **Duration** displays **Root cause latency** and **Slow traces** tabs.
+Choosing **Errors** changes the tabs to **Exceptions**, **Root cause errors**, and **Errored traces**. Rate provides **Service structure**, and **Traces** tabs.
 These tabs are used when you [analyze tracing data](../analyze-tracing-data).
 
 {{< video-embed src="/media/docs/explore-traces/traces-drilldown-select-metric-type-v1.2.mp4" >}}
