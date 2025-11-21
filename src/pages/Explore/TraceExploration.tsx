@@ -55,7 +55,7 @@ import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWi
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
 import { DataLinksCustomContext } from './DataLinksCustomContext';
-import { TimeSeekerHeaderSection } from 'components/Explore/seeker/TimeSeekerHeaderSection';
+import { TimeSeekerScene } from 'components/Explore/seeker/TimeSeekerScene';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -64,6 +64,7 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   body: SceneObject;
 
   drawerScene?: TraceDrawerScene;
+  timeSeekerScene?: TimeSeekerScene;
 
   // details scene
   traceId?: string;
@@ -90,6 +91,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
+      timeSeekerScene: new TimeSeekerScene({}),
       issueDetector: new TraceQLIssueDetector(),
       ...state,
     });
@@ -395,7 +397,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   const serviceName = useServiceName(model);
   const traceExploration = getTraceExplorationScene(model);
 
-  const { traceId } = traceExploration.useState();
+  const { traceId, timeSeekerScene } = traceExploration.useState();
 
   const [localTraceId, setLocalTraceId] = React.useState(traceId ?? '');
 
@@ -519,7 +521,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           />
         </Stack>
       </Stack>
-      <TimeSeekerHeaderSection traceExploration={traceExploration} />
+      {timeSeekerScene && <timeSeekerScene.Component model={timeSeekerScene} />}
     </div>
   );
 };
