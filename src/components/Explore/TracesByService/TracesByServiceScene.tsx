@@ -143,11 +143,15 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     const traceExploration = getTraceExplorationScene(this);
     const metric = traceExploration.getMetricVariable().getValue();
     const actionViewDef = actionViewsDefinitions.find((v) => v.value === this.state.actionView);
+    const embedded = traceExploration.state.embedded;
+    const embeddedMini = traceExploration.state.embeddedMini;
 
     this.setState({
       body: buildGraphScene(
         metric as MetricFunction,
-        actionViewDef ? [actionViewDef?.getScene(metric as MetricFunction)] : undefined
+        actionViewDef ? [actionViewDef?.getScene(metric as MetricFunction)] : undefined,
+        embedded,
+        embeddedMini
       ),
     });
 
@@ -355,7 +359,7 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       gap: theme.spacing.x0_5,
       fontSize: theme.typography.bodySmall.fontSize,
-      paddingBottom: theme.spacing.x0_5,
+      padding: `${theme.spacing(1)} 0 ${theme.spacing(0.5)} 0`,
       alignItems: 'center',
     }),
     hand: css({
@@ -445,20 +449,67 @@ function timeRangeFromSelection(selection?: ComparisonSelection) {
     : undefined;
 }
 
-function buildGraphScene(metric: MetricFunction, children?: SceneObject[]) {
+function buildGraphScene(metric: MetricFunction, children?: SceneObject[], embedded?: boolean, embeddedMini?: boolean) {
   const secondaryPanel =
     metric === 'rate'
-      ? new MiniREDPanel({ metric: 'errors' })
-      : new MiniREDPanel({
-          metric: 'rate',
-        });
+      ? new MiniREDPanel({ embeddedMini, metric: 'errors' })
+      : new MiniREDPanel({ embeddedMini, metric: 'rate' });
 
   const tertiaryPanel =
     metric === 'duration'
-      ? new MiniREDPanel({
-          metric: 'errors',
-        })
-      : new MiniREDPanel({ metric: 'duration' });
+      ? new MiniREDPanel({ embeddedMini, metric: 'errors' })
+      : new MiniREDPanel({ embeddedMini, metric: 'duration' });
+
+  // All three panels are stacked vertically (one per row)
+  // Layout direction adjusts based on screen size
+  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 700;
+  
+  const sceneChildren: SceneObject[] = [
+    new SceneFlexLayout({
+      direction: !embeddedMini ? 'row' : isSmallScreen ? 'row' : 'column',
+      ySizing: 'content',
+      children: [
+        new SceneFlexItem({
+          minHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
+          maxHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
+          width: embeddedMini ? undefined : '60%',
+          body: new REDPanel({ embeddedMini }),
+        }),
+        new SceneFlexLayout({
+          direction: 'column',
+          minHeight: MAIN_PANEL_HEIGHT,
+          maxHeight: MAIN_PANEL_HEIGHT,
+          children: [
+            new SceneFlexItem({
+              minHeight: MINI_PANEL_HEIGHT,
+              maxHeight: MINI_PANEL_HEIGHT,
+              height: MINI_PANEL_HEIGHT,
+              body: secondaryPanel,
+            }),
+            new SceneFlexItem({
+              minHeight: MINI_PANEL_HEIGHT,
+              maxHeight: MINI_PANEL_HEIGHT,
+              height: MINI_PANEL_HEIGHT,
+              ySizing: 'fill',
+              body: tertiaryPanel,
+            }),
+          ],
+        }),
+      ],
+    })
+  ];
+
+  if (!embeddedMini) {
+    sceneChildren.push(
+      new SceneFlexItem({
+        ySizing: 'content',
+        body: new TabsBarScene({}),
+      })
+    );
+    if (children) {
+      sceneChildren.push(...children);
+    }
+  }
 
   return new SceneFlexLayout({
     direction: 'column',
@@ -468,48 +519,7 @@ function buildGraphScene(metric: MetricFunction, children?: SceneObject[]) {
         sync: DashboardCursorSync.Crosshair,
       }),
     ],
-    children: [
-      new SceneFlexLayout({
-        direction: 'row',
-        ySizing: 'content',
-        children: [
-          new SceneFlexItem({
-            minHeight: MAIN_PANEL_HEIGHT,
-            maxHeight: MAIN_PANEL_HEIGHT,
-            width: '60%',
-            body: new REDPanel({}),
-          }),
-          new SceneFlexLayout({
-            direction: 'column',
-            minHeight: MAIN_PANEL_HEIGHT,
-            maxHeight: MAIN_PANEL_HEIGHT,
-            children: [
-              new SceneFlexItem({
-                minHeight: MINI_PANEL_HEIGHT,
-                maxHeight: MINI_PANEL_HEIGHT,
-                height: MINI_PANEL_HEIGHT,
-
-                body: secondaryPanel,
-              }),
-              new SceneFlexItem({
-                minHeight: MINI_PANEL_HEIGHT,
-                maxHeight: MINI_PANEL_HEIGHT,
-                height: MINI_PANEL_HEIGHT,
-
-                ySizing: 'fill',
-
-                body: tertiaryPanel,
-              }),
-            ],
-          }),
-        ],
-      }),
-      new SceneFlexItem({
-        ySizing: 'content',
-        body: new TabsBarScene({}),
-      }),
-      ...(children || []),
-    ],
+    children: sceneChildren,
   });
 }
 
