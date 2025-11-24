@@ -110,24 +110,25 @@ describe('Lezer TraceQL Parser', () => {
       });
     });
 
-    it('should parse multiple spansets', () => {
+    it('should parse multiple spansets but only extract first spanset', () => {
       const query = '{resource.service.name="api"} && {span.http.status_code=200}';
       const result = parseTraceQLQuery(query);
       
       expect(result).not.toBeNull();
-      expect(result!.filters).toHaveLength(2);
-      expect(result!.errors).toHaveLength(0);
+      // Only filters from first spanset are extracted
+      expect(result!.filters).toHaveLength(1);
+      expect(result!.errors).toHaveLength(1);
       expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
         value: 'api'
       });
-      expect(result!.filters[1]).toEqual({
-        scope: 'span',
-        tag: 'http.status_code',
-        operator: '=',
-        value: '200'
+      // Error reported about multiple spansets
+      expect(result!.errors[0]).toEqual({
+        type: 'unsupported_or_between_fields',
+        message: 'Query contains 2 spansets. Only the first spanset was extracted because traces-drilldown supports a single spanset only.',
+        query
       });
     });
 
@@ -176,7 +177,7 @@ describe('Lezer TraceQL Parser', () => {
         
         expect(result).not.toBeNull();
         expect(result!.filters).toHaveLength(1);
-        expect(result!.errors).toHaveLength(1);
+        expect(result!.errors).toHaveLength(2);
         
         // Parser extracts only the first spanset to avoid changing OR to AND
         expect(result!.filters[0]).toEqual({
@@ -186,10 +187,15 @@ describe('Lezer TraceQL Parser', () => {
           value: 'frontend'
         });
         
-        // Parser reports the limitation as an error
+        // Parser reports both multiple spansets and OR operators
         expect(result!.errors[0]).toEqual({
           type: 'unsupported_or_between_fields',
-          message: 'OR operators are not supported in traces-drilldown. Using first filter only. Subsequent filters after || could not be applied because traces-drilldown does not support || operators.',
+          message: 'Query contains 2 spansets. Only the first spanset was extracted because traces-drilldown supports a single spanset only.',
+          query
+        });
+        expect(result!.errors[1]).toEqual({
+          type: 'unsupported_or_between_fields',
+          message: 'OR operators are not supported in traces-drilldown. Only filters from the first spanset were applied.',
           query
         });
       });
@@ -201,7 +207,7 @@ describe('Lezer TraceQL Parser', () => {
         
         expect(result).not.toBeNull();
         expect(result!.filters).toHaveLength(1);
-        expect(result!.errors).toHaveLength(1);
+        expect(result!.errors).toHaveLength(2);
         
         // Parser extracts only the first filter to preserve query semantics
         expect(result!.filters[0]).toEqual({
@@ -211,10 +217,15 @@ describe('Lezer TraceQL Parser', () => {
           value: 'quoteservice'
         });
         
-        // Parser reports the OR limitation as an error
+        // Parser reports both multiple spansets and OR operators
         expect(result!.errors[0]).toEqual({
           type: 'unsupported_or_between_fields',
-          message: 'OR operators are not supported in traces-drilldown. Using first filter only. Subsequent filters after || could not be applied because traces-drilldown does not support || operators.',
+          message: 'Query contains 2 spansets. Only the first spanset was extracted because traces-drilldown supports a single spanset only.',
+          query
+        });
+        expect(result!.errors[1]).toEqual({
+          type: 'unsupported_or_between_fields',
+          message: 'OR operators are not supported in traces-drilldown. Only filters from the first spanset were applied.',
           query
         });
       });
@@ -225,15 +236,22 @@ describe('Lezer TraceQL Parser', () => {
         const result = parseTraceQLQuery(query);
         
         expect(result).not.toBeNull();
-        expect(result!.filters).toHaveLength(1);
+        // Parser extracts all filters from the single spanset
+        expect(result!.filters).toHaveLength(2);
         expect(result!.errors).toHaveLength(1);
         
-        // Parser extracts only the first filter
+        // Both filters from the single spanset are extracted
         expect(result!.filters[0]).toEqual({
           scope: 'resource',
           tag: 'service.name',
           operator: '=',
           value: 'quoteservice'
+        });
+        expect(result!.filters[1]).toEqual({
+          scope: 'span',
+          tag: 'app.ads.ad_request_type',
+          operator: '=',
+          value: 'TARGETED'
         });
         
         // Parser reports the OR limitation
@@ -249,12 +267,24 @@ describe('Lezer TraceQL Parser', () => {
         // Parser extracts only the first spanset
         expect(result).not.toBeNull();
         expect(result!.filters).toHaveLength(1);
-        expect(result!.errors).toHaveLength(1);
+        expect(result!.errors).toHaveLength(2);
         expect(result!.filters[0]).toEqual({
           scope: 'intrinsic',
           tag: 'status',
           operator: '=',
           value: 'error'
+        });
+        
+        // Reports both multiple spansets and OR operators
+        expect(result!.errors[0]).toEqual({
+          type: 'unsupported_or_between_fields',
+          message: 'Query contains 2 spansets. Only the first spanset was extracted because traces-drilldown supports a single spanset only.',
+          query
+        });
+        expect(result!.errors[1]).toEqual({
+          type: 'unsupported_or_between_fields',
+          message: 'OR operators are not supported in traces-drilldown. Only filters from the first spanset were applied.',
+          query
         });
         
         // NOTE: Query Builder would generate this as: {(status=error || status=timeout)}
@@ -547,8 +577,8 @@ describe('Lezer TraceQL Parser', () => {
       });
     });
 
-    it('should reject Query Builder OR pattern and report error', () => {
-      // Even Query Builder's multiple value OR pattern cannot be supported by links.ts
+    it('should handle Query Builder OR pattern by combining values', () => {
+      // Query Builder generates this pattern for multiple values of the same field
       const query = '{(resource.service.name="quoteservice" || resource.service.name="cartservice")}';
       const result = parseTraceQLQuery(query);
       
@@ -556,21 +586,21 @@ describe('Lezer TraceQL Parser', () => {
       expect(result!.filters).toHaveLength(1);
       expect(result!.errors).toHaveLength(1);
       
-      // Parser extracts only the first filter
+      // Parser combines OR filters with same field into array
       expect(result!.filters[0]).toEqual({
         scope: 'resource',
         tag: 'service.name',
         operator: '=',
-        value: 'quoteservice'
+        value: ['quoteservice', 'cartservice']
       });
       
-      // Parser reports that OR is not supported
+      // Parser reports that OR operator was detected
       expect(result!.errors[0].type).toBe('unsupported_or_between_fields');
       expect(result!.errors[0].message).toContain('OR operators are not supported in traces-drilldown');
     });
 
-    it('should reject multiple string values OR pattern and report error', () => {
-      // Query Builder generates this but links.ts cannot support it
+    it('should handle multiple string values OR pattern by combining values', () => {
+      // Query Builder generates this pattern for multiple values of the same field
       const query = '{(span.http.method="GET" || span.http.method="POST")}';
       const result = parseTraceQLQuery(query);
       
@@ -581,13 +611,13 @@ describe('Lezer TraceQL Parser', () => {
         scope: 'span',
         tag: 'http.method',
         operator: '=',
-        value: 'GET'
+        value: ['GET', 'POST']
       });
       expect(result!.errors[0].message).toContain('OR operators are not supported in traces-drilldown');
     });
 
-    it('should reject multiple numeric values OR pattern and report error', () => {
-      // Query Builder generates this but links.ts cannot support it
+    it('should handle multiple numeric values OR pattern by combining values', () => {
+      // Query Builder generates this pattern for multiple values of the same field
       const query = '{(span.http.status_code=200 || span.http.status_code=404)}';
       const result = parseTraceQLQuery(query);
       
@@ -598,7 +628,7 @@ describe('Lezer TraceQL Parser', () => {
         scope: 'span',
         tag: 'http.status_code',
         operator: '=',
-        value: '200'
+        value: ['200', '404']
       });
       expect(result!.errors[0].message).toContain('OR operators are not supported in traces-drilldown');
     });
@@ -649,21 +679,26 @@ describe('Lezer TraceQL Parser', () => {
         const result = parseTraceQLQuery(query);
         
         expect(result).not.toBeNull();
-        expect(result!.errors).toHaveLength(1);
+        expect(result!.errors).toHaveLength(2);
         
-        // Parser combines filters with same field into array values
+        // Parser extracts only first spanset filter
         expect(result!.filters).toHaveLength(1);
         expect(result!.filters[0]).toEqual({
           scope: 'span',
           tag: 'name',
           operator: '=',
-          value: ['parent', 'child']
+          value: 'parent'
         });
         
-        // Parser reports the structural operator as an error
-        expect(result!.errors[0].type).toBe('unsupported_structural_operator');
-        expect(result!.errors[0].message).toContain('Structural operator');
-        expect(result!.errors[0].message).toContain('relationships will be ignored');
+        // Parser reports multiple spansets and structural operator
+        expect(result!.errors[0]).toEqual({
+          type: 'unsupported_or_between_fields',
+          message: 'Query contains 2 spansets. Only the first spanset was extracted because traces-drilldown supports a single spanset only.',
+          query
+        });
+        expect(result!.errors[1].type).toBe('unsupported_structural_operator');
+        expect(result!.errors[1].message).toContain('Structural operator');
+        expect(result!.errors[1].message).toContain('relationships will be ignored');
       });
 
       it('should extract basic filters from pipeline aggregations (ignores pipeline)', () => {
@@ -686,22 +721,30 @@ describe('Lezer TraceQL Parser', () => {
       });
 
       it('should extract basic filters from descendant operators (ignores relationships)', () => {
-        // Descendant operators - parser extracts basic filters from both spansets
+        // Descendant operators - parser extracts only first spanset
         const query = '{.region = "eu-west-0"} >> {.region = "eu-west-1"}';
         const result = parseTraceQLQuery(query);
         
-        // Parser combines filters with same field into array values
+        // Parser extracts only first spanset filter
         expect(result).not.toBeNull();
         expect(result!.filters).toHaveLength(1);
-        expect(result!.errors).toHaveLength(1);
+        expect(result!.errors).toHaveLength(2);
         expect(result!.filters[0]).toEqual({
           scope: 'intrinsic',
           tag: 'region',
           operator: '=',
-          value: ['eu-west-0', 'eu-west-1']
+          value: 'eu-west-0'
         });
         
-        // The >> (descendant) relationship is lost, but values are combined into array
+        // Reports multiple spansets and structural operator errors
+        expect(result!.errors[0]).toEqual({
+          type: 'unsupported_or_between_fields',
+          message: 'Query contains 2 spansets. Only the first spanset was extracted because traces-drilldown supports a single spanset only.',
+          query
+        });
+        expect(result!.errors[1].type).toBe('unsupported_structural_operator');
+        
+        // The >> (descendant) relationship is lost
       });
     });
 
