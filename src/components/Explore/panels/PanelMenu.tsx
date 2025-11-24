@@ -1,4 +1,4 @@
-import { PanelMenuItem, PluginExtensionLink, toURLRange, urlUtil } from '@grafana/data';
+import { PanelMenuItem, toURLRange, urlUtil } from '@grafana/data';
 import {
   SceneObjectBase,
   VizPanelMenu,
