@@ -13,9 +13,11 @@ services:
     volumes:
       - ../dist:/var/lib/grafana/plugins/grafana-explore-traces
       - ../provisioning:/etc/grafana/provisioning
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   tempo:
-    image: grafana/tempo:latest
+    image: grafana/tempo:latest@sha256:009af35797ad7169d264436e3d06e1173afa6c3848bfd8f09d5e914b310a4819
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
@@ -24,7 +26,7 @@ services:
 
   # generates uninteresting traces, but is useful for testing
   k6-tracing:
-    image: ghcr.io/grafana/xk6-client-tracing:latest
+    image: ghcr.io/grafana/xk6-client-tracing:latest@sha256:c176112df6a6aac970d54b0b2e2db950642378496c6967adc8a401179819fab0
     environment:
       - ENDPOINT=tempo:4317
     restart: always
@@ -39,7 +41,7 @@ services:
 
   # A RabbitMQ queue used to send message between the requester and the server microservices.
   mythical-queue:
-    image: rabbitmq:management
+    image: rabbitmq:management@sha256:294b01e1796a8acede4619f32a1c394fae1f8021e57986ea01aad38dc2a4f502
     restart: always
     ports:
       - "5672:5672"
@@ -52,7 +54,7 @@ services:
 
   # A postgres DB used to store data by the API server microservice.
   mythical-database:
-    image: postgres:14.5
+    image: postgres:14.5@sha256:135c62a8134dcef829a1e4f5568bfae44bcfa2c75659ff948f43c71964366aa4
     restart: always
     environment:
       POSTGRES_PASSWORD: "mythical"
@@ -61,7 +63,7 @@ services:
 
   # A microservice that makes requests to the API server microservice. Requests are also pushed onto the mythical-queue.
   mythical-requester-A:
-    image: grafana/intro-to-mltp:mythical-beasts-requester-0.3.1
+    image: grafana/intro-to-mltp:mythical-beasts-requester-0.3.1@sha256:2643fb2e2cd1100e9edecb44d67c82cfa436ea97ff23aeeb646ea063776e539b
     restart: always
     depends_on:
       mythical-queue:
@@ -78,7 +80,7 @@ services:
 
   # The API server microservice.
   mythical-server-A:
-    image: grafana/intro-to-mltp:mythical-beasts-server-0.3.1
+    image: grafana/intro-to-mltp:mythical-beasts-server-0.3.1@sha256:d58db9e2bb1c3ffc1a29a7732e2f700bbbeea86a91936c53fc8623e5c39ae648
     restart: always
     depends_on:
       - mythical-database
@@ -91,7 +93,7 @@ services:
 
    # A microservice that makes requests to the API server microservice. Requests are also pushed onto the mythical-queue.
   mythical-requester-B:
-    image: grafana/intro-to-mltp:mythical-beasts-requester-0.3.1
+    image: grafana/intro-to-mltp:mythical-beasts-requester-0.3.1@sha256:2643fb2e2cd1100e9edecb44d67c82cfa436ea97ff23aeeb646ea063776e539b
     restart: always
     depends_on:
       mythical-queue:
@@ -108,7 +110,7 @@ services:
 
   # The API server microservice.
   mythical-server-B:
-    image: grafana/intro-to-mltp:mythical-beasts-server-0.3.1
+    image: grafana/intro-to-mltp:mythical-beasts-server-0.3.1@sha256:d58db9e2bb1c3ffc1a29a7732e2f700bbbeea86a91936c53fc8623e5c39ae648
     restart: always
     depends_on:
       - mythical-database
@@ -122,7 +124,7 @@ services:
 
   # A microservice that consumes requests from the mythical-queue
   mythical-recorder:
-    image: grafana/intro-to-mltp:mythical-beasts-recorder-latest
+    image: grafana/intro-to-mltp:mythical-beasts-recorder-latest@sha256:dae10980a1f422d659d0862275f77dca42a735681c4c65a27d78eb719190e13d
     restart: always
     depends_on:
       mythical-queue:

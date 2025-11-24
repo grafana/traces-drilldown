@@ -1,6 +1,5 @@
 import { css, cx } from '@emotion/css';
 import { useDialog } from '@react-aria/dialog';
-import { FocusScope } from '@react-aria/focus';
 import { useOverlay } from '@react-aria/overlays';
 import RcDrawer from 'rc-drawer';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
@@ -109,52 +108,50 @@ export function Drawer({
         motionName: styles.maskMotion,
       }}
     >
-      <FocusScope restoreFocus contain autoFocus>
+      <div
+        aria-label={
+          typeof title === 'string'
+            ? selectors.components.Drawer.General.title(title)
+            : selectors.components.Drawer.General.title('no title')
+        }
+        className={styles.container}
+        {...overlayProps}
+        {...dialogProps}
+        ref={overlayRef}
+      >
         <div
-          aria-label={
-            typeof title === 'string'
-              ? selectors.components.Drawer.General.title(title)
-              : selectors.components.Drawer.General.title('no title')
-          }
-          className={styles.container}
-          {...overlayProps}
-          {...dialogProps}
-          ref={overlayRef}
-        >
-          <div
-            className={cx(dragStyles.dragHandleVertical, styles.resizer)}
-            onMouseDown={onMouseDown}
-            onTouchStart={onTouchStart}
-          />
-          <div className={cx(styles.header, Boolean(tabs) && styles.headerWithTabs)}>
-            <div className={styles.actions}>
-              <IconButton
-                name="times"
-                variant="secondary"
-                onClick={onClose}
-                data-testid={selectors.components.Drawer.General.close}
-                tooltip={t(`grafana-ui.drawer.close`, 'Close')}
-              />
-            </div>
-            {typeof title === 'string' ? (
-              <div className={styles.titleWrapper}>
-                <Text element="h3" {...titleProps}>
-                  {title}
-                </Text>
-                {subtitle && (
-                  <div className={styles.subtitle} data-testid={selectors.components.Drawer.General.subtitle}>
-                    {subtitle}
-                  </div>
-                )}
-              </div>
-            ) : (
-              title
-            )}
-            {tabs && <div className={styles.tabsWrapper}>{tabs}</div>}
+          className={cx(dragStyles.dragHandleVertical, styles.resizer)}
+          onMouseDown={onMouseDown}
+          onTouchStart={onTouchStart}
+        />
+        <div className={cx(styles.header, Boolean(tabs) && styles.headerWithTabs)}>
+          <div className={styles.actions}>
+            <IconButton
+              name="times"
+              variant="secondary"
+              onClick={onClose}
+              data-testid={selectors.components.Drawer.General.close}
+              tooltip={t(`grafana-ui.drawer.close`, 'Close')}
+            />
           </div>
-          {!scrollableContent ? content : <ScrollContainer showScrollIndicators>{content}</ScrollContainer>}
+          {typeof title === 'string' ? (
+            <div className={styles.titleWrapper}>
+              <Text element="h3" {...titleProps}>
+                {title}
+              </Text>
+              {subtitle && (
+                <div className={styles.subtitle} data-testid={selectors.components.Drawer.General.subtitle}>
+                  {subtitle}
+                </div>
+              )}
+            </div>
+          ) : (
+            title
+          )}
+          {tabs && <div className={styles.tabsWrapper}>{tabs}</div>}
         </div>
-      </FocusScope>
+        {!scrollableContent ? content : <ScrollContainer showScrollIndicators>{content}</ScrollContainer>}
+      </div>
     </RcDrawer>
   );
 }
@@ -211,9 +208,15 @@ function useResizebleDrawer(): [
 }
 
 function getCustomDrawerWidth(clientX: number) {
-  let offsetRight = document.body.offsetWidth - (clientX - document.body.offsetLeft);
-  let widthPercent = Math.min((offsetRight / document.body.clientWidth) * 100, 98).toFixed(2);
-  return `${widthPercent}vw`;
+  const traceExploration = document.getElementById('trace-exploration');
+  if (traceExploration) {
+    const traceExplorationWidth = traceExploration.offsetWidth;
+    const offsetLeft = traceExploration.offsetLeft;
+    const offsetRight = traceExplorationWidth - (clientX - offsetLeft);
+    const widthPercent = Math.min((offsetRight / traceExplorationWidth) * 100, 98).toFixed(2);
+    return `${widthPercent}%`;
+  }
+  return '50%';
 }
 
 function useBodyClassWhileOpen() {

@@ -362,11 +362,17 @@ function buildQuery(metric: MetricFunction) {
       break;
   }
 
+  const rootSelectors = `${VAR_FILTERS_EXPR} ${
+    selectionQuery.length ? `&& ${selectionQuery}` : ''
+  }`;
+
+  // ({${rootSelectors}} &>> { ${metricQuery} }) # finds trees of spans in error or with high duration
+  //    || ({${rootSelectors}})                  # finds single spans in error or with high duration
+  const query = `({${rootSelectors}} &>> { ${metricQuery} }) || ({${rootSelectors}}) | select(status, resource.service.name, name, nestedSetParent, nestedSetLeft, nestedSetRight)`;
+
   return {
     refId: 'A',
-    query: `{${VAR_FILTERS_EXPR} ${
-      selectionQuery.length ? `&& ${selectionQuery}` : ''
-    }} &>> { ${metricQuery} } | select(status, resource.service.name, name, nestedSetParent, nestedSetLeft, nestedSetRight)`,
+    query: query,
     queryType: 'traceql',
     tableType: 'raw',
     limit: 200,

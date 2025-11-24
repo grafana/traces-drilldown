@@ -10,7 +10,7 @@ import {
   SceneObjectBase,
   SceneObjectState,
 } from '@grafana/scenes';
-import { arrayToDataFrame, DataFrame, GrafanaTheme2, LoadingState } from '@grafana/data';
+import { arrayToDataFrame, DataFrame, GrafanaTheme2, LoadingState, DataTopic } from '@grafana/data';
 import { ComparisonSelection, EMPTY_STATE_ERROR_MESSAGE, explorationDS, MetricFunction } from 'utils/shared';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
@@ -250,6 +250,10 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
       },
     ]);
     frame.name = 'xymark';
+    frame.meta = {
+      ...frame.meta,
+      dataTopic: DataTopic.Annotations
+    }
 
     return [frame];
   }
@@ -259,6 +263,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const { value: metric } = getMetricVariable(model).useState();
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
+    const timeRange = sceneGraph.getTimeRange(model).useState();
 
     if (!panel) {
       return;
@@ -308,10 +313,14 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           </div>
         </div>
         <panel.Component model={panel} />
-        <InsightsTimelineWidget
-          serviceName={serviceName || ''}
-          model={model}
-        />
+        {timeRange && (
+          <InsightsTimelineWidget
+            serviceName={serviceName || ''}           
+            metric={metric as MetricFunction}
+            startTime={timeRange.from.valueOf()}
+            endTime={timeRange.to.valueOf()}
+          />
+        )}
       </div>
     );
   };

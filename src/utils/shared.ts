@@ -36,6 +36,8 @@ export const VAR_LATENCY_THRESHOLD = 'latencyThreshold';
 export const VAR_LATENCY_THRESHOLD_EXPR = '${latencyThreshold}';
 export const VAR_LATENCY_PARTIAL_THRESHOLD = 'partialLatencyThreshold';
 export const VAR_LATENCY_PARTIAL_THRESHOLD_EXPR = '${partialLatencyThreshold}';
+export const VAR_DURATION_PERCENTILES = 'durationPercentiles';
+export const VAR_DURATION_PERCENTILES_EXPR = '${durationPercentiles:csv}';
 export const explorationDS = { uid: VAR_DATASOURCE_EXPR };
 
 export const ACTION_VIEW = 'actionView';
@@ -50,7 +52,7 @@ export const SPAN_ATTR = 'span.';
 export const EVENT_ATTR = 'event.';
 export const EVENT_INTRINSIC = 'event:';
 
-export const radioAttributesResource = [
+export const defaultFavoriteResourceAttributes = [
   // https://opentelemetry.io/docs/specs/semconv/resource/
   'resource.service.name',
   'resource.service.namespace',
@@ -67,7 +69,7 @@ export const radioAttributesResource = [
   'resource.k8s.container.name',
   'resource.k8s.node.name',
 ];
-export const radioAttributesSpan = [
+export const defaultFavoriteSpanAttributes = [
   'name',
   'kind',
   'rootName',

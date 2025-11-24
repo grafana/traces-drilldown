@@ -16,7 +16,7 @@ import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateSc
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
-import { Icon, Link, TableCellDisplayMode, TableCustomCellOptions, useStyles2, useTheme2 } from '@grafana/ui';
+import { Icon, Link, Stack, TableCellDisplayMode, TableCustomCellOptions, useStyles2, useTheme2 } from '@grafana/ui';
 import { map, Observable } from 'rxjs';
 import {
   getDataSource,
@@ -29,8 +29,8 @@ import {
   EMPTY_STATE_ERROR_REMEDY_MESSAGE,
   EventTraceOpened,
 } from '../../../../../utils/shared';
-import { SpanListColumnsSelector } from './SpanListColumnsSelector';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
+import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 
 export interface SpanListSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -105,6 +105,12 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
               if (nameField?.config?.custom) {
                 nameField.config.custom.cellOptions = options;
               }
+
+              const spanIDField = fields.find((f) => f.name === 'spanID');
+              if (spanIDField?.config?.custom) {
+                spanIDField.config.custom.hideFrom = { viz: true };
+              }
+
               return {
                 ...df,
                 fields,
@@ -190,8 +196,6 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
                   .setHoverHeader(true)
                   .setOverrides((builder) => {
                     return builder
-                      .matchFieldsWithName('spanID')
-                      .overrideCustomFieldConfig('hidden', true)
                       .matchFieldsWithName('traceService')
                       .overrideCustomFieldConfig('width', 350)
                       .matchFieldsWithName('traceName')
@@ -235,13 +239,20 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.description}>View a list of spans for the current set of filters.</div>
-          <SpanListColumnsSelector
-            options={attributes?.map((x) => toOption(x)) ?? []}
-            value={variable.getValue()}
-            onChange={model.onChange}
-          />
         </div>
-        <panel.Component model={panel} />
+        <div className={styles.content}>
+          <Stack direction="row" gap={2} width="100%">
+            <AttributesSidebar
+              options={attributes?.map((x) => toOption(x)) ?? []}
+              selected={variable.getValue() as string[]}
+              onAttributeChange={(attributes) => model.onChange(attributes ?? [])}
+              model={model}
+              showFavorites={true}
+              isMulti={true}
+            />
+            <panel.Component model={panel} />
+          </Stack>
+        </div>
       </div>
     );
   };
@@ -295,6 +306,12 @@ const getStyles = (theme: GrafanaTheme2) => {
       justifyContent: 'space-between',
       alignItems: 'flex-start',
       gap: '10px',
+    }),
+    content: css({
+      flexGrow: 1,
+      display: 'flex',
+      paddingTop: theme.spacing(0),
+      height: 'calc(100vh - 550px)',
     }),
   };
 };

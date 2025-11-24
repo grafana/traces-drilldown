@@ -19,7 +19,7 @@ import {
   SceneVariableSet,
 } from '@grafana/scenes';
 import { config, useReturnToPrevious } from '@grafana/runtime';
-import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton } from '@grafana/ui';
+import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
 
 import {
   DATASOURCE_LS_KEY,
@@ -32,6 +32,7 @@ import {
   VAR_METRIC,
   VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
+  VAR_DURATION_PERCENTILES,
 } from '../../utils/shared';
 import {
   getTraceExplorationScene,
@@ -53,6 +54,7 @@ import { SharedExplorationState } from 'exposedComponents/types';
 import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWidget/EntityAssertionsWidget';
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
+import { DataLinksCustomContext } from './DataLinksCustomContext';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -273,28 +275,33 @@ export class TraceExplorationScene extends SceneObjectBase {
       setTimeout(() => traceExploration.closeDrawer(), 100);
     };
 
+    const state = traceExploration.useState();
+    const timeRangeState = state.$timeRange?.useState();
+
     return (
       <div className={styles.container} id="trace-exploration">
         {hasIssue && issueDetector && <TraceQLConfigWarning detector={issueDetector} />}
         {embedded ? <EmbeddedHeader model={model} /> : <TraceExplorationHeader controls={controls} model={model} />}
         <div className={styles.body}>{topScene && <topScene.Component model={topScene} />}</div>
-        <SmartDrawer
-          isOpen={!!drawerScene && !!traceId}
-          onClose={() => traceExploration.closeDrawer()}
-          title={`View trace ${traceId}`}
-          embedded={embedded}
-          forceNoDrawer={embedded}
-          investigationButton={
-            addToInvestigationButton &&
-            investigationLink && (
-              <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
-                {ADD_TO_INVESTIGATION_MENU_TEXT}
-              </Button>
-            )
-          }
-        >
-          {drawerScene && <drawerScene.Component model={drawerScene} />}
-        </SmartDrawer>
+        <DataLinksCustomContext embedded={embedded} timeRange={timeRangeState?.value}>
+          <SmartDrawer
+            isOpen={!!drawerScene && !!traceId}
+            onClose={() => traceExploration.closeDrawer()}
+            title={`View trace ${traceId}`}
+            embedded={embedded}
+            forceNoDrawer={embedded}
+            investigationButton={
+              addToInvestigationButton &&
+              investigationLink && (
+                <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
+                  {ADD_TO_INVESTIGATION_MENU_TEXT}
+                </Button>
+              )
+            }
+          >
+            {drawerScene && <drawerScene.Component model={drawerScene} />}
+          </SmartDrawer>
+        </DataLinksCustomContext>
       </div>
     );
   };
@@ -340,7 +347,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const filtersVariableState = filtersVariable.useState();
   const metricVariableState = traceExploration.getMetricVariable().useState();
   const [explorationUrl, setExplorationUrl] = React.useState(() => getUrlForExploration(traceExploration));
-  
+
   // Force the primary signal to be 'All Spans'
   primarySignalVariable?.changeValueTo(primarySignalOptions[1].value!);
 
@@ -387,9 +394,17 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   const serviceName = useServiceName(model);
   const traceExploration = getTraceExplorationScene(model);
 
+  const { traceId } = traceExploration.useState();
+
+  const [localTraceId, setLocalTraceId] = React.useState(traceId ?? '');
+
   const dsVariable = sceneGraph.lookupVariable(VAR_DATASOURCE, traceExploration);
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
+
+  useEffect(() => {
+    setLocalTraceId(traceId ?? '');
+  }, [traceId]);
 
   function VersionHeader() {
     const styles = useStyles2(getStyles);
@@ -431,6 +446,12 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
     </Menu>
   );
 
+  const onTraceIdSubmit = () => {
+    if (localTraceId !== traceId) {
+      traceExploration.setState({ traceId: localTraceId });
+    }
+  };
+
   return (
     <div className={styles.headerContainer}>
       <Stack gap={1} justifyContent={'space-between'} wrap={'wrap'}>
@@ -455,16 +476,47 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           ))}
         </div>
       </Stack>
-      <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
-        <Stack gap={0} alignItems={'center'}>
-          <div className={styles.datasourceLabel}>Filters</div>
-          {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
+      <Stack gap={1} alignItems={'flex-start'} justifyContent={'space-between'}>
+        <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
+          <Stack gap={0} alignItems={'center'}>
+            <div className={styles.datasourceLabel}>Filters</div>
+            {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
+          </Stack>
+          {filtersVariable && (
+            <div>
+              <filtersVariable.Component model={filtersVariable} />
+            </div>
+          )}
         </Stack>
-        {filtersVariable && (
-          <div>
-            <filtersVariable.Component model={filtersVariable} />
-          </div>
-        )}
+        <Stack gap={0} alignItems={'center'}>
+          <div className={styles.datasourceLabel}>Trace ID</div>
+          <Input
+            placeholder="Enter an ID and press Enter"
+            value={localTraceId ?? ''}
+            suffix={
+              <Stack direction="row" alignItems="center" gap={1} width="40px">
+                {localTraceId && (
+                  <>
+                    <Icon name="times" onClick={() => setLocalTraceId('')} cursor="pointer" />
+                    <Icon name="enter" onClick={onTraceIdSubmit} cursor="pointer" />
+                  </>
+                )}
+              </Stack>
+            }
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setLocalTraceId(e.currentTarget.value);
+            }}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === 'Enter') {
+                e.stopPropagation();
+                e.preventDefault();
+                e.currentTarget.blur();
+
+                onTraceIdSubmit();
+              }
+            }}
+          />
+        </Stack>
       </Stack>
     </div>
   );
@@ -490,8 +542,6 @@ function getVariableSet(state: TraceExplorationState) {
       }),
       new AttributeFiltersVariable({
         initialFilters: state.initialFilters,
-        embedderName: state.embedderName,
-        embedded: state.embedded,
       }),
       new CustomVariable({
         name: VAR_METRIC,
@@ -515,6 +565,13 @@ function getVariableSet(state: TraceExplorationState) {
         name: VAR_LATENCY_PARTIAL_THRESHOLD,
         defaultToAll: false,
         hide: VariableHide.hideVariable,
+      }),
+      new CustomVariable({
+        name: VAR_DURATION_PERCENTILES,
+        label: 'Duration Percentiles',
+        value: ['0.9'], // Default to 90th percentile
+        isMulti: true,
+        includeAll: false,
       }),
     ],
   });

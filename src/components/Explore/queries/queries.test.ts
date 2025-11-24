@@ -89,13 +89,13 @@ describe('getMetricsTempoQuery', () => {
     });
   });
 
-
   it('should return correct query for duration', () => {
     const query = getMetricsTempoQuery({ metric: 'duration', groupByKey: 'service' });
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${primarySignal} && ${filters} && service != nil} | quantile_over_time(duration, 0.9) by(service)',
+      query:
+        '{${primarySignal} && ${filters} && service != nil} | quantile_over_time(duration, ${durationPercentiles:csv}) by(service)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
