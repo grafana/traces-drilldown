@@ -4,7 +4,7 @@ import { DataQuery, DataSourceRef } from '@grafana/schema';
 
 import Logo from '../../../../src/img/logo.svg';
 
-export interface AddToInvestigationButtonState extends SceneObjectState {
+interface AddToInvestigationButtonState extends SceneObjectState {
   dsUid?: string;
   query?: string;
   labelValue?: string;
