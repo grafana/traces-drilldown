@@ -21,6 +21,8 @@ interface TimeSeekerProps {
   fieldConfig?: FieldConfigSource;
   metric?: MetricFunction;
   onChangeTimeRange: (range: AbsoluteTimeRange) => void;
+  onVisibleRangeChange?: (range: AbsoluteTimeRange) => void;
+  loadingRanges?: Array<{ from: number; to: number }>;
   renderControls?: (controls: {
     onPanLeft: () => void;
     onPanRight: () => void;
@@ -63,6 +65,31 @@ const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   `,
+  loadingOverlay: css`
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: repeating-linear-gradient(
+      -45deg,
+      ${theme.colors.background.secondary},
+      ${theme.colors.background.secondary} 4px,
+      transparent 4px,
+      transparent 8px
+    );
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 5;
+    animation: loading-pulse 1.5s ease-in-out infinite;
+    @keyframes loading-pulse {
+      0%,
+      100% {
+        opacity: 0.4;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+  `,
 });
 
 export const TimeSeeker: React.FC<TimeSeekerProps> = ({
@@ -72,6 +99,8 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
   id,
   metric,
   onChangeTimeRange,
+  onVisibleRangeChange,
+  loadingRanges,
   renderControls,
 }) => {
   const theme = useTheme2();
@@ -117,14 +146,18 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
   const isPanning = useRef(false);
   const wheelListenerRef = useRef<((e: WheelEvent) => void) | null>(null);
 
-  const setVisibleRange = useCallback((range: AbsoluteTimeRange, suppressDashboardUpdate = false) => {
-    setVisibleRangeState(range);
-    if (suppressDashboardUpdate) {
-      suppressNextDashboardUpdate.current = true;
-      skipNextSelectUpdate.current = true;
-      isProgrammaticSelect.current = true;
-    }
-  }, []);
+  const setVisibleRange = useCallback(
+    (range: AbsoluteTimeRange, suppressDashboardUpdate = false) => {
+      setVisibleRangeState(range);
+      onVisibleRangeChange?.(range);
+      if (suppressDashboardUpdate) {
+        suppressNextDashboardUpdate.current = true;
+        skipNextSelectUpdate.current = true;
+        isProgrammaticSelect.current = true;
+      }
+    },
+    [onVisibleRangeChange]
+  );
 
   const handlePanStart = useCallback(
     (e: MouseEvent | React.MouseEvent) => {
@@ -620,6 +653,29 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
       )}
       <div style={{ position: 'relative', width: width, height: 50 }}>
         <UPlotChart data={[timeValues, valueValues]} width={width} height={50} config={builder} />
+        {/* Loading overlays for batches that are still loading */}
+        {loadingRanges?.map((range, idx) => {
+          const u = uplotRef.current;
+          if (!u) {
+            return null;
+          }
+          const left = u.valToPos(range.from, 'x') + u.bbox.left;
+          const right = u.valToPos(range.to, 'x') + u.bbox.left;
+          const rangeWidth = right - left;
+          if (rangeWidth <= 0) {
+            return null;
+          }
+          return (
+            <div
+              key={idx}
+              className={styles.loadingOverlay}
+              style={{
+                left,
+                width: rangeWidth,
+              }}
+            />
+          );
+        })}
         {dragStyles.dragOverlayStyle && (
           <>
             <div

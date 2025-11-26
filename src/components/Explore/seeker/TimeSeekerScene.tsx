@@ -8,14 +8,15 @@ import {
   SceneTimeRange,
   sceneGraph,
 } from '@grafana/scenes';
-import { Alert, Text, useStyles2, IconButton, Spinner } from '@grafana/ui';
+import { Text, useStyles2, IconButton, Spinner } from '@grafana/ui';
 import { css } from '@emotion/css';
 
 import { TimeSeeker } from './TimeSeeker';
 import { getTraceExplorationScene } from 'utils/utils';
-import { MetricFunction } from 'utils/shared';
+import { explorationDS, MetricFunction } from 'utils/shared';
 import { StreamingIndicator } from '../StreamingIndicator';
 import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
+import { BatchDataCache } from './BatchCache';
 
 const DEFAULT_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -24,6 +25,10 @@ export interface TimeSeekerSceneState extends SceneObjectState {
 }
 
 export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
+  private batchCache: BatchDataCache = new BatchDataCache();
+  private currentMetric: MetricFunction | null = null;
+  private visibleRange: AbsoluteTimeRange | null = null;
+
   constructor(state: Partial<TimeSeekerSceneState> = {}) {
     super({
       isCollapsed: false,
@@ -37,52 +42,134 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     const traceExploration = getTraceExplorationScene(this);
     const metricVar = traceExploration.getMetricVariable();
 
-    // Only subscribe to metric changes - datasource, filters, and primarySignal
-    // are handled automatically by the SceneQueryRunner through variable interpolation
+    // Subscribe to metric changes - need to clear cache
     this._subs.add(
-      metricVar.subscribeToState(() => {
-        this.updateQueryRunner();
+      metricVar.subscribeToState((newState) => {
+        const newMetric = newState.value as MetricFunction;
+        if (this.currentMetric !== newMetric) {
+          this.currentMetric = newMetric;
+          this.batchCache.clearCache();
+          this.loadNextBatch();
+        }
       })
     );
 
-    // Initial query runner setup
-    this.updateQueryRunner();
+    this.currentMetric = metricVar.state.value as MetricFunction;
+
+    // Cleanup on deactivation
+    return () => {
+      this.batchCache.clearCache();
+    };
   }
 
-  private updateQueryRunner() {
-    const traceExploration = getTraceExplorationScene(this);
-    const metricVar = traceExploration.getMetricVariable();
-    const sceneTimeRange = traceExploration.state.$timeRange;
+  /**
+   * Update the visible range and trigger batch loading if needed.
+   */
+  public updateVisibleRange(visibleFrom: number, visibleTo: number): void {
+    this.visibleRange = { from: visibleFrom, to: visibleTo };
 
-    const metricValue = metricVar.state.value as MetricFunction;
-    const selectionTimeRange = sceneTimeRange?.state.value;
-
-    if (!metricValue) {
+    if (!this.currentMetric) {
       return;
     }
 
-    // Build context range (24h centered on selection)
-    const contextRange = this.buildContextRange(selectionTimeRange);
+    // Check if metric changed
+    this.batchCache.checkMetricChange(this.currentMetric);
 
-    // Create query - datasource and filters are handled automatically via explorationDS
-    const query = getMetricsTempoQuery({ metric: metricValue, sample: true });
+    // Load next batch if needed
+    this.loadNextBatch();
+  }
 
-    // Create time range for the query
+  /**
+   * Load the next batch that's needed for the visible range.
+   */
+  private loadNextBatch(): void {
+    if (!this.visibleRange || !this.currentMetric) {
+      return;
+    }
+
+    // Check if there's already a batch loading
+    if (this.batchCache.getLoadingBatchId() !== null) {
+      return;
+    }
+
+    const nextBatch = this.batchCache.getNextBatchToLoad(this.visibleRange.from, this.visibleRange.to);
+    if (!nextBatch) {
+      return;
+    }
+
+    // Mark batch as loading
+    this.batchCache.setLoadingBatch(nextBatch.batchId);
+
+    // Create query
+    const query = getMetricsTempoQuery({ metric: this.currentMetric, sample: true });
+
+    // Create time range for this batch
     const $timeRange = new SceneTimeRange({
-      from: dateTime(contextRange.from).toISOString(),
-      to: dateTime(contextRange.to).toISOString(),
+      from: dateTime(nextBatch.from).toISOString(),
+      to: dateTime(nextBatch.to).toISOString(),
     });
 
-    // Update or create query runner
-    // The datasource uses explorationDS which automatically interpolates VAR_DATASOURCE_EXPR
-    // The query uses VAR_FILTERS_EXPR which automatically includes primarySignal and filters
+    // Create a transformer that caches the result and merges with existing data
+    const batchId = nextBatch.batchId;
+    const batchFrom = nextBatch.from;
+    const batchTo = nextBatch.to;
+    const cache = this.batchCache;
+    const loadNextBatchFn = this.loadNextBatch.bind(this);
+    const forceRenderFn = () => this.forceRender();
+
+    // Update the $data with new query runner
     this.setState({
       $data: new SceneQueryRunner({
-        datasource: { uid: '${ds}' }, // Uses the datasource variable
+        datasource: explorationDS,
         queries: [{ ...query, step: '30s' }],
         $timeRange,
       }),
     });
+
+    // Subscribe to data updates
+    const data = sceneGraph.getData(this);
+    this._subs.add(
+      data.subscribeToState((state) => {
+        if (state.data?.state === LoadingState.Done || state.data?.state === LoadingState.Streaming) {
+          // Store the new batch data
+          if (state.data.series.length > 0 && cache.getLoadingBatchId() === batchId) {
+            cache.storeBatch(batchId, batchFrom, batchTo, state.data.series);
+            forceRenderFn();
+
+            // Load next batch if needed
+            setTimeout(() => loadNextBatchFn(), 0);
+          }
+        } else if (state.data?.state === LoadingState.Error) {
+          // Clear loading state on error
+          cache.setLoadingBatch(null);
+          forceRenderFn();
+        }
+      })
+    );
+  }
+
+  /**
+   * Get concatenated data for the visible range from cache.
+   */
+  public getCachedData(): { series: any[]; loading: boolean } {
+    if (!this.visibleRange) {
+      return { series: [], loading: false };
+    }
+
+    const series = this.batchCache.getCachedData(this.visibleRange.from, this.visibleRange.to);
+    const loading = !this.batchCache.isFullyLoaded(this.visibleRange.from, this.visibleRange.to);
+
+    return { series, loading };
+  }
+
+  /**
+   * Get loading ranges for UI display.
+   */
+  public getLoadingRanges(): Array<{ from: number; to: number }> {
+    if (!this.visibleRange) {
+      return [];
+    }
+    return this.batchCache.getLoadingRanges(this.visibleRange.from, this.visibleRange.to);
   }
 
   private buildContextRange(selectionTimeRange?: TimeRange): AbsoluteTimeRange {
@@ -120,6 +207,12 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     const styles = useStyles2(getStyles);
     const containerRef = useRef<HTMLDivElement>(null);
     const [width, setWidth] = useState(0);
+    const [, forceUpdate] = useState(0);
+
+    // Store forceRender callback on the model
+    React.useEffect(() => {
+      model.forceRender = () => forceUpdate((n) => n + 1);
+    }, [model]);
 
     const traceExploration = getTraceExplorationScene(model);
     const metricVar = traceExploration.getMetricVariable();
@@ -128,9 +221,22 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     const sceneTimeRangeState = sceneTimeRange?.useState();
     const selectionTimeRange = sceneTimeRangeState?.value;
 
-    const data = sceneGraph.getData(model);
-    const dataState = data.useState();
-    const loadingState = dataState.data?.state ?? LoadingState.NotStarted;
+    // Track visible range for batch loading
+    const [visibleRange, setVisibleRange] = useState<AbsoluteTimeRange>(() => {
+      const contextRange = model.buildContextRange(selectionTimeRange);
+      return contextRange;
+    });
+
+    // Update visible range when selection changes (initial load)
+    React.useEffect(() => {
+      const contextRange = model.buildContextRange(selectionTimeRange);
+      setVisibleRange(contextRange);
+    }, [model, selectionTimeRange]);
+
+    // Trigger batch loading when visible range changes
+    React.useEffect(() => {
+      model.updateVisibleRange(visibleRange.from, visibleRange.to);
+    }, [model, visibleRange.from, visibleRange.to]);
 
     const controlHandlersRef = useRef<{
       onPanLeft: () => void;
@@ -178,27 +284,38 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       [sceneTimeRange]
     );
 
-    // Build seeker data with proper time range
+    // Callback when TimeSeeker's visible range changes (pan/zoom on context)
+    const onVisibleRangeChange = useCallback((range: AbsoluteTimeRange) => {
+      setVisibleRange(range);
+    }, []);
+
+    // Get cached data and loading state
+    const { series, loading } = model.getCachedData();
+    const loadingRanges = model.getLoadingRanges();
+    const hasData = series.length > 0;
+
+    // Build panel data from cached series
     const seekerData = React.useMemo(() => {
-      if (!dataState.data || !dataState.data.series.length) {
+      if (!hasData) {
         return null;
       }
 
-      const contextRange = model.buildContextRange(selectionTimeRange);
       const timeRange = selectionTimeRange ?? {
-        from: dateTime(contextRange.from),
-        to: dateTime(contextRange.to),
+        from: dateTime(visibleRange.from),
+        to: dateTime(visibleRange.to),
         raw: {
-          from: dateTime(contextRange.from),
-          to: dateTime(contextRange.to),
+          from: dateTime(visibleRange.from),
+          to: dateTime(visibleRange.to),
         },
       };
 
       return {
-        ...dataState.data,
+        state: loading ? LoadingState.Loading : LoadingState.Done,
+        series,
         timeRange,
+        structureRev: 1,
       };
-    }, [dataState.data, selectionTimeRange, model]);
+    }, [hasData, series, loading, visibleRange, selectionTimeRange]);
 
     return (
       <div className={styles.container} ref={containerRef}>
@@ -212,10 +329,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
               variant="secondary"
             />
             <Text weight="medium">Time range seeker</Text>
-            <StreamingIndicator
-              isStreaming={loadingState === LoadingState.Loading || loadingState === LoadingState.Streaming}
-              iconSize={10}
-            />
+            <StreamingIndicator isStreaming={loading} iconSize={10} />
           </div>
           {!isCollapsed && seekerData && controlHandlersRef.current && (
             <div className={styles.headerRight}>
@@ -266,12 +380,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
         </div>
         {!isCollapsed && (
           <>
-            {loadingState === LoadingState.Error && (
-              <Alert severity="error" title="Unable to load context data">
-                Check your data source configuration or adjust your filters.
-              </Alert>
-            )}
-            {loadingState !== LoadingState.Error && (!seekerData || width === 0) && (
+            {!seekerData && (
               <div className={styles.placeholder}>
                 <Spinner size={16} />
                 <Text variant="bodySmall" color="secondary">
@@ -279,12 +388,14 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
                 </Text>
               </div>
             )}
-            {loadingState !== LoadingState.Error && seekerData && width > 0 && (
+            {seekerData && width > 0 && (
               <TimeSeeker
                 data={seekerData}
                 width={width}
                 metric={metricValue as MetricFunction}
                 onChangeTimeRange={onRangeChange}
+                onVisibleRangeChange={onVisibleRangeChange}
+                loadingRanges={loadingRanges}
                 renderControls={(handlers) => {
                   controlHandlersRef.current = handlers;
                   return null;
@@ -296,6 +407,9 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       </div>
     );
   };
+
+  // This will be set by the component to trigger re-renders
+  public forceRender: () => void = () => {};
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
