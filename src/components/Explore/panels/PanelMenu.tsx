@@ -1,4 +1,4 @@
-import { PanelMenuItem, PluginExtensionLink, toURLRange, urlUtil } from '@grafana/data';
+import { PanelMenuItem, toURLRange, urlUtil } from '@grafana/data';
 import {
   SceneObjectBase,
   VizPanelMenu,
@@ -134,7 +134,7 @@ export const getInvestigationLink = async (addToInvestigations: AddToInvestigati
 
   // `getObservablePluginLinks` is introduced in Grafana v12
   if (getObservablePluginLinks !== undefined) {
-    const links: PluginExtensionLink[] = await firstValueFrom(
+    const links = await firstValueFrom(
       getObservablePluginLinks({
         extensionPointId,
         context,
