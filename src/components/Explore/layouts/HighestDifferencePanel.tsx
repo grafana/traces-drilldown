@@ -7,7 +7,7 @@ import { getFiltersVariable } from '../../../utils/utils';
 import { addToFilters, filterExistsForKey } from '../actions/AddToFiltersAction';
 import { computeHighestDifference } from '../../../utils/comparison';
 
-export interface HighestDifferencePanelState extends SceneObjectState {
+interface HighestDifferencePanelState extends SceneObjectState {
   frame: DataFrame;
   panel: VizPanel;
   maxDifference?: number;

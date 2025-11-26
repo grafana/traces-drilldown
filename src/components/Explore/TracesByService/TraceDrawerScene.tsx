@@ -6,7 +6,7 @@ import { TraceViewPanelScene } from '../panels/TraceViewPanelScene';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../utils/analytics';
 import { getTraceExplorationScene } from '../../../utils/utils';
 
-export interface DetailsSceneState extends SceneObjectState {
+interface DetailsSceneState extends SceneObjectState {
   body?: SceneObject;
 }
 

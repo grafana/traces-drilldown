@@ -6,7 +6,7 @@ import { Button } from '@grafana/ui';
 import { getFiltersVariable, getLabelValue } from '../../../utils/utils';
 import { DATABASE_CALLS_KEY } from 'pages/Explore/primary-signals';
 
-export interface AddToFiltersActionState extends SceneObjectState {
+interface AddToFiltersActionState extends SceneObjectState {
   frame: DataFrame;
   onClick: (payload: any) => void;
   labelKey?: string;

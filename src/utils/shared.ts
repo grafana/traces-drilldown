@@ -113,14 +113,14 @@ export interface ComparisonSelection {
   query?: string;
 }
 
-export interface EventTimeseriesDataReceivedPayload {
+interface EventTimeseriesDataReceivedPayload {
   series?: DataFrame[];
 }
 
 export class EventTimeseriesDataReceived extends BusEventWithPayload<EventTimeseriesDataReceivedPayload> {
   public static type = 'timeseries-data-received';
 }
-export interface EventTraceOpenedPayload {
+interface EventTraceOpenedPayload {
   traceId: string;
   spanId?: string;
 }
