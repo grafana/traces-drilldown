@@ -39,6 +39,7 @@ import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 import { useServiceName } from 'pages/Explore/TraceExploration';
+import { getTraceExplorationScene } from 'utils/utils';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -252,8 +253,8 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     frame.name = 'xymark';
     frame.meta = {
       ...frame.meta,
-      dataTopic: DataTopic.Annotations
-    }
+      dataTopic: DataTopic.Annotations,
+    };
 
     return [frame];
   }
@@ -264,6 +265,8 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
     const timeRange = sceneGraph.getTimeRange(model).useState();
+    const traceExploration = getTraceExplorationScene(model);
+    const { timeSeekerScene } = traceExploration.useState();
 
     if (!panel) {
       return;
@@ -309,13 +312,16 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           </div>
           <div className={styles.actions}>
             {isStreaming && <StreamingIndicator isStreaming={true} iconSize={10} />}
-            {actions?.map((action) => <action.Component model={action} key={action.state.key} />)}
+            {actions?.map((action) => (
+              <action.Component model={action} key={action.state.key} />
+            ))}
           </div>
         </div>
+        {timeSeekerScene && <timeSeekerScene.Component model={timeSeekerScene} />}
         <panel.Component model={panel} />
         {timeRange && (
           <InsightsTimelineWidget
-            serviceName={serviceName || ''}           
+            serviceName={serviceName || ''}
             metric={metric as MetricFunction}
             startTime={timeRange.from.valueOf()}
             endTime={timeRange.to.valueOf()}

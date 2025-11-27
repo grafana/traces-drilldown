@@ -8,21 +8,18 @@ import {
   SceneTimeRange,
   sceneGraph,
 } from '@grafana/scenes';
-import { Text, useStyles2, IconButton, Spinner } from '@grafana/ui';
+import { Text, useStyles2, Spinner, Stack } from '@grafana/ui';
 import { css } from '@emotion/css';
 
 import { TimeSeeker } from './TimeSeeker';
 import { getTraceExplorationScene } from 'utils/utils';
 import { explorationDS, MetricFunction } from 'utils/shared';
-import { StreamingIndicator } from '../StreamingIndicator';
 import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { BatchDataCache } from './BatchCache';
 
 const DEFAULT_WINDOW_MS = 24 * 60 * 60 * 1000;
 
-export interface TimeSeekerSceneState extends SceneObjectState {
-  isCollapsed?: boolean;
-}
+export interface TimeSeekerSceneState extends SceneObjectState {}
 
 export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
   private batchCache: BatchDataCache = new BatchDataCache();
@@ -31,7 +28,6 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 
   constructor(state: Partial<TimeSeekerSceneState> = {}) {
     super({
-      isCollapsed: false,
       ...state,
     });
 
@@ -198,12 +194,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     return { from, to };
   }
 
-  public toggleCollapsed() {
-    this.setState({ isCollapsed: !this.state.isCollapsed });
-  }
-
   public static Component = ({ model }: SceneComponentProps<TimeSeekerScene>) => {
-    const { isCollapsed } = model.useState();
     const styles = useStyles2(getStyles);
     const containerRef = useRef<HTMLDivElement>(null);
     const [width, setWidth] = useState(0);
@@ -238,15 +229,6 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       model.updateVisibleRange(visibleRange.from, visibleRange.to);
     }, [model, visibleRange.from, visibleRange.to]);
 
-    const controlHandlersRef = useRef<{
-      onPanLeft: () => void;
-      onPanRight: () => void;
-      onZoomIn: () => void;
-      onZoomOut: () => void;
-      onReset: () => void;
-      onOpenContextSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
-    } | null>(null);
-
     React.useEffect(() => {
       if (!containerRef.current) {
         return;
@@ -255,7 +237,9 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       const observer = new ResizeObserver((entries) => {
         const entry = entries[0];
         if (entry) {
-          setWidth(entry.contentRect.width);
+          // Subtract the text and gap width
+          const newWidth = entry.contentRect.width - 48;
+          setWidth(newWidth > 0 ? newWidth : 0);
         }
       });
 
@@ -317,92 +301,36 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       };
     }, [hasData, series, loading, visibleRange, selectionTimeRange]);
 
+    // Don't render anything if no data yet
+    if (!seekerData) {
+      return (
+        <div className={styles.container} ref={containerRef}>
+          <div className={styles.placeholder}>
+            <Spinner size={16} />
+            <Text variant="bodySmall" color="secondary">
+              Loading time seeker…
+            </Text>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className={styles.container} ref={containerRef}>
-        <div className={styles.header}>
-          <div className={styles.headerLeft}>
-            <IconButton
-              name={isCollapsed ? 'angle-right' : 'angle-down'}
-              tooltip={isCollapsed ? 'Expand time range seeker' : 'Collapse time range seeker'}
-              onClick={() => model.toggleCollapsed()}
-              size="sm"
-              variant="secondary"
+        {width > 0 && (
+          <Stack direction="row" rowGap={1} alignItems="center">
+            <Text variant="bodySmall" color="secondary">
+              Seeker
+            </Text>
+            <TimeSeeker
+              data={seekerData}
+              width={width}
+              metric={metricValue as MetricFunction}
+              onChangeTimeRange={onRangeChange}
+              onVisibleRangeChange={onVisibleRangeChange}
+              loadingRanges={loadingRanges}
             />
-            <Text weight="medium">Time range seeker</Text>
-            <StreamingIndicator isStreaming={loading} iconSize={10} />
-          </div>
-          {!isCollapsed && seekerData && controlHandlersRef.current && (
-            <div className={styles.headerRight}>
-              <IconButton
-                tooltip="Pan left"
-                name="arrow-left"
-                onClick={controlHandlersRef.current.onPanLeft}
-                size="sm"
-                variant="secondary"
-              />
-              <IconButton
-                tooltip="Zoom out context"
-                name="search-minus"
-                onClick={controlHandlersRef.current.onZoomOut}
-                size="sm"
-                variant="secondary"
-              />
-              <IconButton
-                tooltip="Zoom in context"
-                name="search-plus"
-                onClick={controlHandlersRef.current.onZoomIn}
-                size="sm"
-                variant="secondary"
-              />
-              <IconButton
-                tooltip="Pan right"
-                name="arrow-right"
-                onClick={controlHandlersRef.current.onPanRight}
-                size="sm"
-                variant="secondary"
-              />
-              <IconButton
-                tooltip="Reset context window"
-                name="crosshair"
-                onClick={controlHandlersRef.current.onReset}
-                size="sm"
-                variant="secondary"
-              />
-              <IconButton
-                name="calendar-alt"
-                tooltip="Set context window"
-                onClick={controlHandlersRef.current.onOpenContextSelector}
-                size="sm"
-                variant="secondary"
-              />
-            </div>
-          )}
-        </div>
-        {!isCollapsed && (
-          <>
-            {!seekerData && (
-              <div className={styles.placeholder}>
-                <Spinner size={16} />
-                <Text variant="bodySmall" color="secondary">
-                  Loading sparkline…
-                </Text>
-              </div>
-            )}
-            {seekerData && width > 0 && (
-              <TimeSeeker
-                data={seekerData}
-                width={width}
-                metric={metricValue as MetricFunction}
-                onChangeTimeRange={onRangeChange}
-                onVisibleRangeChange={onVisibleRangeChange}
-                loadingRanges={loadingRanges}
-                renderControls={(handlers) => {
-                  controlHandlersRef.current = handlers;
-                  return null;
-                }}
-              />
-            )}
-          </>
+          </Stack>
         )}
       </div>
     );
@@ -415,33 +343,23 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css({
     width: '100%',
-    border: `1px solid ${theme.colors.border.weak}`,
-    borderRadius: 4,
-    padding: `${theme.spacing(1)} ${theme.spacing(1.5)} ${theme.spacing(1)}`,
-    background: theme.colors.background.primary,
     display: 'flex',
     flexDirection: 'column',
-    gap: theme.spacing(1),
+    padding: theme.spacing(0, 1, 1, 1),
+    borderBottom: `1px solid ${theme.colors.border.weak}`,
   }),
-  header: css({
+
+  seekerContainer: css({
+    width: '100%',
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  }),
-  headerLeft: css({
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-  }),
-  headerRight: css({
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(0.5),
+    flexDirection: 'column',
   }),
   placeholder: css({
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: theme.spacing(1),
+    padding: theme.spacing(1),
     color: theme.colors.text.secondary,
   }),
 });

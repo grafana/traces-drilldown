@@ -397,7 +397,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   const serviceName = useServiceName(model);
   const traceExploration = getTraceExplorationScene(model);
 
-  const { traceId, timeSeekerScene } = traceExploration.useState();
+  const { traceId } = traceExploration.useState();
 
   const [localTraceId, setLocalTraceId] = React.useState(traceId ?? '');
 
@@ -521,7 +521,6 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           />
         </Stack>
       </Stack>
-      {timeSeekerScene && <timeSeekerScene.Component model={timeSeekerScene} />}
     </div>
   );
 };

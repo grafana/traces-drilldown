@@ -37,6 +37,7 @@ const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
   wrapper: css`
     font-family: Open Sans;
     position: relative;
+    overflow: hidden;
   `,
   resizeHandle: css`
     position: absolute;
