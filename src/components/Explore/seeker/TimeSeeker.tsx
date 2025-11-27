@@ -266,6 +266,15 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
     updateOverlay();
   }, [updateOverlay, visibleRange, timelineRange.from, timelineRange.to]);
 
+  // Update overlay when width changes (window resize)
+  // Use requestAnimationFrame to ensure UPlot has finished resizing
+  useEffect(() => {
+    const frameId = requestAnimationFrame(() => {
+      updateOverlay();
+    });
+    return () => cancelAnimationFrame(frameId);
+  }, [width, updateOverlay]);
+
   const lastDashboardRange = useRef<AbsoluteTimeRange>({
     from: dashboardFrom,
     to: dashboardTo,
