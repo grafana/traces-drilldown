@@ -47,7 +47,7 @@ const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
     background: linear-gradient(to right, rgba(0, 123, 255, 0.4), rgba(0, 123, 255, 0.2));
     border: 1px solid rgba(0, 123, 255, 0.8);
     cursor: ew-resize;
-    z-index: 11;
+    z-index: 2;
     box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
     transition: background 0.2s;
     &:hover {
@@ -69,11 +69,11 @@ const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
   loadingOverlay: css`
     position: absolute;
     top: 0;
-    height: 100%;
+    height: 29px;
     background: repeating-linear-gradient(
       -45deg,
-      ${theme.colors.background.secondary},
-      ${theme.colors.background.secondary} 4px,
+      ${theme.colors.primary.shade},
+      ${theme.colors.primary.shade} 4px,
       transparent 4px,
       transparent 8px
     );
@@ -223,7 +223,7 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
         height: u.bbox.height,
         cursor: 'grab',
         background: 'rgba(0, 123, 255, 0.1)',
-        zIndex: 10,
+        zIndex: 1,
       },
       leftHandleStyle: {
         position: 'absolute',
@@ -234,7 +234,7 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
         cursor: 'ew-resize',
         background: 'rgba(0, 123, 255, 0.6)',
         borderRadius: 2,
-        zIndex: 11,
+        zIndex: 2,
       },
       rightHandleStyle: {
         position: 'absolute',
@@ -245,7 +245,7 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
         cursor: 'ew-resize',
         background: 'rgba(0, 123, 255, 0.6)',
         borderRadius: 2,
-        zIndex: 11,
+        zIndex: 2,
       },
     });
   }, [timelineRange.from, timelineRange.to]);
