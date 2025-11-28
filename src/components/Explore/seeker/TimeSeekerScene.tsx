@@ -17,7 +17,7 @@ import { explorationDS, MetricFunction } from 'utils/shared';
 import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { BatchDataCache } from './BatchCache';
 
-const DEFAULT_WINDOW_MS = 24 * 60 * 60 * 1000;
+const DEFAULT_WINDOW_MS = 12 * 60 * 60 * 1000; // 12 hours for visible range
 
 export interface TimeSeekerSceneState extends SceneObjectState {}
 
@@ -326,6 +326,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
               data={seekerData}
               width={width}
               metric={metricValue as MetricFunction}
+              initialVisibleRange={visibleRange}
               onChangeTimeRange={onRangeChange}
               onVisibleRangeChange={onVisibleRangeChange}
               loadingRanges={loadingRanges}

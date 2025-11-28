@@ -20,6 +20,7 @@ interface TimeSeekerProps {
   id?: number;
   fieldConfig?: FieldConfigSource;
   metric?: MetricFunction;
+  initialVisibleRange?: AbsoluteTimeRange;
   onChangeTimeRange: (range: AbsoluteTimeRange) => void;
   onVisibleRangeChange?: (range: AbsoluteTimeRange) => void;
   loadingRanges?: Array<{ from: number; to: number }>;
@@ -99,6 +100,7 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
   fieldConfig,
   id,
   metric,
+  initialVisibleRange,
   onChangeTimeRange,
   onVisibleRangeChange,
   loadingRanges,
@@ -133,7 +135,7 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
 
   const [timelineRange, setTimelineRange] = useState({ from: dashboardFrom, to: dashboardTo });
   const [visibleRange, setVisibleRangeState] = useState<AbsoluteTimeRange>(
-    computeContextWindowFromSelection(dashboardFrom, dashboardTo)
+    initialVisibleRange ?? computeContextWindowFromSelection(dashboardFrom, dashboardTo)
   );
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
