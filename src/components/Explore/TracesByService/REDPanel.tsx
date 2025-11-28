@@ -317,8 +317,8 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
             ))}
           </div>
         </div>
-        {timeSeekerScene && <timeSeekerScene.Component model={timeSeekerScene} />}
         <panel.Component model={panel} />
+        {timeSeekerScene && <timeSeekerScene.Component model={timeSeekerScene} />}
         {timeRange && (
           <InsightsTimelineWidget
             serviceName={serviceName || ''}

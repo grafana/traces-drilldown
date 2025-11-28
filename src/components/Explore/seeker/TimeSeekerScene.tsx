@@ -345,8 +345,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    padding: theme.spacing(0, 1, 1, 1),
-    borderBottom: `1px solid ${theme.colors.border.weak}`,
+    padding: theme.spacing(1),
+    borderTop: `1px solid ${theme.colors.border.weak}`,
   }),
 
   seekerContainer: css({
