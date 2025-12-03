@@ -8,7 +8,7 @@ import {
   SceneTimeRange,
   sceneGraph,
 } from '@grafana/scenes';
-import { Text, useStyles2, Spinner, Stack } from '@grafana/ui';
+import { Text, useStyles2, Spinner } from '@grafana/ui';
 import { css } from '@emotion/css';
 
 import { TimeSeeker } from './TimeSeeker';
@@ -237,9 +237,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       const observer = new ResizeObserver((entries) => {
         const entry = entries[0];
         if (entry) {
-          // Subtract the text and gap width
-          const newWidth = entry.contentRect.width - 48;
-          setWidth(newWidth > 0 ? newWidth : 0);
+          setWidth(entry.contentRect.width);
         }
       });
 
@@ -318,20 +316,15 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     return (
       <div className={styles.container} ref={containerRef}>
         {width > 0 && (
-          <Stack direction="row" rowGap={1} alignItems="center">
-            <Text variant="bodySmall" color="secondary">
-              Seeker
-            </Text>
-            <TimeSeeker
-              data={seekerData}
-              width={width}
-              metric={metricValue as MetricFunction}
-              initialVisibleRange={visibleRange}
-              onChangeTimeRange={onRangeChange}
-              onVisibleRangeChange={onVisibleRangeChange}
-              loadingRanges={loadingRanges}
-            />
-          </Stack>
+          <TimeSeeker
+            data={seekerData}
+            width={width}
+            metric={metricValue as MetricFunction}
+            initialVisibleRange={visibleRange}
+            onChangeTimeRange={onRangeChange}
+            onVisibleRangeChange={onVisibleRangeChange}
+            loadingRanges={loadingRanges}
+          />
         )}
       </div>
     );
@@ -343,14 +336,6 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css({
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: theme.spacing(1),
-    borderTop: `1px solid ${theme.colors.border.weak}`,
-  }),
-
-  seekerContainer: css({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',

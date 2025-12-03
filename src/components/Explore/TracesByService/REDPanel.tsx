@@ -37,9 +37,9 @@ import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
-import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 import { useServiceName } from 'pages/Explore/TraceExploration';
 import { getTraceExplorationScene } from 'utils/utils';
+import { RedPanelExtras } from './RedPanelExtras';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -318,15 +318,13 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           </div>
         </div>
         <panel.Component model={panel} />
-        {timeSeekerScene && <timeSeekerScene.Component model={timeSeekerScene} />}
-        {timeRange && (
-          <InsightsTimelineWidget
-            serviceName={serviceName || ''}
-            metric={metric as MetricFunction}
-            startTime={timeRange.from.valueOf()}
-            endTime={timeRange.to.valueOf()}
-          />
-        )}
+        <RedPanelExtras
+          timeSeekerScene={timeSeekerScene}
+          serviceName={serviceName}
+          metric={metric as MetricFunction}
+          startTime={String(timeRange.value.from.valueOf())}
+          endTime={String(timeRange.value.to.valueOf())}
+        />
       </div>
     );
   };
