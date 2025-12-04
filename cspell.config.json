@@ -66,6 +66,7 @@
     "behaviour",
     "Resizeble",
     "Dismissable",
-    "automerge"
+    "automerge",
+    "nwsapi"
   ]
 }
