@@ -25,7 +25,7 @@ When you select **Rate**, **Breakdown** orders the sequence of attributes by the
 
 You can change the **Scope** to show **Resource** or **Span**.
 
-Using the **Group by** selector, you can group the selected metric by different attributes.
+Using the **Attributes** sidebar, you can group the selected metric by different attributes.
 For example, if you have selected **Errors** as a metric type and then choose the `service.name` attribute, the displayed results show the number of errors sorted by the `service.name` with the most matches.
 
 Use the **Attributes** sidebar to select the attribute for **Group by**.
@@ -37,7 +37,6 @@ Attributes already in your **Filters** are listed at the top of the Attribute si
 By default, the selected attribute is your first **Favorite** or `resource.service.name`.
 You can reorder **Favorites** to change this default.
 The **Attributes** sidebar displays other commonly used resource level attributes such as `cluster`, `environment`, and `namespace`.
-
 
 ### Choose percentiles (Duration only)
 
@@ -120,7 +119,7 @@ The Exceptions tab has a table with the following columns:
 - **Frequency**: Sparkline of occurrences over time
 - **Last seen**: The most recent occurrence
 
-The **Exceptions** tab is available when the **Errors** metics is selected and exceptions are present. 
+The **Exceptions** tab is available when the **Errors** metics is selected and exceptions are present.
 The tab respects the current time range and filters.
 For example, when Errors are selected, **Exceptions** works with both **Root spans** and **All spans** selections. The results reflect the data in scope.
 

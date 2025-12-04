@@ -53,4 +53,8 @@ Trade‑offs:
 - Performance: Scanning all spans is heavier, especially in wide or deep traces.
 - Result size: You may hit maximum spans per span-set limits if your traces are large.
 
+{{< admonition type="note" >}}
+Errors can cascade through downstream services, and error counts differ from error rates. When using **All spans**, verify the error type on spans and consider rate (errors/requests) to avoid overestimating the impact.
+{{< /admonition >}}
+
 ![The Span rate metric view showing All spans selected](/media/docs/explore-traces/traces-drilldown-all-spans-v1.2.png "The Span rate metric view showing All spans selected")
