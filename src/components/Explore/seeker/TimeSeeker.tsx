@@ -2,7 +2,16 @@ import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { AbsoluteTimeRange, durationToMilliseconds, parseDuration, PanelData, FieldConfigSource } from '@grafana/data';
 import { MetricFunction } from 'utils/shared';
 import { css, cx } from '@emotion/css';
-import { AxisPlacement, UPlotChart, UPlotConfigBuilder, useStyles2, useTheme2, Popover, DrawStyle } from '@grafana/ui';
+import {
+  AxisPlacement,
+  UPlotChart,
+  UPlotConfigBuilder,
+  useStyles2,
+  useTheme2,
+  Popover,
+  DrawStyle,
+  IconButton,
+} from '@grafana/ui';
 import { PanelDataErrorView } from '@grafana/runtime';
 import { ContextWindowSelector } from './ContextWindowSelector';
 
@@ -24,74 +33,83 @@ interface TimeSeekerProps {
   onChangeTimeRange: (range: AbsoluteTimeRange) => void;
   onVisibleRangeChange?: (range: AbsoluteTimeRange) => void;
   loadingRanges?: Array<{ from: number; to: number }>;
-  renderControls?: (controls: {
-    onPanLeft: () => void;
-    onPanRight: () => void;
-    onZoomIn: () => void;
-    onZoomOut: () => void;
-    onReset: () => void;
-    onOpenContextSelector: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  }) => React.ReactNode;
 }
 
 const getStyles = (theme: ReturnType<typeof useTheme2>) => ({
-  wrapper: css`
-    font-family: Open Sans;
-    position: relative;
-    overflow: hidden;
-  `,
-  resizeHandle: css`
-    position: absolute;
-    top: 0;
-    width: 8px;
-    height: 100%;
-    background: linear-gradient(to right, rgba(0, 123, 255, 0.4), rgba(0, 123, 255, 0.2));
-    border: 1px solid rgba(0, 123, 255, 0.8);
-    cursor: ew-resize;
-    z-index: 2;
-    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
-    transition: background 0.2s;
-    &:hover {
-      background: rgba(0, 123, 255, 0.6);
-    }
-  `,
-  controlRow: css`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-  `,
-  popoverContent: css`
-    background-color: ${theme.colors.background.primary};
-    padding: 8px;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  `,
-  loadingOverlay: css`
-    position: absolute;
-    top: 0;
-    height: 29px;
-    background: repeating-linear-gradient(
+  wrapper: css({
+    fontFamily: 'Open Sans',
+    position: 'relative',
+    overflow: 'hidden',
+    paddingTop: theme.spacing(2),
+    height: theme.spacing(8),
+  }),
+  resizeHandle: css({
+    position: 'absolute',
+    top: 0,
+    width: '8px',
+    height: '100%',
+    background: 'linear-gradient(to right, rgba(0, 123, 255, 0.4), rgba(0, 123, 255, 0.2))',
+    border: '1px solid rgba(0, 123, 255, 0.8)',
+    cursor: 'ew-resize',
+    zIndex: 2,
+    boxShadow: '0 0 4px rgba(0, 123, 255, 0.5)',
+    transition: 'background 0.2s',
+    '&:hover': {
+      background: 'rgba(0, 123, 255, 0.6)',
+    },
+  }),
+  floatingControls: css({
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+    background: theme.colors.background.primary,
+    border: `1px solid ${theme.colors.border.weak}`,
+    borderRadius: 4,
+    padding: 2,
+    zIndex: 3,
+    opacity: 0.3,
+    transition: 'opacity 0.2s',
+    '&:hover': {
+      opacity: 1,
+    },
+
+    button: {
+      margin: 0,
+    },
+  }),
+  popoverContent: css({
+    backgroundColor: theme.colors.background.primary,
+    padding: 8,
+    borderRadius: 4,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+  }),
+  loadingOverlay: css({
+    position: 'absolute',
+    top: 0,
+    height: '29px',
+    background: `repeating-linear-gradient(
       -45deg,
       ${theme.colors.primary.shade},
       ${theme.colors.primary.shade} 4px,
       transparent 4px,
       transparent 8px
-    );
-    opacity: 0.6;
-    pointer-events: none;
-    z-index: 5;
-    animation: loading-pulse 1.5s ease-in-out infinite;
-    @keyframes loading-pulse {
-      0%,
-      100% {
-        opacity: 0.4;
-      }
-      50% {
-        opacity: 0.7;
-      }
-    }
-  `,
+    )`,
+    opacity: 0.6,
+    pointerEvents: 'none',
+    zIndex: 5,
+    animation: 'loading-pulse 1.5s ease-in-out infinite',
+    '@keyframes loading-pulse': {
+      '0%, 100%': {
+        opacity: 0.4,
+      },
+      '50%': {
+        opacity: 0.7,
+      },
+    },
+  }),
 });
 
 export const TimeSeeker: React.FC<TimeSeekerProps> = ({
@@ -104,7 +122,6 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
   onChangeTimeRange,
   onVisibleRangeChange,
   loadingRanges,
-  renderControls,
 }) => {
   const theme = useTheme2();
   const styles = useStyles2(() => getStyles(theme));
@@ -603,18 +620,53 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
     return <PanelDataErrorView fieldConfig={fieldConfig} panelId={id ?? 0} data={data} needsStringField />;
   }
 
-  const controlHandlers = {
-    onPanLeft: () => panContextWindow('left'),
-    onPanRight: () => panContextWindow('right'),
-    onZoomIn: () => zoomContextWindow(0.5),
-    onZoomOut: () => zoomContextWindow(2),
-    onReset: resetContextWindow,
-    onOpenContextSelector: (e: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(e.currentTarget),
-  };
-
   return (
     <div className={cx(styles.wrapper)}>
-      {renderControls && <div className={styles.controlRow}>{renderControls(controlHandlers)}</div>}
+      {/* Floating controls in top right */}
+      <div className={styles.floatingControls}>
+        <IconButton
+          tooltip="Pan left"
+          name="arrow-left"
+          onClick={() => panContextWindow('left')}
+          size="sm"
+          variant="secondary"
+        />
+        <IconButton
+          tooltip="Zoom out context"
+          name="search-minus"
+          onClick={() => zoomContextWindow(2)}
+          size="sm"
+          variant="secondary"
+        />
+        <IconButton
+          tooltip="Zoom in context"
+          name="search-plus"
+          onClick={() => zoomContextWindow(0.5)}
+          size="sm"
+          variant="secondary"
+        />
+        <IconButton
+          tooltip="Pan right"
+          name="arrow-right"
+          onClick={() => panContextWindow('right')}
+          size="sm"
+          variant="secondary"
+        />
+        <IconButton
+          tooltip="Reset context window"
+          name="crosshair"
+          onClick={resetContextWindow}
+          size="sm"
+          variant="secondary"
+        />
+        <IconButton
+          name="calendar-alt"
+          tooltip="Set context window"
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          size="sm"
+          variant="secondary"
+        />
+      </div>
       {anchorEl && (
         <Popover
           referenceElement={anchorEl}
@@ -663,8 +715,8 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
           }
         />
       )}
-      <div style={{ position: 'relative', width: width, height: 50 }}>
-        <UPlotChart data={[timeValues, valueValues]} width={width} height={50} config={builder} />
+      <div style={{ position: 'relative', width: width, height: 42 }}>
+        <UPlotChart data={[timeValues, valueValues]} width={width} height={42} config={builder} />
         {/* Loading overlays for batches that are still loading */}
         {loadingRanges?.map((range, idx) => {
           const u = uplotRef.current;

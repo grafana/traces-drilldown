@@ -91,13 +91,13 @@ const getStyles = (theme: GrafanaTheme2) => ({
     alignItems: 'flex-start',
     gap: theme.spacing(1),
     width: '100%',
-    padding: theme.spacing(1),
     backgroundColor: theme.colors.background.secondary,
   }),
   radioButtons: css({
     display: 'flex',
     flexDirection: 'column',
     gap: theme.spacing(0.5),
+    padding: theme.spacing(1),
     '& > div': {
       flexDirection: 'column',
     },
@@ -111,6 +111,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: theme.spacing(1),
 
     fontSize: theme.typography.bodySmall.fontSize,
     color: theme.colors.text.secondary,
