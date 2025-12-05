@@ -1,37 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Input, DatePickerWithInput } from '@grafana/ui';
+import { Button, Input, DatePickerWithInput, Stack, Field, Grid } from '@grafana/ui';
 import { AbsoluteTimeRange, parseDuration, durationToMilliseconds, dateTime } from '@grafana/data';
 
 interface Props {
   dashboardFrom: number;
   dashboardTo: number;
   now: number;
-  uplotRef: React.RefObject<uPlot | null>;
-  timelineRange: AbsoluteTimeRange;
   visibleRange: AbsoluteTimeRange;
   setVisibleRange: (r: AbsoluteTimeRange) => void;
-  setTimelineRange: (r: AbsoluteTimeRange) => void;
   setRelativeContextDuration?: (duration: string | null) => void;
   onClose: () => void;
 }
 
 const OPTIONS = [
-  { label: 'Same as timepicker', value: '0h' },
+  { label: 'Last 12 hours', value: '12h' },
   { label: 'Last 24 hours', value: '24h' },
+  { label: 'Last 3 days', value: '3d' },
   { label: 'Last 1 week', value: '7d' },
   { label: 'Last 2 weeks', value: '14d' },
-  { label: 'Last 30 days', value: '30d' },
+  { label: 'Same as timepicker', value: '0h' },
 ];
 
 export const ContextWindowSelector: React.FC<Props> = ({
   dashboardFrom,
   dashboardTo,
   now,
-  uplotRef,
-  timelineRange,
   visibleRange,
   setVisibleRange,
-  setTimelineRange,
   setRelativeContextDuration,
   onClose,
 }) => {
@@ -86,67 +81,57 @@ export const ContextWindowSelector: React.FC<Props> = ({
   };
 
   return (
-    <div ref={wrapperRef} style={{ padding: 10, width: 350 }}>
-      {OPTIONS.map((opt) => (
-        <Button key={opt.value} fullWidth variant="secondary" size="sm" onClick={() => applyExtraWindow(opt.value)}>
-          {opt.label}
-        </Button>
-      ))}
+    <div ref={wrapperRef}>
+      <Stack direction="column" gap={2}>
+        <Grid columns={2} gap={1}>
+          {OPTIONS.map((opt) => (
+            <Button key={opt.value} variant="secondary" size="sm" onClick={() => applyExtraWindow(opt.value)}>
+              {opt.label}
+            </Button>
+          ))}
+        </Grid>
+        <Stack direction="column" gap={1}>
+          <Field label="From" noMargin>
+            <Stack direction="row" gap={1} alignItems="center">
+              <Input width={25} value={fromText} onChange={(e) => setFromText(e.currentTarget.value)} />
+              <Button
+                icon="calendar-alt"
+                size="sm"
+                variant="secondary"
+                onClick={() => setShowFromPicker(!showFromPicker)}
+              />
+            </Stack>
+          </Field>
+          {showFromPicker && (
+            <DatePickerWithInput
+              value={fromText}
+              onChange={(val) => setFromText(val instanceof Date ? val.toISOString() : val)}
+            />
+          )}
 
-      <div style={{ marginTop: 16 }}>
-        <Input
-          width={25}
-          placeholder="Custom duration (e.g. 12h)"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              const val = (e.target as HTMLInputElement).value;
-              applyExtraWindow(val);
-            }
-          }}
-        />
-      </div>
+          <Field label="To" noMargin>
+            <Stack direction="row" gap={1} alignItems="center">
+              <Input width={25} value={toText} onChange={(e) => setToText(e.currentTarget.value)} />
+              <Button
+                icon="calendar-alt"
+                size="sm"
+                variant="secondary"
+                onClick={() => setShowToPicker(!showToPicker)}
+              />
+            </Stack>
+          </Field>
+          {showToPicker && (
+            <DatePickerWithInput
+              value={toText}
+              onChange={(val) => setToText(val instanceof Date ? val.toISOString() : val)}
+            />
+          )}
 
-      <div style={{ marginTop: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>
-          <span style={{ marginRight: 6 }}>From:</span>
-          <Input width={25} value={fromText} onChange={(e) => setFromText(e.currentTarget.value)} />
-          <Button
-            icon="calendar-alt"
-            size="sm"
-            variant="secondary"
-            onClick={() => setShowFromPicker(true)}
-            style={{ marginLeft: 8 }}
-          />
-        </div>
-        {showFromPicker && (
-          <DatePickerWithInput
-            value={fromText}
-            onChange={(val) => setFromText(val instanceof Date ? val.toISOString() : val)}
-          />
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0 6px' }}>
-          <span style={{ marginRight: 6 }}>To:</span>
-          <Input width={25} value={toText} onChange={(e) => setToText(e.currentTarget.value)} />
-          <Button
-            icon="calendar-alt"
-            size="sm"
-            variant="secondary"
-            onClick={() => setShowToPicker(true)}
-            style={{ marginLeft: 8 }}
-          />
-        </div>
-        {showToPicker && (
-          <DatePickerWithInput
-            value={toText}
-            onChange={(val) => setToText(val instanceof Date ? val.toISOString() : val)}
-          />
-        )}
-
-        <Button fullWidth size="sm" variant="primary" onClick={applyAbsoluteRange} style={{ marginTop: 10 }}>
-          Apply Absolute Range
-        </Button>
-      </div>
+          <Button fullWidth size="sm" variant="primary" onClick={applyAbsoluteRange}>
+            Apply Absolute Range
+          </Button>
+        </Stack>
+      </Stack>
     </div>
   );
 };
