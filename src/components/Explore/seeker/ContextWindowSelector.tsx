@@ -83,7 +83,7 @@ export const ContextWindowSelector: React.FC<Props> = ({
   return (
     <div ref={wrapperRef}>
       <Stack direction="column" gap={2}>
-        <Grid columns={2} gap={1}>
+        <Grid columns={2} gap={0.5}>
           {OPTIONS.map((opt) => (
             <Button key={opt.value} variant="secondary" size="sm" onClick={() => applyExtraWindow(opt.value)}>
               {opt.label}
@@ -92,15 +92,18 @@ export const ContextWindowSelector: React.FC<Props> = ({
         </Grid>
         <Stack direction="column" gap={1}>
           <Field label="From" noMargin>
-            <Stack direction="row" gap={1} alignItems="center">
-              <Input width={25} value={fromText} onChange={(e) => setFromText(e.currentTarget.value)} />
-              <Button
-                icon="calendar-alt"
-                size="sm"
-                variant="secondary"
-                onClick={() => setShowFromPicker(!showFromPicker)}
-              />
-            </Stack>
+            <Input
+              value={fromText}
+              onChange={(e) => setFromText(e.currentTarget.value)}
+              addonAfter={
+                <Button
+                  tooltip="Select from date"
+                  icon="calendar-alt"
+                  variant="secondary"
+                  onClick={() => setShowFromPicker(!showFromPicker)}
+                />
+              }
+            />
           </Field>
           {showFromPicker && (
             <DatePickerWithInput
@@ -110,15 +113,18 @@ export const ContextWindowSelector: React.FC<Props> = ({
           )}
 
           <Field label="To" noMargin>
-            <Stack direction="row" gap={1} alignItems="center">
-              <Input width={25} value={toText} onChange={(e) => setToText(e.currentTarget.value)} />
-              <Button
-                icon="calendar-alt"
-                size="sm"
-                variant="secondary"
-                onClick={() => setShowToPicker(!showToPicker)}
-              />
-            </Stack>
+            <Input
+              value={toText}
+              onChange={(e) => setToText(e.currentTarget.value)}
+              addonAfter={
+                <Button
+                  tooltip="Select to date"
+                  icon="calendar-alt"
+                  variant="secondary"
+                  onClick={() => setShowToPicker(!showToPicker)}
+                />
+              }
+            />
           </Field>
           {showToPicker && (
             <DatePickerWithInput
