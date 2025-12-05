@@ -237,7 +237,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       const observer = new ResizeObserver((entries) => {
         const entry = entries[0];
         if (entry) {
-          setWidth(entry.contentRect.width);
+          setWidth(entry.contentRect.width - 4); // 4px for border
         }
       });
 
