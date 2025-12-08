@@ -3,13 +3,14 @@ import { ComparisonSelection } from '../../../utils/shared';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../utils/analytics';
 import { PanelBuilders, SceneFlexItem, SceneFlexLayout, SceneObject } from '@grafana/scenes';
 
-export function getHistogramVizPanel(scene: SceneObject, yBuckets: number[]) {
+export function getHistogramVizPanel(scene: SceneObject, yBuckets: number[], panelBuilderCallback?: (builder: ReturnType<typeof histogramPanelConfig>) => void) {
   const parent = getTraceByServiceScene(scene);
-  const panel = histogramPanelConfig()
+  const panelBuilder = histogramPanelConfig()
     .setHoverHeader(true)
     // @ts-ignore
-    .setOption('selectionMode', 'xy')
-    .build();
+    .setOption('selectionMode', 'xy');
+  panelBuilderCallback?.(panelBuilder)
+  const panel = panelBuilder.build();
   panel.setState({
     extendPanelContext: (vizPanel, context) => {
       // TODO remove when we the Grafana version with #88107 is released

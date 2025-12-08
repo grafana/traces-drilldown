@@ -102,6 +102,9 @@
       },
       {
         "id": "grafana-exploretraces-app/get-logs-drilldown-link/v1"
+      },
+      {
+        "id": "grafana-exploretraces-app/get-annotations/v1"
       }
     ]
   }
