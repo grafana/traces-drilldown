@@ -91,8 +91,9 @@ export const ContextWindowSelector: React.FC<Props> = ({
           ))}
         </Grid>
         <Stack direction="column" gap={1}>
-          <Field label="From" noMargin>
+          <Field label="From" htmlFor="from-input" noMargin>
             <Input
+              id="from-input"
               value={fromText}
               onChange={(e) => setFromText(e.currentTarget.value)}
               addonAfter={
@@ -112,8 +113,9 @@ export const ContextWindowSelector: React.FC<Props> = ({
             />
           )}
 
-          <Field label="To" noMargin>
+          <Field label="To" htmlFor="to-input" noMargin>
             <Input
+              id="to-input"
               value={toText}
               onChange={(e) => setToText(e.currentTarget.value)}
               addonAfter={

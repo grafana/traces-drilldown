@@ -8,6 +8,7 @@ export interface CachedBatch {
   from: number;
   to: number;
   data: DataFrame[];
+  error?: string;
 }
 
 /**
@@ -133,8 +134,8 @@ export class BatchDataCache {
   /**
    * Store loaded batch data in the cache.
    */
-  public storeBatch(batchId: number, from: number, to: number, data: DataFrame[]): void {
-    this.cache.set(batchId, { batchId, from, to, data });
+  public storeBatch(batchId: number, from: number, to: number, data: DataFrame[], error?: string): void {
+    this.cache.set(batchId, { batchId, from, to, data, error });
 
     if (this.loadingBatchId === batchId) {
       this.loadingBatchId = null;
@@ -142,6 +143,53 @@ export class BatchDataCache {
 
     // Enforce cache size limit
     this.enforceCacheLimit();
+  }
+
+  /**
+   * Store an error for a batch that failed to load.
+   */
+  public storeBatchError(batchId: number, from: number, to: number, error: string): void {
+    this.cache.set(batchId, { batchId, from, to, data: [], error });
+
+    if (this.loadingBatchId === batchId) {
+      this.loadingBatchId = null;
+    }
+  }
+
+  /**
+   * Get errors from batches in the visible range.
+   */
+  public getErrors(visibleFrom: number, visibleTo: number): string[] {
+    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime);
+    const errors: string[] = [];
+
+    for (const batchId of neededBatchIds) {
+      const batch = this.cache.get(batchId);
+      if (batch?.error) {
+        errors.push(batch.error);
+      }
+    }
+
+    // Return unique errors
+    return [...new Set(errors)];
+  }
+
+  /**
+   * Check if any batch in the visible range has an error.
+   */
+  public hasErrors(visibleFrom: number, visibleTo: number): boolean {
+    return this.getErrors(visibleFrom, visibleTo).length > 0;
+  }
+
+  /**
+   * Clear errors for all batches (e.g., when retrying).
+   */
+  public clearErrors(): void {
+    for (const [batchId, batch] of this.cache.entries()) {
+      if (batch.error) {
+        this.cache.delete(batchId);
+      }
+    }
   }
 
   /**

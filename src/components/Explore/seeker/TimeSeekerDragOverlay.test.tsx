@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { TimeSeekerDragOverlay } from './TimeSeekerDragOverlay';
 import { TimeSeekerProvider } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
@@ -61,7 +61,7 @@ describe('TimeSeekerDragOverlay', () => {
     // The drag overlay depends on uplotRef being set, which requires UPlot to be ready
     // Since UPlot is mocked, dragStyles will be empty and it will return null
     const { container } = renderWithProvider(<TimeSeekerDragOverlay />);
-    
+
     // When dragStyles is empty (no uplot ref), it returns null
     expect(container.firstChild).toBeNull();
   });

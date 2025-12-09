@@ -8,7 +8,7 @@ import {
   SceneTimeRange,
   sceneGraph,
 } from '@grafana/scenes';
-import { Text, useStyles2, Spinner } from '@grafana/ui';
+import { Text, useStyles2, Spinner, Alert } from '@grafana/ui';
 import { css } from '@emotion/css';
 
 import { TimeSeeker } from './TimeSeeker';
@@ -136,9 +136,13 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
             setTimeout(() => loadNextBatchFn(), 0);
           }
         } else if (state.data?.state === LoadingState.Error) {
-          // Clear loading state on error
-          cache.setLoadingBatch(null);
+          // Store the error for this batch
+          const errorMessage = state.data.errors?.[0]?.message || state.data.error?.message || 'Failed to load data';
+          cache.storeBatchError(batchId, batchFrom, batchTo, errorMessage);
           forceRenderFn();
+
+          // Try to load the next batch even if this one failed
+          setTimeout(() => loadNextBatchFn(), 0);
         }
       })
     );
@@ -166,6 +170,25 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       return [];
     }
     return this.batchCache.getLoadingRanges(this.visibleRange.from, this.visibleRange.to);
+  }
+
+  /**
+   * Get errors from the visible range.
+   */
+  public getErrors(): string[] {
+    if (!this.visibleRange) {
+      return [];
+    }
+    return this.batchCache.getErrors(this.visibleRange.from, this.visibleRange.to);
+  }
+
+  /**
+   * Clear errors and retry loading failed batches.
+   */
+  public retryErrors(): void {
+    this.batchCache.clearErrors();
+    this.loadNextBatch();
+    this.forceRender();
   }
 
   private buildContextRange(selectionTimeRange?: TimeRange): AbsoluteTimeRange {
@@ -271,10 +294,20 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       setVisibleRange(range);
     }, []);
 
-    // Get cached data and loading state
+    // Get cached data, loading state, and errors
     const { series, loading } = model.getCachedData();
     const loadingRanges = model.getLoadingRanges();
+    const errors = model.getErrors();
     const hasData = series.length > 0;
+    const hasErrors = errors.length > 0;
+
+    // Check for max duration error and provide a more helpful message
+    const maxDurationError =
+      'The selected time range exceeds the maximum allowed duration. Please select a shorter time range.';
+    const maxDurationErrorMessage =
+      'The time seeker requires the maximum range to be at least 24h, please update query_frontend.metrics.max_duration in your Tempo configuration file.';
+    const isMaxDurationError = errors.some((e) => e === maxDurationError);
+    const displayError = isMaxDurationError ? maxDurationErrorMessage : errors[0];
 
     // Build panel data from cached series
     const seekerData = React.useMemo(() => {
@@ -299,7 +332,20 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       };
     }, [hasData, series, loading, visibleRange, selectionTimeRange]);
 
-    // Don't render anything if no data yet
+    // Show error state if we have errors and no data
+    if (hasErrors && !hasData) {
+      return (
+        <div className={styles.container} ref={containerRef}>
+          <Alert title="Failed to load time seeker data" severity="error" className={styles.error}>
+            <div className={styles.errorContent}>
+              <Text variant="bodySmall">{displayError}</Text>
+            </div>
+          </Alert>
+        </div>
+      );
+    }
+
+    // Show loading state if no data yet
     if (!seekerData) {
       return (
         <div className={styles.container} ref={containerRef}>
@@ -315,6 +361,14 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 
     return (
       <div className={styles.container} ref={containerRef}>
+        {/* Show inline error if we have data but also errors */}
+        {hasErrors && (
+          <Alert title="" severity="warning" className={styles.inlineError}>
+            <div className={styles.errorContent}>
+              <Text variant="bodySmall">Some data failed to load: {displayError}</Text>
+            </div>
+          </Alert>
+        )}
         {width > 0 && (
           <TimeSeeker
             data={seekerData}
@@ -347,5 +401,19 @@ const getStyles = (theme: GrafanaTheme2) => ({
     gap: theme.spacing(1),
     padding: theme.spacing(1),
     color: theme.colors.text.secondary,
+  }),
+  error: css({
+    margin: 0,
+  }),
+  inlineError: css({
+    margin: 0,
+    marginBottom: theme.spacing(0.5),
+    padding: theme.spacing(0.5, 1),
+  }),
+  errorContent: css({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.spacing(1),
   }),
 });
