@@ -9,7 +9,7 @@ import { getDatasourceVariable } from '../../utils/utils';
 import { Alert, LinkButton } from '@grafana/ui';
 import React from 'react';
 
-export interface TraceQLIssueDetectorState extends SceneObjectState {
+interface TraceQLIssueDetectorState extends SceneObjectState {
   hasIssue: boolean;
 }
 

@@ -18,7 +18,8 @@ interface Props {
   endTime: string;
 }
 
-export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({ serviceName, metric, startTime, endTime }: Props) {  const { isLoading, component: InsightsTimelineWidgetExternal } = usePluginComponent<InsightsTimelineWidgetProps>(
+export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({ serviceName, metric, startTime, endTime }: Props) {
+  const { isLoading, component: InsightsTimelineWidgetExternal } = usePluginComponent<InsightsTimelineWidgetProps>(
     'grafana-asserts-app/insights-timeline-widget/v1'
   );
   const styles = useStyles2(getStyles);
@@ -38,10 +39,10 @@ export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({ ser
   if (isLoading || !InsightsTimelineWidgetExternal || !serviceName) {
     return null;
   }
-
+  
   return (
     <InsightsTimelineWidgetExternal
-      serviceName={serviceName}      
+      serviceName={serviceName}
       start={startTime}
       end={endTime}
       filterBySeverity={filterBySeverity}

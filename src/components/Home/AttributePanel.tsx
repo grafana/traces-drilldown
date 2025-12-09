@@ -21,7 +21,7 @@ import { getMinimumsForDuration, getYBuckets } from 'components/Explore/TracesBy
 
 export type HomepagePanelType = 'errored-services' | 'slowest-services' | 'slowest-traces';
 
-export interface AttributePanelState extends SceneObjectState {
+interface AttributePanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
   query: {
     query: string;

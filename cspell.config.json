@@ -71,6 +71,8 @@
     "lezer",
     "Lezer",
     "quoteservice",
-    "cartservice"
+    "cartservice",
+    "automerge",
+    "nwsapi"
   ]
 }

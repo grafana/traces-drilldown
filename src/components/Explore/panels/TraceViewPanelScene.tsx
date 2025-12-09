@@ -20,7 +20,7 @@ import { useStyles2 } from '@grafana/ui';
 import { getDataSource, getTraceExplorationScene } from 'utils/utils';
 import { TempoDatasource } from 'types';
 
-export interface TracePanelState extends SceneObjectState {
+interface TracePanelState extends SceneObjectState {
   panel?: SceneObject;
   traceId: string;
   spanId?: string;

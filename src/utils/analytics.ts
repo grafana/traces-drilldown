@@ -21,7 +21,7 @@ export const USER_EVENTS_PAGES = {
   common: 'common',
 } as const;
 
-export type UserEventPagesType = keyof typeof USER_EVENTS_PAGES;
+type UserEventPagesType = keyof typeof USER_EVENTS_PAGES;
 type UserEventActionType =
   | keyof (typeof USER_EVENTS_ACTIONS)['analyse_traces']
   | keyof (typeof USER_EVENTS_ACTIONS)['home']
