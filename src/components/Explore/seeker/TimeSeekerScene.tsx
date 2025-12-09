@@ -137,7 +137,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
           }
         } else if (state.data?.state === LoadingState.Error) {
           // Store the error for this batch
-          const errorMessage = state.data.errors?.[0]?.message || state.data.error?.message || 'Failed to load data';
+          const errorMessage = state.data.errors?.[0]?.message || 'Failed to load data';
           cache.storeBatchError(batchId, batchFrom, batchTo, errorMessage);
           forceRenderFn();
 

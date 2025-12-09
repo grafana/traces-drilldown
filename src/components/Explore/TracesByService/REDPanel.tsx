@@ -41,7 +41,6 @@ import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 import { useServiceName } from 'pages/Explore/TraceExploration';
 import { locationService } from '@grafana/runtime';
-import { getTraceExplorationScene } from 'utils/utils';
 import { RedPanelExtras } from './RedPanelExtras';
 
 export interface RateMetricsPanelState extends SceneObjectState {
@@ -273,7 +272,6 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
     const timeRange = sceneGraph.getTimeRange(model).useState();
-    const traceExploration = getTraceExplorationScene(model);
     const { timeSeekerScene } = traceExploration.useState();
 
     if (!panel) {
@@ -312,34 +310,38 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     };
 
     return (
-      <div className={styles.container}>
-        <div className={styles.headerContainer}>
-          <div className={styles.titleContainer}>
-            <div className={styles.titleRadioWrapper}>
-              <RadioButtonList
-                name={`metric-${metric}`}
-                options={[{ title: '', value: 'selected' }]}
-                value={'selected'}
-              />
-              <span>{getTitle()}</span>
+      <div className={styles.container} onClick={() => selectMetric(embeddedMini)}>
+        {!embeddedMini && (
+          <div className={styles.headerContainer}>
+            <div className={styles.titleContainer}>
+              <div className={styles.titleRadioWrapper}>
+                <RadioButtonList
+                  name={`metric-${metric}`}
+                  options={[{ title: '', value: 'selected' }]}
+                  value={'selected'}
+                />
+                <span>{getTitle()}</span>
+              </div>
+              {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
             </div>
-            {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
+            <div className={styles.actions}>
+              {isStreaming && <StreamingIndicator isStreaming={true} iconSize={10} />}
+              {actions?.map((action) => (
+                <action.Component model={action} key={action.state.key} />
+              ))}
+            </div>
           </div>
-          <div className={styles.actions}>
-            {isStreaming && <StreamingIndicator isStreaming={true} iconSize={10} />}
-            {actions?.map((action) => (
-              <action.Component model={action} key={action.state.key} />
-            ))}
-          </div>
-        </div>
+        )}
         <panel.Component model={panel} />
-        <RedPanelExtras
-          timeSeekerScene={timeSeekerScene}
-          serviceName={serviceName}
-          metric={metric as MetricFunction}
-          startTime={String(timeRange.value.from.valueOf())}
-          endTime={String(timeRange.value.to.valueOf())}
-        />
+        {!embeddedMini && (
+          <RedPanelExtras
+            timeSeekerScene={timeSeekerScene}
+            serviceName={serviceName}
+            metric={metric as MetricFunction}
+            startTime={String(timeRange.value.from.valueOf())}
+            endTime={String(timeRange.value.to.valueOf())}
+          />
+        )}
       </div>
     );
   };
