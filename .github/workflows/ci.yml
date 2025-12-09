@@ -25,7 +25,7 @@ jobs:
       auto-merge-environments: dev,ops
       # Deploy provisioned plugin to Grafana Cloud
       grafana-cloud-deployment-type: provisioned
-      argo-workflow-slack-channel: '#proj-tracesdrilldown-cd'
+      argo-workflow-slack-channel: "#proj-tracesdrilldown-cd"
 
       # Scope for the plugin published to the catalog. Setting this to "grafana_cloud" will make it visible only in Grafana Cloud
       # (and hide it for on-prem). This is required for some provisioned plugins.
@@ -36,7 +36,7 @@ jobs:
 
       # Playwright
       run-playwright: false
-      run-playwright-docker: false
+      run-playwright-docker: true
       upload-playwright-artifacts: true # IMPORTANT: we must ensure there are no unmasked secrets in the E2E tests
       run-playwright-with-skip-grafana-dev-image: true
       playwright-report-path: e2e/test-reports/
