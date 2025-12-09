@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.2.1
+
+##### Chores
+
+*  Add Renovate rules (#606) (d836c42a)
+* **deps:**
+  *  update dependency nwsapi to v2.2.22 (#572) (07865f22)
+  *  pin dependencies (#569) (f3353005)
+
+##### Documentation Changes
+
+*  Exception tab (#585) (364fe32e)
+*  Doc updates for 554, 558, and 555 (#564) (68d41f9c)
+
+##### New Features
+
+*  Mini embeddable Traces Drilldown (#592) (7aecc60e)
+*  Find single span errors and high latency on the root cause tab (#594) (db46387a)
+*  Link to Logs Drilldown instead of Explore (#563) (6ea96dd3)
+
+
 ## 1.2.0
 
 ##### Chores

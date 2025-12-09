@@ -339,9 +339,9 @@ export const useServiceName = (model: SceneObject) => {
 
 const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
   const setReturnToPrevious = useReturnToPrevious();
-  const styles = useStyles2(getStyles, true);
   const traceExploration = getTraceExplorationScene(model);
-  const { returnToPreviousSource } = traceExploration.useState();
+  const { returnToPreviousSource, embeddedMini } = traceExploration.useState();
+  const styles = useStyles2(getStyles, true, embeddedMini);
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
@@ -580,7 +580,7 @@ function getVariableSet(state: TraceExplorationState) {
   });
 }
 
-function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
+function getStyles(theme: GrafanaTheme2, embedded?: boolean, embeddedMini?: boolean) {
   return {
     bodyContainer: css({
       label: 'bodyContainer',
@@ -588,6 +588,7 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
       display: 'flex',
       minHeight: '100%',
       flexDirection: 'column',
+      minWidth: '380px',
     }),
     container: css({
       label: 'container',
@@ -628,12 +629,12 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean) {
     headerContainer: css({
       label: 'headerContainer',
       backgroundColor: embedded ? theme.colors.background.primary : theme.colors.background.canvas,
-      display: 'flex',
+      display: embeddedMini ? 'none' : 'flex',
       flexDirection: 'column',
       position: 'sticky',
       top: 0,
       zIndex: 3,
-      padding: `${theme.spacing(1.5)} 0`,
+      padding: `${theme.spacing(1.5)} 0 0 0`,
       gap: theme.spacing(1),
     }),
     datasourceLabel: css({

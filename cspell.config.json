@@ -65,6 +65,8 @@
     "sparkline",
     "behaviour",
     "Resizeble",
-    "Dismissable"
+    "Dismissable",
+    "automerge",
+    "nwsapi"
   ]
 }

@@ -5,6 +5,12 @@ import { AttributesSidebar } from './AttributesSidebar';
 import { SelectableValue } from '@grafana/data';
 import { AdHocFiltersVariable, SceneObject } from '@grafana/scenes';
 
+// Mock react-inlinesvg to prevent async state updates during tests
+jest.mock('react-inlinesvg', () => ({
+  __esModule: true,
+  default: ({ src, innerRef, ...props }: any) => React.createElement('span', { 'data-testid': 'mocked-svg', ...props }),
+}));
+
 // Mock the hooks and utilities
 jest.mock('hooks', () => ({
   useFavoriteAttributes: jest.fn(() => ({

@@ -23,7 +23,7 @@ import { PercentilesSelect } from './PercentilesSelect';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 import { useFavoriteAttributes } from 'hooks/useFavoriteAttributes';
 
-export interface AttributesBreakdownSceneState extends SceneObjectState {
+interface AttributesBreakdownSceneState extends SceneObjectState {
   body?: SceneObject;
 }
 

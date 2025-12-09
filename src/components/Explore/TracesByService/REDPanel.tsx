@@ -28,6 +28,8 @@ import {
   getMetricVariable,
   getOpenTrace,
   getTraceByServiceScene,
+  getTraceExplorationScene,
+  getUrlForExploration,
   shouldShowSelection,
 } from '../../../utils/utils';
 import { getHistogramVizPanel, yBucketToDuration } from '../panels/histogram';
@@ -38,6 +40,7 @@ import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 import { useServiceName } from 'pages/Explore/TraceExploration';
+import { locationService } from '@grafana/runtime';
 import { getTraceExplorationScene } from 'utils/utils';
 import { RedPanelExtras } from './RedPanelExtras';
 
@@ -46,6 +49,7 @@ export interface RateMetricsPanelState extends SceneObjectState {
   actions?: SceneObject[];
   yBuckets?: number[];
   isStreaming?: boolean;
+  embeddedMini?: boolean;
 }
 
 export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
@@ -143,7 +147,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           } else if (newData.data?.state === LoadingState.Loading) {
             this.setState({
               panel: new SceneFlexLayout({
-                direction: 'column',
+                direction: 'row',
                 children: [
                   new LoadingStateScene({
                     component: () => SkeletonComponent(1),
@@ -189,9 +193,10 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           datasource: explorationDS,
           queries: [this.isDuration() ? buildHistogramQuery() : getMetricsTempoQuery({ metric, sample: true })],
         }),
-        transformations: this.isDuration()
-          ? [...removeExemplarsTransformation()]
-          : [...exemplarsTransformations(getOpenTrace(this))],
+        transformations:
+          this.isDuration() || this.state.embeddedMini
+            ? [...removeExemplarsTransformation()]
+            : [...exemplarsTransformations(getOpenTrace(this))],
       }),
       panel: this.getVizPanel(),
     });
@@ -207,7 +212,9 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
-    const panel = barsPanelConfig(type, 70).setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(type, this.state.embeddedMini ? undefined : 70)
+      .setHoverHeader(true)
+      .setDisplayMode('transparent');
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
@@ -260,8 +267,9 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<REDPanel>) => {
-    const { panel, actions, isStreaming } = model.useState();
+    const { panel, actions, isStreaming, embeddedMini } = model.useState();
     const { value: metric } = getMetricVariable(model).useState();
+    const traceExploration = getTraceExplorationScene(model);
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
     const timeRange = sceneGraph.getTimeRange(model).useState();
@@ -295,6 +303,13 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     };
 
     const subtitle = getSubtitle();
+
+    const selectMetric = (embeddedMini?: boolean) => {
+      if (embeddedMini) {
+        const url = getUrlForExploration(traceExploration);
+        locationService.push(url);
+      }
+    };
 
     return (
       <div className={styles.container}>
@@ -350,6 +365,8 @@ export const getMinimumsForDuration = (yBuckets: number[]) => {
 function getStyles(theme: GrafanaTheme2) {
   return {
     container: css({
+      flex: 1,
+      cursor: 'pointer',
       width: '100%',
       display: 'flex',
       flexDirection: 'column',
