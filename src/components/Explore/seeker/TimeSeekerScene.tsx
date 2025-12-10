@@ -25,6 +25,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
   private batchCache: BatchDataCache = new BatchDataCache();
   private currentMetric: MetricFunction | null = null;
   private visibleRange: AbsoluteTimeRange | null = null;
+  private currentBatchSubscription: (() => void) | null = null;
 
   constructor(state: Partial<TimeSeekerSceneState> = {}) {
     super({
@@ -55,6 +56,10 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     // Cleanup on deactivation
     return () => {
       this.batchCache.clearCache();
+      if (this.currentBatchSubscription) {
+        this.currentBatchSubscription();
+        this.currentBatchSubscription = null;
+      }
     };
   }
 
@@ -113,6 +118,12 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     const loadNextBatchFn = this.loadNextBatch.bind(this);
     const forceRenderFn = () => this.forceRender();
 
+    // Clean up previous batch subscription
+    if (this.currentBatchSubscription) {
+      this.currentBatchSubscription();
+      this.currentBatchSubscription = null;
+    }
+
     // Update the $data with new query runner
     this.setState({
       $data: new SceneQueryRunner({
@@ -124,28 +135,44 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 
     // Subscribe to data updates
     const data = sceneGraph.getData(this);
-    this._subs.add(
-      data.subscribeToState((state) => {
-        if (state.data?.state === LoadingState.Done || state.data?.state === LoadingState.Streaming) {
-          // Store the new batch data
-          if (state.data.series.length > 0 && cache.getLoadingBatchId() === batchId) {
-            cache.storeBatch(batchId, batchFrom, batchTo, state.data.series);
-            forceRenderFn();
+    let hasProcessedBatch = false;
 
-            // Load next batch if needed
-            setTimeout(() => loadNextBatchFn(), 0);
-          }
-        } else if (state.data?.state === LoadingState.Error) {
-          // Store the error for this batch
-          const errorMessage = state.data.errors?.[0]?.message || 'Failed to load data';
-          cache.storeBatchError(batchId, batchFrom, batchTo, errorMessage);
-          forceRenderFn();
+    const subscription = data.subscribeToState((state) => {
+      // Prevent processing the same batch multiple times
+      if (hasProcessedBatch) {
+        return;
+      }
 
-          // Try to load the next batch even if this one failed
-          setTimeout(() => loadNextBatchFn(), 0);
-        }
-      })
-    );
+      // Only process if this batch is still the one we're waiting for
+      if (cache.getLoadingBatchId() !== batchId) {
+        return;
+      }
+
+      if (state.data?.state === LoadingState.Done || state.data?.state === LoadingState.Streaming) {
+        hasProcessedBatch = true;
+
+        // Store the batch data (even if empty - it means no data for that time range)
+        cache.storeBatch(batchId, batchFrom, batchTo, state.data.series);
+        forceRenderFn();
+
+        // Load next batch if needed
+        setTimeout(() => loadNextBatchFn(), 0);
+      } else if (state.data?.state === LoadingState.Error) {
+        hasProcessedBatch = true;
+
+        // Store the error for this batch
+        const errorMessage = state.data.errors?.[0]?.message || 'Failed to load data';
+        cache.storeBatchError(batchId, batchFrom, batchTo, errorMessage);
+        forceRenderFn();
+
+        // Try to load the next batch even if this one failed
+        setTimeout(() => loadNextBatchFn(), 0);
+      }
+    });
+
+    // Store subscription for cleanup
+    this.currentBatchSubscription = () => subscription.unsubscribe();
+    this._subs.add(subscription);
   }
 
   /**

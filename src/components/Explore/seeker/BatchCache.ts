@@ -87,6 +87,7 @@ export class BatchDataCache {
   /**
    * Get the next batch that needs to be loaded for the visible range.
    * Returns null if all batches are loaded.
+   * Batches are loaded in descending order (most recent first).
    */
   public getNextBatchToLoad(
     visibleFrom: number,
@@ -95,7 +96,10 @@ export class BatchDataCache {
     const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime);
     const now = Date.now();
 
-    for (const batchId of neededBatchIds) {
+    // Sort batch IDs in descending order to load most recent batches first
+    const sortedBatchIds = [...neededBatchIds].sort((a, b) => b - a);
+
+    for (const batchId of sortedBatchIds) {
       // Skip if already cached or currently loading
       if (this.cache.has(batchId) || this.loadingBatchId === batchId) {
         continue;
