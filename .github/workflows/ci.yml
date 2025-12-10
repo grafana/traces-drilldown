@@ -36,7 +36,7 @@ jobs:
 
       # Playwright
       run-playwright: false
-      run-playwright-docker: true
+      run-playwright-docker: false
       upload-playwright-artifacts: true # IMPORTANT: we must ensure there are no unmasked secrets in the E2E tests
       run-playwright-with-skip-grafana-dev-image: true
       playwright-report-path: e2e/test-reports/
