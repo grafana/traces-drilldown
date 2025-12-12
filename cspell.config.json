@@ -67,6 +67,8 @@
     "Resizeble",
     "Dismissable",
     "automerge",
-    "nwsapi"
+    "nwsapi",
+    "adaptivetraces",
+    "tailsampling"
   ]
 }
