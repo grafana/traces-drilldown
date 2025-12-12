@@ -17,6 +17,7 @@ import { buildBreakdownScene } from './Breakdown/BreakdownScene';
 import { buildExceptionsScene } from './Exceptions/ExceptionsScene';
 import { MetricFunction } from 'utils/shared';
 import { buildComparisonScene } from './Comparison/ComparisonScene';
+import { buildAdaptiveTracesScene } from './AdaptiveTraces/AdaptiveTracesScene';
 import { useMount } from 'react-use';
 import { ActionViewType } from 'exposedComponents/types';
 
@@ -35,6 +36,11 @@ export const actionViewsDefinitions: ActionViewDefinition[] = [
     displayName: tracesDisplayName,
     value: 'traceList',
     getScene: buildSpansScene,
+  },
+  {
+    displayName: adaptiveTracesDisplayName,
+    value: 'adaptiveTraces',
+    getScene: buildAdaptiveTracesScene,
   },
 ];
 
@@ -176,6 +182,10 @@ function tracesDisplayName(metric: MetricFunction) {
 
 function exceptionsDisplayName(_: MetricFunction) {
   return 'Exceptions';
+}
+
+function adaptiveTracesDisplayName() {
+  return 'Adaptive Traces';
 }
 
 function getStyles(theme: GrafanaTheme2) {
