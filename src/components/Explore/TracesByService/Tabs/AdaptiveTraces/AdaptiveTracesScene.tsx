@@ -9,7 +9,7 @@ import {
 } from '@grafana/scenes';
 import { useStyles2, LoadingPlaceholder } from '@grafana/ui';
 import { css } from '@emotion/css';
-import { GrafanaTheme2, TimeRange } from '@grafana/data';
+import { TimeRange } from '@grafana/data';
 import { usePluginComponent } from '@grafana/runtime';
 import { getFiltersVariable } from '../../../../../utils/utils';
 
@@ -90,7 +90,7 @@ export function buildAdaptiveTracesScene() {
   });
 }
 
-function getStyles(theme: GrafanaTheme2) {
+function getStyles() {
   return {
     container: css({
       label: 'container',
