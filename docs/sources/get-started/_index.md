@@ -62,6 +62,9 @@ Select **All spans** in the Filters, then choose the **Errors** metric.
 
 ![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors-red-v1.2.png "Select All spans to view all raw span data and Errors as your metric")
 
+
+### Handle errors 
+
 If you're seeing errors in your traces, here are three common misunderstandings to avoid.
 
 First, not all red spans are application failures. A span marked 'error' might just indicate a timeout or expected validation failure. Check the error message and type before assuming something's broken.
