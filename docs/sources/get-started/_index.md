@@ -62,6 +62,19 @@ Select **All spans** in the Filters, then choose the **Errors** metric.
 
 ![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors-red-v1.2.png "Select All spans to view all raw span data and Errors as your metric")
 
+
+### Handle errors 
+
+If you're seeing errors in your traces, here are three common misunderstandings to avoid.
+
+First, not all red spans are application failures. A span marked 'error' might just indicate a timeout or expected validation failure. Check the error message and type before assuming something's broken.
+
+Second, errors cascade. When one service fails, downstream spans inherit that error status. Look for the root span with the error to find the actual source, not just the last service in the chain.
+
+Finally, remember that error count isn't the same as error rate. Ten errors might seem alarming, but if you handled ten thousand requests, that's only 0.1%. Always consider the context.
+
+Check the span attributes and error details. They'll tell you what really happened.
+
 ### Correlate attributes
 
 Use the **Comparison** tab to correlate attributes values with errors. The results are ordered by the difference in those attributes by the highest ones first. This helps
