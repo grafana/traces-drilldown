@@ -20,6 +20,7 @@ import { buildComparisonScene } from './Comparison/ComparisonScene';
 import { buildAdaptiveTracesScene } from './AdaptiveTraces/AdaptiveTracesScene';
 import { useMount } from 'react-use';
 import { ActionViewType } from 'exposedComponents/types';
+import { usePluginComponent } from '@grafana/runtime';
 
 interface ActionViewDefinition {
   displayName: (metric: MetricFunction) => string;
@@ -60,8 +61,20 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
     const dataState = sceneGraph.getData(model).useState();
     const tracesCount = dataState.data?.series?.[0]?.length;
 
+    const { component: SpanLatencyComponent } = usePluginComponent(
+      'grafana-adaptivetraces-app/span-latency/v1'
+    );
+
+    const filtersVariable = getFiltersVariable(model);
+    const { filters } = filtersVariable.useState();
+    const hasPolicySelected = filters.some((f) => f.key === 'instrumentation.tailsampling.policy');
+
     const enabledViews = actionViewsDefinitions.filter((view) => {
       if (view.value === 'exceptions' && metric !== 'errors') {
+        return false;
+      }
+      // Hide adaptive traces tab unless there's a policy selected and the component is available
+      if (view.value === 'adaptiveTraces' && (!hasPolicySelected || !SpanLatencyComponent)) {
         return false;
       }
       // If allowedActionViews is defined and has items, use it for filtering
@@ -70,10 +83,8 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
     });
 
     // Get state variables that affect exceptions data
-    const filtersVariable = getFiltersVariable(model);
     const primarySignalVariable = getPrimarySignalVariable(model);
     const timeRange = sceneGraph.getTimeRange(model);
-    const { filters } = filtersVariable.useState();
     const { value: primarySignal } = primarySignalVariable.useState();
     const { value: timeRangeValue } = timeRange.useState();
 
