@@ -253,7 +253,7 @@ export class BatchDataCache {
       if (!this.cache.has(batchId)) {
         loadingRanges.push({
           from: Math.max(from, visibleFrom),
-          to: Math.min(Math.min(to, now), visibleTo),
+          to: Math.min(to, now, visibleTo),
         });
       }
     }
