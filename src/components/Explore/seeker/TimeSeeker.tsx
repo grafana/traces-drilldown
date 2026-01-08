@@ -21,6 +21,7 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
   onChangeTimeRange,
   onVisibleRangeChange,
   loadingRanges,
+  hasLargeBatchWarning,
 }) => {
   const theme = useTheme2();
   const styles = useStyles2(() => getTimeSeekerStyles(theme));
@@ -38,6 +39,7 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
       metric={metric}
       initialVisibleRange={initialVisibleRange}
       loadingRanges={loadingRanges}
+      hasLargeBatchWarning={hasLargeBatchWarning}
       onChangeTimeRange={onChangeTimeRange}
       onVisibleRangeChange={onVisibleRangeChange}
     >

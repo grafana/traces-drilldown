@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { AbsoluteTimeRange, TimeRange, dateTime } from '@grafana/data';
-import { IconButton, TimeRangeInput, useStyles2, useTheme2 } from '@grafana/ui';
+import { Icon, IconButton, TimeRangeInput, Tooltip, useStyles2, useTheme2 } from '@grafana/ui';
 import { getControlStyles } from './styles';
 import { useTimeSeeker } from './TimeSeekerContext';
 
@@ -19,6 +19,7 @@ export const TimeSeekerControls: React.FC = () => {
     zoomContextWindow,
     panContextWindow,
     resetContextWindow,
+    hasLargeBatchWarning,
   } = useTimeSeeker();
 
   const handleSetVisibleRange = (r: AbsoluteTimeRange) => {
@@ -89,6 +90,14 @@ export const TimeSeekerControls: React.FC = () => {
   return (
     <div className={styles.floatingControls}>
       <div className={styles.floatingControlsContent}>
+        {hasLargeBatchWarning && (
+          <Tooltip
+            content="The time seeker needs to load a large amount of data. Performance may be impacted."
+            placement="bottom"
+          >
+            <Icon name="exclamation-triangle" size="sm" style={{ color: theme.colors.warning.main }} />
+          </Tooltip>
+        )}
         <IconButton
           tooltip="Pan left"
           name="arrow-left"

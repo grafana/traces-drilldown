@@ -28,7 +28,7 @@ export const TimeSeekerLoadingOverlay: React.FC = () => {
         }
         return (
           <div
-            key={idx}
+            key={`loading-${idx}`}
             className={styles.loadingOverlay}
             style={{
               left,

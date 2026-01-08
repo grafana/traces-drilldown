@@ -19,6 +19,7 @@ export interface TimeSeekerProps {
   onChangeTimeRange: (range: AbsoluteTimeRange) => void;
   onVisibleRangeChange?: (range: AbsoluteTimeRange) => void;
   loadingRanges?: Array<{ from: number; to: number }>;
+  hasLargeBatchWarning?: boolean;
 }
 
 export interface DragStyles {

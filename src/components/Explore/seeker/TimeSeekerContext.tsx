@@ -17,6 +17,7 @@ interface TimeSeekerContextValue {
   now: number;
   dragStyles: DragStyles;
   loadingRanges?: Array<{ from: number; to: number }>;
+  hasLargeBatchWarning?: boolean;
 
   // Chart data
   timeValues: number[];
@@ -56,6 +57,7 @@ interface TimeSeekerProviderProps {
   metric?: MetricFunction;
   initialVisibleRange?: AbsoluteTimeRange;
   loadingRanges?: Array<{ from: number; to: number }>;
+  hasLargeBatchWarning?: boolean;
   onChangeTimeRange: (range: AbsoluteTimeRange) => void;
   onVisibleRangeChange?: (range: AbsoluteTimeRange) => void;
   children: React.ReactNode;
@@ -72,6 +74,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   metric,
   initialVisibleRange,
   loadingRanges,
+  hasLargeBatchWarning,
   onChangeTimeRange,
   onVisibleRangeChange,
   children,
@@ -620,6 +623,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       now,
       dragStyles,
       loadingRanges,
+      hasLargeBatchWarning,
 
       // Chart data
       timeValues,
@@ -653,6 +657,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       now,
       dragStyles,
       loadingRanges,
+      hasLargeBatchWarning,
       timeValues,
       valueValues,
       width,

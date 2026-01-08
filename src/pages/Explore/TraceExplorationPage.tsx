@@ -10,7 +10,9 @@ import { usePluginJsonData } from 'components/App/App';
 const TraceExplorationPage = () => {
   const initialDs = localStorage.getItem(DATASOURCE_LS_KEY) || '';
   const jsonData = usePluginJsonData();
-  const [exploration] = useState(newTracesExploration(initialDs, jsonData.queryRangeHours));
+  const [exploration] = useState(() => {
+    return newTracesExploration(initialDs, jsonData.queryRangeHours);
+  });
 
   return <TraceExplorationView exploration={exploration} />;
 };

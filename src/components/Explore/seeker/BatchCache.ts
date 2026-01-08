@@ -1,6 +1,12 @@
 import { DataFrame, FieldType } from '@grafana/data';
 
-const MAX_CACHE_SIZE = 10;
+// Maximum number of batches to keep in cache
+// Large enough to accommodate very zoomed-out visible ranges
+const MAX_CACHE_SIZE = 250;
+
+// Threshold for showing a performance warning
+// When more than this many batches need to be loaded, we warn the user
+const LARGE_BATCH_COUNT_THRESHOLD = 50;
 
 export interface CachedBatch {
   batchId: number;
@@ -54,10 +60,19 @@ export class BatchDataCache {
   private currentMetric: string | null = null;
   private loadingBatchId: number | null = null;
   private batchDurationMs: number;
+  private lastVisibleRange: { from: number; to: number } | null = null;
+  private hasLargeBatchCount: boolean = false;
 
   constructor(batchDurationHours: number) {
     this.anchorTime = this.calculateAnchorTime();
     this.batchDurationMs = batchDurationHours * 60 * 60 * 1000;
+  }
+
+  /**
+   * Check if the visible range requires a large number of batches (performance warning).
+   */
+  public hasLargeBatchWarning(): boolean {
+    return this.hasLargeBatchCount;
   }
 
   /**
@@ -98,11 +113,17 @@ export class BatchDataCache {
     visibleFrom: number,
     visibleTo: number
   ): { batchId: number; from: number; to: number } | null {
+    // Track the visible range for cache eviction policy
+    this.lastVisibleRange = { from: visibleFrom, to: visibleTo };
+
     const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
     const now = Date.now();
 
     // Sort batch IDs in descending order to load most recent batches first
     const sortedBatchIds = [...neededBatchIds].sort((a, b) => b - a);
+
+    // Track if we have a large number of batches (for performance warning)
+    this.hasLargeBatchCount = neededBatchIds.length > LARGE_BATCH_COUNT_THRESHOLD;
 
     for (const batchId of sortedBatchIds) {
       // Skip if already cached or currently loading
@@ -150,8 +171,8 @@ export class BatchDataCache {
       this.loadingBatchId = null;
     }
 
-    // Enforce cache size limit
-    this.enforceCacheLimit();
+    // Enforce cache size limit, but protect the batch we just stored
+    this.enforceCacheLimit(batchId);
   }
 
   /**
@@ -267,17 +288,42 @@ export class BatchDataCache {
   }
 
   /**
-   * Enforce cache size limit by removing oldest batches.
+   * Enforce cache size limit by removing batches furthest from the visible range.
+   * This ensures we keep batches that are most likely to be needed.
+   * @param protectedBatchId - Batch ID that should never be evicted (typically the one just stored)
    */
-  private enforceCacheLimit(): void {
+  private enforceCacheLimit(protectedBatchId?: number): void {
     if (this.cache.size <= MAX_CACHE_SIZE) {
       return;
     }
 
-    // Remove oldest batches (lowest batch IDs first)
-    const sortedBatchIds = Array.from(this.cache.keys()).sort((a, b) => a - b);
-    const toRemove = this.cache.size - MAX_CACHE_SIZE;
+    // If we don't have a visible range yet, fall back to removing oldest batches
+    if (!this.lastVisibleRange) {
+      const sortedBatchIds = Array.from(this.cache.keys())
+        .filter((id) => id !== protectedBatchId)
+        .sort((a, b) => a - b);
+      const toRemove = this.cache.size - MAX_CACHE_SIZE;
+      for (let i = 0; i < toRemove; i++) {
+        this.cache.delete(sortedBatchIds[i]);
+      }
+      return;
+    }
 
+    // Calculate the center of the visible range
+    const visibleCenter = (this.lastVisibleRange.from + this.lastVisibleRange.to) / 2;
+
+    // Sort batches by distance from visible center (furthest first), excluding protected batch
+    const sortedBatchIds = Array.from(this.cache.keys())
+      .filter((id) => id !== protectedBatchId)
+      .sort((a, b) => {
+        const aCenter = this.anchorTime + (a + 0.5) * this.batchDurationMs;
+        const bCenter = this.anchorTime + (b + 0.5) * this.batchDurationMs;
+        const aDistance = Math.abs(aCenter - visibleCenter);
+        const bDistance = Math.abs(bCenter - visibleCenter);
+        return bDistance - aDistance; // Sort descending (furthest first)
+      });
+
+    const toRemove = this.cache.size - MAX_CACHE_SIZE;
     for (let i = 0; i < toRemove; i++) {
       this.cache.delete(sortedBatchIds[i]);
     }

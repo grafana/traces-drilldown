@@ -34,7 +34,6 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       queryRangeHours: DEFAULT_QUERY_RANGE_HOURS,
       ...state,
     });
-
     this.batchCache = new BatchDataCache(this.state.queryRangeHours!);
     this.addActivationHandler(this._onActivate.bind(this));
   }
@@ -77,10 +76,9 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       return;
     }
 
-    // Check if metric changed
-    this.batchCache.checkMetricChange(this.currentMetric);
-
     // Load next batch if needed
+    // Note: Metric changes are handled by the subscription in _onActivate(),
+    // no need to check on every visible range update
     this.loadNextBatch();
   }
 
@@ -201,6 +199,13 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       return [];
     }
     return this.batchCache.getLoadingRanges(this.visibleRange.from, this.visibleRange.to);
+  }
+
+  /**
+   * Check if the visible range requires a large number of batches (performance warning).
+   */
+  public hasLargeBatchWarning(): boolean {
+    return this.batchCache.hasLargeBatchWarning();
   }
 
   /**
@@ -328,6 +333,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     // Get cached data, loading state, and errors
     const { series, loading } = model.getCachedData();
     const loadingRanges = model.getLoadingRanges();
+    const hasLargeBatchWarning = model.hasLargeBatchWarning();
     const errors = model.getErrors();
     const hasData = series.length > 0;
     const hasErrors = errors.length > 0;
@@ -409,6 +415,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
             onChangeTimeRange={onRangeChange}
             onVisibleRangeChange={onVisibleRangeChange}
             loadingRanges={loadingRanges}
+            hasLargeBatchWarning={hasLargeBatchWarning}
           />
         )}
       </div>
