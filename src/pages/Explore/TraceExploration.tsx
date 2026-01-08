@@ -33,6 +33,7 @@ import {
   VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
   VAR_DURATION_PERCENTILES,
+  DEFAULT_QUERY_RANGE_HOURS,
 } from '../../utils/shared';
 import {
   getTraceExplorationScene,
@@ -74,6 +75,9 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
 
   investigationLink?: PluginExtensionLink;
   addToInvestigationButton?: AddToInvestigationButton;
+
+  // Plugin configuration
+  queryRangeHours?: number;
 }
 
 const version = process.env.VERSION;
@@ -85,13 +89,18 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
 
   public constructor(state: Partial<TraceExplorationState>) {
+    // Get query range from state or use default
+    // Note: queryRangeHours should be passed from React components using usePluginJsonData() hook
+    // See: https://grafana.com/developers/plugin-tools/tutorials/build-an-app-plugin#configuration-page
+    const queryRangeHours = state.queryRangeHours ?? DEFAULT_QUERY_RANGE_HOURS;
+
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
       $variables: state.$variables ?? getVariableSet(state as TraceExplorationState),
       controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
-      timeSeekerScene: new TimeSeekerScene({}),
+      timeSeekerScene: new TimeSeekerScene({ queryRangeHours }),
       issueDetector: new TraceQLIssueDetector(),
       ...state,
     });

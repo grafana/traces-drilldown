@@ -13,25 +13,29 @@ import { css } from '@emotion/css';
 
 import { TimeSeeker } from './TimeSeeker';
 import { getTraceExplorationScene } from 'utils/utils';
-import { explorationDS, MetricFunction } from 'utils/shared';
+import { explorationDS, MetricFunction, DEFAULT_QUERY_RANGE_HOURS } from 'utils/shared';
 import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { BatchDataCache } from './BatchCache';
 
 const DEFAULT_WINDOW_MS = 12 * 60 * 60 * 1000; // 12 hours for visible range
 
-export interface TimeSeekerSceneState extends SceneObjectState {}
+export interface TimeSeekerSceneState extends SceneObjectState {
+  queryRangeHours?: number;
+}
 
 export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
-  private batchCache: BatchDataCache = new BatchDataCache();
+  private batchCache: BatchDataCache;
   private currentMetric: MetricFunction | null = null;
   private visibleRange: AbsoluteTimeRange | null = null;
   private currentBatchSubscription: (() => void) | null = null;
 
   constructor(state: Partial<TimeSeekerSceneState> = {}) {
     super({
+      queryRangeHours: DEFAULT_QUERY_RANGE_HOURS,
       ...state,
     });
 
+    this.batchCache = new BatchDataCache(this.state.queryRangeHours!);
     this.addActivationHandler(this._onActivate.bind(this));
   }
 

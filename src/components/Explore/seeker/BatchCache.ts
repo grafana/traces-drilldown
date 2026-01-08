@@ -1,6 +1,5 @@
 import { DataFrame, FieldType } from '@grafana/data';
 
-const BATCH_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 const MAX_CACHE_SIZE = 10;
 
 export interface CachedBatch {
@@ -13,27 +12,31 @@ export interface CachedBatch {
 
 /**
  * Calculates the batch ID for a given timestamp.
- * Batches are 24-hour windows anchored to a reference time.
+ * Batches are time windows anchored to a reference time.
  */
-export function getBatchId(timestamp: number, anchorTime: number): number {
-  return Math.floor((timestamp - anchorTime) / BATCH_DURATION_MS);
+export function getBatchId(timestamp: number, anchorTime: number, batchDurationMs: number): number {
+  return Math.floor((timestamp - anchorTime) / batchDurationMs);
 }
 
 /**
  * Gets the time range for a specific batch ID.
  */
-export function getBatchTimeRange(batchId: number, anchorTime: number): { from: number; to: number } {
-  const from = anchorTime + batchId * BATCH_DURATION_MS;
-  const to = from + BATCH_DURATION_MS;
+export function getBatchTimeRange(
+  batchId: number,
+  anchorTime: number,
+  batchDurationMs: number
+): { from: number; to: number } {
+  const from = anchorTime + batchId * batchDurationMs;
+  const to = from + batchDurationMs;
   return { from, to };
 }
 
 /**
  * Gets all batch IDs that cover a given time range.
  */
-export function getBatchIdsForRange(from: number, to: number, anchorTime: number): number[] {
-  const startBatchId = getBatchId(from, anchorTime);
-  const endBatchId = getBatchId(to, anchorTime);
+export function getBatchIdsForRange(from: number, to: number, anchorTime: number, batchDurationMs: number): number[] {
+  const startBatchId = getBatchId(from, anchorTime, batchDurationMs);
+  const endBatchId = getBatchId(to, anchorTime, batchDurationMs);
 
   const batchIds: number[] = [];
   for (let id = startBatchId; id <= endBatchId; id++) {
@@ -50,9 +53,11 @@ export class BatchDataCache {
   private anchorTime: number;
   private currentMetric: string | null = null;
   private loadingBatchId: number | null = null;
+  private batchDurationMs: number;
 
-  constructor() {
+  constructor(batchDurationHours: number) {
     this.anchorTime = this.calculateAnchorTime();
+    this.batchDurationMs = batchDurationHours * 60 * 60 * 1000;
   }
 
   /**
@@ -93,7 +98,7 @@ export class BatchDataCache {
     visibleFrom: number,
     visibleTo: number
   ): { batchId: number; from: number; to: number } | null {
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime);
+    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
     const now = Date.now();
 
     // Sort batch IDs in descending order to load most recent batches first
@@ -105,7 +110,7 @@ export class BatchDataCache {
         continue;
       }
 
-      const { from, to } = getBatchTimeRange(batchId, this.anchorTime);
+      const { from, to } = getBatchTimeRange(batchId, this.anchorTime, this.batchDurationMs);
 
       // Don't fetch future data
       if (from > now) {
@@ -164,7 +169,7 @@ export class BatchDataCache {
    * Get errors from batches in the visible range.
    */
   public getErrors(visibleFrom: number, visibleTo: number): string[] {
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime);
+    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
     const errors: string[] = [];
 
     for (const batchId of neededBatchIds) {
@@ -200,7 +205,7 @@ export class BatchDataCache {
    * Get all cached data for the visible range, concatenated.
    */
   public getCachedData(visibleFrom: number, visibleTo: number): DataFrame[] {
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime);
+    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
     const allFrames: DataFrame[] = [];
 
     for (const batchId of neededBatchIds.sort((a, b) => a - b)) {
@@ -217,11 +222,11 @@ export class BatchDataCache {
    * Check if all batches for the visible range are loaded.
    */
   public isFullyLoaded(visibleFrom: number, visibleTo: number): boolean {
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime);
+    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
     const now = Date.now();
 
     for (const batchId of neededBatchIds) {
-      const { from } = getBatchTimeRange(batchId, this.anchorTime);
+      const { from } = getBatchTimeRange(batchId, this.anchorTime, this.batchDurationMs);
       // Skip future batches
       if (from > now) {
         continue;
@@ -238,12 +243,12 @@ export class BatchDataCache {
    * Get loading ranges for UI display.
    */
   public getLoadingRanges(visibleFrom: number, visibleTo: number): Array<{ from: number; to: number }> {
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime);
+    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
     const loadingRanges: Array<{ from: number; to: number }> = [];
     const now = Date.now();
 
     for (const batchId of neededBatchIds) {
-      const { from, to } = getBatchTimeRange(batchId, this.anchorTime);
+      const { from, to } = getBatchTimeRange(batchId, this.anchorTime, this.batchDurationMs);
 
       // Skip future batches
       if (from > now) {

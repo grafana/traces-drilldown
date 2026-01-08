@@ -1,7 +1,6 @@
 // Main components
 export { TimeSeeker } from './TimeSeeker';
 export { TimeSeekerScene } from './TimeSeekerScene';
-export { ContextWindowSelector } from './ContextWindowSelector';
 
 // Sub-components
 export { TimeSeekerChart } from './TimeSeekerChart';

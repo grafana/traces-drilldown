@@ -5,10 +5,12 @@ import { TraceExploration } from './TraceExploration';
 import { DATASOURCE_LS_KEY } from '../../utils/shared';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../utils/analytics';
 import { UrlSyncContextProvider } from '@grafana/scenes';
+import { usePluginJsonData } from 'components/App/App';
 
 const TraceExplorationPage = () => {
   const initialDs = localStorage.getItem(DATASOURCE_LS_KEY) || '';
-  const [exploration] = useState(newTracesExploration(initialDs));
+  const jsonData = usePluginJsonData();
+  const [exploration] = useState(newTracesExploration(initialDs, jsonData.queryRangeHours));
 
   return <TraceExplorationView exploration={exploration} />;
 };
