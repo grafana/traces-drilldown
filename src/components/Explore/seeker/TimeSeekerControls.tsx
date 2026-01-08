@@ -1,26 +1,21 @@
-import React, { useState } from 'react';
-import { AbsoluteTimeRange } from '@grafana/data';
-import { IconButton, Popover, useStyles2, useTheme2 } from '@grafana/ui';
-import { ContextWindowSelector } from './ContextWindowSelector';
+import React, { useRef } from 'react';
+import { AbsoluteTimeRange, TimeRange, dateTime } from '@grafana/data';
+import { IconButton, TimeRangeInput, useStyles2, useTheme2 } from '@grafana/ui';
 import { getControlStyles } from './styles';
 import { useTimeSeeker } from './TimeSeekerContext';
 
 export const TimeSeekerControls: React.FC = () => {
   const theme = useTheme2();
   const styles = useStyles2(() => getControlStyles(theme));
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const timeRangeInputContainerRef = useRef<HTMLDivElement>(null);
 
   const {
-    dashboardFrom,
-    dashboardTo,
-    now,
     uplotRef,
     timelineRange,
     visibleRange,
     setVisibleRange,
     setTimelineRange,
     suppressNextDashboardUpdate,
-    applyRelativeContextWindow,
     zoomContextWindow,
     panContextWindow,
     resetContextWindow,
@@ -52,9 +47,48 @@ export const TimeSeekerControls: React.FC = () => {
     });
   };
 
+  // Convert AbsoluteTimeRange to TimeRange
+  const timeRangeValue: TimeRange = {
+    from: dateTime(visibleRange.from),
+    to: dateTime(visibleRange.to),
+    raw: {
+      from: dateTime(visibleRange.from),
+      to: dateTime(visibleRange.to),
+    },
+  };
+
+  const handleTimeRangeChange = (newTimeRange: TimeRange) => {
+    const newAbsoluteRange: AbsoluteTimeRange = {
+      from: newTimeRange.from.valueOf(),
+      to: newTimeRange.to.valueOf(),
+    };
+    handleSetVisibleRange(newAbsoluteRange);
+  };
+
+  const handleButtonClick = () => {
+    // Trigger the TimeRangeInput popup by clicking its input
+    if (!timeRangeInputContainerRef.current) {
+      return;
+    }
+
+    const container = timeRangeInputContainerRef.current;
+
+    // Use requestAnimationFrame and setTimeout to ensure the component is ready
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const button = container.querySelector('button') as HTMLButtonElement;
+        if (button) {
+          button.focus();
+          button.click();
+          return;
+        }
+      }, 100);
+    });
+  };
+
   return (
-    <>
-      <div className={styles.floatingControls}>
+    <div className={styles.floatingControls}>
+      <div className={styles.floatingControlsContent}>
         <IconButton
           tooltip="Pan left"
           name="arrow-left"
@@ -93,32 +127,19 @@ export const TimeSeekerControls: React.FC = () => {
         <IconButton
           name="calendar-alt"
           tooltip="Set context window"
-          onClick={(e) => setAnchorEl(e.currentTarget)}
+          onClick={handleButtonClick}
           size="sm"
           variant="secondary"
         />
+        <div ref={timeRangeInputContainerRef} className={styles.timeRangeInputContainer}>
+          <TimeRangeInput
+            value={timeRangeValue}
+            onChange={handleTimeRangeChange}
+            hideQuickRanges={false}
+            showIcon={false}
+          />
+        </div>
       </div>
-      {anchorEl && (
-        <Popover
-          referenceElement={anchorEl}
-          show={true}
-          content={
-            <div className={styles.popoverContent}>
-              <ContextWindowSelector
-                dashboardFrom={dashboardFrom}
-                dashboardTo={dashboardTo}
-                now={now}
-                visibleRange={visibleRange}
-                setVisibleRange={handleSetVisibleRange}
-                setRelativeContextDuration={(d) => {
-                  applyRelativeContextWindow.current = d;
-                }}
-                onClose={() => setAnchorEl(null)}
-              />
-            </div>
-          }
-        />
-      )}
-    </>
+    </div>
   );
 };
