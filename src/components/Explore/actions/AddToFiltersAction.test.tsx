@@ -24,6 +24,7 @@ describe('AddToFiltersAction', () => {
       fields: [
         {
           labels: { label1: 'value1', label2: 'value2' },
+          type: 'string',
         },
       ],
     } as unknown as DataFrame; 
@@ -78,6 +79,15 @@ describe('AddToFiltersAction', () => {
     expect(variable.setState).not.toHaveBeenCalled();
     expect(onClick).not.toHaveBeenCalled();
   });
+
+  it('should not render button when filter already exists', () => {
+    variable.state.filters = [{ key: 'label1', operator: '=', value: 'value1' }];
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'label1' });
+    const { queryByRole } = render(<AddToFiltersAction.Component model={action} />);
+    
+    const button = queryByRole('button', { name: /add to filters/i });
+    expect(button).not.toBeInTheDocument();
+  });
 });
 
 describe('addToFilters', () => {
@@ -87,7 +97,7 @@ describe('addToFilters', () => {
     variable = {
       state: { filters: [{ key: 'otherKey', operator: '=', value: 'value2' }] },
       setState: jest.fn(),
-    } as unknown as AdHocFiltersVariable; 
+    } as unknown as AdHocFiltersVariable;
   });
 
   it('should add new filter and remove existing filter for the same key', () => {
@@ -110,6 +120,21 @@ describe('addToFilters', () => {
         { key: 'otherKey', operator: '=', value: 'value2' },
         { key: 'span.db.system.name', operator: '=', value: 'value3' },
         { key: 'newKey', operator: '=', value: 'newValue' },
+      ],
+    });
+  });
+
+  it('should append filter when append is true', () => {
+    variable.state.filters = [
+      { key: 'existingKey', operator: '=', value: 'existingValue' },
+    ];
+    
+    addToFilters(variable, 'existingKey', 'newValue', '=', true);
+
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [
+        { key: 'existingKey', operator: '=', value: 'existingValue' },
+        { key: 'existingKey', operator: '=', value: 'newValue' },
       ],
     });
   });
