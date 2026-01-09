@@ -24,9 +24,6 @@ export function getBatchId(timestamp: number, anchorTime: number, batchDurationM
   return Math.floor((timestamp - anchorTime) / batchDurationMs);
 }
 
-/**
- * Gets the time range for a specific batch ID.
- */
 export function getBatchTimeRange(
   batchId: number,
   anchorTime: number,
@@ -37,9 +34,6 @@ export function getBatchTimeRange(
   return { from, to };
 }
 
-/**
- * Gets all batch IDs that cover a given time range.
- */
 export function getBatchIdsForRange(from: number, to: number, anchorTime: number, batchDurationMs: number): number[] {
   const startBatchId = getBatchId(from, anchorTime, batchDurationMs);
   const endBatchId = getBatchId(to, anchorTime, batchDurationMs);
@@ -51,9 +45,6 @@ export function getBatchIdsForRange(from: number, to: number, anchorTime: number
   return batchIds;
 }
 
-/**
- * Simple batch data cache that stores loaded batch data.
- */
 export class BatchDataCache {
   private cache: Map<number, CachedBatch> = new Map();
   private anchorTime: number;
@@ -61,40 +52,28 @@ export class BatchDataCache {
   private loadingBatchId: number | null = null;
   private batchDurationMs: number;
   private lastVisibleRange: { from: number; to: number } | null = null;
-  private hasLargeBatchCount: boolean = false;
+  private hasLargeBatchCount = false;
 
   constructor(batchDurationHours: number) {
     this.anchorTime = this.calculateAnchorTime();
     this.batchDurationMs = batchDurationHours * 60 * 60 * 1000;
   }
 
-  /**
-   * Check if the visible range requires a large number of batches (performance warning).
-   */
   public hasLargeBatchWarning(): boolean {
     return this.hasLargeBatchCount;
   }
 
-  /**
-   * Calculate anchor time - we use midnight UTC of today as anchor
-   */
   private calculateAnchorTime(): number {
     const now = new Date();
     now.setUTCHours(0, 0, 0, 0);
     return now.getTime();
   }
 
-  /**
-   * Clear all cached data (e.g., when metric changes).
-   */
   public clearCache(): void {
     this.cache.clear();
     this.loadingBatchId = null;
   }
 
-  /**
-   * Check if metric changed and clear cache if needed.
-   */
   public checkMetricChange(metric: string): boolean {
     if (this.currentMetric !== metric) {
       this.clearCache();

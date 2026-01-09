@@ -1,8 +1,19 @@
-import React, { createContext, useContext, useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import { AbsoluteTimeRange, durationToMilliseconds, GrafanaTheme2, parseDuration, PanelData } from '@grafana/data';
-import { AxisPlacement, DrawStyle, UPlotConfigBuilder, useTheme2 } from '@grafana/ui';
+import { UPlotConfigBuilder, useTheme2 } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 import { DragStyles } from './types';
+import { useTimeSeekerChartConfig } from './useTimeSeekerChartConfig';
 
 // ============================================================================
 // Context Types
@@ -27,14 +38,14 @@ interface TimeSeekerContextValue {
   chartConfig: UPlotConfigBuilder;
 
   // Refs
-  uplotRef: React.MutableRefObject<uPlot | null>;
-  wheelListenerRef: React.MutableRefObject<((e: WheelEvent) => void) | null>;
-  suppressNextDashboardUpdate: React.MutableRefObject<boolean>;
-  applyRelativeContextWindow: React.MutableRefObject<string | null>;
+  uplotRef: React.RefObject<uPlot | null>;
+  wheelListenerRef: React.RefObject<((e: WheelEvent) => void) | null>;
+  suppressNextDashboardUpdate: React.RefObject<boolean>;
+  applyRelativeContextWindow: React.RefObject<string | null>;
 
   // Actions
   setVisibleRange: (range: AbsoluteTimeRange, suppressDashboardUpdate?: boolean) => void;
-  setTimelineRange: React.Dispatch<React.SetStateAction<{ from: number; to: number }>>;
+  setTimelineRange: Dispatch<SetStateAction<{ from: number; to: number }>>;
   updateOverlay: () => void;
   handleDrag: (e: React.MouseEvent, kind: 'move' | 'left' | 'right') => void;
   handlePanStart: (e: MouseEvent | React.MouseEvent) => void;
@@ -423,170 +434,24 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   // -------------------------------------------------------------------------
   // Build UPlot configuration
   // -------------------------------------------------------------------------
-  const chartConfig = useMemo(() => {
-    const b = new UPlotConfigBuilder();
-
-    b.setCursor({ y: false });
-
-    b.addAxis({
-      placement: AxisPlacement.Bottom,
-      scaleKey: 'x',
-      isTime: true,
-      theme,
-    });
-
-    b.addAxis({
-      placement: AxisPlacement.Left,
-      scaleKey: 'y',
-      theme,
-      show: false,
-      size: 0,
-    });
-
-    // Add series with metric-specific style and color
-    const isErrorsMetric = metric === 'errors';
-    const isDurationMetric = metric === 'duration';
-
-    b.addSeries({
-      scaleKey: 'y',
-      lineWidth: isDurationMetric ? 1 : 0,
-      show: true,
-      theme,
-      drawStyle: isDurationMetric ? DrawStyle.Line : DrawStyle.Bars,
-      fillOpacity: isDurationMetric ? 30 : 50,
-    });
-
-    // Apply color override for the series
-    const internalConfig = b.getConfig();
-    if (internalConfig.series && internalConfig.series[1]) {
-      let seriesColor: string;
-      if (isDurationMetric) {
-        seriesColor = theme.visualization.getColorByName('blue');
-      } else if (isErrorsMetric) {
-        seriesColor = theme.visualization.getColorByName('semi-dark-red');
-      } else {
-        seriesColor = theme.visualization.getColorByName('green');
-      }
-
-      internalConfig.series[1].stroke = seriesColor;
-      internalConfig.series[1].fill = seriesColor;
-    }
-
-    b.addHook('setSelect', (u: uPlot) => {
-      if (isProgrammaticSelect.current || skipNextSelectUpdate.current) {
-        isProgrammaticSelect.current = false;
-        skipNextSelectUpdate.current = false;
-        return;
-      }
-
-      if (isPanning.current) {
-        return;
-      }
-
-      if (isDragging.current) {
-        return;
-      }
-
-      const xDrag = Boolean(u.cursor?.drag?.x);
-      if (xDrag && u.select.left != null && u.select.width != null) {
-        const from = u.posToVal(u.select.left, 'x');
-        const to = u.posToVal(u.select.left + u.select.width, 'x');
-        const newRange: AbsoluteTimeRange = { from, to };
-        setTimelineRange(newRange);
-
-        if (!suppressNextDashboardUpdate.current) {
-          onChangeTimeRange(newRange);
-        }
-
-        suppressNextDashboardUpdate.current = false;
-      }
-    });
-
-    b.addHook('ready', (u: uPlot) => {
-      uplotRef.current = u;
-
-      // Store the wheel listener so it can be reused in the overlay div
-      wheelListenerRef.current = (e: WheelEvent) => {
-        e.preventDefault();
-        const zoomBase = 0.8;
-        const zoomFactor = e.deltaY < 0 ? zoomBase : 1 / zoomBase;
-
-        const rect = u.root.getBoundingClientRect();
-        const cursorX = e.clientX - rect.left - u.bbox.left;
-        const cursorVal = u.posToVal(cursorX, 'x');
-
-        const span = visibleRange.to - visibleRange.from;
-        const newSpan = span * zoomFactor;
-        const newFrom = cursorVal - ((cursorVal - visibleRange.from) / span) * newSpan;
-        const newTo = newFrom + newSpan;
-
-        setVisibleRange({ from: newFrom, to: newTo }, true);
-      };
-
-      // Attach wheel zoom to uPlot overlay
-      const over = u.root.querySelector('.u-over') as HTMLElement;
-      if (over && wheelListenerRef.current) {
-        over.addEventListener('wheel', wheelListenerRef.current, { passive: false });
-
-        (u as any)._cleanupWheelZoom = () => {
-          over.removeEventListener('wheel', wheelListenerRef.current!);
-        };
-      }
-
-      // Draw selection brush
-      requestAnimationFrame(() => {
-        const left = u.valToPos(timelineRange.from, 'x');
-        const right = u.valToPos(timelineRange.to, 'x');
-        u.setSelect({
-          left,
-          top: 0,
-          width: right - left,
-          height: u.bbox.height,
-        });
-        updateOverlay();
-      });
-
-      // Enable pan drag on bottom axis
-      const bottomAxis = u.root.querySelector('.u-axis') as HTMLElement;
-      if (bottomAxis) {
-        bottomAxis.style.cursor = 'grab';
-        const listener = (e: MouseEvent) => handlePanStart(e);
-        bottomAxis.addEventListener('mousedown', listener);
-        (u as any)._cleanupBottomAxisPan = () => {
-          bottomAxis.removeEventListener('mousedown', listener);
-        };
-      }
-    });
-
-    b.addHook('destroy', (u: uPlot) => {
-      if ((u as any)._cleanupBottomAxisPan) {
-        (u as any)._cleanupBottomAxisPan();
-      }
-      if ((u as any)._cleanupWheelZoom) {
-        (u as any)._cleanupWheelZoom();
-      }
-    });
-
-    const finalConfig = b.getConfig();
-    finalConfig.scales = finalConfig.scales ?? {};
-    finalConfig.scales.x = {
-      ...finalConfig.scales.x,
-      range: [visibleRange.from, visibleRange.to],
-    };
-
-    return b;
-  }, [
+  const chartConfig = useTimeSeekerChartConfig({
     theme,
     metric,
-    visibleRange.from,
-    visibleRange.to,
-    timelineRange.from,
-    timelineRange.to,
+    visibleRange,
+    timelineRange,
+    uplotRef,
+    wheelListenerRef,
+    isProgrammaticSelect,
+    skipNextSelectUpdate,
+    isPanning,
+    isDragging,
+    suppressNextDashboardUpdate,
     setVisibleRange,
+    setTimelineRange,
     handlePanStart,
     onChangeTimeRange,
     updateOverlay,
-  ]);
+  });
 
   // -------------------------------------------------------------------------
   // Update overlay when dependencies change
