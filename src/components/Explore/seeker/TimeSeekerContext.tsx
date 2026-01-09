@@ -16,8 +16,28 @@ import { DragStyles } from './types';
 import { useTimeSeekerChartConfig } from './useTimeSeekerChartConfig';
 
 // ============================================================================
-// Context Types
+// Constants
 // ============================================================================
+
+/** Factor to expand selection into visible context window (8x the selection span) */
+const CONTEXT_WINDOW_ZOOM_FACTOR = 8;
+/** Tolerance in ms for detecting same time range */
+const TIME_RANGE_TOLERANCE_MS = 1000;
+/** Factor for pan operations (25% of visible span) */
+const PAN_FACTOR = 0.25;
+/** Minimum width in pixels for selection handles */
+const MIN_SELECTION_WIDTH_PX = 10;
+/** Width in pixels for drag handles */
+const HANDLE_WIDTH_PX = 6;
+/** Height ratio for drag handles (60% of chart height) */
+const HANDLE_HEIGHT_RATIO = 0.6;
+
+// ============================================================================
+// Types
+// ============================================================================
+
+/** Tracks the current user interaction mode to prevent conflicting operations */
+type InteractionMode = 'idle' | 'dragging' | 'panning' | 'programmatic';
 
 interface TimeSeekerContextValue {
   // State
@@ -75,6 +95,52 @@ interface TimeSeekerProviderProps {
 }
 
 // ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * Computes a zoomed-out context window centered on the given selection.
+ * Ensures the result doesn't extend into the future.
+ */
+function computeContextWindowFromSelection(from: number, to: number, maxTime: number): AbsoluteTimeRange {
+  const mid = (from + to) / 2;
+  const span = to - from;
+  const zoomSpan = span * CONTEXT_WINDOW_ZOOM_FACTOR;
+
+  let newFrom = mid - zoomSpan / 2;
+  let newTo = mid + zoomSpan / 2;
+
+  // Clamp to not extend into the future
+  if (newTo > maxTime) {
+    const shift = newTo - maxTime;
+    newFrom -= shift;
+    newTo = maxTime;
+  }
+
+  return { from: newFrom, to: newTo };
+}
+
+function areRangesEqual(
+  a: { from: number; to: number },
+  b: { from: number; to: number },
+  tolerance = TIME_RANGE_TOLERANCE_MS
+): boolean {
+  return Math.abs(a.from - b.from) < tolerance && Math.abs(a.to - b.to) < tolerance;
+}
+
+/**
+ * Parses a relative time string like "now-1h" and returns the duration in ms.
+ * Returns null if parsing fails or the format doesn't match.
+ */
+function parseRelativeTimeRange(raw: { from: unknown; to: unknown }): string | null {
+  if (typeof raw.from !== 'string' || typeof raw.to !== 'string' || raw.to !== 'now') {
+    return null;
+  }
+  const match = raw.from.match(/^now-(\d+[smhdw])$/);
+  return match ? match[1] : null;
+}
+
+// ============================================================================
 // Provider Component
 // ============================================================================
 
@@ -97,52 +163,25 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   const dashboardTo = data.timeRange.to.valueOf();
 
   // -------------------------------------------------------------------------
-  // Compute context window from selection
-  // -------------------------------------------------------------------------
-  const computeContextWindowFromSelection = useCallback(
-    (from: number, to: number): AbsoluteTimeRange => {
-      const mid = (from + to) / 2;
-      const span = to - from;
-      const zoomSpan = span * 8;
-
-      let newFrom = mid - zoomSpan / 2;
-      let newTo = mid + zoomSpan / 2;
-
-      if (newTo > now) {
-        const shift = newTo - now;
-        newFrom -= shift;
-        newTo = now;
-      }
-
-      return { from: newFrom, to: newTo };
-    },
-    [now]
-  );
-
-  // -------------------------------------------------------------------------
   // State
   // -------------------------------------------------------------------------
   const [timelineRange, setTimelineRange] = useState({ from: dashboardFrom, to: dashboardTo });
   const [visibleRange, setVisibleRangeState] = useState<AbsoluteTimeRange>(
-    initialVisibleRange ?? computeContextWindowFromSelection(dashboardFrom, dashboardTo)
+    initialVisibleRange ?? computeContextWindowFromSelection(dashboardFrom, dashboardTo, now)
   );
   const [dragStyles, setDragStyles] = useState<DragStyles>({});
 
   // -------------------------------------------------------------------------
   // Refs
   // -------------------------------------------------------------------------
-  const suppressNextDashboardUpdate = useRef(false);
-  const isProgrammaticSelect = useRef(false);
-  const skipNextSelectUpdate = useRef(false);
   const uplotRef = useRef<uPlot | null>(null);
-  const isDragging = useRef(false);
-  const isPanning = useRef(false);
   const wheelListenerRef = useRef<((e: WheelEvent) => void) | null>(null);
   const applyRelativeContextWindow = useRef<string | null>(null);
-  const lastDashboardRange = useRef<AbsoluteTimeRange>({
-    from: dashboardFrom,
-    to: dashboardTo,
-  });
+  const lastDashboardRange = useRef<AbsoluteTimeRange>({ from: dashboardFrom, to: dashboardTo });
+
+  // Interaction tracking - consolidates multiple boolean flags
+  const interactionMode = useRef<InteractionMode>('idle');
+  const suppressNextDashboardUpdate = useRef(false);
 
   // -------------------------------------------------------------------------
   // Set visible range with optional dashboard update suppression
@@ -151,67 +190,55 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
     (range: AbsoluteTimeRange, suppressDashboardUpdate = false) => {
       setVisibleRangeState(range);
       onVisibleRangeChange?.(range);
+
       if (suppressDashboardUpdate) {
         suppressNextDashboardUpdate.current = true;
-        skipNextSelectUpdate.current = true;
-        isProgrammaticSelect.current = true;
+        interactionMode.current = 'programmatic';
       }
     },
     [onVisibleRangeChange]
   );
 
   // -------------------------------------------------------------------------
-  // Handle relative time ranges (e.g., "now-1h")
+  // Handle relative time ranges (e.g., "now-1h") and sync dashboard changes
   // -------------------------------------------------------------------------
   useEffect(() => {
-    const raw = data.timeRange.raw;
-
-    if (typeof raw.from === 'string' && typeof raw.to === 'string' && raw.to === 'now') {
-      const fromStr = raw.from as string;
-      const match = fromStr.match(/^now-(\d+[smhdw])$/);
-      if (match) {
-        applyRelativeContextWindow.current = match[1];
-      }
+    const relativeDuration = parseRelativeTimeRange(data.timeRange.raw);
+    if (relativeDuration) {
+      applyRelativeContextWindow.current = relativeDuration;
     }
-  }, [data.timeRange.raw]);
 
-  // -------------------------------------------------------------------------
-  // Sync dashboard range changes
-  // -------------------------------------------------------------------------
-  useEffect(() => {
-    const dashboardChanged =
-      lastDashboardRange.current.from !== dashboardFrom || lastDashboardRange.current.to !== dashboardTo;
-
-    const timelineMatchesDashboard =
-      Math.abs(timelineRange.from - dashboardFrom) < 1000 && Math.abs(timelineRange.to - dashboardTo) < 1000;
+    // Check if dashboard range changed
+    const dashboardChanged = !areRangesEqual(lastDashboardRange.current, { from: dashboardFrom, to: dashboardTo });
+    const timelineMatchesDashboard = areRangesEqual(timelineRange, { from: dashboardFrom, to: dashboardTo });
 
     if (dashboardChanged && !timelineMatchesDashboard) {
       setTimelineRange({ from: dashboardFrom, to: dashboardTo });
     }
 
     lastDashboardRange.current = { from: dashboardFrom, to: dashboardTo };
-  }, [dashboardFrom, dashboardTo, timelineRange.from, timelineRange.to]);
+  }, [data.timeRange.raw, dashboardFrom, dashboardTo, timelineRange]);
 
   // -------------------------------------------------------------------------
-  // Apply relative context window
+  // Apply relative context window when set
   // -------------------------------------------------------------------------
   useEffect(() => {
-    if (!applyRelativeContextWindow.current) {
+    const duration = applyRelativeContextWindow.current;
+    if (!duration) {
       return;
     }
 
     try {
-      const durMs = durationToMilliseconds(parseDuration(applyRelativeContextWindow.current));
+      const durMs = durationToMilliseconds(parseDuration(duration));
       const brushTo = dashboardTo;
       const brushFrom = dashboardTo - durMs;
 
       suppressNextDashboardUpdate.current = true;
       setTimelineRange({ from: brushFrom, to: brushTo });
 
-      const sameRange = Math.abs(visibleRange.from - brushFrom) < 10 && Math.abs(visibleRange.to - brushTo) < 10;
-
+      const sameRange = areRangesEqual(visibleRange, { from: brushFrom, to: brushTo }, 10);
       if (sameRange) {
-        const context = computeContextWindowFromSelection(brushFrom, brushTo);
+        const context = computeContextWindowFromSelection(brushFrom, brushTo, now);
         setVisibleRange(context, true);
       }
     } catch (err) {
@@ -219,14 +246,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
     } finally {
       applyRelativeContextWindow.current = null;
     }
-  }, [
-    dashboardTo,
-    dashboardFrom,
-    visibleRange.from,
-    visibleRange.to,
-    setVisibleRange,
-    computeContextWindowFromSelection,
-  ]);
+  }, [dashboardTo, visibleRange, setVisibleRange, now]);
 
   // -------------------------------------------------------------------------
   // Update overlay positions
@@ -239,9 +259,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
 
     const left = u.valToPos(timelineRange.from, 'x') + u.bbox.left;
     const right = u.valToPos(timelineRange.to, 'x') + u.bbox.left;
-
-    const handleWidth = 6;
-    const handleHeight = u.bbox.height * 0.6;
+    const handleHeight = u.bbox.height * HANDLE_HEIGHT_RATIO;
     const topOffset = (u.bbox.height - handleHeight) / 2;
 
     setDragStyles({
@@ -258,8 +276,8 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       leftHandleStyle: {
         position: 'absolute',
         top: topOffset,
-        left: left - handleWidth,
-        width: handleWidth,
+        left: left - HANDLE_WIDTH_PX,
+        width: HANDLE_WIDTH_PX,
         height: handleHeight,
         cursor: 'ew-resize',
         background: 'rgba(0, 123, 255, 0.6)',
@@ -270,7 +288,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
         position: 'absolute',
         top: topOffset,
         left: right,
-        width: handleWidth,
+        width: HANDLE_WIDTH_PX,
         height: handleHeight,
         cursor: 'ew-resize',
         background: 'rgba(0, 123, 255, 0.6)',
@@ -281,12 +299,12 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   }, [timelineRange.from, timelineRange.to]);
 
   // -------------------------------------------------------------------------
-  // Pan start handler
+  // Pan start handler (for axis dragging)
   // -------------------------------------------------------------------------
   const handlePanStart = useCallback(
     (e: MouseEvent | React.MouseEvent) => {
       const u = uplotRef.current;
-      if (!u || isDragging.current) {
+      if (!u || interactionMode.current !== 'idle') {
         return;
       }
 
@@ -295,19 +313,17 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       const startTo = visibleRange.to;
       const pixelsToMs = (startTo - startFrom) / u.bbox.width;
 
-      isPanning.current = true;
+      interactionMode.current = 'panning';
       suppressNextDashboardUpdate.current = true;
 
       const onMouseMove = (moveEvent: MouseEvent) => {
         const deltaPx = moveEvent.clientX - startX;
         const deltaMs = -deltaPx * pixelsToMs;
-        const newFrom = startFrom + deltaMs;
-        const newTo = startTo + deltaMs;
-        setVisibleRange({ from: newFrom, to: newTo }, true);
+        setVisibleRange({ from: startFrom + deltaMs, to: startTo + deltaMs }, true);
       };
 
       const onMouseUp = () => {
-        isPanning.current = false;
+        interactionMode.current = 'idle';
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
       };
@@ -331,7 +347,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       e.preventDefault();
       e.stopPropagation();
 
-      isDragging.current = true;
+      interactionMode.current = 'dragging';
 
       const startX = e.clientX;
       const origFrom = timelineRange.from;
@@ -339,11 +355,8 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       let newFrom = origFrom;
       let newTo = origTo;
 
-      const MIN_WIDTH_PX = 10;
-
       const onMouseMove = (moveEvent: MouseEvent) => {
         const deltaPx = moveEvent.clientX - startX;
-
         const origFromPx = u.valToPos(origFrom, 'x');
         const origToPx = u.valToPos(origTo, 'x');
 
@@ -355,13 +368,13 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
           toPx += deltaPx;
         } else if (kind === 'left') {
           fromPx = origFromPx + deltaPx;
-          if (toPx - fromPx < MIN_WIDTH_PX) {
-            fromPx = toPx - MIN_WIDTH_PX;
+          if (toPx - fromPx < MIN_SELECTION_WIDTH_PX) {
+            fromPx = toPx - MIN_SELECTION_WIDTH_PX;
           }
         } else if (kind === 'right') {
           toPx = origToPx + deltaPx;
-          if (toPx - fromPx < MIN_WIDTH_PX) {
-            toPx = fromPx + MIN_WIDTH_PX;
+          if (toPx - fromPx < MIN_SELECTION_WIDTH_PX) {
+            toPx = fromPx + MIN_SELECTION_WIDTH_PX;
           }
         }
 
@@ -380,7 +393,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       const onMouseUp = () => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
-        isDragging.current = false;
+        interactionMode.current = 'idle';
 
         u.setSelect({ left: 0, width: 0, top: 0, height: 0 });
         if (u.cursor?.drag) {
@@ -389,6 +402,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
 
         const newRange = { from: newFrom, to: newTo };
         setTimelineRange(newRange);
+
         if (!suppressNextDashboardUpdate.current) {
           onChangeTimeRange(newRange);
         }
@@ -407,10 +421,8 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   const zoomContextWindow = useCallback(
     (factor: number) => {
       const mid = (visibleRange.from + visibleRange.to) / 2;
-      const span = ((visibleRange.to - visibleRange.from) * factor) / 2;
-      const newFrom = mid - span;
-      const newTo = mid + span;
-      setVisibleRange({ from: newFrom, to: newTo }, true);
+      const halfSpan = ((visibleRange.to - visibleRange.from) * factor) / 2;
+      setVisibleRange({ from: mid - halfSpan, to: mid + halfSpan }, true);
     },
     [visibleRange.from, visibleRange.to, setVisibleRange]
   );
@@ -418,7 +430,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   const panContextWindow = useCallback(
     (direction: 'left' | 'right') => {
       const span = visibleRange.to - visibleRange.from;
-      const shift = span * 0.25;
+      const shift = span * PAN_FACTOR;
       const delta = direction === 'left' ? -shift : shift;
       setVisibleRange({ from: visibleRange.from + delta, to: visibleRange.to + delta }, true);
     },
@@ -426,14 +438,29 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   );
 
   const resetContextWindow = useCallback(() => {
-    const newRange = computeContextWindowFromSelection(timelineRange.from, timelineRange.to);
-    suppressNextDashboardUpdate.current = true;
+    const newRange = computeContextWindowFromSelection(timelineRange.from, timelineRange.to, now);
     setVisibleRange(newRange, true);
-  }, [computeContextWindowFromSelection, timelineRange.from, timelineRange.to, setVisibleRange]);
+  }, [timelineRange.from, timelineRange.to, setVisibleRange, now]);
 
   // -------------------------------------------------------------------------
   // Build UPlot configuration
   // -------------------------------------------------------------------------
+  // Create refs for chart config that won't trigger re-renders
+  const isProgrammaticSelect = useRef(false);
+  const skipNextSelectUpdate = useRef(false);
+
+  // Sync programmatic flags when interaction mode changes
+  useEffect(() => {
+    if (interactionMode.current === 'programmatic') {
+      isProgrammaticSelect.current = true;
+      skipNextSelectUpdate.current = true;
+      // Reset to idle after a frame
+      requestAnimationFrame(() => {
+        interactionMode.current = 'idle';
+      });
+    }
+  });
+
   const chartConfig = useTimeSeekerChartConfig({
     theme,
     metric,
@@ -443,8 +470,8 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
     wheelListenerRef,
     isProgrammaticSelect,
     skipNextSelectUpdate,
-    isPanning,
-    isDragging,
+    isPanning: { current: interactionMode.current === 'panning' } as React.RefObject<boolean>,
+    isDragging: { current: interactionMode.current === 'dragging' } as React.RefObject<boolean>,
     suppressNextDashboardUpdate,
     setVisibleRange,
     setTimelineRange,
@@ -454,26 +481,27 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   });
 
   // -------------------------------------------------------------------------
-  // Update overlay when dependencies change
+  // Update overlay when dependencies change (consolidated effect)
   // -------------------------------------------------------------------------
   useEffect(() => {
-    updateOverlay();
-  }, [updateOverlay, visibleRange, timelineRange.from, timelineRange.to]);
-
-  useEffect(() => {
+    // Use requestAnimationFrame to batch updates and handle width changes smoothly
     const frameId = requestAnimationFrame(() => {
       updateOverlay();
     });
     return () => cancelAnimationFrame(frameId);
-  }, [width, updateOverlay]);
+  }, [updateOverlay, visibleRange, timelineRange.from, timelineRange.to, width]);
 
   // -------------------------------------------------------------------------
-  // Extract data for chart
+  // Extract data for chart (memoized to prevent dependency instability)
   // -------------------------------------------------------------------------
-  const timeField = data.series[0]?.fields.find((f) => f.type === 'time');
-  const valueField = data.series[0]?.fields.find((f) => f.type === 'number');
-  const timeValues = timeField?.values ?? [];
-  const valueValues = valueField?.values ?? [];
+  const { timeValues, valueValues } = useMemo(() => {
+    const timeField = data.series[0]?.fields.find((f) => f.type === 'time');
+    const valueField = data.series[0]?.fields.find((f) => f.type === 'number');
+    return {
+      timeValues: timeField?.values ?? [],
+      valueValues: valueField?.values ?? [],
+    };
+  }, [data.series]);
 
   // -------------------------------------------------------------------------
   // Context value
