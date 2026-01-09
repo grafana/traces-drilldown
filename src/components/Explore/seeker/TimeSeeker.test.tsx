@@ -3,6 +3,20 @@ import { render, screen } from '@testing-library/react';
 import { TimeSeeker } from './TimeSeeker';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
+// Mock the chart config hook
+jest.mock('./useTimeSeekerChartConfig', () => ({
+  useTimeSeekerChartConfig: jest.fn(() => {
+    const mockBuilder = {
+      setCursor: jest.fn().mockReturnThis(),
+      addAxis: jest.fn().mockReturnThis(),
+      addSeries: jest.fn().mockReturnThis(),
+      addHook: jest.fn().mockReturnThis(),
+      getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
+    };
+    return mockBuilder;
+  }),
+}));
+
 // Mock Grafana UI components
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
@@ -20,29 +34,36 @@ jest.mock('@grafana/ui', () => ({
       border: { weak: '#ccc' },
       text: { secondary: '#666' },
       primary: { shade: '#007bff' },
+      warning: { main: '#ff9800' },
     },
     spacing: (n: number) => `${n * 8}px`,
+    typography: {
+      fontFamily: 'Roboto, sans-serif',
+    },
     visualization: {
       getColorByName: (name: string) => name,
     },
   }),
-  useStyles2: (fn: Function) => fn({
-    colors: { background: { primary: '#fff' }, border: { weak: '#ccc' }, primary: { shade: '#007bff' } },
-    spacing: (n: number) => `${n * 8}px`,
-  }),
+  useStyles2: (fn: Function) =>
+    fn({
+      colors: { background: { primary: '#fff' }, border: { weak: '#ccc' }, primary: { shade: '#007bff' } },
+      spacing: (n: number) => `${n * 8}px`,
+    }),
   IconButton: ({ onClick, tooltip, name }: any) => (
     <button onClick={onClick} aria-label={tooltip} data-icon={name}>
       {name}
     </button>
   ),
   Popover: ({ content, show }: any) => (show ? <div data-testid="popover">{content}</div> : null),
+  TimeRangeInput: ({ value, onChange }: any) => (
+    <div data-testid="time-range-input">
+      <button onClick={() => onChange && onChange(value)}>Time Range</button>
+    </div>
+  ),
+  Icon: ({ name }: any) => <span data-testid={`icon-${name}`}>{name}</span>,
+  Tooltip: ({ children }: any) => <div>{children}</div>,
   AxisPlacement: { Bottom: 'bottom', Left: 'left' },
   DrawStyle: { Line: 'line', Bars: 'bars' },
-}));
-
-// Mock ContextWindowSelector
-jest.mock('./ContextWindowSelector', () => ({
-  ContextWindowSelector: () => <div data-testid="context-selector">Context Selector</div>,
 }));
 
 // Mock PanelDataErrorView
@@ -111,4 +132,3 @@ describe('TimeSeeker', () => {
     expect(screen.getByTestId('uplot-chart')).toBeInTheDocument();
   });
 });
-

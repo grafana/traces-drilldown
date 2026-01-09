@@ -4,6 +4,20 @@ import { TimeSeekerLoadingOverlay } from './TimeSeekerLoadingOverlay';
 import { TimeSeekerProvider } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
+// Mock the chart config hook
+jest.mock('./useTimeSeekerChartConfig', () => ({
+  useTimeSeekerChartConfig: jest.fn(() => {
+    const mockBuilder = {
+      setCursor: jest.fn().mockReturnThis(),
+      addAxis: jest.fn().mockReturnThis(),
+      addSeries: jest.fn().mockReturnThis(),
+      addHook: jest.fn().mockReturnThis(),
+      getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
+    };
+    return mockBuilder;
+  }),
+}));
+
 // Mock Grafana UI
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),

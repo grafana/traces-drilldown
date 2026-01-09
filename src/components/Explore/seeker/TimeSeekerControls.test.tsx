@@ -4,6 +4,20 @@ import { TimeSeekerControls } from './TimeSeekerControls';
 import { TimeSeekerProvider } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
+// Mock the chart config hook
+jest.mock('./useTimeSeekerChartConfig', () => ({
+  useTimeSeekerChartConfig: jest.fn(() => {
+    const mockBuilder = {
+      setCursor: jest.fn().mockReturnThis(),
+      addAxis: jest.fn().mockReturnThis(),
+      addSeries: jest.fn().mockReturnThis(),
+      addHook: jest.fn().mockReturnThis(),
+      getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
+    };
+    return mockBuilder;
+  }),
+}));
+
 // Mock Grafana UI components
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
@@ -13,6 +27,13 @@ jest.mock('@grafana/ui', () => ({
     </button>
   ),
   Popover: ({ content, show }: any) => (show ? <div data-testid="popover">{content}</div> : null),
+  TimeRangeInput: ({ value, onChange }: any) => (
+    <div data-testid="time-range-input">
+      <button>Time Range</button>
+    </div>
+  ),
+  Icon: ({ name }: any) => <span data-testid={`icon-${name}`}>{name}</span>,
+  Tooltip: ({ children }: any) => <div>{children}</div>,
   UPlotConfigBuilder: jest.fn().mockImplementation(() => ({
     setCursor: jest.fn(),
     addAxis: jest.fn(),
@@ -25,6 +46,11 @@ jest.mock('@grafana/ui', () => ({
       background: { primary: '#fff' },
       border: { weak: '#ccc' },
       primary: { shade: '#007bff' },
+      warning: { main: '#ff9800' },
+    },
+    spacing: (n: number) => `${n * 8}px`,
+    typography: {
+      fontFamily: 'Roboto, sans-serif',
     },
     visualization: { getColorByName: (name: string) => name },
   }),
@@ -32,11 +58,6 @@ jest.mock('@grafana/ui', () => ({
     colors: { background: { primary: '#fff' }, border: { weak: '#ccc' } },
     spacing: () => '8px',
   }),
-}));
-
-// Mock ContextWindowSelector
-jest.mock('./ContextWindowSelector', () => ({
-  ContextWindowSelector: () => <div data-testid="context-selector">Context Selector</div>,
 }));
 
 const createMockData = () => ({
@@ -115,17 +136,10 @@ describe('TimeSeekerControls', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Reset context window' }));
   });
 
-  it('opens context window selector popover when calendar button is clicked', () => {
+  it('renders time range input component', () => {
     renderWithProvider(<TimeSeekerControls />);
 
-    expect(screen.queryByTestId('popover')).not.toBeInTheDocument();
-
-    // Get all buttons and find the calendar button by its icon
-    const calendarButton = screen.getByRole('button', { name: 'Set context window' });
-    fireEvent.click(calendarButton);
-
-    expect(screen.getByTestId('popover')).toBeInTheDocument();
-    expect(screen.getByTestId('context-selector')).toBeInTheDocument();
+    expect(screen.getByTestId('time-range-input')).toBeInTheDocument();
   });
 });
 
