@@ -387,7 +387,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
           width: toPx - fromPx,
           height: u.bbox.height,
         });
-        updateOverlay();
+        // Don't update overlay during drag - only update on mouse up
       };
 
       const onMouseUp = () => {
@@ -412,7 +412,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       window.addEventListener('mousemove', onMouseMove);
       window.addEventListener('mouseup', onMouseUp);
     },
-    [timelineRange.from, timelineRange.to, onChangeTimeRange, updateOverlay]
+    [timelineRange.from, timelineRange.to, onChangeTimeRange]
   );
 
   // -------------------------------------------------------------------------
@@ -470,8 +470,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
     wheelListenerRef,
     isProgrammaticSelect,
     skipNextSelectUpdate,
-    isPanning: { current: interactionMode.current === 'panning' } as React.RefObject<boolean>,
-    isDragging: { current: interactionMode.current === 'dragging' } as React.RefObject<boolean>,
+    interactionMode,
     suppressNextDashboardUpdate,
     setVisibleRange,
     setTimelineRange,

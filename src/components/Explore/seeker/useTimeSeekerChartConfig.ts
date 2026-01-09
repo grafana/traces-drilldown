@@ -3,6 +3,8 @@ import { AbsoluteTimeRange, GrafanaTheme2 } from '@grafana/data';
 import { AxisPlacement, DrawStyle, UPlotConfigBuilder } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 
+type InteractionMode = 'idle' | 'dragging' | 'panning' | 'programmatic';
+
 interface UseTimeSeekerChartConfigParams {
   theme: GrafanaTheme2;
   metric?: MetricFunction;
@@ -12,8 +14,7 @@ interface UseTimeSeekerChartConfigParams {
   wheelListenerRef: RefObject<((e: WheelEvent) => void) | null>;
   isProgrammaticSelect: RefObject<boolean>;
   skipNextSelectUpdate: RefObject<boolean>;
-  isPanning: RefObject<boolean>;
-  isDragging: RefObject<boolean>;
+  interactionMode: RefObject<InteractionMode>;
   suppressNextDashboardUpdate: RefObject<boolean>;
   setVisibleRange: (range: AbsoluteTimeRange, suppressDashboardUpdate?: boolean) => void;
   setTimelineRange: Dispatch<SetStateAction<{ from: number; to: number }>>;
@@ -31,8 +32,7 @@ export function useTimeSeekerChartConfig({
   wheelListenerRef,
   isProgrammaticSelect,
   skipNextSelectUpdate,
-  isPanning,
-  isDragging,
+  interactionMode,
   suppressNextDashboardUpdate,
   setVisibleRange,
   setTimelineRange,
@@ -96,11 +96,8 @@ export function useTimeSeekerChartConfig({
         return;
       }
 
-      if (isPanning.current) {
-        return;
-      }
-
-      if (isDragging.current) {
+      // Skip if user is currently panning or dragging
+      if (interactionMode.current === 'panning' || interactionMode.current === 'dragging') {
         return;
       }
 
@@ -207,8 +204,7 @@ export function useTimeSeekerChartConfig({
     wheelListenerRef,
     isProgrammaticSelect,
     skipNextSelectUpdate,
-    isPanning,
-    isDragging,
+    interactionMode,
     suppressNextDashboardUpdate,
     setTimelineRange,
   ]);

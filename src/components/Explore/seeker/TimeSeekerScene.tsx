@@ -277,11 +277,17 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       return contextRange;
     });
 
-    // Update visible range when selection changes (initial load)
+    // Update visible range only on initial mount or when explicitly needed
+    // (not when selection changes - that should be controlled by the user via pan/zoom)
+    const hasInitializedRef = useRef(false);
     React.useEffect(() => {
-      const contextRange = model.buildContextRange(selectionTimeRange);
-      setVisibleRange(contextRange);
-    }, [model, selectionTimeRange]);
+      if (!hasInitializedRef.current) {
+        hasInitializedRef.current = true;
+        const contextRange = model.buildContextRange(selectionTimeRange);
+        setVisibleRange(contextRange);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Trigger batch loading when visible range changes
     React.useEffect(() => {
