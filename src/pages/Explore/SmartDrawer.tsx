@@ -11,7 +11,6 @@ interface SmartDrawerProps {
   onClose: () => void;
   embedded?: boolean;
   forceNoDrawer?: boolean;
-  investigationButton?: React.ReactNode;
 }
 
 export const SmartDrawer = ({
@@ -21,7 +20,6 @@ export const SmartDrawer = ({
   onClose,
   embedded = false,
   forceNoDrawer = false,
-  investigationButton,
 }: SmartDrawerProps) => {
   const styles = useStyles2(getStyles);
 
@@ -45,7 +43,6 @@ export const SmartDrawer = ({
         <Button variant="primary" fill="text" size="md" icon={'arrow-left'} onClick={onClose}>
           Back to all traces
         </Button>
-        {embedded && investigationButton}
       </div>
       {children}
     </div>

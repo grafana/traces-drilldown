@@ -19,7 +19,7 @@
     "docker-compose*.yml",
     "devenv"
   ],
-  "ignoreRegExpList": ["import\\s*\\((.|[\r\n])*?\\)", "import\\s*.*\".*?\""],
+  "ignoreRegExpList": ["import\\s*\\((.|[\r\n])*?\\)", "import\\s*.*\".*?\"", "%[0-9A-Fa-f]{2}[a-zA-Z]*"],
   "words": [
     "grafana",
     "datasource",
@@ -66,7 +66,15 @@
     "behaviour",
     "Resizeble",
     "Dismissable",
+    "spansets",
+    "healthcheck",
+    "lezer",
+    "Lezer",
+    "quoteservice",
+    "cartservice",
     "automerge",
-    "nwsapi"
+    "nwsapi",
+    "adaptivetraces",
+    "tailsampling"
   ]
 }
