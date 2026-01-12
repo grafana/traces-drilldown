@@ -39,8 +39,6 @@ export const USER_EVENTS_ACTIONS = {
     stop_investigation: 'stop_investigation',
     open_trace: 'open_trace',
     open_in_explore_clicked: 'open_in_explore_clicked',
-    add_to_investigation_clicked: 'add_to_investigation_clicked',
-    add_to_investigation_trace_view_clicked: 'add_to_investigation_trace_view_clicked',
     span_list_columns_changed: 'span_list_columns_changed',
     toggle_bookmark_clicked: 'toggle_bookmark_clicked',
     primary_signal_changed: 'primary_signal_changed',
