@@ -7,9 +7,11 @@ import {
 
 import { DataSourceRef } from '@grafana/schema';
 import { EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC } from './shared';
+import { parseTraceQLQuery } from './lezer-traceql-parser';
 
 type TempoQuery = {
   filters?: TraceqlFilter[];
+  query?: string; // Raw TraceQL query
   datasource?: DataSourceRef;
 };
 
@@ -35,6 +37,13 @@ export const linkConfigs: Array<PluginExtensionAddedLinkConfig<PluginExtensionPa
     path: createAppUrl(),
     configure: (context?: PluginExtensionPanelContext) => contextToLink(context),
   } as PluginExtensionAddedLinkConfig,
+  {
+    targets: 'grafana-assistant-app/navigateToDrilldown/v1',
+    title: 'Grafana assistant link',
+    description: 'Create a link to the Traces Drilldown app',
+    path: createAppUrl(),
+    configure: (context?: PluginExtensionPanelContext) => contextToLink(context),
+  } as PluginExtensionAddedLinkConfig,
 ];
 
 export function contextToLink(context?: PluginExtensionPanelContext) {
@@ -47,19 +56,49 @@ export function contextToLink(context?: PluginExtensionPanelContext) {
     return undefined;
   }
 
-  const filters = tempoQuery.filters?.filter(
+  // Try to get filters from the structured filters array first
+  let filters = tempoQuery.filters?.filter(
     (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length
   );
-  if (!filters || filters.length === 0) {
-    return undefined;
-  }
 
   const params = new URLSearchParams();
   params.append(`var-${VAR_DATASOURCE}`, tempoQuery.datasource?.uid || '');
 
-  const timeRangeParams = toURLRange(context.timeRange);
-  params.append(`from`, String(timeRangeParams.from));
-  params.append(`to`, String(timeRangeParams.to));
+  // If no structured filters found, try to parse from raw query
+  if ((!filters || filters.length === 0) && tempoQuery.query) {
+    const query = tempoQuery.query;
+    const parseResult = parseTraceQLQuery(query);
+    if (parseResult && parseResult.filters.length > 0) {
+      filters = parseResult.filters.filter(
+        (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length
+      );
+      
+      // Log any parsing errors to console for debugging
+      if (parseResult.errors.length > 0) {
+        console.warn('TraceQL parsing warnings for query:', tempoQuery.query);
+        parseResult.errors.forEach(error => {
+          console.warn(`- ${error.type}: ${error.message}`);
+        });
+      }
+    }
+    // if we parse the query, we should also set the url param actionView to "traceList"
+    params.append('actionView', 'traceList');
+  }
+
+  // Add time range if available
+  if (context.timeRange) {
+    const timeRangeParams = toURLRange(context.timeRange);
+    params.append(`from`, String(timeRangeParams.from));
+    params.append(`to`, String(timeRangeParams.to));
+  }
+
+  // If no filters, return default URL with just datasource (and optional time range)
+  if (!filters || filters.length === 0) {
+    const url = createAppUrl(params);
+    return {
+      path: `${url}`,
+    };
+  }
 
   const statusFilter = filters.find((filter) => filter.tag === 'status');
   if (statusFilter) {
