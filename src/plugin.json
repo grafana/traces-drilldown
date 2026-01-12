@@ -56,7 +56,7 @@
     "grafanaDependency": ">=11.5.0",
     "plugins": [],
     "extensions": {
-      "exposedComponents": ["grafana-asserts-app/entity-assertions-widget/v1", "grafana-asserts-app/insights-timeline-widget/v1"]
+      "exposedComponents": ["grafana-asserts-app/entity-assertions-widget/v1", "grafana-asserts-app/insights-timeline-widget/v1", "grafana-adaptivetraces-app/span-latency/v1"]
     }
   },
   "extensions": {
@@ -82,6 +82,11 @@
         "targets": ["grafana-asserts-app/insights-timeline-widget/v1"],
         "title": "Insights Timeline Widget",
         "description": "Widget for displaying insights timeline in other apps"
+      },
+      {
+        "targets": ["grafana-adaptivetraces-app/span-latency/v1"],
+        "title": "Span Latency",
+        "description": "A component that renders a span latency view that can be embedded in other parts of Grafana."
       }
     ],
     "addedLinks": [
@@ -102,9 +107,6 @@
       }
     ],
     "extensionPoints": [
-      {
-        "id": "grafana-exploretraces-app/investigation/v1"
-      },
       {
         "id": "grafana-exploretraces-app/get-logs-drilldown-link/v1"
       }

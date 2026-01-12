@@ -73,6 +73,8 @@
     "quoteservice",
     "cartservice",
     "automerge",
-    "nwsapi"
+    "nwsapi",
+    "adaptivetraces",
+    "tailsampling"
   ]
 }

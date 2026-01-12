@@ -6,7 +6,7 @@ export type TempoMatcher = {
   operator: '=' | '!=' | '>' | '<' | '=~' | '!~';
 };
 
-export type ActionViewType = 'traceList' | 'breakdown' | 'structure' | 'comparison' | 'exceptions';
+export type ActionViewType = 'traceList' | 'breakdown' | 'structure' | 'comparison' | 'exceptions' | 'adaptiveTraces';
 export interface OpenInExploreTracesButtonProps {
   datasourceUid?: string;
   matchers: TempoMatcher[];
