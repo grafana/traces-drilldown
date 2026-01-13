@@ -866,6 +866,124 @@ describe('AttributesSidebar', () => {
     });
   });
 
+  describe('Favorites First in Scope Tabs', () => {
+    it('should show favorites first in Resource tab', () => {
+      mockUseFavoriteAttributes.mockReturnValue({
+        favoriteAttributes: ['resource.namespace', 'resource.cluster'], // These are favorites
+        toggleFavorite: jest.fn(),
+        reorderFavorites: jest.fn(),
+      });
+
+      const { container } = render(
+        <AttributesSidebar
+          options={sampleOptions}
+          selected={undefined}
+          onAttributeChange={mockOnAttributeChange}
+          model={mockModel}
+          showFavorites={true}
+        />
+      );
+
+      fireEvent.click(screen.getByText('Resource'));
+
+      const items = container.querySelectorAll('li[title]');
+      const labels = Array.from(items).map((item) => item.textContent);
+
+      // Favorites should be first (namespace, cluster), then non-favorites alphabetically (service.name)
+      expect(labels[0]).toContain('namespace');
+      expect(labels[1]).toContain('cluster');
+      expect(labels[2]).toContain('service.name');
+    });
+
+    it('should show favorites first in Span tab', () => {
+      mockUseFavoriteAttributes.mockReturnValue({
+        favoriteAttributes: ['span.db.system', 'span.http.method'], // These are favorites
+        toggleFavorite: jest.fn(),
+        reorderFavorites: jest.fn(),
+      });
+
+      const { container } = render(
+        <AttributesSidebar
+          options={sampleOptions}
+          selected={undefined}
+          onAttributeChange={mockOnAttributeChange}
+          model={mockModel}
+          showFavorites={true}
+        />
+      );
+
+      fireEvent.click(screen.getByText('Span'));
+
+      const items = container.querySelectorAll('li[title]');
+      const labels = Array.from(items).map((item) => item.textContent);
+
+      // Favorites should be first in custom order (db.system, http.method), then non-favorites (http.status_code)
+      expect(labels[0]).toContain('db.system');
+      expect(labels[1]).toContain('http.method');
+      expect(labels[2]).toContain('http.status_code');
+    });
+
+    it('should NOT show favorites first in All tab', () => {
+      mockUseFavoriteAttributes.mockReturnValue({
+        favoriteAttributes: ['span.db.system', 'resource.namespace'],
+        toggleFavorite: jest.fn(),
+        reorderFavorites: jest.fn(),
+      });
+
+      const { container } = render(
+        <AttributesSidebar
+          options={sampleOptions}
+          selected={undefined}
+          onAttributeChange={mockOnAttributeChange}
+          model={mockModel}
+          showFavorites={true}
+        />
+      );
+
+      fireEvent.click(screen.getByText('All'));
+
+      const items = container.querySelectorAll('li[title]');
+      const labels = Array.from(items).map((item) => item.textContent);
+
+      // Should be in alphabetical order, not favorites first
+      // Alphabetical: cluster, db.system, http.method, http.status_code, namespace, service.name
+      expect(labels[0]).toContain('cluster');
+      expect(labels[1]).toContain('db.system');
+      expect(labels[2]).toContain('http.method');
+    });
+
+    it('should apply search filter to favorites-first ordering in Resource tab', () => {
+      mockUseFavoriteAttributes.mockReturnValue({
+        favoriteAttributes: ['resource.namespace', 'resource.cluster'],
+        toggleFavorite: jest.fn(),
+        reorderFavorites: jest.fn(),
+      });
+
+      const { container } = render(
+        <AttributesSidebar
+          options={sampleOptions}
+          selected={undefined}
+          onAttributeChange={mockOnAttributeChange}
+          model={mockModel}
+          showFavorites={true}
+        />
+      );
+
+      fireEvent.click(screen.getByText('Resource'));
+
+      // Search for 'c'
+      const searchInput = screen.getByPlaceholderText('Search attributes...');
+      fireEvent.change(searchInput, { target: { value: 'c' } });
+
+      const items = container.querySelectorAll('li[title]');
+      const labels = Array.from(items).map((item) => item.textContent);
+
+      // Should show favorite 'cluster' first, then 'service.name' (contains 'c')
+      expect(labels[0]).toContain('cluster');
+      expect(labels[1]).toContain('service.name'); // service contains 'c'
+    });
+  });
+
   describe('Edge Cases', () => {
     it('should handle empty options array', () => {
       render(
