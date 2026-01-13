@@ -52,22 +52,24 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
   };
 }
 
-export const addToFilters = (variable: AdHocFiltersVariable, label: string, value: string) => {
-  // ensure we set the new filter with latest value
-  // and remove any existing filter for the same key
-  // and also keep span.db.system.name as it is a primary filter
-  const filtersWithoutNew = variable.state.filters.filter((f) => f.key === DATABASE_CALLS_KEY || f.key !== label);
-
+export const addToFilters = (variable: AdHocFiltersVariable, label: string, value: string, operator: '=' | '!=' = '=', append = false) => {
   // TODO: Replace it with new API introduced in https://github.com/grafana/scenes/issues/1103
   // At the moment AdHocFiltersVariable doesn't support pushing new history entry on change
   history.pushState(null, '');
 
+  let baseFilters;
+  if (append) {
+    baseFilters = variable.state.filters;
+  } else {
+    baseFilters = variable.state.filters.filter((f) => f.key === DATABASE_CALLS_KEY || f.key !== label);
+  }
+
   variable.setState({
     filters: [
-      ...filtersWithoutNew,
+      ...baseFilters,
       {
         key: label,
-        operator: '=',
+        operator: operator,
         value: value,
       },
     ],
