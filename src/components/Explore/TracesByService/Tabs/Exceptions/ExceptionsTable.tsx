@@ -75,29 +75,21 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick }: ExceptionsTableP
   const styles = useStyles2(getStyles);
   
   const handleTypeClick = (type: string) => {
-    if (onFilterClick) {
-      onFilterClick('event.exception.type', type);
-    }
+    onFilterClick?.('event.exception.type', type);
   };
 
   const handleMessageClick = (message: string) => {
-    if (onFilterClick) {
-      onFilterClick('event.exception.message', message);
-    }
+    onFilterClick?.('event.exception.message', message);
   };
 
   const handleIncludeClick = (message: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onFilterClick) {
-      onFilterClick('event.exception.message', message, '=', true);
-    }
+    onFilterClick?.('event.exception.message', message, '=', true);
   };
 
   const handleExcludeClick = (message: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onFilterClick) {
-      onFilterClick('event.exception.message', message, '!=', true);
-    }
+    onFilterClick?.('event.exception.message', message, '!=', true);
   };
 
   return (
@@ -107,7 +99,7 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick }: ExceptionsTableP
           <tr className={styles.headerRow}>
             <th className={styles.headerCell}>
               <span>Exception Details</span>
-              <Tooltip content="Exception type, message, service, and last seen timestamp. Use the +/- buttons to include or exclude exception types, or click on type or message to filter.">
+              <Tooltip content="Exception type, message, service, and last seen timestamp. Use the include/exclude buttons to include or exclude exception messages, or click on type or message to filter.">
                 <Icon name="info-circle" size="sm" className={styles.headerIcon} />
               </Tooltip>
             </th>
