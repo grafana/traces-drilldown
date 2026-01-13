@@ -954,7 +954,7 @@ describe('AttributesSidebar', () => {
 
     it('should apply search filter to favorites-first ordering in Resource tab', () => {
       mockUseFavoriteAttributes.mockReturnValue({
-        favoriteAttributes: ['resource.namespace', 'resource.cluster'],
+        favoriteAttributes: ['resource.cluster', 'resource.namespace'],
         toggleFavorite: jest.fn(),
         reorderFavorites: jest.fn(),
       });
@@ -978,9 +978,11 @@ describe('AttributesSidebar', () => {
       const items = container.querySelectorAll('li[title]');
       const labels = Array.from(items).map((item) => item.textContent);
 
-      // Should show favorite 'cluster' first, then 'service.name' (contains 'c')
+      // Should show favorites first (both contain 'c'), then non-favorites
+      // 'cluster' contains 'c', 'namespace' contains 'c' at the end, both are favorites
       expect(labels[0]).toContain('cluster');
-      expect(labels[1]).toContain('service.name'); // service contains 'c'
+      expect(labels[1]).toContain('namespace');
+      expect(labels[2]).toContain('service.name'); // non-favorite that contains 'c'
     });
   });
 
