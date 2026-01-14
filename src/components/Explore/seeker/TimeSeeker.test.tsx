@@ -20,9 +20,7 @@ jest.mock('./useTimeSeekerChartConfig', () => ({
 
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
-  UPlotChart: ({ width, height }: any) => (
-    <div data-testid="uplot-main-div" data-width={width} data-height={height} />
-  ),
+  UPlotChart: ({ width, height }: any) => <div data-testid="uplot-main-div" data-width={width} data-height={height} />,
 }));
 
 jest.mock('@grafana/runtime', () => ({
@@ -84,20 +82,14 @@ describe('TimeSeeker', () => {
   it('passes metric prop correctly', () => {
     const { rerender } = render(<TimeSeeker {...defaultProps} metric="rate" />);
     expect(screen.getByTestId('uplot-main-div')).toBeInTheDocument();
-    expect(mockedUseTimeSeekerChartConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ metric: 'rate' })
-    );
+    expect(mockedUseTimeSeekerChartConfig).toHaveBeenCalledWith(expect.objectContaining({ metric: 'rate' }));
 
     rerender(<TimeSeeker {...defaultProps} metric="errors" />);
     expect(screen.getByTestId('uplot-main-div')).toBeInTheDocument();
-    expect(mockedUseTimeSeekerChartConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ metric: 'errors' })
-    );
+    expect(mockedUseTimeSeekerChartConfig).toHaveBeenCalledWith(expect.objectContaining({ metric: 'errors' }));
 
     rerender(<TimeSeeker {...defaultProps} metric="duration" />);
     expect(screen.getByTestId('uplot-main-div')).toBeInTheDocument();
-    expect(mockedUseTimeSeekerChartConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ metric: 'duration' })
-    );
+    expect(mockedUseTimeSeekerChartConfig).toHaveBeenCalledWith(expect.objectContaining({ metric: 'duration' }));
   });
 });
