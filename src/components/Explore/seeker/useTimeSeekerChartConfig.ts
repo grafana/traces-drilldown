@@ -2,8 +2,14 @@ import React, { useMemo, RefObject, Dispatch, SetStateAction } from 'react';
 import { AbsoluteTimeRange, GrafanaTheme2 } from '@grafana/data';
 import { AxisPlacement, DrawStyle, UPlotConfigBuilder } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
+import type uPlot from 'uplot';
 
 type InteractionMode = 'idle' | 'dragging' | 'panning' | 'programmatic';
+
+type UPlotWithCleanupHandlers = uPlot & {
+  _cleanupWheelZoom?: () => void;
+  _cleanupBottomAxisPan?: () => void;
+};
 
 interface UseTimeSeekerChartConfigParams {
   theme: GrafanaTheme2;
@@ -142,7 +148,9 @@ export function useTimeSeekerChartConfig({
       if (over && wheelListenerRef.current) {
         over.addEventListener('wheel', wheelListenerRef.current, { passive: false });
 
-        (u as any)._cleanupWheelZoom = () => {
+        const uPlotWithCleanup: UPlotWithCleanupHandlers = u;
+
+        uPlotWithCleanup._cleanupWheelZoom = () => {
           over.removeEventListener('wheel', wheelListenerRef.current!);
         };
       }
@@ -166,18 +174,22 @@ export function useTimeSeekerChartConfig({
         bottomAxis.style.cursor = 'grab';
         const listener = (e: MouseEvent) => handlePanStart(e);
         bottomAxis.addEventListener('mousedown', listener);
-        (u as any)._cleanupBottomAxisPan = () => {
+        const uPlotWithCleanup: UPlotWithCleanupHandlers = u;
+
+        uPlotWithCleanup._cleanupBottomAxisPan = () => {
           bottomAxis.removeEventListener('mousedown', listener);
         };
       }
     });
 
     b.addHook('destroy', (u: uPlot) => {
-      if ((u as any)._cleanupBottomAxisPan) {
-        (u as any)._cleanupBottomAxisPan();
+      const uPlotWithCleanup: UPlotWithCleanupHandlers = u;
+
+      if (uPlotWithCleanup._cleanupBottomAxisPan) {
+        uPlotWithCleanup._cleanupBottomAxisPan();
       }
-      if ((u as any)._cleanupWheelZoom) {
-        (u as any)._cleanupWheelZoom();
+      if (uPlotWithCleanup._cleanupWheelZoom) {
+        uPlotWithCleanup._cleanupWheelZoom();
       }
     });
 
