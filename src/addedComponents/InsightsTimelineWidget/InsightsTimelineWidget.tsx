@@ -3,6 +3,9 @@ import React, { memo, ReactElement } from 'react';
 import { usePluginComponent } from '@grafana/runtime';
 import { InsightsTimelineWidgetProps } from '@grafana/plugin-types/grafana-asserts-app/';
 import { MetricFunction } from 'utils/shared';
+import { useStyles2 } from '@grafana/ui';
+import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 
 export type AssertionSeverity = 'warning' | 'critical' | 'info';
 
@@ -25,6 +28,8 @@ export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({
     'grafana-asserts-app/insights-timeline-widget/v1'
   );
 
+  const styles = useStyles2(getStyles);
+
   let filterBySeverity: AssertionSeverity[] = [];
   if (metric === 'errors') {
     filterBySeverity = ['critical', 'warning'];
@@ -42,12 +47,20 @@ export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({
   }
 
   return (
-    <InsightsTimelineWidgetExternal
-      serviceName={serviceName}
-      start={startTime}
-      end={endTime}
-      filterBySeverity={filterBySeverity}
-      filterBySummaryKeywords={filterBySummaryKeywords}
-    />
+    <div className={styles.container}>
+      <InsightsTimelineWidgetExternal
+        serviceName={serviceName}
+        start={startTime}
+        end={endTime}
+        filterBySeverity={filterBySeverity}
+        filterBySummaryKeywords={filterBySummaryKeywords}
+      />
+    </div>
   );
+});
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  container: css({
+    padding: theme.spacing(1, 0),
+  }),
 });

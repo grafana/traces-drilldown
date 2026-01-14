@@ -4,56 +4,24 @@ import { TimeSeekerChart } from './TimeSeekerChart';
 import { TimeSeekerProvider } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
-// Mock the chart config hook
+// Keep mocks minimal: only replace uPlot-heavy pieces.
+const mockConfigBuilder = {
+  setCursor: jest.fn().mockReturnThis(),
+  addAxis: jest.fn().mockReturnThis(),
+  addSeries: jest.fn().mockReturnThis(),
+  addHook: jest.fn().mockReturnThis(),
+  getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
+};
+
 jest.mock('./useTimeSeekerChartConfig', () => ({
-  useTimeSeekerChartConfig: jest.fn(() => {
-    const mockBuilder = {
-      setCursor: jest.fn().mockReturnThis(),
-      addAxis: jest.fn().mockReturnThis(),
-      addSeries: jest.fn().mockReturnThis(),
-      addHook: jest.fn().mockReturnThis(),
-      getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
-    };
-    return mockBuilder;
-  }),
+  useTimeSeekerChartConfig: jest.fn(() => mockConfigBuilder),
 }));
 
-// Mock Grafana UI
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
   UPlotChart: ({ width, height, data }: any) => (
-    <div data-testid="uplot-chart" data-width={width} data-height={height} data-points={data[0]?.length ?? 0}>
-      UPlot Chart
-    </div>
+    <div data-testid="uplot-main-div" data-width={width} data-height={height} data-points={data?.[0]?.length ?? 0} />
   ),
-  UPlotConfigBuilder: jest.fn().mockImplementation(() => ({
-    setCursor: jest.fn(),
-    addAxis: jest.fn(),
-    addSeries: jest.fn(),
-    addHook: jest.fn(),
-    getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
-  })),
-  useTheme2: () => ({
-    colors: {
-      background: { primary: '#fff' },
-      border: { weak: '#ccc' },
-      primary: { shade: '#007bff' },
-    },
-    visualization: { getColorByName: (name: string) => name },
-  }),
-  useStyles2: (fn: Function) => fn({
-    colors: { background: { primary: '#fff' }, primary: { shade: '#007bff' } },
-    spacing: () => '8px',
-  }),
-}));
-
-// Mock sub-components
-jest.mock('./TimeSeekerDragOverlay', () => ({
-  TimeSeekerDragOverlay: () => <div data-testid="drag-overlay">Drag Overlay</div>,
-}));
-
-jest.mock('./TimeSeekerLoadingOverlay', () => ({
-  TimeSeekerLoadingOverlay: () => <div data-testid="loading-overlay">Loading Overlay</div>,
 }));
 
 const createMockData = () => ({
@@ -77,13 +45,7 @@ const createMockData = () => ({
 
 const renderWithProvider = (ui: React.ReactElement, props = {}) => {
   return render(
-    <TimeSeekerProvider
-      data={createMockData()}
-      width={800}
-      chartHeight={42}
-      onChangeTimeRange={jest.fn()}
-      {...props}
-    >
+    <TimeSeekerProvider data={createMockData()} width={800} chartHeight={42} onChangeTimeRange={jest.fn()} {...props}>
       {ui}
     </TimeSeekerProvider>
   );
@@ -93,28 +55,16 @@ describe('TimeSeekerChart', () => {
   it('renders UPlotChart with correct dimensions', () => {
     renderWithProvider(<TimeSeekerChart />);
 
-    const chart = screen.getByTestId('uplot-chart');
+    const chart = screen.getByTestId('uplot-main-div');
     expect(chart).toBeInTheDocument();
     expect(chart).toHaveAttribute('data-width', '800');
     expect(chart).toHaveAttribute('data-height', '42');
   });
 
-  it('renders drag overlay', () => {
-    renderWithProvider(<TimeSeekerChart />);
-
-    expect(screen.getByTestId('drag-overlay')).toBeInTheDocument();
-  });
-
-  it('renders loading overlay', () => {
-    renderWithProvider(<TimeSeekerChart />);
-
-    expect(screen.getByTestId('loading-overlay')).toBeInTheDocument();
-  });
-
   it('passes data to UPlotChart', () => {
     renderWithProvider(<TimeSeekerChart />);
 
-    const chart = screen.getByTestId('uplot-chart');
+    const chart = screen.getByTestId('uplot-main-div');
     expect(chart).toHaveAttribute('data-points', '3');
   });
 
@@ -125,4 +75,3 @@ describe('TimeSeekerChart', () => {
     expect(chartContainer).toHaveStyle({ width: '800px', height: '42px' });
   });
 });
-

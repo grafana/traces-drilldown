@@ -105,6 +105,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   content: css({
     flex: 1,
     minWidth: 0,
+    height: 60,
   }),
   text: css({
     height: '100%',

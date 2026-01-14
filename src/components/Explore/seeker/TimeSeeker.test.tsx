@@ -1,74 +1,33 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { TimeSeeker } from './TimeSeeker';
+import { useTimeSeekerChartConfig } from './useTimeSeekerChartConfig';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
-// Mock the chart config hook
+// We mock only the heavy pieces that rely on uPlot/DOM measurement.
+// Everything else runs real code to keep the test meaningful.
+const mockConfigBuilder = {
+  setCursor: jest.fn().mockReturnThis(),
+  addAxis: jest.fn().mockReturnThis(),
+  addSeries: jest.fn().mockReturnThis(),
+  addHook: jest.fn().mockReturnThis(),
+  getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
+};
+
 jest.mock('./useTimeSeekerChartConfig', () => ({
-  useTimeSeekerChartConfig: jest.fn(() => {
-    const mockBuilder = {
-      setCursor: jest.fn().mockReturnThis(),
-      addAxis: jest.fn().mockReturnThis(),
-      addSeries: jest.fn().mockReturnThis(),
-      addHook: jest.fn().mockReturnThis(),
-      getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
-    };
-    return mockBuilder;
-  }),
+  useTimeSeekerChartConfig: jest.fn(() => mockConfigBuilder),
 }));
 
-// Mock Grafana UI components
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
-  UPlotChart: () => <div data-testid="uplot-chart">UPlot Chart</div>,
-  UPlotConfigBuilder: jest.fn().mockImplementation(() => ({
-    setCursor: jest.fn().mockReturnThis(),
-    addAxis: jest.fn().mockReturnThis(),
-    addSeries: jest.fn().mockReturnThis(),
-    addHook: jest.fn().mockReturnThis(),
-    getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
-  })),
-  useTheme2: () => ({
-    colors: {
-      background: { primary: '#fff' },
-      border: { weak: '#ccc' },
-      text: { secondary: '#666' },
-      primary: { shade: '#007bff' },
-      warning: { main: '#ff9800' },
-    },
-    spacing: (n: number) => `${n * 8}px`,
-    typography: {
-      fontFamily: 'Roboto, sans-serif',
-    },
-    visualization: {
-      getColorByName: (name: string) => name,
-    },
-  }),
-  useStyles2: (fn: Function) =>
-    fn({
-      colors: { background: { primary: '#fff' }, border: { weak: '#ccc' }, primary: { shade: '#007bff' } },
-      spacing: (n: number) => `${n * 8}px`,
-    }),
-  IconButton: ({ onClick, tooltip, name }: any) => (
-    <button onClick={onClick} aria-label={tooltip} data-icon={name}>
-      {name}
-    </button>
+  UPlotChart: ({ width, height }: any) => (
+    <div data-testid="uplot-main-div" data-width={width} data-height={height} />
   ),
-  Popover: ({ content, show }: any) => (show ? <div data-testid="popover">{content}</div> : null),
-  TimeRangeInput: ({ value, onChange }: any) => (
-    <div data-testid="time-range-input">
-      <button onClick={() => onChange && onChange(value)}>Time Range</button>
-    </div>
-  ),
-  Icon: ({ name }: any) => <span data-testid={`icon-${name}`}>{name}</span>,
-  Tooltip: ({ children }: any) => <div>{children}</div>,
-  AxisPlacement: { Bottom: 'bottom', Left: 'left' },
-  DrawStyle: { Line: 'line', Bars: 'bars' },
 }));
 
-// Mock PanelDataErrorView
 jest.mock('@grafana/runtime', () => ({
-  PanelDataErrorView: () => <div data-testid="error-view">Error View</div>,
+  ...jest.requireActual('@grafana/runtime'),
+  PanelDataErrorView: () => <div data-testid="error-view">Error</div>,
 }));
 
 const createMockData = (hasSeries = true) => ({
@@ -93,6 +52,7 @@ const createMockData = (hasSeries = true) => ({
 });
 
 describe('TimeSeeker', () => {
+  const mockedUseTimeSeekerChartConfig = useTimeSeekerChartConfig as jest.Mock;
   const defaultProps = {
     data: createMockData(),
     width: 800,
@@ -110,7 +70,7 @@ describe('TimeSeeker', () => {
 
   it('renders chart when series data is available', () => {
     render(<TimeSeeker {...defaultProps} />);
-    expect(screen.getByTestId('uplot-chart')).toBeInTheDocument();
+    expect(screen.getByTestId('uplot-main-div')).toBeInTheDocument();
   });
 
   it('renders control buttons', () => {
@@ -123,12 +83,21 @@ describe('TimeSeeker', () => {
 
   it('passes metric prop correctly', () => {
     const { rerender } = render(<TimeSeeker {...defaultProps} metric="rate" />);
-    expect(screen.getByTestId('uplot-chart')).toBeInTheDocument();
+    expect(screen.getByTestId('uplot-main-div')).toBeInTheDocument();
+    expect(mockedUseTimeSeekerChartConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ metric: 'rate' })
+    );
 
     rerender(<TimeSeeker {...defaultProps} metric="errors" />);
-    expect(screen.getByTestId('uplot-chart')).toBeInTheDocument();
+    expect(screen.getByTestId('uplot-main-div')).toBeInTheDocument();
+    expect(mockedUseTimeSeekerChartConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ metric: 'errors' })
+    );
 
     rerender(<TimeSeeker {...defaultProps} metric="duration" />);
-    expect(screen.getByTestId('uplot-chart')).toBeInTheDocument();
+    expect(screen.getByTestId('uplot-main-div')).toBeInTheDocument();
+    expect(mockedUseTimeSeekerChartConfig).toHaveBeenCalledWith(
+      expect.objectContaining({ metric: 'duration' })
+    );
   });
 });

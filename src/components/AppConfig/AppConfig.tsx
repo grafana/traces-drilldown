@@ -161,7 +161,7 @@ export const updatePlugin = async (pluginId: string, data: Partial<PluginMeta>) 
   const response = getBackendSrv().fetch({
     url: `/api/plugins/${pluginId}/settings`,
     method: 'POST',
-    data, // data: { jsonData: { ... }, secureJsonData: { ... } }
+    data,
   }) as unknown as Observable<FetchResponse>;
 
   const dataResponse = await lastValueFrom(response);

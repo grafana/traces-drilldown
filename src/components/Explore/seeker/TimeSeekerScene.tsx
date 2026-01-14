@@ -435,6 +435,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css({
     width: '100%',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
   }),
@@ -443,7 +444,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     alignItems: 'center',
     justifyContent: 'center',
     gap: theme.spacing(1),
-    minHeight: 42,
+    height: '100%',
     padding: theme.spacing(1),
     color: theme.colors.text.secondary,
   }),

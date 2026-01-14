@@ -697,13 +697,5 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean, embeddedMini?: bool
       display: 'flex',
       gap: theme.spacing(1),
     }),
-    filtersColumn: css({
-      label: 'filtersColumn',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: theme.spacing(1),
-      flex: 1,
-      minWidth: 0,
-    }),
   };
 }
