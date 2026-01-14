@@ -443,6 +443,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     alignItems: 'center',
     justifyContent: 'center',
     gap: theme.spacing(1),
+    minHeight: 42,
     padding: theme.spacing(1),
     color: theme.colors.text.secondary,
   }),

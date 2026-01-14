@@ -109,7 +109,7 @@ export const getDragOverlayStyles = (theme: GrafanaTheme2) => ({
   resizeHandle: css({
     position: 'absolute',
     top: 0,
-    width: '8px',
+    width: '4px',
     height: '100%',
     background: 'linear-gradient(to right, rgba(0, 123, 255, 0.4), rgba(0, 123, 255, 0.2))',
     border: '1px solid rgba(0, 123, 255, 0.8)',

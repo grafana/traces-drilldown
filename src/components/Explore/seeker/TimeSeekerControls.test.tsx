@@ -54,10 +54,11 @@ jest.mock('@grafana/ui', () => ({
     },
     visualization: { getColorByName: (name: string) => name },
   }),
-  useStyles2: (fn: Function) => fn({
-    colors: { background: { primary: '#fff' }, border: { weak: '#ccc' } },
-    spacing: () => '8px',
-  }),
+  useStyles2: (fn: Function) =>
+    fn({
+      colors: { background: { primary: '#fff' }, border: { weak: '#ccc' } },
+      spacing: () => '8px',
+    }),
 }));
 
 const createMockData = () => ({
@@ -101,8 +102,8 @@ describe('TimeSeekerControls', () => {
     expect(screen.getByRole('button', { name: 'Pan right' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Zoom in context' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Zoom out context' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Reset context window' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Set context window' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Focus selection' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Set range' })).toBeInTheDocument();
   });
 
   it('calls panContextWindow when pan left is clicked', () => {
@@ -133,7 +134,7 @@ describe('TimeSeekerControls', () => {
   it('calls resetContextWindow when reset is clicked', () => {
     renderWithProvider(<TimeSeekerControls />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Reset context window' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Focus selection' }));
   });
 
   it('renders time range input component', () => {
@@ -142,4 +143,3 @@ describe('TimeSeekerControls', () => {
     expect(screen.getByTestId('time-range-input')).toBeInTheDocument();
   });
 });
-

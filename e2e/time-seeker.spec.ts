@@ -28,8 +28,8 @@ test.describe('time seeker', () => {
     await expect(page.getByRole('button', { name: 'Pan right' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Zoom in context' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Zoom out context' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Reset context window' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Set context window', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Focus selection' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Set range', exact: true })).toBeVisible();
   });
 
   test('context window selector opens on calendar button click', async ({ page }) => {
@@ -37,7 +37,7 @@ test.describe('time seeker', () => {
     await expect(page.getByText('Loading time seeker…')).toBeHidden({ timeout: 30000 });
 
     // Click the calendar button to open the context window selector
-    await page.getByRole('button', { name: 'Set context window', exact: true }).click();
+    await page.getByRole('button', { name: 'Set range', exact: true }).click();
 
     // The context window selector should show preset options
     await expect(page.getByRole('button', { name: 'Last 12 hours' })).toBeVisible();
@@ -60,7 +60,7 @@ test.describe('time seeker', () => {
     await expect(page.getByText('Loading time seeker…')).toBeHidden({ timeout: 30000 });
 
     // Open the context window selector
-    await page.getByRole('button', { name: 'Set context window', exact: true }).click();
+    await page.getByRole('button', { name: 'Set range', exact: true }).click();
     await expect(page.getByRole('button', { name: 'Last 12 hours' })).toBeVisible();
 
     // Click outside to close it
@@ -118,10 +118,10 @@ test.describe('time seeker', () => {
     await page.getByRole('button', { name: 'Zoom out context' }).click();
 
     // Then reset
-    await page.getByRole('button', { name: 'Reset context window' }).click();
+    await page.getByRole('button', { name: 'Focus selection' }).click();
 
     // Controls should still be visible after reset
-    await expect(page.getByRole('button', { name: 'Reset context window' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Focus selection' })).toBeVisible();
   });
 
   test('selecting a preset duration updates the context window', async ({ page }) => {
@@ -129,7 +129,7 @@ test.describe('time seeker', () => {
     await expect(page.getByText('Loading time seeker…')).toBeHidden({ timeout: 30000 });
 
     // Open the context window selector
-    await page.getByRole('button', { name: 'Set context window', exact: true }).click();
+    await page.getByRole('button', { name: 'Set range', exact: true }).click();
 
     // Click "Last 24 hours" preset
     await page.getByRole('button', { name: 'Last 24 hours' }).click();
@@ -138,7 +138,7 @@ test.describe('time seeker', () => {
     await expect(page.getByRole('button', { name: 'Last 12 hours' })).toBeHidden();
 
     // The seeker controls should still be visible
-    await expect(page.getByRole('button', { name: 'Set context window', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Set range', exact: true })).toBeVisible();
   });
 
   test('seeker chart canvas is rendered', async ({ page }) => {

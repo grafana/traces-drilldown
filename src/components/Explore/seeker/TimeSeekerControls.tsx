@@ -127,19 +127,13 @@ export const TimeSeekerControls: React.FC = () => {
           variant="secondary"
         />
         <IconButton
-          tooltip="Reset context window"
+          tooltip="Focus selection"
           name="crosshair"
           onClick={resetContextWindow}
           size="sm"
           variant="secondary"
         />
-        <IconButton
-          name="calendar-alt"
-          tooltip="Set context window"
-          onClick={handleButtonClick}
-          size="sm"
-          variant="secondary"
-        />
+        <IconButton name="calendar-alt" tooltip="Set range" onClick={handleButtonClick} size="sm" variant="secondary" />
         <div ref={timeRangeInputContainerRef} className={styles.timeRangeInputContainer}>
           <TimeRangeInput
             value={timeRangeValue}

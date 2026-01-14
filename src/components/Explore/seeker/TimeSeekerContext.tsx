@@ -28,9 +28,9 @@ const PAN_FACTOR = 0.25;
 /** Minimum width in pixels for selection handles */
 const MIN_SELECTION_WIDTH_PX = 10;
 /** Width in pixels for drag handles */
-const HANDLE_WIDTH_PX = 6;
-/** Height ratio for drag handles (60% of chart height) */
-const HANDLE_HEIGHT_RATIO = 0.6;
+const HANDLE_WIDTH_PX = 4;
+/** Height ratio for drag handles (50% of chart height) */
+const HANDLE_HEIGHT_RATIO = 0.5;
 
 // ============================================================================
 // Types
@@ -257,8 +257,8 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       return;
     }
 
-    const left = u.valToPos(timelineRange.from, 'x') + u.bbox.left;
-    const right = u.valToPos(timelineRange.to, 'x') + u.bbox.left;
+    const left = u.valToPos(timelineRange.from, 'x') + u.bbox.left - HANDLE_WIDTH_PX + 1;
+    const right = u.valToPos(timelineRange.to, 'x') + u.bbox.left - HANDLE_WIDTH_PX;
     const handleHeight = u.bbox.height * HANDLE_HEIGHT_RATIO;
     const topOffset = (u.bbox.height - handleHeight) / 2;
 
@@ -276,7 +276,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       leftHandleStyle: {
         position: 'absolute',
         top: topOffset,
-        left: left - HANDLE_WIDTH_PX,
+        left: left,
         width: HANDLE_WIDTH_PX,
         height: handleHeight,
         cursor: 'ew-resize',
