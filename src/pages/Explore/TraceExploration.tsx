@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import React, { useEffect } from 'react';
 
-import { GrafanaTheme2, LoadingState, PluginExtensionLink, AdHocVariableFilter } from '@grafana/data';
+import { GrafanaTheme2, AdHocVariableFilter } from '@grafana/data';
 import {
   CustomVariable,
   DataSourceVariable,
@@ -12,7 +12,6 @@ import {
   SceneObjectState,
   SceneObjectUrlSyncConfig,
   SceneObjectUrlValues,
-  SceneQueryRunner,
   SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
@@ -39,7 +38,6 @@ import {
   getTraceExplorationScene,
   getFiltersVariable,
   getPrimarySignalVariable,
-  getDataSource,
   getUrlForExploration,
 } from '../../utils/utils';
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
@@ -48,8 +46,6 @@ import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'ut
 import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { primarySignalOptions } from './primary-signals';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
-import { AddToInvestigationButton } from 'components/Explore/actions/AddToInvestigationButton';
-import { ADD_TO_INVESTIGATION_MENU_TEXT, getInvestigationLink } from 'components/Explore/panels/PanelMenu';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { SharedExplorationState } from 'exposedComponents/types';
 import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWidget/EntityAssertionsWidget';
@@ -72,9 +68,6 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   spanId?: string;
 
   issueDetector?: TraceQLIssueDetector;
-
-  investigationLink?: PluginExtensionLink;
-  addToInvestigationButton?: AddToInvestigationButton;
 
   // Plugin configuration
   queryRangeHours?: number;
@@ -115,14 +108,9 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
     this._subs.add(
       this.subscribeToEvent(EventTraceOpened, (event) => {
-        this.setupInvestigationButton(event.payload.traceId);
         this.setState({ traceId: event.payload.traceId, spanId: event.payload.spanId });
       })
     );
-
-    if (this.state.traceId) {
-      this.setupInvestigationButton(this.state.traceId);
-    }
 
     const datasourceVar = sceneGraph.lookupVariable(VAR_DATASOURCE, this) as DataSourceVariable;
     datasourceVar.subscribeToState((newState) => {
@@ -183,71 +171,6 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     this.setState({ traceId: undefined, spanId: undefined });
   }
 
-  private setupInvestigationButton(traceId: string) {
-    const traceExploration = getTraceExplorationScene(this);
-    const dsUid = getDataSource(traceExploration);
-
-    const queryRunner = new SceneQueryRunner({
-      datasource: { uid: dsUid },
-      queries: [
-        {
-          refId: 'A',
-          query: traceId,
-          queryType: 'traceql',
-        },
-      ],
-    });
-
-    const addToInvestigationButton = new AddToInvestigationButton({
-      query: traceId,
-      type: 'trace',
-      dsUid,
-      $data: queryRunner,
-    });
-
-    addToInvestigationButton.activate();
-    this.setState({ addToInvestigationButton });
-    this._subs.add(
-      addToInvestigationButton.subscribeToState(() => {
-        this.updateInvestigationLink();
-      })
-    );
-
-    queryRunner.activate();
-
-    this._subs.add(
-      queryRunner.subscribeToState((state) => {
-        if (state.data?.state === LoadingState.Done && state.data?.series?.length > 0) {
-          const serviceNameField = state.data.series[0]?.fields?.find((f) => f.name === 'serviceName');
-
-          if (serviceNameField && serviceNameField.values[0]) {
-            addToInvestigationButton.setState({
-              ...addToInvestigationButton.state,
-              labelValue: `${serviceNameField.values[0]}`,
-            });
-          }
-        }
-      })
-    );
-
-    addToInvestigationButton.setState({
-      ...addToInvestigationButton.state,
-      labelValue: traceId,
-    });
-  }
-
-  private async updateInvestigationLink() {
-    const { addToInvestigationButton } = this.state;
-    if (!addToInvestigationButton) {
-      return;
-    }
-
-    const link = await getInvestigationLink(addToInvestigationButton);
-    if (link) {
-      this.setState({ investigationLink: link });
-    }
-  }
-
   static Component = ({ model }: SceneComponentProps<TraceExploration>) => {
     const { body } = model.useState();
     const styles = useStyles2(getStyles);
@@ -259,33 +182,11 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const {
-      controls,
-      topScene,
-      drawerScene,
-      traceId,
-      issueDetector,
-      investigationLink,
-      addToInvestigationButton,
-      embedded,
-    } = traceExploration.useState();
+    const { controls, topScene, drawerScene, traceId, issueDetector, embedded } = traceExploration.useState();
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
     const styles = useStyles2(getStyles);
-
-    const addToInvestigationClicked = (e: React.MouseEvent) => {
-      if (investigationLink?.onClick) {
-        investigationLink.onClick(e);
-      }
-
-      reportAppInteraction(
-        USER_EVENTS_PAGES.analyse_traces,
-        USER_EVENTS_ACTIONS.analyse_traces.add_to_investigation_trace_view_clicked
-      );
-
-      setTimeout(() => traceExploration.closeDrawer(), 100);
-    };
 
     const state = traceExploration.useState();
     const timeRangeState = state.$timeRange?.useState();
@@ -302,14 +203,6 @@ export class TraceExplorationScene extends SceneObjectBase {
             title={`View trace ${traceId}`}
             embedded={embedded}
             forceNoDrawer={embedded}
-            investigationButton={
-              addToInvestigationButton &&
-              investigationLink && (
-                <Button variant="secondary" size="sm" icon="plus-square" onClick={addToInvestigationClicked}>
-                  {ADD_TO_INVESTIGATION_MENU_TEXT}
-                </Button>
-              )
-            }
           >
             {drawerScene && <drawerScene.Component model={drawerScene} />}
           </SmartDrawer>
