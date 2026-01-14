@@ -21,44 +21,11 @@ jest.mock('./useTimeSeekerChartConfig', () => ({
 // Mock Grafana UI components
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
-  IconButton: ({ onClick, tooltip, name }: any) => (
-    <button onClick={onClick} aria-label={tooltip} data-icon={name}>
-      {name}
-    </button>
-  ),
-  Popover: ({ content, show }: any) => (show ? <div data-testid="popover">{content}</div> : null),
   TimeRangeInput: ({ value, onChange }: any) => (
     <div data-testid="time-range-input">
       <button>Time Range</button>
     </div>
   ),
-  Icon: ({ name }: any) => <span data-testid={`icon-${name}`}>{name}</span>,
-  Tooltip: ({ children }: any) => <div>{children}</div>,
-  UPlotConfigBuilder: jest.fn().mockImplementation(() => ({
-    setCursor: jest.fn(),
-    addAxis: jest.fn(),
-    addSeries: jest.fn(),
-    addHook: jest.fn(),
-    getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
-  })),
-  useTheme2: () => ({
-    colors: {
-      background: { primary: '#fff' },
-      border: { weak: '#ccc' },
-      primary: { shade: '#007bff' },
-      warning: { main: '#ff9800' },
-    },
-    spacing: (n: number) => `${n * 8}px`,
-    typography: {
-      fontFamily: 'Roboto, sans-serif',
-    },
-    visualization: { getColorByName: (name: string) => name },
-  }),
-  useStyles2: (fn: Function) =>
-    fn({
-      colors: { background: { primary: '#fff' }, border: { weak: '#ccc' } },
-      spacing: () => '8px',
-    }),
 }));
 
 const createMockData = () => ({

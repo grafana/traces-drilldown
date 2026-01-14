@@ -1,13 +1,13 @@
 import React from 'react';
-import { cx } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { useStyles2, useTheme2 } from '@grafana/ui';
 import { PanelDataErrorView } from '@grafana/runtime';
 
 import { TimeSeekerProps } from './types';
-import { getTimeSeekerStyles } from './styles';
 import { TimeSeekerProvider } from './TimeSeekerContext';
 import { TimeSeekerControls } from './TimeSeekerControls';
 import { TimeSeekerChart } from './TimeSeekerChart';
+import { GrafanaTheme2 } from '@grafana/data';
 
 const CHART_HEIGHT = 42;
 
@@ -51,5 +51,17 @@ export const TimeSeeker: React.FC<TimeSeekerProps> = ({
   );
 };
 
-// Re-export types for convenience
-export type { TimeSeekerProps } from './types';
+const getTimeSeekerStyles = (theme: GrafanaTheme2) => ({
+  wrapper: css({
+    fontFamily: 'Open Sans',
+    position: 'relative',
+    overflow: 'hidden',
+    paddingTop: theme.spacing(2),
+    height: theme.spacing(8),
+  }),
+  chartContainer: css({
+    position: 'relative',
+    width: '100%',
+    height: 42,
+  }),
+});

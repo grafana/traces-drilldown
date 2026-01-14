@@ -1,7 +1,8 @@
 import React from 'react';
 import { useStyles2, useTheme2 } from '@grafana/ui';
-import { getLoadingOverlayStyles } from './styles';
 import { useTimeSeeker } from './TimeSeekerContext';
+import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 
 export const TimeSeekerLoadingOverlay: React.FC = () => {
   const theme = useTheme2();
@@ -40,3 +41,30 @@ export const TimeSeekerLoadingOverlay: React.FC = () => {
     </>
   );
 };
+
+const getLoadingOverlayStyles = (theme: GrafanaTheme2) => ({
+  loadingOverlay: css({
+    position: 'absolute',
+    top: 0,
+    height: '29px',
+    background: `repeating-linear-gradient(
+      -45deg,
+      ${theme.colors.primary.shade},
+      ${theme.colors.primary.shade} 4px,
+      transparent 4px,
+      transparent 8px
+    )`,
+    opacity: 0.6,
+    pointerEvents: 'none',
+    zIndex: 5,
+    animation: 'loading-pulse 1.5s ease-in-out infinite',
+    '@keyframes loading-pulse': {
+      '0%, 100%': {
+        opacity: 0.4,
+      },
+      '50%': {
+        opacity: 0.7,
+      },
+    },
+  }),
+});

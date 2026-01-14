@@ -1,7 +1,8 @@
 import React from 'react';
 import { useStyles2, useTheme2 } from '@grafana/ui';
-import { getDragOverlayStyles } from './styles';
 import { useTimeSeeker } from './TimeSeekerContext';
+import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 
 export const TimeSeekerDragOverlay: React.FC = () => {
   const theme = useTheme2();
@@ -39,3 +40,21 @@ export const TimeSeekerDragOverlay: React.FC = () => {
     </>
   );
 };
+
+const getDragOverlayStyles = (theme: GrafanaTheme2) => ({
+  resizeHandle: css({
+    position: 'absolute',
+    top: 0,
+    width: '4px',
+    height: '100%',
+    background: 'linear-gradient(to right, rgba(0, 123, 255, 0.4), rgba(0, 123, 255, 0.2))',
+    border: '1px solid rgba(0, 123, 255, 0.8)',
+    cursor: 'ew-resize',
+    zIndex: 2,
+    boxShadow: '0 0 4px rgba(0, 123, 255, 0.5)',
+    transition: 'background 0.2s',
+    '&:hover': {
+      background: 'rgba(0, 123, 255, 0.6)',
+    },
+  }),
+});
