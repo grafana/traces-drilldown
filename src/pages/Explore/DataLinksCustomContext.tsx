@@ -1,21 +1,13 @@
-import { DataLinkPostProcessor, PluginExtensionLink, TimeRange } from '@grafana/data';
+import {
+  DataLinkPostProcessor,
+  DataLinksContext,
+  PluginExtensionLink,
+  TimeRange,
+  useDataLinksContext,
+} from '@grafana/data';
 import { getDataSourceSrv, usePluginFunctions } from '@grafana/runtime';
 import { DataQuery } from '@grafana/schema';
 import React from 'react';
-
-// These are optional imports that may not be available in older Grafana versions
-// @ts-ignore - DataLinksContext and useDataLinksContext may not exist in older versions
-let DataLinksContext: any;
-let useDataLinksContext: any;
-
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const dataModule = require('@grafana/data');
-  DataLinksContext = dataModule.DataLinksContext;
-  useDataLinksContext = dataModule.useDataLinksContext;
-} catch (e) {
-  // APIs not available in this Grafana version
-}
 
 type ContextForLinks = {
   targets: DataQuery[];
@@ -35,8 +27,7 @@ export function DataLinksCustomContext(props: Props) {
   const dataLinksContext = typeof useDataLinksContext === 'function' ? useDataLinksContext() : undefined;
 
   // Check if both the context and provider are available
-  const postProcessingSupported =
-    typeof DataLinksContext !== 'undefined' && DataLinksContext?.Provider && dataLinksContext;
+  const postProcessingSupported = typeof DataLinksContext !== 'undefined' && dataLinksContext;
 
   const { children, embedded, timeRange } = props;
 
