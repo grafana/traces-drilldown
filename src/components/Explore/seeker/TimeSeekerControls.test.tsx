@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { TimeSeekerControls } from './TimeSeekerControls';
-import { TimeSeekerProvider } from './TimeSeekerContext';
+import { TimeSeekerProvider, useTimeSeeker } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
 // Mock the chart config hook
@@ -21,12 +22,38 @@ jest.mock('./useTimeSeekerChartConfig', () => ({
 // Mock Grafana UI components
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
+  IconButton: ({ tooltip, onClick, children, ...rest }: any) => (
+    <button aria-label={tooltip} onClick={onClick} {...rest}>
+      {children ?? tooltip}
+    </button>
+  ),
+  Tooltip: ({ children }: any) => <>{children}</>,
+  Icon: ({ name }: any) => <span data-testid={`icon-${name}`} />,
   TimeRangeInput: ({ value, onChange }: any) => (
     <div data-testid="time-range-input">
-      <button>Time Range</button>
+      <button onClick={() => onChange?.(value)}>Time Range</button>
     </div>
   ),
 }));
+
+const StateViewer = () => {
+  const { visibleRange, timelineRange } = useTimeSeeker();
+
+  return (
+    <div>
+      <div data-testid="visible-range">{`${visibleRange.from},${visibleRange.to}`}</div>
+      <div data-testid="timeline-range">{`${timelineRange.from},${timelineRange.to}`}</div>
+    </div>
+  );
+};
+
+const expectVisibleRange = (from: number, to: number) => {
+  const content = screen.getByTestId('visible-range').textContent ?? '';
+  const [currentFrom, currentTo] = content.split(',').map(Number);
+
+  expect(currentFrom).toBeCloseTo(from);
+  expect(currentTo).toBeCloseTo(to);
+};
 
 const createMockData = () => ({
   state: LoadingState.Done,
@@ -43,7 +70,7 @@ const createMockData = () => ({
   timeRange: {
     from: dateTime(1000),
     to: dateTime(3000),
-    raw: { from: 'now-1h', to: 'now' },
+    raw: { from: dateTime(1000), to: dateTime(3000) },
   },
 });
 
@@ -56,7 +83,10 @@ const renderWithProvider = (ui: React.ReactElement) => {
       onChangeTimeRange={jest.fn()}
       initialVisibleRange={{ from: 0, to: 10000 }}
     >
-      {ui}
+      <>
+        {ui}
+        <StateViewer />
+      </>
     </TimeSeekerProvider>
   );
 };
@@ -73,35 +103,44 @@ describe('TimeSeekerControls', () => {
     expect(screen.getByRole('button', { name: 'Set range' })).toBeInTheDocument();
   });
 
-  it('calls panContextWindow when pan left is clicked', () => {
+  it('calls panContextWindow when pan left is clicked', async () => {
     renderWithProvider(<TimeSeekerControls />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Pan left' }));
-    // No error means the action was dispatched successfully
+
+    await waitFor(() => expectVisibleRange(-2500, 7500));
   });
 
-  it('calls panContextWindow when pan right is clicked', () => {
+  it('calls panContextWindow when pan right is clicked', async () => {
     renderWithProvider(<TimeSeekerControls />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Pan right' }));
+
+    await waitFor(() => expectVisibleRange(2500, 12500));
   });
 
-  it('calls zoomContextWindow with 0.5 when zoom in is clicked', () => {
+  it('calls zoomContextWindow with 0.5 when zoom in is clicked', async () => {
     renderWithProvider(<TimeSeekerControls />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Zoom in context' }));
+
+    await waitFor(() => expectVisibleRange(2500, 7500));
   });
 
-  it('calls zoomContextWindow with 2 when zoom out is clicked', () => {
+  it('calls zoomContextWindow with 2 when zoom out is clicked', async () => {
     renderWithProvider(<TimeSeekerControls />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Zoom out context' }));
+
+    await waitFor(() => expectVisibleRange(-5000, 15000));
   });
 
-  it('calls resetContextWindow when reset is clicked', () => {
+  it('calls resetContextWindow when reset is clicked', async () => {
     renderWithProvider(<TimeSeekerControls />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Focus selection' }));
+
+    await waitFor(() => expectVisibleRange(-6000, 10000));
   });
 
   it('renders time range input component', () => {
