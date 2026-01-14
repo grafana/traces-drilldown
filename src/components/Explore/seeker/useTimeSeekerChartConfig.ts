@@ -21,7 +21,7 @@ interface UseTimeSeekerChartConfigParams {
   isProgrammaticSelect: RefObject<boolean>;
   skipNextSelectUpdate: RefObject<boolean>;
   interactionMode: RefObject<InteractionMode>;
-  suppressNextDashboardUpdate: RefObject<boolean>;
+  suppressNextTimeRangeUpdate: RefObject<boolean>;
   setVisibleRange: (range: AbsoluteTimeRange, suppressDashboardUpdate?: boolean) => void;
   setTimelineRange: Dispatch<SetStateAction<{ from: number; to: number }>>;
   handlePanStart: (e: MouseEvent | React.MouseEvent) => void;
@@ -39,7 +39,7 @@ export function useTimeSeekerChartConfig({
   isProgrammaticSelect,
   skipNextSelectUpdate,
   interactionMode,
-  suppressNextDashboardUpdate,
+  suppressNextTimeRangeUpdate,
   setVisibleRange,
   setTimelineRange,
   handlePanStart,
@@ -114,11 +114,11 @@ export function useTimeSeekerChartConfig({
         const newRange: AbsoluteTimeRange = { from, to };
         setTimelineRange(newRange);
 
-        if (!suppressNextDashboardUpdate.current) {
+        if (!suppressNextTimeRangeUpdate.current) {
           onChangeTimeRange(newRange);
         }
 
-        suppressNextDashboardUpdate.current = false;
+        suppressNextTimeRangeUpdate.current = false;
       }
     });
 
@@ -217,7 +217,7 @@ export function useTimeSeekerChartConfig({
     isProgrammaticSelect,
     skipNextSelectUpdate,
     interactionMode,
-    suppressNextDashboardUpdate,
+    suppressNextTimeRangeUpdate,
     setTimelineRange,
   ]);
 }

@@ -60,7 +60,7 @@ interface TimeSeekerContextValue {
   // Refs
   uplotRef: React.RefObject<uPlot | null>;
   wheelListenerRef: React.RefObject<((e: WheelEvent) => void) | null>;
-  suppressNextDashboardUpdate: React.RefObject<boolean>;
+  suppressNextTimeRangeUpdate: React.RefObject<boolean>;
   applyRelativeContextWindow: React.RefObject<string | null>;
 
   // Actions
@@ -181,7 +181,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
 
   // Interaction tracking - consolidates multiple boolean flags
   const interactionMode = useRef<InteractionMode>('idle');
-  const suppressNextDashboardUpdate = useRef(false);
+  const suppressNextTimeRangeUpdate = useRef(false);
 
   // -------------------------------------------------------------------------
   // Set visible range with optional dashboard update suppression
@@ -192,7 +192,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       onVisibleRangeChange?.(range);
 
       if (suppressDashboardUpdate) {
-        suppressNextDashboardUpdate.current = true;
+        suppressNextTimeRangeUpdate.current = true;
         interactionMode.current = 'programmatic';
       }
     },
@@ -233,7 +233,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       const brushTo = dashboardTo;
       const brushFrom = dashboardTo - durMs;
 
-      suppressNextDashboardUpdate.current = true;
+      suppressNextTimeRangeUpdate.current = true;
       setTimelineRange({ from: brushFrom, to: brushTo });
 
       const sameRange = areRangesEqual(visibleRange, { from: brushFrom, to: brushTo }, 10);
@@ -314,7 +314,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       const pixelsToMs = (startTo - startFrom) / u.bbox.width;
 
       interactionMode.current = 'panning';
-      suppressNextDashboardUpdate.current = true;
+      suppressNextTimeRangeUpdate.current = true;
 
       const onMouseMove = (moveEvent: MouseEvent) => {
         const deltaPx = moveEvent.clientX - startX;
@@ -403,10 +403,10 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
         const newRange = { from: newFrom, to: newTo };
         setTimelineRange(newRange);
 
-        if (!suppressNextDashboardUpdate.current) {
+        if (!suppressNextTimeRangeUpdate.current) {
           onChangeTimeRange(newRange);
         }
-        suppressNextDashboardUpdate.current = false;
+        suppressNextTimeRangeUpdate.current = false;
       };
 
       window.addEventListener('mousemove', onMouseMove);
@@ -471,7 +471,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
     isProgrammaticSelect,
     skipNextSelectUpdate,
     interactionMode,
-    suppressNextDashboardUpdate,
+    suppressNextTimeRangeUpdate: suppressNextTimeRangeUpdate,
     setVisibleRange,
     setTimelineRange,
     handlePanStart,
@@ -527,7 +527,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       // Refs
       uplotRef,
       wheelListenerRef,
-      suppressNextDashboardUpdate,
+      suppressNextTimeRangeUpdate,
       applyRelativeContextWindow,
 
       // Actions

@@ -15,7 +15,7 @@ export const TimeSeekerControls: React.FC = () => {
     visibleRange,
     setVisibleRange,
     setTimelineRange,
-    suppressNextDashboardUpdate,
+    suppressNextTimeRangeUpdate,
     zoomContextWindow,
     panContextWindow,
     resetContextWindow,
@@ -38,7 +38,7 @@ export const TimeSeekerControls: React.FC = () => {
 
     setVisibleRange(r, true);
     requestAnimationFrame(() => {
-      suppressNextDashboardUpdate.current = true;
+      suppressNextTimeRangeUpdate.current = true;
       setTimelineRange({ from: newTimelineFrom, to: newTimelineTo });
 
       const u = uplotRef.current;
@@ -74,17 +74,12 @@ export const TimeSeekerControls: React.FC = () => {
 
     const container = timeRangeInputContainerRef.current;
 
-    // Use requestAnimationFrame and setTimeout to ensure the component is ready
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        const button = container.querySelector('button') as HTMLButtonElement;
-        if (button) {
-          button.focus();
-          button.click();
-          return;
-        }
-      }, 100);
-    });
+    const button = container.querySelector('button') as HTMLButtonElement;
+    if (button) {
+      button.focus();
+      button.click();
+      return;
+    }
   };
 
   return (
