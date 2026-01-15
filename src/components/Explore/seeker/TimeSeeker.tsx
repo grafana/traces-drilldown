@@ -3,13 +3,26 @@ import { css, cx } from '@emotion/css';
 import { useStyles2, useTheme2 } from '@grafana/ui';
 import { PanelDataErrorView } from '@grafana/runtime';
 
-import { TimeSeekerProps } from './types';
 import { TimeSeekerProvider } from './TimeSeekerContext';
 import { TimeSeekerControls } from './TimeSeekerControls';
 import { TimeSeekerChart } from './TimeSeekerChart';
-import { GrafanaTheme2 } from '@grafana/data';
+import { AbsoluteTimeRange, FieldConfigSource, GrafanaTheme2, PanelData } from '@grafana/data';
+import { MetricFunction } from 'utils/shared';
 
 const CHART_HEIGHT = 42;
+
+interface TimeSeekerProps {
+  data: PanelData;
+  width: number;
+  id?: number;
+  fieldConfig?: FieldConfigSource;
+  metric?: MetricFunction;
+  initialVisibleRange?: AbsoluteTimeRange;
+  onChangeTimeRange: (range: AbsoluteTimeRange) => void;
+  onVisibleRangeChange?: (range: AbsoluteTimeRange) => void;
+  loadingRanges?: Array<{ from: number; to: number }>;
+  hasLargeBatchWarning?: boolean;
+}
 
 export const TimeSeeker: React.FC<TimeSeekerProps> = ({
   data,
