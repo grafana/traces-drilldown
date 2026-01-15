@@ -178,6 +178,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   const wheelListenerRef = useRef<((e: WheelEvent) => void) | null>(null);
   const applyRelativeContextWindow = useRef<string | null>(null);
   const lastDashboardRange = useRef<AbsoluteTimeRange>({ from: dashboardFrom, to: dashboardTo });
+  const lastProcessedRelativeDuration = useRef<string | null>(null);
 
   // Interaction tracking - consolidates multiple boolean flags
   const interactionMode = useRef<InteractionMode>('idle');
@@ -204,8 +205,10 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   // -------------------------------------------------------------------------
   useEffect(() => {
     const relativeDuration = parseRelativeTimeRange(data.timeRange.raw);
-    if (relativeDuration) {
+    if (relativeDuration && relativeDuration !== lastProcessedRelativeDuration.current) {
       applyRelativeContextWindow.current = relativeDuration;
+    } else if (!relativeDuration) {
+      lastProcessedRelativeDuration.current = null;
     }
 
     // Check if dashboard range changed
@@ -224,7 +227,8 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   // -------------------------------------------------------------------------
   useEffect(() => {
     const duration = applyRelativeContextWindow.current;
-    if (!duration) {
+    // Only process if we have a duration and it's different from what we last processed
+    if (!duration || duration === lastProcessedRelativeDuration.current) {
       return;
     }
 
@@ -241,12 +245,14 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
         const context = computeContextWindowFromSelection(brushFrom, brushTo, now);
         setVisibleRange(context, true);
       }
+
+      lastProcessedRelativeDuration.current = duration;
     } catch (err) {
       console.error('Failed to apply relative context window', err);
     } finally {
       applyRelativeContextWindow.current = null;
     }
-  }, [dashboardTo, visibleRange, setVisibleRange, now]);
+  }, [data.timeRange.raw, dashboardTo, setVisibleRange, now]);
 
   // -------------------------------------------------------------------------
   // Update overlay positions

@@ -28,6 +28,12 @@ jest.mock('@grafana/runtime', () => ({
   PanelDataErrorView: () => <div data-testid="error-view">Error</div>,
 }));
 
+// Mock react-inlinesvg to prevent async state updates during tests
+jest.mock('react-inlinesvg', () => ({
+  __esModule: true,
+  default: ({ src, innerRef, ...props }: any) => React.createElement('span', { 'data-testid': 'mocked-svg', ...props }),
+}));
+
 const createMockData = (hasSeries = true) => ({
   state: LoadingState.Done,
   series: hasSeries
