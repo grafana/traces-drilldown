@@ -59,11 +59,18 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     // Cleanup on deactivation
     return () => {
       this.batchCache.clearCache();
-      if (this.currentBatchSubscription) {
-        this.currentBatchSubscription();
-        this.currentBatchSubscription = null;
-      }
+      this.cleanupBatchSubscription();
     };
+  }
+
+  /**
+   * Clean up the current batch subscription if it exists.
+   */
+  private cleanupBatchSubscription(): void {
+    if (this.currentBatchSubscription) {
+      this.currentBatchSubscription();
+      this.currentBatchSubscription = null;
+    }
   }
 
   /**
@@ -121,10 +128,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     const forceRenderFn = () => this.forceRender();
 
     // Clean up previous batch subscription
-    if (this.currentBatchSubscription) {
-      this.currentBatchSubscription();
-      this.currentBatchSubscription = null;
-    }
+    this.cleanupBatchSubscription();
 
     // Update the $data with new query runner
     this.setState({
