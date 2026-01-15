@@ -1,9 +1,16 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 
-import { TimeRange } from '@grafana/data';
-import { EntityAssertionsWidgetProps } from "@grafana/plugin-types/grafana-asserts-app/"
+import { AdHocVariableFilter, TimeRange } from '@grafana/data';
+import type { 
+  EntityAssertionsWidgetProps, 
+  EntityFilterPropertyMatcher,
+  StringRules,
+  NumberRules,
+  EntityPropertyTypes
+} from "@grafana/plugin-types/grafana-asserts-app"
 import { usePluginComponent } from '@grafana/runtime';
 import { sceneGraph, SceneObject } from '@grafana/scenes';
+import { getFiltersVariable } from 'utils/utils';
 
 export type EntityAssertionsWidgetExternal = (props: EntityAssertionsWidgetProps) => ReactElement | null;
 
@@ -17,6 +24,7 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
     'grafana-asserts-app/entity-assertions-widget/v1'
   );
   const [timeRange, setTimeRange] = useState<TimeRange>();
+  const [filters, setFilters] = useState<AdHocVariableFilter[]>([]);
 
   useEffect(() => {
     const sceneTimeRange = sceneGraph.getTimeRange(model);
@@ -31,9 +39,33 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
     };
   }, [model]);
 
+  useEffect(() => {
+    const filtersVariable = getFiltersVariable(model);
+    setFilters(filtersVariable.state.filters);
+
+    const sub = filtersVariable.subscribeToState((state) => {
+      setFilters(state.filters);
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [model]);
+
   if (isLoading || !EntityAssertionsWidgetExternal || !timeRange) {
     return null;
   }
+
+  // Convert AdHocVariableFilter to EntityFilterPropertyMatcher format for additionalMatchers
+  const additionalMatchers: EntityFilterPropertyMatcher[] = filters
+    .filter((filter) => filter.key !== 'resource.service.name') // Exclude service.name as it's already passed as entityName
+    .map((filter, index) => ({
+      id: index,
+      name: filter.key,
+      value: filter.value,
+      op: mapOperatorToStringRule(filter.operator) as StringRules | NumberRules,
+      type: 'String' as EntityPropertyTypes,
+    }));
 
   return (
     <EntityAssertionsWidgetExternal
@@ -45,8 +77,22 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
         entityName: serviceName,
         entityType: 'Service',
         enabled: true,
+        additionalMatchers: additionalMatchers.length > 0 ? additionalMatchers : undefined,
       }}
       returnToPrevious={true}
     />
   );
 }
+
+const mapOperatorToStringRule = (operator: string): StringRules => {
+  switch (operator) {
+    case '=':
+      return '=' as StringRules;
+    case '!=':
+      return '<>' as StringRules;
+    case '=~':
+      return 'CONTAINS' as StringRules;
+    default:
+      return '=' as StringRules;
+  }
+};
