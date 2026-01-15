@@ -40,8 +40,8 @@ import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 import { useServiceName } from 'pages/Explore/TraceExploration';
-import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 import { locationService } from '@grafana/runtime';
+import { RedPanelExtras } from './RedPanelExtras';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -192,9 +192,10 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           datasource: explorationDS,
           queries: [this.isDuration() ? buildHistogramQuery() : getMetricsTempoQuery({ metric, sample: true })],
         }),
-        transformations: this.isDuration() || this.state.embeddedMini
-          ? [...removeExemplarsTransformation()]
-          : [...exemplarsTransformations(getOpenTrace(this))],
+        transformations:
+          this.isDuration() || this.state.embeddedMini
+            ? [...removeExemplarsTransformation()]
+            : [...exemplarsTransformations(getOpenTrace(this))],
       }),
       panel: this.getVizPanel(),
     });
@@ -210,7 +211,9 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
-    const panel = barsPanelConfig(type, this.state.embeddedMini ? undefined : 70).setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(type, this.state.embeddedMini ? undefined : 70)
+      .setHoverHeader(true)
+      .setDisplayMode('transparent');
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
@@ -256,8 +259,8 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     frame.name = 'xymark';
     frame.meta = {
       ...frame.meta,
-      dataTopic: DataTopic.Annotations
-    }
+      dataTopic: DataTopic.Annotations,
+    };
 
     return [frame];
   }
@@ -269,6 +272,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
     const timeRange = sceneGraph.getTimeRange(model).useState();
+    const { timeSeekerScene } = traceExploration.useState();
 
     if (!panel) {
       return;
@@ -322,17 +326,20 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
             </div>
             <div className={styles.actions}>
               {isStreaming && <StreamingIndicator isStreaming={true} iconSize={10} />}
-              {actions?.map((action) => <action.Component model={action} key={action.state.key} />)}
+              {actions?.map((action) => (
+                <action.Component model={action} key={action.state.key} />
+              ))}
             </div>
           </div>
         )}
-        <panel.Component model={panel}  />
-        {!embeddedMini && timeRange && (
-          <InsightsTimelineWidget
-            serviceName={serviceName || ''}
+        <panel.Component model={panel} />
+        {!embeddedMini && (
+          <RedPanelExtras
+            timeSeekerScene={timeSeekerScene}
+            serviceName={serviceName}
             metric={metric as MetricFunction}
-            startTime={timeRange.from.valueOf()}
-            endTime={timeRange.to.valueOf()}
+            startTime={String(timeRange.value.from.valueOf())}
+            endTime={String(timeRange.value.to.valueOf())}
           />
         )}
       </div>
