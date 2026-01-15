@@ -88,7 +88,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
   container: css({
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'flex-start',
     gap: theme.spacing(1),
     width: '100%',
     backgroundColor: theme.colors.background.secondary,
@@ -105,7 +104,13 @@ const getStyles = (theme: GrafanaTheme2) => ({
   content: css({
     flex: 1,
     minWidth: 0,
-    height: 60,
+    minHeight: 60,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    '& > *': {
+      width: '100%',
+    },
   }),
   text: css({
     height: '100%',

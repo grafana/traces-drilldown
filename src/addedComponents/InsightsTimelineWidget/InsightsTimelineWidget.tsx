@@ -62,5 +62,8 @@ export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css({
     padding: theme.spacing(1, 0),
+    '& > *:first-child': {
+      marginBottom: 0,
+    },
   }),
 });
