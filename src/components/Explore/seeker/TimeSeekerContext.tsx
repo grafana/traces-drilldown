@@ -252,6 +252,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
     } finally {
       applyRelativeContextWindow.current = null;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.timeRange.raw, dashboardTo, setVisibleRange, now]);
 
   // -------------------------------------------------------------------------

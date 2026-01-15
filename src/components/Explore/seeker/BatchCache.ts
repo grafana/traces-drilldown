@@ -48,7 +48,6 @@ export function getBatchIdsForRange(from: number, to: number, anchorTime: number
 export class BatchDataCache {
   private cache: Map<number, CachedBatch> = new Map();
   private anchorTime: number;
-  private currentMetric: string | null = null;
   private loadingBatchId: number | null = null;
   private batchDurationMs: number;
   private lastVisibleRange: { from: number; to: number } | null = null;
@@ -74,13 +73,16 @@ export class BatchDataCache {
     this.loadingBatchId = null;
   }
 
-  public checkMetricChange(metric: string): boolean {
-    if (this.currentMetric !== metric) {
-      this.clearCache();
-      this.currentMetric = metric;
-      return true;
-    }
-    return false;
+  /**
+   * Get needed batch IDs for a range, excluding future batches.
+   */
+  private getNeededBatchIds(visibleFrom: number, visibleTo: number): number[] {
+    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
+    const now = Date.now();
+    return neededBatchIds.filter((batchId) => {
+      const { from } = getBatchTimeRange(batchId, this.anchorTime, this.batchDurationMs);
+      return from <= now;
+    });
   }
 
   /**
@@ -95,14 +97,13 @@ export class BatchDataCache {
     // Track the visible range for cache eviction policy
     this.lastVisibleRange = { from: visibleFrom, to: visibleTo };
 
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
-    const now = Date.now();
-
-    // Sort batch IDs in descending order to load most recent batches first
-    const sortedBatchIds = [...neededBatchIds].sort((a, b) => b - a);
+    const neededBatchIds = this.getNeededBatchIds(visibleFrom, visibleTo);
 
     // Track if we have a large number of batches (for performance warning)
     this.hasLargeBatchCount = neededBatchIds.length > LARGE_BATCH_COUNT_THRESHOLD;
+
+    // Sort batch IDs in descending order to load most recent batches first
+    const sortedBatchIds = [...neededBatchIds].sort((a, b) => b - a);
 
     for (const batchId of sortedBatchIds) {
       // Skip if already cached or currently loading
@@ -113,6 +114,7 @@ export class BatchDataCache {
       const { from, to } = getBatchTimeRange(batchId, this.anchorTime, this.batchDurationMs);
 
       // Don't fetch future data
+      const now = Date.now();
       if (from > now) {
         continue;
       }
@@ -141,15 +143,20 @@ export class BatchDataCache {
   }
 
   /**
+   * Clear the loading batch ID if it matches the given batch ID.
+   */
+  private clearLoadingBatchIfMatch(batchId: number): void {
+    if (this.loadingBatchId === batchId) {
+      this.loadingBatchId = null;
+    }
+  }
+
+  /**
    * Store loaded batch data in the cache.
    */
   public storeBatch(batchId: number, from: number, to: number, data: DataFrame[], error?: string): void {
     this.cache.set(batchId, { batchId, from, to, data, error });
-
-    if (this.loadingBatchId === batchId) {
-      this.loadingBatchId = null;
-    }
-
+    this.clearLoadingBatchIfMatch(batchId);
     // Enforce cache size limit, but protect the batch we just stored
     this.enforceCacheLimit(batchId);
   }
@@ -159,17 +166,14 @@ export class BatchDataCache {
    */
   public storeBatchError(batchId: number, from: number, to: number, error: string): void {
     this.cache.set(batchId, { batchId, from, to, data: [], error });
-
-    if (this.loadingBatchId === batchId) {
-      this.loadingBatchId = null;
-    }
+    this.clearLoadingBatchIfMatch(batchId);
   }
 
   /**
    * Get errors from batches in the visible range.
    */
   public getErrors(visibleFrom: number, visibleTo: number): string[] {
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
+    const neededBatchIds = this.getNeededBatchIds(visibleFrom, visibleTo);
     const errors: string[] = [];
 
     for (const batchId of neededBatchIds) {
@@ -181,13 +185,6 @@ export class BatchDataCache {
 
     // Return unique errors
     return [...new Set(errors)];
-  }
-
-  /**
-   * Check if any batch in the visible range has an error.
-   */
-  public hasErrors(visibleFrom: number, visibleTo: number): boolean {
-    return this.getErrors(visibleFrom, visibleTo).length > 0;
   }
 
   /**
@@ -205,7 +202,7 @@ export class BatchDataCache {
    * Get all cached data for the visible range, concatenated.
    */
   public getCachedData(visibleFrom: number, visibleTo: number): DataFrame[] {
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
+    const neededBatchIds = this.getNeededBatchIds(visibleFrom, visibleTo);
     const allFrames: DataFrame[] = [];
 
     for (const batchId of neededBatchIds.sort((a, b) => a - b)) {
@@ -222,40 +219,21 @@ export class BatchDataCache {
    * Check if all batches for the visible range are loaded.
    */
   public isFullyLoaded(visibleFrom: number, visibleTo: number): boolean {
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
-    const now = Date.now();
-
-    for (const batchId of neededBatchIds) {
-      const { from } = getBatchTimeRange(batchId, this.anchorTime, this.batchDurationMs);
-      // Skip future batches
-      if (from > now) {
-        continue;
-      }
-      if (!this.cache.has(batchId)) {
-        return false;
-      }
-    }
-
-    return true;
+    const neededBatchIds = this.getNeededBatchIds(visibleFrom, visibleTo);
+    return neededBatchIds.every((batchId) => this.cache.has(batchId));
   }
 
   /**
    * Get loading ranges for UI display.
    */
   public getLoadingRanges(visibleFrom: number, visibleTo: number): Array<{ from: number; to: number }> {
-    const neededBatchIds = getBatchIdsForRange(visibleFrom, visibleTo, this.anchorTime, this.batchDurationMs);
+    const neededBatchIds = this.getNeededBatchIds(visibleFrom, visibleTo);
     const loadingRanges: Array<{ from: number; to: number }> = [];
     const now = Date.now();
 
     for (const batchId of neededBatchIds) {
-      const { from, to } = getBatchTimeRange(batchId, this.anchorTime, this.batchDurationMs);
-
-      // Skip future batches
-      if (from > now) {
-        continue;
-      }
-
       if (!this.cache.has(batchId)) {
+        const { from, to } = getBatchTimeRange(batchId, this.anchorTime, this.batchDurationMs);
         loadingRanges.push({
           from: Math.max(from, visibleFrom),
           to: Math.min(to, now, visibleTo),
