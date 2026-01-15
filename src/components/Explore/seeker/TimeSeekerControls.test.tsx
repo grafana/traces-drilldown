@@ -5,20 +5,6 @@ import { TimeSeekerControls } from './TimeSeekerControls';
 import { TimeSeekerProvider, useTimeSeeker } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
-// Mock the chart config hook
-jest.mock('./useTimeSeekerChartConfig', () => ({
-  useTimeSeekerChartConfig: jest.fn(() => {
-    const mockBuilder = {
-      setCursor: jest.fn().mockReturnThis(),
-      addAxis: jest.fn().mockReturnThis(),
-      addSeries: jest.fn().mockReturnThis(),
-      addHook: jest.fn().mockReturnThis(),
-      getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
-    };
-    return mockBuilder;
-  }),
-}));
-
 // Mock Grafana UI components
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
@@ -27,8 +13,6 @@ jest.mock('@grafana/ui', () => ({
       {children ?? tooltip}
     </button>
   ),
-  Tooltip: ({ children }: any) => <>{children}</>,
-  Icon: ({ name }: any) => <span data-testid={`icon-${name}`} />,
   TimeRangeInput: ({ value, onChange }: any) => (
     <div data-testid="time-range-input">
       <button onClick={() => onChange?.(value)}>Time Range</button>
