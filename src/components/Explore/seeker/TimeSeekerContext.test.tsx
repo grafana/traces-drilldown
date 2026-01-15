@@ -3,44 +3,6 @@ import { render, screen, act } from '@testing-library/react';
 import { TimeSeekerProvider, useTimeSeeker, getMetricColor } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
-// Mock the chart config hook
-jest.mock('./useTimeSeekerChartConfig', () => ({
-  useTimeSeekerChartConfig: jest.fn(() => {
-    const mockBuilder = {
-      setCursor: jest.fn().mockReturnThis(),
-      addAxis: jest.fn().mockReturnThis(),
-      addSeries: jest.fn().mockReturnThis(),
-      addHook: jest.fn().mockReturnThis(),
-      getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
-    };
-    return mockBuilder;
-  }),
-}));
-
-// Mock Grafana UI
-jest.mock('@grafana/ui', () => ({
-  ...jest.requireActual('@grafana/ui'),
-  UPlotConfigBuilder: jest.fn().mockImplementation(() => ({
-    setCursor: jest.fn().mockReturnThis(),
-    addAxis: jest.fn().mockReturnThis(),
-    addSeries: jest.fn().mockReturnThis(),
-    addHook: jest.fn().mockReturnThis(),
-    getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
-  })),
-  useTheme2: () => ({
-    colors: {
-      background: { primary: '#fff' },
-      border: { weak: '#ccc' },
-      primary: { shade: '#007bff' },
-    },
-    visualization: {
-      getColorByName: (name: string) => name,
-    },
-  }),
-  AxisPlacement: { Bottom: 'bottom', Left: 'left' },
-  DrawStyle: { Line: 'line', Bars: 'bars' },
-}));
-
 const createMockData = () => ({
   state: LoadingState.Done,
   series: [
