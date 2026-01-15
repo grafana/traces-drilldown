@@ -4,19 +4,6 @@ import { TimeSeekerChart } from './TimeSeekerChart';
 import { TimeSeekerProvider } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
-// Keep mocks minimal: only replace uPlot-heavy pieces.
-const mockConfigBuilder = {
-  setCursor: jest.fn().mockReturnThis(),
-  addAxis: jest.fn().mockReturnThis(),
-  addSeries: jest.fn().mockReturnThis(),
-  addHook: jest.fn().mockReturnThis(),
-  getConfig: jest.fn(() => ({ series: [null, {}], scales: {} })),
-};
-
-jest.mock('./useTimeSeekerChartConfig', () => ({
-  useTimeSeekerChartConfig: jest.fn(() => mockConfigBuilder),
-}));
-
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
   UPlotChart: ({ width, height, data }: any) => (
