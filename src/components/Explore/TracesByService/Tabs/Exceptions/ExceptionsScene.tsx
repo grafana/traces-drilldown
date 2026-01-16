@@ -9,14 +9,13 @@ import {
   SceneObjectState,
   SceneQueryRunner,
 } from '@grafana/scenes';
-import { DataFrame, GrafanaTheme2, LoadingState, PanelData } from '@grafana/data';
+import { GrafanaTheme2, LoadingState, PanelData } from '@grafana/data';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { EmptyState } from 'components/states/EmptyState/EmptyState';
 import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
 import { useStyles2, useTheme2 } from '@grafana/ui';
-import { map, Observable } from 'rxjs';
 import {
   EMPTY_STATE_ERROR_MESSAGE,
   EMPTY_STATE_ERROR_REMEDY_MESSAGE,
@@ -52,7 +51,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
 
     const dataTransformer = this.state.$data as SceneDataTransformer;
     dataTransformer.setState({
-      transformations: [...filterStreamingProgressTransformations, this.createTransformation()],
+      transformations: [...filterStreamingProgressTransformations],
     });
 
     this.addActivationHandler(() => {
@@ -145,12 +144,6 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
       occurrences: aggregated.occurrences[index] || 0,
       timeSeries: aggregated.timeSeries[index] || [],
     }));
-  }
-
-  private createTransformation() {
-    return () => (source: Observable<DataFrame[]>) => {
-      return source.pipe(map((data: DataFrame[]) => data));
-    };
   }
 
   public getExceptionsCount(): number {
