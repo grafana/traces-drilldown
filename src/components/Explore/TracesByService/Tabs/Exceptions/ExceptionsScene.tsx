@@ -178,26 +178,32 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
             View exception details from errored traces for the current set of filters.
           </div>
         </div>
-        {dataState === 'loading' && (
-          <div className={styles.loadingContainer}>
-            <Skeleton
-              count={10}
-              height={120}
-              baseColor={theme.colors.background.secondary}
-              highlightColor={theme.colors.background.primary}
-            />
-          </div>
-        )}
-        {dataState === 'done' && exceptionRows && exceptionRows.length > 0 && (
-          <ExceptionsTable rows={exceptionRows} theme={theme} onFilterClick={handleFilterClick} />
-        )}
-        {dataState === 'empty' && (
-          <EmptyState 
-            message="No exceptions found" 
-            remedyMessage={EMPTY_STATE_ERROR_REMEDY_MESSAGE}
-            padding={theme.spacing(4)}
-          />
-        )}
+        <div className={styles.content}>
+          {dataState === 'loading' && (
+            <div className={styles.loadingContainer}>
+              <Skeleton
+                count={10}
+                height={120}
+                baseColor={theme.colors.background.secondary}
+                highlightColor={theme.colors.background.primary}
+              />
+            </div>
+          )}
+          {dataState === 'done' && exceptionRows && exceptionRows.length > 0 && (
+            <div className={styles.tableWrapper}>
+              <ExceptionsTable rows={exceptionRows} theme={theme} scene={model} onFilterClick={handleFilterClick} />
+            </div>
+          )}
+          {dataState === 'empty' && (
+            <div className={styles.emptyContainer}>
+              <EmptyState
+                message="No exceptions found"
+                remedyMessage={EMPTY_STATE_ERROR_REMEDY_MESSAGE}
+                padding={theme.spacing(4)}
+              />
+            </div>
+          )}
+        </div>
       </div>
     );
   };
@@ -208,7 +214,8 @@ const getStyles = (theme: GrafanaTheme2) => {
     container: css({
       display: 'flex',
       flexDirection: 'column',
-      height: '100%',
+      flexGrow: 1,
+      minHeight: '100%',
     }),
     header: css({
       display: 'flex',
@@ -218,8 +225,25 @@ const getStyles = (theme: GrafanaTheme2) => {
       fontSize: theme.typography.h6.fontSize,
       padding: `${theme.spacing(1)} 0 ${theme.spacing(2)} 0`,
     }),
+    content: css({
+      flexGrow: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: 0,
+      height: 'calc(100vh - 550px)',
+    }),
     loadingContainer: css({
       padding: theme.spacing(2),
+      overflow: 'auto',
+    }),
+    tableWrapper: css({
+      flex: 1,
+      minHeight: 0,
+    }),
+    emptyContainer: css({
+      flex: 1,
+      minHeight: 0,
+      overflow: 'auto',
     }),
   };
 };
