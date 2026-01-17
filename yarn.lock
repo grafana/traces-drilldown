@@ -8229,7 +8229,7 @@ react-router-dom@5.3.4:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
-react-router-dom@^6.28.0:
+react-router-dom@^6.30.2:
   version "6.30.3"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.30.3.tgz#42ae6dc4c7158bfb0b935f162b9621b29dddf740"
   integrity sha512-pxPcv1AczD4vso7G4Z3TKcvlxK7g7TNt3/FNGMhfqyntocvYKj+GCatfigGDjbLozC4baguJ0ReCigoDJXb0ag==
