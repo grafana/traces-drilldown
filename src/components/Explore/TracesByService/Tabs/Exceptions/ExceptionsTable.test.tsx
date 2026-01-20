@@ -22,6 +22,10 @@ jest.mock('./SparklineCell', () => ({
   ),
 }));
 
+jest.mock('./accordion/ExceptionAccordion', () => ({
+  ExceptionAccordionContent: () => <div data-testid="exception-accordion">Accordion</div>,
+}));
+
 describe('ExceptionsTable', () => {
   const mockTheme = createTheme();
   const mockOnFilterClick = jest.fn();
@@ -92,29 +96,40 @@ describe('ExceptionsTable', () => {
     expect(sparklines).toHaveLength(2);
   });
 
-  it('should call onFilterClick when exception type is clicked', () => {
-    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} onFilterClick={mockOnFilterClick} />);
+  it('should toggle accordion when exception type is clicked', () => {
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
     const typeElement = screen.getByText('SQLException');
     fireEvent.click(typeElement);
+    expect(screen.getByTestId('exception-accordion')).toBeInTheDocument();
 
-    expect(mockOnFilterClick).toHaveBeenCalledWith('event.exception.type', 'SQLException');
+    fireEvent.click(typeElement);
+    expect(screen.queryByTestId('exception-accordion')).not.toBeInTheDocument();
   });
 
-  it('should call onFilterClick when exception message is clicked', () => {
-    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} onFilterClick={mockOnFilterClick} />);
+  it('should toggle accordion when exception message is clicked', () => {
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
     const messageElement = screen.getByText('Database connection failed');
     fireEvent.click(messageElement);
 
-    expect(mockOnFilterClick).toHaveBeenCalledWith('event.exception.message', 'Database connection failed');
+    expect(screen.getByTestId('exception-accordion')).toBeInTheDocument();
+  });
+
+  it('should call onFilterClick when include/exclude buttons are clicked', () => {
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} onFilterClick={mockOnFilterClick} />);
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Include exception message' })[0]);
+    expect(mockOnFilterClick).toHaveBeenCalledWith('event.exception.message', 'Database connection failed', '=', true);
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Exclude exception message' })[0]);
+    expect(mockOnFilterClick).toHaveBeenCalledWith('event.exception.message', 'Database connection failed', '!=', true);
   });
 
   it('should not call onFilterClick when onFilterClick prop is not provided', () => {
     render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
-    const typeElement = screen.getByText('SQLException');
-    fireEvent.click(typeElement);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Include exception message' })[0]);
 
     expect(mockOnFilterClick).not.toHaveBeenCalled();
   });

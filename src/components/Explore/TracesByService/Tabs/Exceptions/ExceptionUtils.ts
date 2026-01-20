@@ -1,7 +1,10 @@
 import { Field } from "@grafana/data";
-import { calculateBucketSize } from "utils/dates";
+import { SceneObject } from "@grafana/scenes";
 
-export function aggregateExceptions(messageField: Field<string>, typeField?: Field<string>, timeField?: Field<any>, serviceField?: Field<string>) {
+import { calculateBucketSize } from "utils/dates";
+import { getDatasourceVariable } from "utils/utils";
+
+export function aggregateExceptions(messageField: Field<string>, typeField?: Field<string>, timeField?: Field<number>, serviceField?: Field<string>) {
   const occurrences = new Map<string, number>();
   const types = new Map<string, string>();
   const lastSeenTimes = new Map<string, number>();
@@ -109,4 +112,16 @@ export function createTimeSeries(timestamps: number[]): Array<{time: number, cou
 export function normalizeExceptionMessage(message: string): string {
   if (!message) { return '' }
   return message.replace(/\s+/g, ' ').trim();
+}
+
+export function escapeTraceQlString(value: string) {
+  return value.replace(/["\\]/g, (s) => `\\${s}`);
+}
+
+export function getDatasourceUidOrThrow(scene: SceneObject) {
+  const datasourceUid = getDatasourceVariable(scene).state.value?.toString();
+  if (!datasourceUid) {
+    throw new Error('Datasource variable not found');
+  }
+  return datasourceUid;
 }

@@ -273,7 +273,6 @@ const getStyles = (theme: GrafanaTheme2) => {
     tableCellFrequency: css(centeredTableCell('220px')),
     occurrencesCell: css({
       color: theme.colors.text.primary,
-      fontVariantNumeric: 'tabular-nums',
       fontSize: theme.typography.body.fontSize,
     }),
     exceptionDetailsContainer: css({
