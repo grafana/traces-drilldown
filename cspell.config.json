@@ -76,6 +76,7 @@
     "nwsapi",
     "adaptivetraces",
     "tailsampling",
-    "sparklines"
+    "sparklines",
+    "vals"
   ]
 }
