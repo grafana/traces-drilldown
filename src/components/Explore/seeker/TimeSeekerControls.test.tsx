@@ -1,6 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { TimeSeekerControls } from './TimeSeekerControls';
 import { TimeSeekerProvider, useTimeSeeker } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
