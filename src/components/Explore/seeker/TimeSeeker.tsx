@@ -9,7 +9,7 @@ import { TimeSeekerChart } from './TimeSeekerChart';
 import { AbsoluteTimeRange, FieldConfigSource, GrafanaTheme2, PanelData } from '@grafana/data';
 import { MetricFunction } from 'utils/shared';
 
-const CHART_HEIGHT = 42;
+const CHART_HEIGHT = 32;
 
 interface TimeSeekerProps {
   data: PanelData;
@@ -75,6 +75,6 @@ const getTimeSeekerStyles = (theme: GrafanaTheme2) => ({
   chartContainer: css({
     position: 'relative',
     width: '100%',
-    height: 42,
+    height: 32,
   }),
 });

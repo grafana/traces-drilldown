@@ -47,23 +47,22 @@ export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({
   }
 
   return (
-    <div className={styles.container}>
-      <InsightsTimelineWidgetExternal
-        serviceName={serviceName}
-        start={startTime}
-        end={endTime}
-        filterBySeverity={filterBySeverity}
-        filterBySummaryKeywords={filterBySummaryKeywords}
-      />
-    </div>
+    <InsightsTimelineWidgetExternal
+      serviceName={serviceName}
+      start={startTime}
+      end={endTime}
+      filterBySeverity={filterBySeverity}
+      filterBySummaryKeywords={filterBySummaryKeywords}
+      label={<div className={styles.label}>Insights</div>}
+    />
   );
 });
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  container: css({
-    padding: theme.spacing(1, 0),
-    '& > *:first-child': {
-      marginBottom: 0,
-    },
+  label: css({
+    fontSize: '12px',
+    color: theme.colors.text.secondary,
+    marginLeft: '35px', // we are also passing an axisWidth of 70 to barsPanelConfig()
+    marginTop: '-3px',
   }),
 });

@@ -41,7 +41,7 @@ import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 import { useServiceName } from 'pages/Explore/TraceExploration';
 import { locationService } from '@grafana/runtime';
-import { RedPanelExtras } from './RedPanelExtras';
+import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -332,10 +332,15 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
             </div>
           </div>
         )}
+        {!embeddedMini && timeSeekerScene && (
+          <div className={styles.seekerContainer}>
+            <div className={styles.seekerLabel}>Seeker</div>
+            <timeSeekerScene.Component model={timeSeekerScene} />
+          </div>
+        )}
         <panel.Component model={panel} />
-        {!embeddedMini && (
-          <RedPanelExtras
-            timeSeekerScene={timeSeekerScene}
+        {!embeddedMini && serviceName && (
+          <InsightsTimelineWidget
             serviceName={serviceName}
             metric={metric as MetricFunction}
             startTime={String(timeRange.value.from.valueOf())}
@@ -375,6 +380,7 @@ function getStyles(theme: GrafanaTheme2) {
       border: `1px solid ${theme.colors.border.weak}`,
       borderRadius: '2px',
       background: theme.colors.background.primary,
+      overflow: 'hidden',
 
       '.show-on-hover': {
         display: 'none',
@@ -390,7 +396,7 @@ function getStyles(theme: GrafanaTheme2) {
       width: '100%',
       display: 'flex',
       flexDirection: 'row',
-      padding: '8px',
+      padding: '8px 8px 0 8px',
       gap: '8px',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
@@ -419,6 +425,21 @@ function getStyles(theme: GrafanaTheme2) {
       '& svg': {
         margin: '0 2px',
       },
+    }),
+    seekerContainer: css({
+      display: 'flex',
+      flexDirection: 'row',
+      marginLeft: '35px',
+      marginTop: '-8px',
+    }),
+    seekerLabel: css({
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: theme.spacing(1),
+      fontSize: theme.typography.bodySmall.fontSize,
+      color: theme.colors.text.secondary,
     }),
   };
 }

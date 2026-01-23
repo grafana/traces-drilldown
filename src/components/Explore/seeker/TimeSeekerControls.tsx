@@ -146,7 +146,7 @@ const getControlStyles = (theme: GrafanaTheme2) => ({
   floatingControls: css({
     position: 'absolute',
     top: 0,
-    right: 0,
+    right: theme.spacing(1),
   }),
   floatingControlsContent: css({
     display: 'flex',
