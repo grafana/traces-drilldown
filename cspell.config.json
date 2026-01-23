@@ -78,6 +78,7 @@
     "tailsampling",
     "sparklines",
     "smhdw",
-    "uplot"
+    "uplot",
+    "bbox"
   ]
 }
