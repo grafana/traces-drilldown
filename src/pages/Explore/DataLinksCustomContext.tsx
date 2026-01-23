@@ -23,20 +23,22 @@ type Props = {
 };
 
 export function DataLinksCustomContext(props: Props) {
-  // Check if the APIs are available (they may not be in older Grafana versions)
-  const dataLinksContext = typeof useDataLinksContext === 'function' ? useDataLinksContext() : undefined;
-
-  // Check if both the context and provider are available
-  const postProcessingSupported = typeof DataLinksContext !== 'undefined' && dataLinksContext;
-
   const { children, embedded, timeRange } = props;
 
-  const { functions: logsDrilldownExtensions } = usePluginFunctions<ContextForLinksFn>({
+  const dataLinksContext = useDataLinksContext?.();
+
+  // @ts-expect-error: TS2774 This condition will always return true since this function is always defined. Did you mean to call it instead?
+  // We expect the TS error because the function is not always defined if the DataLinksContext or useDataLinksContext are
+  // not available during runtime (before Grafana 12.3.0)
+  const postProcessingSupported = DataLinksContext?.Provider && dataLinksContext;
+
+  // usePluginFunctions is available in Grafana 11.6.0 while we support back to Grafana 11.5.0
+  const extensions = usePluginFunctions<ContextForLinksFn>?.({
     extensionPointId: 'grafana-exploretraces-app/get-logs-drilldown-link/v1',
     limitPerPlugin: 1,
   });
 
-  const logsDrilldownExtension = logsDrilldownExtensions?.[0] ?? undefined;
+  const logsDrilldownExtension = extensions?.functions?.[0] ?? undefined;
 
   if (embedded || !postProcessingSupported || !logsDrilldownExtension || !timeRange) {
     return <>{children}</>;

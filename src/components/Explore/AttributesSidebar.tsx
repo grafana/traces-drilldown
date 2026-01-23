@@ -137,7 +137,7 @@ export function AttributesSidebar({
       return favoritesItems.filter((item) => matchesSearchValue(item.label, searchValue));
     }
 
-    return attributeItems.filter((item) => {
+    const matchingItems = attributeItems.filter((item) => {
       // Filter by search text
       const matchesSearch = matchesSearchValue(item.label, searchValue);
 
@@ -146,6 +146,32 @@ export function AttributesSidebar({
 
       return matchesSearch && matchesScope;
     });
+
+    // For Resource and Span tabs, show favorites first
+    if (selectedScope === 'Resource' || selectedScope === 'Span') {
+      const favorites: AttributeItem[] = [];
+      const nonFavorites: AttributeItem[] = [];
+
+      matchingItems.forEach((item) => {
+        if (favoriteAttributes.includes(item.value)) {
+          favorites.push(item);
+        } else {
+          nonFavorites.push(item);
+        }
+      });
+
+      favorites.sort((a, b) => {
+        const indexA = favoriteAttributes.indexOf(a.value);
+        const indexB = favoriteAttributes.indexOf(b.value);
+        return indexA - indexB;
+      });
+
+      // Non-favorites are already sorted alphabetically from attributeItems
+      return [...favorites, ...nonFavorites];
+    }
+
+    // For "All" tab, return items in their original alphabetical order
+    return matchingItems;
   }, [attributeItems, searchValue, selectedScope, favoriteAttributes, matchesSearchValue]);
 
   // Select the next favorite attribute if the selected attribute is in the filters (single mode only)
