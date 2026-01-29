@@ -32,6 +32,7 @@ import {
   VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
   VAR_DURATION_PERCENTILES,
+  DEFAULT_QUERY_RANGE_HOURS,
 } from '../../utils/shared';
 import {
   getTraceExplorationScene,
@@ -51,6 +52,7 @@ import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWi
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
 import { DataLinksCustomContext } from './DataLinksCustomContext';
+import { TimeSeekerScene } from 'components/Explore/seeker/TimeSeekerScene';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -59,12 +61,16 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   body: SceneObject;
 
   drawerScene?: TraceDrawerScene;
+  timeSeekerScene?: TimeSeekerScene;
 
   // details scene
   traceId?: string;
   spanId?: string;
 
   issueDetector?: TraceQLIssueDetector;
+
+  // Plugin configuration
+  queryRangeHours?: number;
 }
 
 const version = process.env.VERSION;
@@ -76,12 +82,18 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
 
   public constructor(state: Partial<TraceExplorationState>) {
+    // Get query range from state or use default
+    // Note: queryRangeHours should be passed from React components using usePluginJsonData() hook
+    // See: https://grafana.com/developers/plugin-tools/tutorials/build-an-app-plugin#configuration-page
+    const queryRangeHours = state.queryRangeHours ?? DEFAULT_QUERY_RANGE_HOURS;
+
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
       $variables: state.$variables ?? getVariableSet(state as TraceExplorationState),
       controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
+      timeSeekerScene: new TimeSeekerScene({ queryRangeHours }),
       issueDetector: new TraceQLIssueDetector(),
       ...state,
     });
@@ -170,14 +182,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const {
-      controls,
-      topScene,
-      drawerScene,
-      traceId,
-      issueDetector,
-      embedded,
-    } = traceExploration.useState();
+    const { controls, topScene, drawerScene, traceId, issueDetector, embedded } = traceExploration.useState();
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };

@@ -40,8 +40,8 @@ import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 import { useServiceName } from 'pages/Explore/TraceExploration';
-import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 import { locationService } from '@grafana/runtime';
+import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -192,9 +192,10 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           datasource: explorationDS,
           queries: [this.isDuration() ? buildHistogramQuery() : getMetricsTempoQuery({ metric, sample: true })],
         }),
-        transformations: this.isDuration() || this.state.embeddedMini
-          ? [...removeExemplarsTransformation()]
-          : [...exemplarsTransformations(getOpenTrace(this))],
+        transformations:
+          this.isDuration() || this.state.embeddedMini
+            ? [...removeExemplarsTransformation()]
+            : [...exemplarsTransformations(getOpenTrace(this))],
       }),
       panel: this.getVizPanel(),
     });
@@ -210,7 +211,9 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
-    const panel = barsPanelConfig(type, this.state.embeddedMini ? undefined : 70).setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(type, this.state.embeddedMini ? undefined : 70)
+      .setHoverHeader(true)
+      .setDisplayMode('transparent');
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
@@ -256,8 +259,8 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     frame.name = 'xymark';
     frame.meta = {
       ...frame.meta,
-      dataTopic: DataTopic.Annotations
-    }
+      dataTopic: DataTopic.Annotations,
+    };
 
     return [frame];
   }
@@ -269,6 +272,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
     const timeRange = sceneGraph.getTimeRange(model).useState();
+    const { timeSeekerScene } = traceExploration.useState();
 
     if (!panel) {
       return;
@@ -322,17 +326,25 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
             </div>
             <div className={styles.actions}>
               {isStreaming && <StreamingIndicator isStreaming={true} iconSize={10} />}
-              {actions?.map((action) => <action.Component model={action} key={action.state.key} />)}
+              {actions?.map((action) => (
+                <action.Component model={action} key={action.state.key} />
+              ))}
             </div>
           </div>
         )}
-        <panel.Component model={panel}  />
-        {!embeddedMini && timeRange && (
+        {!embeddedMini && timeSeekerScene && (
+          <div className={styles.seekerContainer}>
+            <div className={styles.seekerLabel}>Seeker</div>
+            <timeSeekerScene.Component model={timeSeekerScene} />
+          </div>
+        )}
+        <panel.Component model={panel} />
+        {!embeddedMini && serviceName && (
           <InsightsTimelineWidget
-            serviceName={serviceName || ''}
+            serviceName={serviceName}
             metric={metric as MetricFunction}
-            startTime={timeRange.from.valueOf()}
-            endTime={timeRange.to.valueOf()}
+            startTime={String(timeRange.value.from.valueOf())}
+            endTime={String(timeRange.value.to.valueOf())}
           />
         )}
       </div>
@@ -368,6 +380,7 @@ function getStyles(theme: GrafanaTheme2) {
       border: `1px solid ${theme.colors.border.weak}`,
       borderRadius: '2px',
       background: theme.colors.background.primary,
+      overflow: 'hidden',
 
       '.show-on-hover': {
         display: 'none',
@@ -383,7 +396,7 @@ function getStyles(theme: GrafanaTheme2) {
       width: '100%',
       display: 'flex',
       flexDirection: 'row',
-      padding: '8px',
+      padding: '8px 8px 0 8px',
       gap: '8px',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
@@ -412,6 +425,21 @@ function getStyles(theme: GrafanaTheme2) {
       '& svg': {
         margin: '0 2px',
       },
+    }),
+    seekerContainer: css({
+      display: 'flex',
+      flexDirection: 'row',
+      marginLeft: '35px',
+      marginTop: '-8px',
+    }),
+    seekerLabel: css({
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: theme.spacing(1),
+      fontSize: theme.typography.bodySmall.fontSize,
+      color: theme.colors.text.secondary,
     }),
   };
 }
