@@ -67,7 +67,7 @@
     "swc-loader": "0.2.6",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.8.3",
+    "typescript": "5.9.3",
     "webpack": "5.101.0",
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-cli": "5.1.4",
