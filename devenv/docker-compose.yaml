@@ -124,7 +124,7 @@ services:
 
   # A microservice that consumes requests from the mythical-queue
   mythical-recorder:
-    image: grafana/intro-to-mltp:mythical-beasts-recorder-latest@sha256:dae10980a1f422d659d0862275f77dca42a735681c4c65a27d78eb719190e13d
+    image: grafana/intro-to-mltp:mythical-beasts-recorder-latest@sha256:1420cd8421e76140d91ae43db2c12d233a4476ab142bf4a4fb0a1e1095fe6833
     restart: always
     depends_on:
       mythical-queue:
