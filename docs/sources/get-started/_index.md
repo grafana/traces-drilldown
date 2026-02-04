@@ -49,21 +49,24 @@ Most investigations follow these steps:
 
 {{< docs/play title="the Grafana Play site" url="https://play.grafana.org/a/grafana-exploretraces-app/explore" >}}
 
+Prefer a step-by-step walkthrough? Refer to the [Investigation walkthrough](./example-investigation.md) to follow along on play.grafana.org.
+
 ## Example: Investigate source of errors
 
-As an example, you want to uncover the source of errors in your spans.
-For this, you need to compare the errors in the traces to locate the problem trace.
-Here's how this works.
+This example demonstrates investigation techniques and patterns you can use when investigating errors. It shows how to use advanced features like the **Comparison** tab and **Inspect** to find root causes.
+
+For a hands-on walkthrough you can follow step-by-step, refer to the [Investigation walkthrough](./example-investigation.md).
+
+As an example, you want to uncover the source of errors in your spans. You need to compare the errors in the traces to locate the problem trace. Here's how this works.
 
 ### Choose the level of data and a metric
 
 To identify the trouble spot, you want to use raw tracing data instead of just the root span, which is the first span of every trace.
 Select **All spans** in the Filters, then choose the **Errors** metric.
 
-![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors-red-v1.2.png "Select All spans to view all raw span data and Errors as your metric")
+![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors-red-v1.2.png 'Select All spans to view all raw span data and Errors as your metric')
 
-
-### Handle errors 
+### Handle errors
 
 If you're seeing errors in your traces, here are three common misunderstandings to avoid.
 
@@ -94,11 +97,11 @@ The visualization highlights that:
 
 Click **Add to filters** to narrow the investigation to these values, or choose **Inspect** to explore the full distribution.
 
-![Errors are immediately visible by the large red bars](/media/docs/explore-traces/traces-drilldown-errors-comparison-http-status-code-v1.2.png "Errors are immediately visible by the large red bars")
+![Errors are immediately visible by the large red bars](/media/docs/explore-traces/traces-drilldown-errors-comparison-http-status-code-v1.2.png 'Errors are immediately visible by the large red bars')
 
 Hovering over any of the bars shows a tooltip with information about the value and the percentage of the total.
 
-![Tooltip showing the value and the percentage of the total](/media/docs/explore-traces/traces-drilldown-errors-hover-tooltip.png "Tooltip showing the value and the percentage of the total")
+![Tooltip showing the value and the percentage of the total](/media/docs/explore-traces/traces-drilldown-errors-hover-tooltip.png 'Tooltip showing the value and the percentage of the total')
 
 ### Inspect the problem
 
@@ -111,7 +114,7 @@ In this example, selecting **Inspect** on `span.http.status_code` shows the dist
 
 Use **Add to filters** on the `500` card to keep only error spans and continue the investigation.
 
-![Inspect the HTTP 500 errors](/media/docs/explore-traces/traces-drilldown-errors-comparison-http-status-attr-selected-v1.2.png "Inspect the HTTP 500 errors")
+![Inspect the HTTP 500 errors](/media/docs/explore-traces/traces-drilldown-errors-comparison-http-status-attr-selected-v1.2.png 'Inspect the HTTP 500 errors')
 
 ### Use Root cause errors
 
@@ -120,12 +123,24 @@ This screen provides critical insights into where and how the `HTTP 500` error o
 
 Using this view, you can see that the Frontend > Recommendations services have problems. Specifically, that the `/api/pizza` endpoint chain is failing.
 
-![Root cause errors tab](/media/docs/explore-traces/traces-drilldown-root-cause-errors-v1.2.png "Root cause errors tab")
+![Root cause errors tab](/media/docs/explore-traces/traces-drilldown-root-cause-errors-v1.2.png 'Root cause errors tab')
 
 To view additional details, click the link icon and select **View linked span** to open the trace drawer.
 
-![View linked spans to see details of errors](/media/docs/explore-traces/traces-drilldown-root-cause-trace-drawer-v1.2.png "View linked spans to see details of errors")
+![View linked spans to see details of errors](/media/docs/explore-traces/traces-drilldown-root-cause-trace-drawer-v1.2.png 'View linked spans to see details of errors')
 
 Errors spans have a red icon next to them. Select the down arrow next to the errored span to see details.
 
-![Select the down arrow next to the errored span to see details](/media/docs/explore-traces/traces-drilldown-root-cause-trace-expanded-v1.2.png "Select the down arrow next to the errored span to see details")
+![Select the down arrow next to the errored span to see details](/media/docs/explore-traces/traces-drilldown-root-cause-trace-expanded-v1.2.png 'Select the down arrow next to the errored span to see details')
+
+## What you learned
+
+This example demonstrated how to:
+
+- Use **All spans** to find errors deeper in the call chain
+- Understand common error investigation misunderstandings
+- Use the **Comparison** tab to correlate attributes with errors
+- Use **Inspect** to drill into attribute distributions
+- Use **Root cause errors** to see error chain structures
+
+For a step-by-step walkthrough you can follow along, refer to the [Investigation walkthrough](./example-investigation.md).
