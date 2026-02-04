@@ -39,7 +39,7 @@
     "@testing-library/react-hooks": "8.0.1",
     "@testing-library/user-event": "14.6.1",
     "@types/jest": "29.5.14",
-    "@types/lodash": "4.17.20",
+    "@types/lodash": "4.17.23",
     "@types/node": "22.16.5",
     "@types/testing-library__jest-dom": "5.14.9",
     "@typescript-eslint/eslint-plugin": "8.38.0",
@@ -104,7 +104,8 @@
     "nwsapi": "2.2.22",
     "rxjs": "^7.8.1",
     "js-yaml": "4.1.1",
-    "@remix-run/router": "1.23.2"
+    "@remix-run/router": "1.23.2",
+    "lodash": "4.17.23"
   },
   "packageManager": "yarn@1.22.22"
 }
