@@ -32,7 +32,7 @@ import {
   getUrlForExploration,
   shouldShowSelection,
 } from '../../../utils/utils';
-import { getHistogramVizPanel, yBucketToDuration } from '../panels/histogram';
+import { getHistogramVizPanel, histogramPanelConfig, yBucketToDuration } from '../panels/histogram';
 import { TraceSceneState } from './TracesByServiceScene';
 import { SelectionColor } from '../layouts/allComparison';
 import { buildHistogramQuery } from '../queries/histogram';
@@ -42,8 +42,9 @@ import { exemplarsTransformations, removeExemplarsTransformation } from '../../.
 import { useServiceName } from 'pages/Explore/TraceExploration';
 import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 import { locationService } from '@grafana/runtime';
+import { AnnotationExtensionsState, enrichWithAnnotations, useAnnotationExtensions } from '../behaviors/getAnnotationExtensions';
 
-export interface RateMetricsPanelState extends SceneObjectState {
+export interface RateMetricsPanelState extends AnnotationExtensionsState, SceneObjectState {
   panel?: SceneFlexLayout;
   actions?: SceneObject[];
   yBuckets?: number[];
@@ -54,6 +55,7 @@ export interface RateMetricsPanelState extends SceneObjectState {
 export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   constructor(state: RateMetricsPanelState) {
     super({
+      $behaviors: [enrichWithAnnotations()],
       yBuckets: [],
       actions: [],
       isStreaming: false,
@@ -155,8 +157,33 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
               }),
             });
           }
-        })
+        }),
       );
+
+      // TODO: This section could benefit from some smarter conditionals and event management
+      // Perhaps it can be merged in with the block below which already alters annotations.
+      {
+        let appendingExternalAnnotations = false;
+        this._subs.add(
+          data.subscribeToState((newData) => {
+            if (appendingExternalAnnotations) {
+              return; // Already here; avoid loop
+            }
+            appendingExternalAnnotations = true;
+
+            const annotations = [...newData.data?.annotations || [], ...this.state.annotationExtensions || []]
+
+            data.setState({
+              data: {
+                ...data.state.data!,
+                annotations: annotations,
+              },
+            });
+
+            appendingExternalAnnotations = false;
+          }),
+        )
+      }
 
       this._subs.add(
         parent.subscribeToState((newState, prevState) => {
@@ -203,14 +230,26 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   private getVizPanel() {
     const metric = getMetricVariable(this).state.value as MetricFunction;
     if (this.isDuration()) {
-      return getHistogramVizPanel(this, this.state.yBuckets ?? []);
+      return getHistogramVizPanel(
+        this, 
+        this.state.yBuckets ?? [], 
+        (builder) => this.applyAnnotationMode(builder)
+      );
     }
 
     return this.getRateOrErrorVizPanel(metric);
   }
 
+  private applyAnnotationMode(builder: ReturnType<typeof barsPanelConfig | typeof histogramPanelConfig>) {
+    // TODO: Consider a toggle to turn this on and off -- having too many lines of annotations diminishes the actual data on the panel
+    // @ts-ignore -- Feature not in schema yet
+    builder.setOption('annotations', {multiLane: true})
+  }
+
   private getRateOrErrorVizPanel(type: MetricFunction) {
     const panel = barsPanelConfig(type, this.state.embeddedMini ? undefined : 70).setHoverHeader(true).setDisplayMode('transparent');
+    this.applyAnnotationMode(panel);
+
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
@@ -269,6 +308,9 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const styles = useStyles2(getStyles);
     const serviceName = useServiceName(model);
     const timeRange = sceneGraph.getTimeRange(model).useState();
+  
+    // Ensure the annotation extensions are initialized
+    useAnnotationExtensions(model)
 
     if (!panel) {
       return;
