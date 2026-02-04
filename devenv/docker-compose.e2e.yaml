@@ -1,15 +1,15 @@
-version: '3.0'
+version: "3.0"
 
 services:
   grafana:
-    container_name: 'grafana-explore-traces-e2e'
+    container_name: "grafana-explore-traces-e2e"
     environment:
       - GF_PLUGINS_PREINSTALL_DISABLED=true
     build:
       context: ../.config
       args:
-        grafana_image: ${GRAFANA_IMAGE:-grafana}
-        grafana_version: ${GRAFANA_VERSION:-latest}
+        grafana_image: ${GRAFANA_IMAGE:-grafana-dev}
+        grafana_version: ${GRAFANA_VERSION:-12.2.0-17432607250}
     ports:
       - 3001:3000/tcp
     volumes:
@@ -17,12 +17,12 @@ services:
       - ../provisioning:/etc/grafana/provisioning
 
   tempo:
-    image: grafana/tempo:main-3449ef6@sha256:bb8d97696aaaf0d261e72066e7b4a39f8936ab80e27888285cb7a12025ea7b9c
-    command: [ "-config.file=/etc/tempo.yaml" ]
+    image: grafana/tempo:latest@sha256:009af35797ad7169d264436e3d06e1173afa6c3848bfd8f09d5e914b310a4819
+    command: ["-config.file=/etc/tempo.yaml"]
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
     ports:
-      - "3200:3200"   # tempo
+      - "3200:3200" # tempo
 
   # A RabbitMQ queue used to send message between the requester and the server microservices.
   mythical-queue:

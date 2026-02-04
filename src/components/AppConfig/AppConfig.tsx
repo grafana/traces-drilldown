@@ -1,56 +1,41 @@
-import React, { useState, ChangeEvent } from 'react';
-import { Button, Field, Input, useStyles2, FieldSet, SecretInput } from '@grafana/ui';
+import React, { useState } from 'react';
+import { Button, Field, useStyles2, FieldSet, Combobox } from '@grafana/ui';
 import { PluginConfigPageProps, AppPluginMeta, PluginMeta, GrafanaTheme2 } from '@grafana/data';
 import { FetchResponse, getBackendSrv, locationService } from '@grafana/runtime';
 import { css } from '@emotion/css';
 import { lastValueFrom, Observable } from 'rxjs';
+import { DEFAULT_QUERY_RANGE_HOURS } from 'utils/shared';
 
 export type JsonData = {
-  apiUrl?: string;
-  isApiKeySet?: boolean;
+  queryRangeHours?: number;
 };
 
 type State = {
-  // The URL to reach our custom API.
-  apiUrl: string;
-  // Tells us if the API key secret is set.
-  // Set to `true` ONLY if it has already been set and haven't been changed.
-  // (We unfortunately need an auxiliary variable for this, as `secureJsonData` is never exposed to the browser after it is set)
-  isApiKeySet: boolean;
-  // An secret key for our custom API.
-  apiKey: string;
+  // The time range for each cached batch (in hours)
+  queryRangeHours: number;
 };
 
 interface Props extends PluginConfigPageProps<AppPluginMeta<JsonData>> {}
+
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => ({
+  label: `${i + 1} hour${i > 0 ? 's' : ''}`,
+  value: i + 1,
+}));
 
 const AppConfig = ({ plugin }: Props) => {
   const s = useStyles2(getStyles);
   const { enabled, pinned, jsonData } = plugin.meta;
   const [state, setState] = useState<State>({
-    apiUrl: jsonData?.apiUrl || '',
-    apiKey: '',
-    isApiKeySet: Boolean(jsonData?.isApiKeySet),
+    queryRangeHours: jsonData?.queryRangeHours ?? DEFAULT_QUERY_RANGE_HOURS,
   });
 
-  const onResetApiKey = () =>
-    setState({
-      ...state,
-      apiKey: '',
-      isApiKeySet: false,
-    });
-
-  const onChangeApiKey = (event: ChangeEvent<HTMLInputElement>) => {
-    setState({
-      ...state,
-      apiKey: event.target.value.trim(),
-    });
-  };
-
-  const onChangeApiUrl = (event: ChangeEvent<HTMLInputElement>) => {
-    setState({
-      ...state,
-      apiUrl: event.target.value.trim(),
-    });
+  const onChangeQueryRange = (option: { label?: string; value?: number } | null) => {
+    if (option?.value) {
+      setState({
+        ...state,
+        queryRangeHours: option.value,
+      });
+    }
   };
 
   return (
@@ -98,31 +83,18 @@ const AppConfig = ({ plugin }: Props) => {
       </FieldSet>
 
       {/* CUSTOM SETTINGS */}
-      <FieldSet label="API Settings" className={s.marginTopXl}>
-        {/* API Key */}
-        <Field label="API Key" description="A secret key for authenticating to our custom API">
-          <SecretInput
-            width={60}
-            data-testid={testIds.appConfig.apiKey}
-            id="api-key"
-            value={state?.apiKey}
-            isConfigured={state.isApiKeySet}
-            placeholder={'Your secret API key'}
-            onChange={onChangeApiKey}
-            onReset={onResetApiKey}
-          />
-        </Field>
-
-        {/* API Url */}
-        <Field label="API Url" description="" className={s.marginTop}>
-          <Input
-            width={60}
-            id="api-url"
-            data-testid={testIds.appConfig.apiUrl}
-            label={`API Url`}
-            value={state?.apiUrl}
-            placeholder={`E.g.: http://mywebsite.com/api/v1`}
-            onChange={onChangeApiUrl}
+      <FieldSet label="Time Seeker Settings" className={s.marginTopXl}>
+        <Field
+          label="Query Range"
+          description="The time range for each cached batch in the Time Seeker. Larger values mean fewer queries but more data per query."
+        >
+          <Combobox<number>
+            width={30}
+            id="query-range-hours"
+            data-testid={testIds.appConfig.queryRange}
+            options={HOUR_OPTIONS}
+            value={state.queryRangeHours}
+            onChange={onChangeQueryRange}
           />
         </Field>
 
@@ -135,21 +107,12 @@ const AppConfig = ({ plugin }: Props) => {
                 enabled,
                 pinned,
                 jsonData: {
-                  apiUrl: state.apiUrl,
-                  isApiKeySet: true,
+                  queryRangeHours: state.queryRangeHours,
                 },
-                // This cannot be queried later by the frontend.
-                // We don't want to override it in case it was set previously and left untouched now.
-                secureJsonData: state.isApiKeySet
-                  ? undefined
-                  : {
-                      apiKey: state.apiKey,
-                    },
               })
             }
-            disabled={Boolean(!state.apiUrl || (!state.isApiKeySet && !state.apiKey))}
           >
-            Save API settings
+            Save settings
           </Button>
         </div>
       </FieldSet>
@@ -184,12 +147,16 @@ const updatePluginAndReload = async (pluginId: string, data: Partial<PluginMeta<
 const testIds = {
   appConfig: {
     container: 'data-testid ac-container',
-    apiKey: 'data-testid ac-api-key',
-    apiUrl: 'data-testid ac-api-url',
+    queryRange: 'data-testid ac-query-range',
     submit: 'data-testid ac-submit-form',
   },
 };
 
+/**
+ * Save plugin settings to Grafana backend.
+ * Follows the recommended approach from:
+ * https://grafana.com/developers/plugin-tools/tutorials/build-an-app-plugin#configuration-page
+ */
 export const updatePlugin = async (pluginId: string, data: Partial<PluginMeta>) => {
   const response = getBackendSrv().fetch({
     url: `/api/plugins/${pluginId}/settings`,

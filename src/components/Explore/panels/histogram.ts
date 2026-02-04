@@ -12,8 +12,6 @@ export function getHistogramVizPanel(scene: SceneObject, yBuckets: number[]) {
     .build();
   panel.setState({
     extendPanelContext: (vizPanel, context) => {
-      // TODO remove when we the Grafana version with #88107 is released
-      // @ts-ignore
       context.onSelectRange = (args) => {
         if (args.length === 0) {
           parent.setState({ selection: undefined });

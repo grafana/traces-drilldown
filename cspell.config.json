@@ -76,6 +76,9 @@
     "nwsapi",
     "adaptivetraces",
     "tailsampling",
-    "sparklines"
+    "sparklines",
+    "smhdw",
+    "uplot",
+    "bbox"
   ]
 }
