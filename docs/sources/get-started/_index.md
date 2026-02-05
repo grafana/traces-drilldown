@@ -49,13 +49,13 @@ Most investigations follow these steps:
 
 {{< docs/play title="the Grafana Play site" url="https://play.grafana.org/a/grafana-exploretraces-app/explore" >}}
 
-Prefer a step-by-step walkthrough? Refer to the [Investigation walkthrough](./example-investigation.md) to follow along on play.grafana.org.
+Prefer a step-by-step walkthrough? Refer to the [Investigation walkthrough](./example-investigation/) to follow along on play.grafana.org.
 
 ## Example: Investigate source of errors
 
 This example demonstrates investigation techniques and patterns you can use when investigating errors. It shows how to use advanced features like the **Comparison** tab and **Inspect** to find root causes.
 
-For a hands-on walkthrough you can follow step-by-step, refer to the [Investigation walkthrough](./example-investigation.md).
+For a hands-on walkthrough you can follow step-by-step, refer to the [Investigation walkthrough](./example-investigation/).
 
 As an example, you want to uncover the source of errors in your spans. You need to compare the errors in the traces to locate the problem trace. Here's how this works.
 
@@ -143,4 +143,4 @@ This example demonstrated how to:
 - Use **Inspect** to drill into attribute distributions
 - Use **Root cause errors** to see error chain structures
 
-For a step-by-step walkthrough you can follow along, refer to the [Investigation walkthrough](./example-investigation.md).
+For a step-by-step walkthrough you can follow along, refer to the [Investigation walkthrough](./example-investigation/).

@@ -20,7 +20,7 @@ weight: 600
 Use filters to refine your investigation.
 
 Filters are available on the **Breakdown** and **Comparison** views.
-Refer to [Analyze tracing data](../analyze-tracing-data) for how to use these views.
+Refer to [Analyze tracing data](../analyze-tracing-data/) for how to use these views.
 
 ## Add filters
 
@@ -30,9 +30,9 @@ The list of filters expands as you investigate and explore your tracing data usi
 1. Refine your investigation by adding filters.
 1. Optional: Use the tabs underneath the metrics selection to provide insights into breakdowns, comparisons, latency, and other explorations.
 1. Choose filters to hone in on the problem areas. Each filter that you select adds to the **Filter** bar at the top of the page. You can select filters on the **Comparison** and **Breakdown** tabs in the following ways:
-    * Select **Add to filters**.
-    * Use the **Filter** bar near the top.
-    * Attributes shown with a filter icon in the **Attributes** sidebar are already applied in your current **Filters**. The **Attributes** sidebar helps you pick and favorite attributes used for grouping, comparison, and **Trace list** columns. Refer to the [UI reference](../ui-reference/).
+   - Select **Add to filters**.
+   - Use the **Filter** bar near the top.
+   - Attributes shown with a filter icon in the **Attributes** sidebar are already applied in your current **Filters**. The **Attributes** sidebar helps you pick and favorite attributes used for grouping, comparison, and **Trace list** columns. Refer to the [UI reference](../../ui-reference/).
 
 ![Change filters for your investigation](/media/docs/explore-traces/traces-drilldown-filters-ga-1.png)
 
@@ -71,4 +71,3 @@ The default retention period is 30 days.
 Your configuration may vary from these values.
 
 For more information about the time range picker, refer to [Use dashboards](ref:use-dashboards).
-
