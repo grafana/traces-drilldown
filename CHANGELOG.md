@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.3.2
+
+##### Chores
+
+*  Upgrade lodash (#643) (433559b)
+
+
+## 1.3.1
+
+##### Chores
+
+*  Upgrade react-router (#621) (eec1df9e)
+
+##### Bug Fixes
+
+*  Check if usePluginFunctions is available (#616) (99112e44)
+
+
 ## 1.3.0
 
 ##### Chores
