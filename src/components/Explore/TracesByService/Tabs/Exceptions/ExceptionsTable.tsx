@@ -3,6 +3,8 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Icon, useStyles2, Tooltip } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { SparklineCell } from './SparklineCell';
+import { ExceptionAccordionContent } from './accordion/ExceptionAccordion';
+import { SceneObject } from '@grafana/scenes';
 
 export interface ExceptionRow {
   type: string;
@@ -16,11 +18,12 @@ export interface ExceptionRow {
 interface ExceptionsTableProps {
   rows: ExceptionRow[];
   theme: GrafanaTheme2;
+  scene: SceneObject;
   onFilterClick?: (key: string, value: string, operator?: '=' | '!=', append?: boolean) => void;
 }
 
 // Component to conditionally show tooltip only when text is truncated
-const TruncatedMessage = ({ message, onClick, className }: { message: string; onClick: () => void; className: string }) => {
+const TruncatedMessage = ({ message, onClick, className }: { message: string; onClick: (e: React.MouseEvent) => void; className: string }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
 
@@ -71,16 +74,9 @@ const TruncatedMessage = ({ message, onClick, className }: { message: string; on
   return content;
 };
 
-export const ExceptionsTable = ({ rows, theme, onFilterClick }: ExceptionsTableProps) => {
+export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: ExceptionsTableProps) => {
   const styles = useStyles2(getStyles);
-  
-  const handleTypeClick = (type: string) => {
-    onFilterClick?.('event.exception.type', type);
-  };
-
-  const handleMessageClick = (message: string) => {
-    onFilterClick?.('event.exception.message', message);
-  };
+  const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   const handleIncludeClick = (message: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -90,6 +86,10 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick }: ExceptionsTableP
   const handleExcludeClick = (message: string, e: React.MouseEvent) => {
     e.stopPropagation();
     onFilterClick?.('event.exception.message', message, '!=', true);
+  };
+
+  const handleRowClick = (index: number) => {
+    setExpandedRow(expandedRow === index ? null : index);
   };
 
   return (
@@ -118,65 +118,102 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick }: ExceptionsTableP
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, index) => (
-            <tr key={index} className={styles.tableRow}>
-              <td className={styles.tableCell}>
-                <div className={styles.exceptionDetailsContainer}>
-                  <div className={styles.contentWithButtonsContainer}>
-                    <div className={styles.exceptionContentContainer}>
-                      <div 
-                        className={styles.exceptionType}
-                        onClick={() => handleTypeClick(row.type)}
-                      >
-                        {row.type}
-                      </div>
-                      <TruncatedMessage
-                        message={row.message}
-                        onClick={() => handleMessageClick(row.message)}
-                        className={styles.exceptionMessage}
-                      />
-                      <div className={styles.exceptionMeta}>
-                        {row.service && (
-                          <span className={styles.metaItem}>
-                            <Icon name="cube" size="xs" />
-                            <span>{row.service}</span>
-                          </span>
-                        )}
-                        {row.lastSeen && (
-                          <span className={styles.metaItem}>
-                            <Icon name="clock-nine" size="xs" />
-                            <span>{row.lastSeen}</span>
-                          </span>
-                        )}
+          {rows.map((row, index) => {
+            const isExpanded = expandedRow === index;
+            return (
+              <React.Fragment key={index}>
+                <tr 
+                  className={styles.tableRow}
+                  onClick={() => handleRowClick(index)}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isExpanded}
+                  aria-controls={`exception-accordion-${index}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleRowClick(index);
+                    }
+                  }}
+                >
+                  <td className={styles.tableCell}>
+                    <div className={styles.exceptionDetailsContainer}>
+                      <div className={styles.contentWithButtonsContainer}>
+                        <div className={styles.exceptionContentContainer}>
+                          <div 
+                            className={styles.exceptionType}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRowClick(index);
+                            }}
+                          >
+                            {row.type}
+                          </div>
+                          <TruncatedMessage
+                            message={row.message}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRowClick(index);
+                            }}
+                            className={styles.exceptionMessage}
+                          />
+                          <div className={styles.exceptionMeta}>
+                            {row.service && (
+                              <span className={styles.metaItem}>
+                                <Icon name="cube" size="xs" />
+                                <span>{row.service}</span>
+                              </span>
+                            )}
+                            {row.lastSeen && (
+                              <span className={styles.metaItem}>
+                                <Icon name="clock-nine" size="xs" />
+                                <span>{row.lastSeen}</span>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className={styles.filterButtonsContainer}>
+                          <button
+                            className={styles.filterButton}
+                            onClick={(e) => handleIncludeClick(row.message, e)}
+                            aria-label="Include exception message"
+                          >
+                            Include
+                          </button>
+                          <button
+                            className={styles.filterButton}
+                            onClick={(e) => handleExcludeClick(row.message, e)}
+                            aria-label="Exclude exception message"
+                          >
+                            Exclude
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    <div className={styles.filterButtonsContainer}>
-                      <button
-                        className={styles.filterButton}
-                        onClick={(e) => handleIncludeClick(row.message, e)}
-                        aria-label="Include exception message"
-                      >
-                        Include
-                      </button>
-                      <button
-                        className={styles.filterButton}
-                        onClick={(e) => handleExcludeClick(row.message, e)}
-                        aria-label="Exclude exception message"
-                      >
-                        Exclude
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td className={styles.tableCellOccurrences}>
-                <div className={styles.occurrencesCell}>{row.occurrences}</div>
-              </td>
-              <td className={styles.tableCellFrequency}>
-                <SparklineCell seriesData={row.timeSeries} theme={theme} />
-              </td>
-            </tr>
-          ))}
+                  </td>
+                  <td className={styles.tableCellOccurrences}>
+                    <div className={styles.occurrencesCell}>{row.occurrences}</div>
+                  </td>
+                  <td className={styles.tableCellFrequency}>
+                    <SparklineCell seriesData={row.timeSeries} theme={theme} />
+                  </td>
+                </tr>
+                {isExpanded && (
+                  <tr>
+                    <td 
+                      colSpan={3} 
+                      className={styles.accordionCell} 
+                      id={`exception-accordion-content-${index}`}
+                      role="region"
+                      aria-labelledby={`exception-accordion-content-${index}`}
+                    >
+                      <ExceptionAccordionContent row={row} scene={scene} />
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -185,7 +222,7 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick }: ExceptionsTableP
 
 const getStyles = (theme: GrafanaTheme2) => {
   const baseHeaderCell = {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1.5),
     fontWeight: theme.typography.fontWeightMedium,
     color: theme.colors.text.secondary,
     backgroundColor: theme.colors.background.secondary,
@@ -202,7 +239,7 @@ const getStyles = (theme: GrafanaTheme2) => {
   });
 
   const baseTableCell = {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1.5),
     verticalAlign: 'middle' as const,
   };
 
@@ -215,6 +252,8 @@ const getStyles = (theme: GrafanaTheme2) => {
   return {
     container: css({
       width: '100%',
+      height: '100%',
+      minHeight: 0,
       overflowX: 'auto',
       overflowY: 'auto',
     }),
@@ -239,6 +278,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       opacity: 0.7,
     }),
     tableRow: css({
+      cursor: 'pointer',
       borderBottom: `1px solid ${theme.colors.border.weak}`,
       '&:hover': {
         backgroundColor: theme.colors.background.secondary,
@@ -248,9 +288,8 @@ const getStyles = (theme: GrafanaTheme2) => {
     tableCellOccurrences: css(centeredTableCell('150px')),
     tableCellFrequency: css(centeredTableCell('220px')),
     occurrencesCell: css({
-      fontSize: theme.typography.h5.fontSize,
-      fontWeight: theme.typography.fontWeightMedium,
       color: theme.colors.text.primary,
+      fontSize: theme.typography.body.fontSize,
     }),
     exceptionDetailsContainer: css({
       display: 'flex',
@@ -261,7 +300,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      gap: theme.spacing(2),
+      gap: theme.spacing(1),
       width: '100%',
     }),
     exceptionContentContainer: css({
@@ -272,46 +311,48 @@ const getStyles = (theme: GrafanaTheme2) => {
     }),
     filterButtonsContainer: css({
       display: 'flex',
-      flexDirection: 'row',
-      gap: theme.spacing(1),
-      flexShrink: 0, // Prevent buttons from shrinking
+      border: `1px solid ${theme.colors.border.medium}`,
+      borderRadius: '4px',
+      overflow: 'hidden',
     }),
     filterButton: css({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
+      padding: `${theme.spacing(0.25)} ${theme.spacing(1)}`,
       background: 'transparent',
-      border: `1px solid ${theme.colors.border.medium}`,
-      borderRadius: theme.shape.radius.default,
+      border: 'none',
       cursor: 'pointer',
-      color: theme.colors.text.secondary,
+      color: theme.colors.text.primary,
       fontSize: theme.typography.bodySmall.fontSize,
-      fontWeight: theme.typography.fontWeightMedium,
-      transition: 'all 0.2s ease-in-out',
+      transition: 'background 0.2s ease-in-out, color 0.2s ease-in-out',
       whiteSpace: 'nowrap',
       '&:hover': {
-        background: theme.colors.background.secondary,
-        color: theme.colors.text.primary,
-        borderColor: theme.colors.border.strong,
+        background: theme.colors.background.primary,
       },
       '&:active': {
         transform: 'scale(0.95)',
+      },
+      '&:not(:last-child)': {
+        borderRight: `1px solid ${theme.colors.border.medium}`,
       },
     }),
     exceptionType: css({
       fontWeight: theme.typography.fontWeightMedium,
       color: theme.colors.text.link,
       cursor: 'pointer',
-      marginBottom: theme.spacing(0.5),
+      marginBottom: theme.spacing(0.25),
       '&:hover': {
         textDecoration: 'underline',
       },
     }),
+    accordionCell: css({
+      padding: 0,
+      borderBottom: `1px solid ${theme.colors.border.weak}`,
+      backgroundColor: theme.colors.background.secondary,
+    }),
     exceptionMessage: css({
-      fontSize: theme.typography.body.fontSize,
       color: theme.colors.text.primary,
-      lineHeight: 1.4,
       wordBreak: 'break-word',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
@@ -326,10 +367,9 @@ const getStyles = (theme: GrafanaTheme2) => {
     exceptionMeta: css({
       display: 'flex',
       alignItems: 'center',
-      gap: theme.spacing(2),
-      fontSize: theme.typography.bodySmall.fontSize,
+      gap: theme.spacing(1),
       color: theme.colors.text.secondary,
-      marginTop: theme.spacing(0.5),
+      marginTop: theme.spacing(0.25),
     }),
     metaItem: css({
       display: 'flex',

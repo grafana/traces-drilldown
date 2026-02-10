@@ -22,9 +22,14 @@ jest.mock('./SparklineCell', () => ({
   ),
 }));
 
+jest.mock('./accordion/ExceptionAccordion', () => ({
+  ExceptionAccordionContent: () => <div data-testid="exception-accordion">Accordion</div>,
+}));
+
 describe('ExceptionsTable', () => {
   const mockTheme = createTheme();
   const mockOnFilterClick = jest.fn();
+  const mockScene = {} as any;
 
   const mockRows: ExceptionRow[] = [
     {
@@ -56,7 +61,7 @@ describe('ExceptionsTable', () => {
   });
 
   it('should render table with exception rows', () => {
-    render(<ExceptionsTable rows={mockRows} theme={mockTheme} />);
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
     // Check headers
     expect(screen.getByText('Exception Details')).toBeInTheDocument();
@@ -85,55 +90,66 @@ describe('ExceptionsTable', () => {
   });
 
   it('should render sparkline cells for each row', () => {
-    render(<ExceptionsTable rows={mockRows} theme={mockTheme} />);
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
     const sparklines = screen.getAllByTestId('sparkline-cell');
     expect(sparklines).toHaveLength(2);
   });
 
-  it('should call onFilterClick when exception type is clicked', () => {
-    render(<ExceptionsTable rows={mockRows} theme={mockTheme} onFilterClick={mockOnFilterClick} />);
+  it('should toggle accordion when exception type is clicked', () => {
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
     const typeElement = screen.getByText('SQLException');
     fireEvent.click(typeElement);
+    expect(screen.getByTestId('exception-accordion')).toBeInTheDocument();
 
-    expect(mockOnFilterClick).toHaveBeenCalledWith('event.exception.type', 'SQLException');
+    fireEvent.click(typeElement);
+    expect(screen.queryByTestId('exception-accordion')).not.toBeInTheDocument();
   });
 
-  it('should call onFilterClick when exception message is clicked', () => {
-    render(<ExceptionsTable rows={mockRows} theme={mockTheme} onFilterClick={mockOnFilterClick} />);
+  it('should toggle accordion when exception message is clicked', () => {
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
     const messageElement = screen.getByText('Database connection failed');
     fireEvent.click(messageElement);
 
-    expect(mockOnFilterClick).toHaveBeenCalledWith('event.exception.message', 'Database connection failed');
+    expect(screen.getByTestId('exception-accordion')).toBeInTheDocument();
+  });
+
+  it('should call onFilterClick when include/exclude buttons are clicked', () => {
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} onFilterClick={mockOnFilterClick} />);
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Include exception message' })[0]);
+    expect(mockOnFilterClick).toHaveBeenCalledWith('event.exception.message', 'Database connection failed', '=', true);
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Exclude exception message' })[0]);
+    expect(mockOnFilterClick).toHaveBeenCalledWith('event.exception.message', 'Database connection failed', '!=', true);
   });
 
   it('should not call onFilterClick when onFilterClick prop is not provided', () => {
-    render(<ExceptionsTable rows={mockRows} theme={mockTheme} />);
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
-    const typeElement = screen.getByText('SQLException');
-    fireEvent.click(typeElement);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Include exception message' })[0]);
 
     expect(mockOnFilterClick).not.toHaveBeenCalled();
   });
 
   it('should render empty table when rows array is empty', () => {
-    render(<ExceptionsTable rows={[]} theme={mockTheme} />);
+    render(<ExceptionsTable rows={[]} theme={mockTheme} scene={mockScene} />);
 
     expect(screen.getByText('Exception Details')).toBeInTheDocument();
     expect(screen.queryByText('SQLException')).not.toBeInTheDocument();
   });
 
   it('should render service icon when service is present', () => {
-    render(<ExceptionsTable rows={mockRows} theme={mockTheme} />);
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
     const cubeIcons = screen.getAllByTestId('icon-cube');
     expect(cubeIcons.length).toBeGreaterThan(0);
   });
 
   it('should render clock icon when lastSeen is present', () => {
-    render(<ExceptionsTable rows={mockRows} theme={mockTheme} />);
+    render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
     const clockIcons = screen.getAllByTestId('icon-clock-nine');
     expect(clockIcons.length).toBeGreaterThan(0);
@@ -151,7 +167,7 @@ describe('ExceptionsTable', () => {
       },
     ];
 
-    render(<ExceptionsTable rows={rowsWithoutService} theme={mockTheme} />);
+    render(<ExceptionsTable rows={rowsWithoutService} theme={mockTheme} scene={mockScene} />);
 
     expect(screen.getByText('Test error')).toBeInTheDocument();
     expect(screen.queryByTestId('icon-cube')).not.toBeInTheDocument();
@@ -169,7 +185,7 @@ describe('ExceptionsTable', () => {
       },
     ];
 
-    render(<ExceptionsTable rows={rowsWithoutLastSeen} theme={mockTheme} />);
+    render(<ExceptionsTable rows={rowsWithoutLastSeen} theme={mockTheme} scene={mockScene} />);
 
     expect(screen.getByText('Test error')).toBeInTheDocument();
     expect(screen.queryByTestId('icon-clock-nine')).not.toBeInTheDocument();
@@ -187,7 +203,7 @@ describe('ExceptionsTable', () => {
       },
     ];
 
-    render(<ExceptionsTable rows={longMessageRows} theme={mockTheme} />);
+    render(<ExceptionsTable rows={longMessageRows} theme={mockTheme} scene={mockScene} />);
 
     expect(screen.getByText(/This is a very long exception message/)).toBeInTheDocument();
   });
@@ -202,7 +218,7 @@ describe('ExceptionsTable', () => {
       timeSeries: [{ time: 1000, count: i }],
     }));
 
-    render(<ExceptionsTable rows={manyRows} theme={mockTheme} />);
+    render(<ExceptionsTable rows={manyRows} theme={mockTheme} scene={mockScene} />);
 
     expect(screen.getByText('Error0')).toBeInTheDocument();
     expect(screen.getByText('Error9')).toBeInTheDocument();
