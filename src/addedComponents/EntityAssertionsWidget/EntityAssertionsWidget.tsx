@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { AdHocVariableFilter, TimeRange } from '@grafana/data';
 import type { 
@@ -57,15 +57,17 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
   }
 
   // Convert AdHocVariableFilter to EntityFilterPropertyMatcher format for additionalMatchers
-  const additionalMatchers: EntityFilterPropertyMatcher[] = filters
-    .filter((filter) => filter.key !== 'resource.service.name') // Exclude service.name as it's already passed as entityName
-    .map((filter, index) => ({
-      id: index,
-      name: filter.key,
-      value: filter.value,
-      op: mapOperatorToStringRule(filter.operator) as StringRules | NumberRules,
-      type: 'String' as EntityPropertyTypes,
-    }));
+  const additionalMatchers: EntityFilterPropertyMatcher[] = useMemo(() => {
+    return filters
+      .filter((filter) => filter.key !== 'resource.service.name') // Exclude service.name as it's already passed as entityName
+      .map((filter, index) => ({
+        id: index,
+        name: filter.key,
+        value: filter.value,
+        op: mapOperatorToStringRule(filter.operator) as StringRules | NumberRules,
+        type: 'String' as EntityPropertyTypes,
+      }));
+  }, [filters]);
 
   return (
     <EntityAssertionsWidgetExternal
