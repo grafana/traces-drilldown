@@ -29,6 +29,8 @@ type ExceptionDistributionPanelInit = Omit<ExceptionDistributionPanelState, 'ite
   timeRangeScene: SceneObject;
 };
 
+const MAX_ROWS = 6;
+
 class ExceptionDistributionPanel extends SceneObjectBase<ExceptionDistributionPanelState> {
   constructor(state: ExceptionDistributionPanelInit) {
     super({
@@ -125,7 +127,7 @@ class ExceptionDistributionPanel extends SceneObjectBase<ExceptionDistributionPa
   };
 }
 
-export function buildDistribution(series: DataFrame[], attributeKey: string, maxRows = 6): DistributionItem[] {
+export function buildDistribution(series: DataFrame[], attributeKey: string, maxRows = MAX_ROWS): DistributionItem[] {
   const rawItems = series
     .map((df) => {
       const value = getSeriesValue(df, attributeKey) ?? 'Unknown';
@@ -272,10 +274,17 @@ export const ExceptionComparison = ({
   const styles = useStyles2(getComparisonStyles);
 
   const panels = useMemo(() => {
-    const datasourceUid = getDatasourceUidOrThrow(scene);
     const defaults = ['resource.service.name', 'resource.service.namespace', 'name'];
     const available = getTraceByServiceScene(scene).state.attributes ?? [];
     const attributeKeys = getAttributeKeys(selectedAttributes, available, defaults);
+
+    let datasourceUid: string;
+    try {
+      datasourceUid = getDatasourceUidOrThrow(scene);
+    } catch (err) {
+      console.error('Failed to get datasource UID:', err);
+      return [];
+    }
 
     return attributeKeys.map((attributeKey) => {
       const query = `${baseFilter} | count_over_time() by (${attributeKey})`;

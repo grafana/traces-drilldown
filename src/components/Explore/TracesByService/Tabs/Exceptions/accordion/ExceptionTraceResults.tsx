@@ -19,8 +19,15 @@ export const ExceptionTraceResults = ({
 }) => {
   const panel = useMemo(() => {
     const timeRange = sceneGraph.getTimeRange(scene);
-    const datasourceUid = getDatasourceUidOrThrow(scene);
     const selectQuery = buildSelectQuery(selectedAttributes);
+    
+    let datasourceUid: string;
+    try {
+      datasourceUid = getDatasourceUidOrThrow(scene);
+    } catch (err) {
+      console.error('Failed to get datasource UID:', err);
+      return null;
+    }
 
     const queryRunner = new SceneQueryRunner({
       datasource: { uid: datasourceUid },
@@ -73,6 +80,10 @@ export const ExceptionTraceResults = ({
       .setData(dataTransformer)
       .build();
   }, [baseFilter, selectedAttributes, scene]);
+
+  if (!panel) {
+    return null;
+  }
 
   return <panel.Component model={panel} />;
 };

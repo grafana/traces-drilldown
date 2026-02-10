@@ -125,6 +125,16 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                 <tr 
                   className={styles.tableRow}
                   onClick={() => handleRowClick(index)}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isExpanded}
+                  aria-controls={`exception-accordion-${index}`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleRowClick(index);
+                    }
+                  }}
                 >
                   <td className={styles.tableCell}>
                     <div className={styles.exceptionDetailsContainer}>
@@ -190,7 +200,13 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                 </tr>
                 {isExpanded && (
                   <tr>
-                    <td colSpan={3} className={styles.accordionCell}>
+                    <td 
+                      colSpan={3} 
+                      className={styles.accordionCell} 
+                      id={`exception-accordion-${index}`}
+                      role="region"
+                      aria-labelledby={`exception-accordion-content-${index}`}
+                    >
                       <ExceptionAccordionContent row={row} scene={scene} />
                     </td>
                   </tr>
