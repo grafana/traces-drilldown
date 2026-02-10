@@ -203,7 +203,7 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                     <td 
                       colSpan={3} 
                       className={styles.accordionCell} 
-                      id={`exception-accordion-${index}`}
+                      id={`exception-accordion-content-${index}`}
                       role="region"
                       aria-labelledby={`exception-accordion-content-${index}`}
                     >
