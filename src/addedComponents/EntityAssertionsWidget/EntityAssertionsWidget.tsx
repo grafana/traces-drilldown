@@ -51,10 +51,6 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
     };
   }, [model]);
 
-  if (isLoading || !EntityAssertionsWidgetExternal || !timeRange) {
-    return null;
-  }
-
   // Convert AdHocVariableFilter to EntityFilterPropertyMatcher format for additionalMatchers
   const additionalMatchers: EntityFilterPropertyMatcher[] = useMemo(() => {
     return filters
@@ -67,6 +63,10 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
         type: 'String' as EntityPropertyTypes,
       }));
   }, [filters]);
+
+  if (isLoading || !EntityAssertionsWidgetExternal || !timeRange) {
+    return null;
+  }
 
   return (
     <EntityAssertionsWidgetExternal
