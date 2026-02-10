@@ -1,11 +1,10 @@
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { AdHocVariableFilter, TimeRange } from '@grafana/data';
-import type { 
+import { 
   EntityAssertionsWidgetProps, 
   EntityFilterPropertyMatcher,
   StringRules,
-  NumberRules,
   EntityPropertyTypes
 } from "@grafana/plugin-types/grafana-asserts-app"
 import { usePluginComponent } from '@grafana/runtime';
@@ -64,7 +63,7 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
         id: index,
         name: filter.key,
         value: filter.value,
-        op: mapOperatorToStringRule(filter.operator) as StringRules | NumberRules,
+        op: mapOperatorToStringRule(filter.operator),
         type: 'String' as EntityPropertyTypes,
       }));
   }, [filters]);
@@ -88,13 +87,12 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
 
 const mapOperatorToStringRule = (operator: string): StringRules => {
   switch (operator) {
-    case '=':
-      return '=' as StringRules;
     case '!=':
-      return '<>' as StringRules;
+      return StringRules.NOT_EQUALS;
     case '=~':
-      return 'CONTAINS' as StringRules;
+      return StringRules.CONTAINS;
+    case '=':
     default:
-      return '=' as StringRules;
+      return StringRules.EQUALS;
   }
 };
