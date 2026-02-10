@@ -1,11 +1,11 @@
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { AdHocVariableFilter, TimeRange } from '@grafana/data';
-import { 
+import type { 
   EntityAssertionsWidgetProps, 
   EntityFilterPropertyMatcher,
-  StringRules,
-  EntityPropertyTypes
+  EntityPropertyTypes,
+  StringRules
 } from "@grafana/plugin-types/grafana-asserts-app"
 import { usePluginComponent } from '@grafana/runtime';
 import { sceneGraph, SceneObject } from '@grafana/scenes';
@@ -85,14 +85,23 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
   );
 }
 
+/**
+ * Maps TraceQL operator strings to StringRules enum values.
+ * 
+ * Note: We use string literals with type assertions instead of importing StringRules as a value
+ * because @grafana/plugin-types only exports types (no runtime code). The package.json exports
+ * field only includes "types", not "import" or "default", so webpack cannot resolve runtime
+ * imports. We import StringRules as a type-only import and use the enum's string literal values
+ * directly to maintain type safety while avoiding runtime import errors.
+ */
 const mapOperatorToStringRule = (operator: string): StringRules => {
   switch (operator) {
     case '!=':
-      return StringRules.NOT_EQUALS;
+      return '<>' as StringRules; // StringRules.NOT_EQUALS
     case '=~':
-      return StringRules.CONTAINS;
+      return 'CONTAINS' as StringRules; // StringRules.CONTAINS
     case '=':
     default:
-      return StringRules.EQUALS;
+      return '=' as StringRules; // StringRules.EQUALS
   }
 };
