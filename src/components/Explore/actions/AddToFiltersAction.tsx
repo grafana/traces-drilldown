@@ -13,7 +13,7 @@ interface AddToFiltersActionState extends SceneObjectState {
 }
 
 export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState> {
-  public onClick = () => {
+  private handleFilterAction = (operator: '=' | '!=') => {
     const variable = getFiltersVariable(this);
 
     const labels = this.state.frame.fields.find((f) => f.labels)?.labels ?? {};
@@ -30,25 +30,30 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
     const labelName = this.state.labelKey ?? Object.keys(labels)[0];
     const value = getLabelValue(this.state.frame, this.state.labelKey);
 
-    addToFilters(variable, labelName, value);
+    addToFilters(variable, labelName, value, operator);
 
     this.state.onClick({ labelName });
   };
 
-  public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
-    const key = model.state?.labelKey ?? '';
-    const field = model.state?.frame.fields.filter((x) => x.type !== 'time');
-    const value = field?.[0]?.labels?.[key] ?? '';
-    const filterExists = filterExistsForKey(getFiltersVariable(model), key, value.replace(/"/g, ''));
+  public onIncludeClick = () => {
+    this.handleFilterAction('=');
+  };
 
-    if (!filterExists) {
-      return (
-        <Button variant="primary" size="sm" fill="text" onClick={model.onClick} icon={'search-plus'}>
-          Add to filters
+  public onExcludeClick = () => {
+    this.handleFilterAction('!=');
+  };
+
+  public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
+    return (
+      <>
+        <Button variant="primary" size="sm" fill="text" onClick={model.onIncludeClick}>
+          Include
         </Button>
-      );
-    }
-    return <></>;
+        <Button variant="primary" size="sm" fill="text" onClick={model.onExcludeClick}>
+          Exclude
+        </Button>
+      </>
+    );
   };
 }
 
