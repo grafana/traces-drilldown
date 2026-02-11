@@ -7,7 +7,7 @@ import {
 } from '@grafana/data';
 import { getDataSourceSrv, usePluginFunctions } from '@grafana/runtime';
 import { DataQuery } from '@grafana/schema';
-import React from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 type ContextForLinks = {
   targets: DataQuery[];
@@ -40,20 +40,31 @@ export function DataLinksCustomContext(props: Props) {
 
   const logsDrilldownExtension = extensions?.functions?.[0] ?? undefined;
 
-  if (embedded || !postProcessingSupported || !logsDrilldownExtension || !timeRange) {
-    return <>{children}</>;
-  }
+  // Use refs to keep stable callback identity regardless of whether upstream hooks return new references
+  const dataLinksContextRef = useRef(dataLinksContext);
+  dataLinksContextRef.current = dataLinksContext;
 
-  const dataLinkPostProcessor: DataLinkPostProcessor = (options) => {
-    const linkModel = dataLinksContext.dataLinkPostProcessor(options);
+  const logsDrilldownExtensionRef = useRef(logsDrilldownExtension);
+  logsDrilldownExtensionRef.current = logsDrilldownExtension;
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const dataLinkPostProcessor: DataLinkPostProcessor = useCallback((options) => {
+    const ctx = dataLinksContextRef.current;
+    const ext = logsDrilldownExtensionRef.current;
+
+    if (!ctx || !ext) {
+      return options.linkModel;
+    }
+
+    const linkModel = ctx.dataLinkPostProcessor(options);
     const query = linkModel?.interpolatedParams?.query;
-    const timeRange = linkModel?.interpolatedParams?.timeRange
+    const timeRange = linkModel?.interpolatedParams?.timeRange;
     const linkDataSourceUid = linkModel?.interpolatedParams?.query?.datasource?.uid;
 
     const dataSourceType = getDataSourceSrv().getInstanceSettings(linkDataSourceUid)?.type;
 
-    if (query && linkModel && query && dataSourceType === "loki" && timeRange) {
-      const extensionLink = logsDrilldownExtension.fn({
+    if (query && linkModel && dataSourceType === "loki" && timeRange) {
+      const extensionLink = ext.fn({
         targets: [{
           ...query,
           datasource: {
@@ -70,7 +81,13 @@ export function DataLinksCustomContext(props: Props) {
     }
 
     return linkModel;
+  }, []);
+
+  const contextValue = useMemo(() => ({ dataLinkPostProcessor }), [dataLinkPostProcessor]);
+
+  if (embedded || !postProcessingSupported || !logsDrilldownExtension || !timeRange) {
+    return <>{children}</>;
   }
 
-  return <DataLinksContext.Provider value={{dataLinkPostProcessor}}>{children}</DataLinksContext.Provider>;
+  return <DataLinksContext.Provider value={contextValue}>{children}</DataLinksContext.Provider>;
 }
