@@ -18,8 +18,7 @@
     "server:ci": "docker compose -f ./devenv/docker-compose.e2e.yaml up --build -d",
     "server:ci:down": "docker compose -f ./devenv/docker-compose.e2e.yaml down",
     "start": "yarn install && yarn dev",
-    "sign": "npx --yes @grafana/sign-plugin@latest",
-    "spellcheck": "cspell -c cspell.config.json \"**/*.{ts,tsx,js,go,md,mdx,yml,yaml,json,scss,css}\""
+    "sign": "npx --yes @grafana/sign-plugin@latest"
   },
   "author": "Grafana",
   "license": "AGPL-3.0-only",
@@ -46,7 +45,6 @@
     "@typescript-eslint/eslint-plugin": "8.38.0",
     "@typescript-eslint/parser": "8.38.0",
     "copy-webpack-plugin": "12.0.2",
-    "cspell": "8.19.4",
     "css-loader": "7.1.2",
     "eslint": "8.57.1",
     "eslint-config-prettier": "10.1.8",
