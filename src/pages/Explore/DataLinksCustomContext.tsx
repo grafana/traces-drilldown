@@ -19,7 +19,7 @@ type ContextForLinksFn = (context: ContextForLinks) => PluginExtensionLink | und
 type Props = {
   children: React.ReactNode;
   embedded?: boolean;
-  timeRange?: TimeRange
+  timeRange?: TimeRange;
 };
 
 export function DataLinksCustomContext(props: Props) {
@@ -47,7 +47,6 @@ export function DataLinksCustomContext(props: Props) {
   const logsDrilldownExtensionRef = useRef(logsDrilldownExtension);
   logsDrilldownExtensionRef.current = logsDrilldownExtension;
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const dataLinkPostProcessor: DataLinkPostProcessor = useCallback((options) => {
     const ctx = dataLinksContextRef.current;
     const ext = logsDrilldownExtensionRef.current;
@@ -63,15 +62,17 @@ export function DataLinksCustomContext(props: Props) {
 
     const dataSourceType = getDataSourceSrv().getInstanceSettings(linkDataSourceUid)?.type;
 
-    if (query && linkModel && dataSourceType === "loki" && timeRange) {
+    if (query && linkModel && dataSourceType === 'loki' && timeRange) {
       const extensionLink = ext.fn({
-        targets: [{
-          ...query,
-          datasource: {
-            uid: linkDataSourceUid,
-            type: dataSourceType,
-          }
-        }],
+        targets: [
+          {
+            ...query,
+            datasource: {
+              uid: linkDataSourceUid,
+              type: dataSourceType,
+            },
+          },
+        ],
         timeRange: timeRange,
       });
 

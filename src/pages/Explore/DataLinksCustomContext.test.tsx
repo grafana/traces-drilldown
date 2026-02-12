@@ -196,6 +196,24 @@ describe('DataLinksCustomContext', () => {
       expect(mockExtensionFn).not.toHaveBeenCalled();
     });
 
+    it('maintains stable dataLinkPostProcessor reference across re-renders', () => {
+      const { rerender } = render(
+        <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
+          <TestConsumer />
+        </DataLinksCustomContext>
+      );
+
+      const firstProcessor = capturedContext.dataLinkPostProcessor;
+
+      rerender(
+        <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
+          <TestConsumer />
+        </DataLinksCustomContext>
+      );
+
+      expect(capturedContext.dataLinkPostProcessor).toBe(firstProcessor);
+    });
+
     it('does not modify href when extension returns no path', () => {
       mockExtensionFn.mockReturnValue(undefined);
 
