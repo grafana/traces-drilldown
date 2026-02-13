@@ -66,7 +66,7 @@ Refer to [Choose root or full span data](../../investigate/choose-span-data/) fo
 1. The **span timeline** shows the sequence of operations:
    - Parent spans (for example, `frontend GET /api/quotes`)
    - Child spans (for example, `HTTP GET`)
-   - Error spans are highlighted in red/orange
+   - Error spans are highlighted in red/orange.
 1. Use the **Filters** to focus on:
    - **Critical path**: The slowest path through the trace
    - **Errors**: Only spans with errors
@@ -86,10 +86,10 @@ Refer to [Choose root or full span data](../../investigate/choose-span-data/) fo
 
 By following this walkthrough, you learned how to:
 
-- Navigate Traces Drilldown and select the **Errors** metric
-- View errored traces in a table format
-- Examine individual trace details
-- Use **Breakdown** to identify error patterns
+- Navigate Traces Drilldown and select the **Errors** metric.
+- View errored traces in a table format.
+- Examine individual trace details.
+- Use **Breakdown** to identify error patterns.
 
 For more advanced investigation techniques like using the **Comparison** tab and **Inspect** feature, refer to the [Example: Investigate source of errors](../../get-started/#example-investigate-source-of-errors) section.
 
@@ -97,8 +97,8 @@ For more advanced investigation techniques like using the **Comparison** tab and
 
 Now that you've completed the basic walkthrough:
 
-- [Determine your use case](../../determine-use-case/) to choose the right investigation approach
-- [Choose a RED metric](../../investigate/choose-red-metric/) to guide what you analyze next
-- [Add filters](../../investigate/add-filters/) to refine the scope of your investigation
-- [Analyze tracing data](../../investigate/analyze-tracing-data/) with Breakdown, Comparison, and Root cause views
-- [Choose root or full span data](../../investigate/choose-span-data/) depending on your use case
+- [Determine your use case](../../determine-use-case/) to choose the right investigation approach.
+- [Choose a RED metric](../../investigate/choose-red-metric/) to guide what you analyze next.
+- [Add filters](../../investigate/add-filters/) to refine the scope of your investigation.
+- [Analyze tracing data](../../investigate/analyze-tracing-data/) with Breakdown, Comparison, and Root cause views.
+- [Choose root or full span data](../../investigate/choose-span-data/) depending on your use case.
