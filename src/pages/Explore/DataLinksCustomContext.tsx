@@ -73,7 +73,7 @@ export function DataLinksCustomContext(props: Props) {
             },
           },
         ],
-        timeRange: timeRange,
+        timeRange,
       });
 
       if (extensionLink?.path) {
