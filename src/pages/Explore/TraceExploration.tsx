@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { GrafanaTheme2, AdHocVariableFilter } from '@grafana/data';
 import {
@@ -177,14 +177,16 @@ export class TraceExplorationScene extends SceneObjectBase {
       traceId,
       issueDetector,
       embedded,
+      $timeRange,
     } = traceExploration.useState();
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
     const styles = useStyles2(getStyles);
 
-    const state = traceExploration.useState();
-    const timeRangeState = state.$timeRange?.useState();
+    const timeRangeState = $timeRange?.useState();
+
+    const onClose = useCallback(() => traceExploration.closeDrawer(), [traceExploration]);
 
     return (
       <div className={styles.container} id="trace-exploration">
@@ -194,7 +196,7 @@ export class TraceExplorationScene extends SceneObjectBase {
         <DataLinksCustomContext embedded={embedded} timeRange={timeRangeState?.value}>
           <SmartDrawer
             isOpen={!!drawerScene && !!traceId}
-            onClose={() => traceExploration.closeDrawer()}
+            onClose={onClose}
             title={`View trace ${traceId}`}
             embedded={embedded}
             forceNoDrawer={embedded}
