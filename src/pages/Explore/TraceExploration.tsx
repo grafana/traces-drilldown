@@ -51,6 +51,8 @@ import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWi
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
 import { DataLinksCustomContext } from './DataLinksCustomContext';
+import { LoadSearchScene } from '../../components/Explore/SavedSearches/LoadSearchScene';
+import { SaveSearchButton } from '../../components/Explore/SavedSearches/SaveSearchButton';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -65,6 +67,7 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   spanId?: string;
 
   issueDetector?: TraceQLIssueDetector;
+  loadSearchScene?: LoadSearchScene;
 }
 
 const version = process.env.VERSION;
@@ -83,6 +86,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
       issueDetector: new TraceQLIssueDetector(),
+      loadSearchScene: state.loadSearchScene ?? new LoadSearchScene({}),
       ...state,
     });
 
@@ -365,6 +369,10 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
         </Stack>
         <div className={styles.controls}>
           <EntityAssertionsWidget serviceName={serviceName || ''} model={model} />
+          <SaveSearchButton sceneRef={model} />
+          {traceExploration.state.loadSearchScene && (
+            <traceExploration.state.loadSearchScene.Component model={traceExploration.state.loadSearchScene} />
+          )}
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
             <Button variant="secondary" icon="info-circle">
               Need help

@@ -1,4 +1,5 @@
 import {
+  AdHocVariableFilter,
   PluginExtensionAddedLinkConfig,
   PluginExtensionPanelContext,
   PluginExtensionPoints,
@@ -9,7 +10,9 @@ import { DataSourceRef } from '@grafana/schema';
 import { EXPLORATIONS_ROUTE, VAR_DATASOURCE, VAR_FILTERS, VAR_METRIC } from './shared';
 import { parseTraceQLQuery } from './lezer-traceql-parser';
 
-type TempoQuery = {
+export type TempoQuery = {
+  refId?: string;
+  queryType?: string;
   filters?: TraceqlFilter[];
   query?: string; // Raw TraceQL query
   datasource?: DataSourceRef;
@@ -155,4 +158,25 @@ function isIntrinsic(filter: TraceqlFilter) {
 
 function getScopeSeparator(filter: TraceqlFilter) {
   return isIntrinsic(filter) ? ':' : '.';
+}
+
+export function traceqlFiltersToAdHoc(traceqlFilters: TraceqlFilter[]): AdHocVariableFilter[] {
+  return traceqlFilters
+    .filter(
+      (f) =>
+        f.scope &&
+        f.tag &&
+        f.operator &&
+        f.value !== undefined &&
+        (Array.isArray(f.value) ? f.value.length > 0 : String(f.value).trim() !== '')
+    )
+    .map((f) => {
+      // Use only the tag as key for intrinsic scope so saved queries like "kind=server" stay as-is
+      // instead of becoming "intrinsic.kind=server"
+      const tag = f.tag!;
+      const key =
+        f.scope === 'intrinsic' ? tag : `${f.scope}${getScopeSeparator(f)}${tag}`;
+      const value = Array.isArray(f.value) ? f.value.join('|') : String(f.value ?? '');
+      return { key, operator: f.operator ?? '=', value };
+    });
 }

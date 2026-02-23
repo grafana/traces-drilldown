@@ -56,7 +56,12 @@
     "grafanaDependency": ">=11.5.0",
     "plugins": [],
     "extensions": {
-      "exposedComponents": ["grafana-asserts-app/entity-assertions-widget/v1", "grafana-asserts-app/insights-timeline-widget/v1", "grafana-adaptivetraces-app/span-latency/v1"]
+      "exposedComponents": [
+        "grafana-asserts-app/entity-assertions-widget/v1", 
+        "grafana-asserts-app/insights-timeline-widget/v1", 
+        "grafana-adaptivetraces-app/span-latency/v1", 
+        "grafana/query-library-context/v1"
+      ]
     }
   },
   "extensions": {
