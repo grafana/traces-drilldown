@@ -10,19 +10,21 @@ services:
         grafana_version: ${GRAFANA_VERSION:-12.2.0-17432607250}
     ports:
       - 3000:3000/tcp
+    environment:
+      - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-}
     volumes:
       - ../dist:/var/lib/grafana/plugins/grafana-explore-traces
       - ../provisioning:/etc/grafana/provisioning
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
 
   tempo:
     image: grafana/tempo:latest@sha256:6d4f1f3f223f949d008944164a822cde8bdc84618e4db2f165772473c13758fc
-    command: [ "-config.file=/etc/tempo.yaml" ]
+    command: ['-config.file=/etc/tempo.yaml']
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
     ports:
-      - "3200:3200"   # tempo
+      - '3200:3200' # tempo
 
   # generates uninteresting traces, but is useful for testing
   k6-tracing:
@@ -44,8 +46,8 @@ services:
     image: rabbitmq:management@sha256:294b01e1796a8acede4619f32a1c394fae1f8021e57986ea01aad38dc2a4f502
     restart: always
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - '5672:5672'
+      - '15672:15672'
     healthcheck:
       test: rabbitmq-diagnostics check_running
       interval: 5s
@@ -57,9 +59,9 @@ services:
     image: postgres:14.5@sha256:135c62a8134dcef829a1e4f5568bfae44bcfa2c75659ff948f43c71964366aa4
     restart: always
     environment:
-      POSTGRES_PASSWORD: "mythical"
+      POSTGRES_PASSWORD: 'mythical'
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   # A microservice that makes requests to the API server microservice. Requests are also pushed onto the mythical-queue.
   mythical-requester-A:
@@ -91,7 +93,7 @@ services:
       - OTEL_EXPORTER_OTLP_TRACES_INSECURE=true
       - OTEL_RESOURCE_ATTRIBUTES=ip=1.2.3.5,region=eu-east
 
-   # A microservice that makes requests to the API server microservice. Requests are also pushed onto the mythical-queue.
+    # A microservice that makes requests to the API server microservice. Requests are also pushed onto the mythical-queue.
   mythical-requester-B:
     image: grafana/intro-to-mltp:mythical-beasts-requester-0.3.1@sha256:2643fb2e2cd1100e9edecb44d67c82cfa436ea97ff23aeeb646ea063776e539b
     restart: always

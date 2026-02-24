@@ -17,6 +17,9 @@
     "server": "docker compose -f ./devenv/docker-compose.yaml up --build -d",
     "server:ci": "docker compose -f ./devenv/docker-compose.e2e.yaml up --build -d",
     "server:ci:down": "docker compose -f ./devenv/docker-compose.e2e.yaml down",
+    "server:down": "docker compose -f ./devenv/docker-compose.yaml down",
+    "server:enterprise": "GRAFANA_VERSION=nightly GRAFANA_IMAGE=grafana-enterprise GF_FEATURE_TOGGLES_ENABLE=queryLibrary docker compose -f ./devenv/docker-compose.yaml up --build -d",
+    "server:enterprise:fallback": "GRAFANA_VERSION=nightly GRAFANA_IMAGE=grafana-enterprise docker compose -f ./devenv/docker-compose.yaml up --build -d",
     "start": "yarn install && yarn dev",
     "sign": "npx --yes @grafana/sign-plugin@latest"
   },
@@ -68,7 +71,7 @@
     "terser-webpack-plugin": "5.3.14",
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
-    "typescript": "5.8.3",    
+    "typescript": "5.8.3",
     "@types/semver": "^7.7.1",
     "webpack": "5.104.1",
     "webpack-bundle-analyzer": "4.10.2",
