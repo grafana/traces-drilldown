@@ -4,6 +4,7 @@ import { nestedSetLeft, nestedSetRight } from './utils';
 export class TreeNode {
   name: string;
   serviceName: string;
+  serviceNamespace: string;
   operationName: string;
   spans: Span[];
   left: number;
@@ -15,6 +16,7 @@ export class TreeNode {
   constructor({
     name,
     serviceName,
+    serviceNamespace,
     operationName,
     spans,
     left,
@@ -23,6 +25,7 @@ export class TreeNode {
   }: {
     name: string;
     serviceName: string;
+    serviceNamespace: string;
     operationName: string;
     spans: Span[];
     left: number;
@@ -31,6 +34,7 @@ export class TreeNode {
   }) {
     this.name = name;
     this.serviceName = serviceName;
+    this.serviceNamespace = serviceNamespace;
     this.operationName = operationName;
     this.spans = spans;
     this.left = left;
@@ -71,11 +75,15 @@ export class TreeNode {
 
 export function createNode(s: Span): TreeNode {
   const serviceNameAttr = s.attributes?.find((a) => a.key === 'service.name');
+  const serviceNamespaceAttr =
+    s.attributes?.find((a) => a.key === 'service.namespace') ??
+    s.attributes?.find((a) => a.key === 'service.namespace.name');
   return new TreeNode({
     left: nestedSetLeft(s),
     right: nestedSetRight(s),
     name: nodeName(s),
     serviceName: serviceNameAttr?.value.stringValue ?? serviceNameAttr?.value?.Value?.string_value ?? '',
+    serviceNamespace: serviceNamespaceAttr?.value.stringValue ?? serviceNamespaceAttr?.value?.Value?.string_value ?? '',
     operationName: s.name ?? '',
     spans: [s],
     traceID: s.traceId ?? '',
@@ -84,11 +92,14 @@ export function createNode(s: Span): TreeNode {
 
 function nodeName(s: Span): string {
   let svcName = '';
+  let namespace = '';
   for (const a of s.attributes || []) {
-    if (a.key === 'service.name' && a.value.stringValue) {
-      svcName = a.value.stringValue;
+    if (a.key === 'service.name') {
+      svcName = a.value.stringValue ?? a.value?.Value?.string_value ?? '';
+    }
+    if (a.key === 'service.namespace' || a.key === 'service.namespace.name') {
+      namespace = a.value.stringValue ?? a.value?.Value?.string_value ?? '';
     }
   }
-
-  return `${svcName}:${s.name}`;
+  return `${namespace ? namespace + '/' : ''}${svcName}:${s.name}`;
 }

@@ -107,7 +107,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
     const openTrace = getOpenTrace(this);
 
     return PanelBuilders.traces()
-      .setTitle(`Structure for ${tree.serviceName} [${countSpans(tree)} spans used]`)
+      .setTitle(`Structure for ${tree.serviceNamespace ? `${tree.serviceNamespace}/${tree.serviceName}` : tree.serviceName} [${countSpans(tree)} spans used]`)
       .setOption('createFocusSpanLink' as any, (traceId: string, spanId: string): LinkModel<Field> => {
         return {
           title: 'Open trace',
@@ -219,7 +219,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         traceID: node.traceID,
         spanID: node.spans[0].spanID,
         parentSpanId: spanID,
-        serviceName: node.serviceName,
+        serviceName: node.serviceNamespace ? `${node.serviceNamespace}/${node.serviceName}` : node.serviceName,
         operationName: node.operationName,
         statusCode: erroredSpans > 0 ? 2 /*error*/ : 0 /*unset*/,
         duration: node.spans.reduce((acc, c) => acc + parseInt(c.durationNanos, 10), 0) / node.spans.length / 1000000,
@@ -368,7 +368,7 @@ function buildQuery(metric: MetricFunction) {
 
   // ({${rootSelectors}} &>> { ${metricQuery} }) # finds trees of spans in error or with high duration
   //    || ({${rootSelectors}})                  # finds single spans in error or with high duration
-  const query = `({${rootSelectors}} &>> { ${metricQuery} }) || ({${rootSelectors}}) | select(status, resource.service.name, name, nestedSetParent, nestedSetLeft, nestedSetRight)`;
+  const query = `({${rootSelectors}} &>> { ${metricQuery} }) || ({${rootSelectors}}) | select(status, resource.service.name, resource.service.namespace, name, nestedSetParent, nestedSetLeft, nestedSetRight)`;
 
   return {
     refId: 'A',

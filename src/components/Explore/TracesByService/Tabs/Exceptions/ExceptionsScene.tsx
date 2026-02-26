@@ -128,13 +128,14 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
     const messageField = df.fields.find((f) => f.name === 'exception.message');
     const typeField = df.fields.find((f) => f.name === 'exception.type');
     const serviceField = df.fields.find((f) => f.name === 'service.name');
+    const serviceNamespaceField = df.fields.find((f) => f.name === 'service.namespace');
     const timeField = df.fields.find((f) => f.name === 'time');
 
     if (!messageField || !messageField.values.length) {
       return [];
     }
 
-    const aggregated = aggregateExceptions(messageField, typeField, timeField, serviceField);
+    const aggregated = aggregateExceptions(messageField, typeField, timeField, serviceField, serviceNamespaceField);
 
     return aggregated.messages.map((message, index) => ({
       type: aggregated.types[index] || 'Unknown',

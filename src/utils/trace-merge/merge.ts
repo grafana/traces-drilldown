@@ -6,6 +6,7 @@ export function mergeTraces(traces: TraceSearchMetadata[]): TreeNode {
   const tree = new TreeNode({
     name: 'root',
     serviceName: '',
+    serviceNamespace: '',
     operationName: '',
     left: Number.MIN_SAFE_INTEGER,
     right: Number.MAX_SAFE_INTEGER,

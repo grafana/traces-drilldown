@@ -1,0 +1,59 @@
+{
+  "traces": [
+    {
+      "traceID": "aabbccddeeff00112233445566778899",
+      "rootServiceName": "Service-A",
+      "rootTraceName": "HTTP POST",
+      "startTimeUnixNano": "1712759380000000000",
+      "durationMs": 50,
+      "spanSets": [
+        {
+          "spans": [
+            {
+              "spanID": "aaaa000000000001",
+              "name": "HTTP POST",
+              "startTimeUnixNano": "1712759380100000000",
+              "durationNanos": "5000000",
+              "attributes": [
+                { "key": "nestedSetLeft", "value": { "intValue": "1" } },
+                { "key": "nestedSetParent", "value": { "intValue": "-1" } },
+                { "key": "nestedSetRight", "value": { "intValue": "6" } },
+                { "key": "service.name", "value": { "stringValue": "Service-A" } },
+                { "key": "service.namespace", "value": { "stringValue": "namespace-1" } },
+                { "key": "status", "value": { "stringValue": "ok" } }
+              ]
+            },
+            {
+              "spanID": "aaaa000000000002",
+              "name": "HTTP POST",
+              "startTimeUnixNano": "1712759380200000000",
+              "durationNanos": "3000000",
+              "attributes": [
+                { "key": "nestedSetLeft", "value": { "intValue": "2" } },
+                { "key": "nestedSetParent", "value": { "intValue": "1" } },
+                { "key": "nestedSetRight", "value": { "intValue": "3" } },
+                { "key": "service.name", "value": { "stringValue": "Service-A" } },
+                { "key": "service.namespace", "value": { "stringValue": "namespace-2" } },
+                { "key": "status", "value": { "stringValue": "ok" } }
+              ]
+            },
+            {
+              "spanID": "aaaa000000000003",
+              "name": "HTTP GET",
+              "startTimeUnixNano": "1712759380300000000",
+              "durationNanos": "2000000",
+              "attributes": [
+                { "key": "nestedSetLeft", "value": { "intValue": "4" } },
+                { "key": "nestedSetParent", "value": { "intValue": "1" } },
+                { "key": "nestedSetRight", "value": { "intValue": "5" } },
+                { "key": "service.name", "value": { "stringValue": "Service-C" } },
+                { "key": "status", "value": { "stringValue": "ok" } }
+              ]
+            }
+          ],
+          "matched": 3
+        }
+      ]
+    }
+  ]
+}

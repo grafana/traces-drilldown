@@ -4,7 +4,7 @@ import { SceneObject } from "@grafana/scenes";
 import { calculateBucketSize } from "utils/dates";
 import { getDatasourceVariable } from "utils/utils";
 
-export function aggregateExceptions(messageField: Field<string>, typeField?: Field<string>, timeField?: Field<number>, serviceField?: Field<string>) {
+export function aggregateExceptions(messageField: Field<string>, typeField?: Field<string>, timeField?: Field<number>, serviceField?: Field<string>, serviceNamespaceField?: Field<string>) {
   const occurrences = new Map<string, number>();
   const types = new Map<string, string>();
   const lastSeenTimes = new Map<string, number>();
@@ -19,17 +19,19 @@ export function aggregateExceptions(messageField: Field<string>, typeField?: Fie
     const type = typeField?.values[i];
     const timestamp = timeField?.values[i];
     const service = serviceField?.values[i];
-    
+    const serviceNamespace = serviceNamespaceField?.values[i];
+    const displayService = serviceNamespace ? `${serviceNamespace}/${service}` : service;
+
     if (message) {
       const normalizedMessage = normalizeExceptionMessage(message);
       occurrences.set(normalizedMessage, (occurrences.get(normalizedMessage) || 0) + 1);
-      
+
       if (!types.has(normalizedMessage) && type) {
         types.set(normalizedMessage, type);
       }
 
-      if (!services.has(normalizedMessage) && service) {
-        services.set(normalizedMessage, service);
+      if (!services.has(normalizedMessage) && displayService) {
+        services.set(normalizedMessage, displayService);
       }
 
       if (timestamp) {
