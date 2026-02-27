@@ -24,7 +24,7 @@
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@babel/core": "7.28.5",
-    "@grafana/e2e-selectors": "12.1.0",
+    "@grafana/e2e-selectors": "12.4.0",
     "@grafana/eslint-config": "8.1.0",
     "@grafana/plugin-e2e": "2.1.8",
     "@grafana/plugin-types": "0.0.39",
@@ -81,18 +81,20 @@
   },
   "dependencies": {
     "@emotion/css": "11.10.6",
-    "@grafana/data": "12.3.0",
-    "@grafana/i18n": "12.3.0",
+    "@grafana/data": "12.4.0",
+    "@openfeature/web-sdk": "^1.7.2",
+    "@grafana/i18n": "12.4.0",
     "@grafana/lezer-traceql": "^0.0.23",
-    "@grafana/runtime": "12.3.0",
+    "@grafana/runtime": "12.4.0",
     "@grafana/scenes": "^6.30.3",
-    "@grafana/schema": "^12.1.0",
-    "@grafana/ui": "12.3.0",
+    "@grafana/schema": "^12.4.0",
+    "@grafana/ui": "12.4.0",
     "@lezer/common": "^1.2.3",
     "@lezer/lr": "^1.4.2",
     "@testing-library/dom": "^10.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "rc-drawer": "7.3.0",
     "react-loading-skeleton": "^3.5.0",
     "react-router-dom": "^6.30.2",
     "react-use": "^17.6.0",
@@ -103,7 +105,8 @@
     "rxjs": "^7.8.1",
     "js-yaml": "4.1.1",
     "@remix-run/router": "1.23.2",
-    "lodash": "4.17.23"
+    "lodash": "4.17.23",
+    "@openfeature/core": "1.9.2"
   },
   "packageManager": "yarn@1.22.22"
 }
