@@ -88,9 +88,8 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
       if (newState.hideBaselineOnlyPanels !== prevState.hideBaselineOnlyPanels) {
         localStorage.setItem(HIDE_BASELINE_ONLY_LS_KEY, String(newState.hideBaselineOnlyPanels ?? false));
         this.updateData(newState.hideBaselineOnlyPanels, true);
-        // Reusing the same query runner: data is already in memory, just re-filtered. Update body on next
-        // tick so the new $data is in state (no loading state needed).
-        setTimeout(() => this.setBody(variable), 0);
+        // Reusing the same query runner: data is already in memory, just re-filtered.
+        this.setBody(variable)
       }
     });
 
