@@ -116,7 +116,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     return primarySignal === 'nestedSetParent<0' ? ['rootName', 'rootServiceName'] : [];
   };
 
-  private updateData(hideBaselineOnly?: boolean, reuseQueryRunner?: boolean): SceneDataTransformer {
+  private updateData(hideBaselineOnly?: boolean, reuseQueryRunner?: boolean) {
     const byServiceScene = getTraceByServiceScene(this);
     const sceneTimeRange = sceneGraph.getTimeRange(this);
     const from = sceneTimeRange.state.value.from.unix();
@@ -160,7 +160,6 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     });
 
     this.setState({ $data });
-    return $data;
   }
 
   private onReferencedVariableValueChanged() {
