@@ -170,7 +170,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     padding: theme.spacing(1),
     marginBottom: theme.spacing(1),
     display: 'block',
-    whiteSpace: 'wrap',
   }),
   input: css({
     cursor: 'pointer',

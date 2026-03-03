@@ -138,6 +138,5 @@ const getStyles = (theme: GrafanaTheme2) => ({
     fontSize: theme.typography.bodySmall.fontSize,
     padding: theme.spacing(1),
     display: 'block',
-    whiteSpace: 'wrap',
   }),
 });
