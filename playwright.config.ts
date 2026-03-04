@@ -22,7 +22,7 @@ export default defineConfig<PluginOptions>({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.BASE_URL ?? 'http://localhost:3000',
     
     // Record trace only when retrying a test for the first time.
     screenshot: 'only-on-failure',
