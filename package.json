@@ -25,6 +25,11 @@
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@babel/core": "7.28.5",
+    "@rc-component/cascader": "^1.14.0",
+    "@rc-component/picker": "^1.9.0",
+    "@rc-component/drawer": "^1.0.0",
+    "@rc-component/slider": "^1.0.0",
+    "@rc-component/tooltip": "^1.0.0",
     "@grafana/e2e-selectors": "12.1.0",
     "@grafana/eslint-config": "8.1.0",
     "@grafana/plugin-e2e": "2.1.8",
