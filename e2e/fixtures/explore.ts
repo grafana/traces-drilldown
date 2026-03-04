@@ -19,6 +19,14 @@ export class ExplorePage {
     await expect(loading).toHaveCount(0);
   }
 
+  /** Wait for the explore view to be ready (header with Data source or Filters visible). */
+  async waitForExploreReady(timeoutMs = 10000) {
+    const headerOrFilters = this.page
+      .getByText('Data source')
+      .or(this.page.getByText('Filters', { exact: true }));
+    await expect(headerOrFilters.first()).toBeVisible({ timeout: timeoutMs });
+  }
+
   async assertMissingData() {
     await expect(this.page.getByTestId(testIds.emptyState)).not.toBeVisible();
     await expect(this.page.getByTestId(testIds.errorState)).not.toBeVisible();
