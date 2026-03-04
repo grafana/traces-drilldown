@@ -105,7 +105,8 @@
     "js-yaml": "4.1.1",
     "@remix-run/router": "1.23.2",
     "lodash": "4.17.23",
-    "react-router": "6.30.3"
+    "react-router": "6.30.3",
+    "rtl-css-js": "1.16.0"
   },
   "packageManager": "yarn@1.22.22"
 }
