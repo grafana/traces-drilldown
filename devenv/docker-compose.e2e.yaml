@@ -1,5 +1,3 @@
-version: '3.0'
-
 services:
   grafana:
     container_name: 'grafana-explore-traces-e2e'
@@ -89,3 +87,18 @@ services:
       - TRACING_COLLECTOR_PORT=4317
       - OTEL_EXPORTER_OTLP_TRACES_INSECURE=true
       - OTEL_RESOURCE_ATTRIBUTES=ip=1.2.3.5
+
+  # Used by plugin-ci-workflows: docker compose --profile playwright up playwright --exit-code-from playwright
+  playwright:
+    profiles:
+      - playwright
+    image: mcr.microsoft.com/playwright:v1.55.0-noble
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      BASE_URL: http://grafana:3000
+      CI: "true"
+    depends_on:
+      - grafana
+    command: sh -c "yarn install --frozen-lockfile && sleep 30 && yarn e2e:fast"
