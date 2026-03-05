@@ -12,11 +12,6 @@ const config = async (env): Promise<Configuration> => {
   const baseConfig = await grafanaConfig(env);
 
   return merge(baseConfig, {
-    externals: [
-      // Required for React 19 compatibility — use Grafana's React runtime to avoid "ReactCurrentOwner" undefined
-      'react/jsx-runtime',
-      'react/jsx-dev-runtime',
-    ],
     plugins: [
       new DefinePlugin({
         'process.env.VERSION': JSON.stringify(packageJson.version),
