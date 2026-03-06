@@ -27,7 +27,6 @@ export const externals: ExternalsType = [
   'react-redux',
   'redux',
   'rxjs',
-  'i18next',
   'react-router',
   'd3',
   'angular',
