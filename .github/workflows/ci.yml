@@ -11,7 +11,7 @@ permissions: {}
 jobs:
   cd:
     name: CI / CD
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main # zizmor: ignore[unpinned-uses]
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v6.0.0
     permissions:
       contents: write
       id-token: write
@@ -37,9 +37,9 @@ jobs:
 
       # Playwright
       run-playwright: false
-      run-playwright-docker: false
+      run-playwright-docker: true
       upload-playwright-artifacts: true # IMPORTANT: we must ensure there are no unmasked secrets in the E2E tests
       run-playwright-with-skip-grafana-dev-image: true
       playwright-report-path: e2e/test-reports/
-      playwright-docker-compose-file: docker-compose.yaml
+      playwright-docker-compose-file: devenv/docker-compose.e2e.yaml
       playwright-grafana-url: http://localhost:3001

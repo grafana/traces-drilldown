@@ -17,6 +17,7 @@
     "server": "docker compose -f ./devenv/docker-compose.yaml up --build -d",
     "server:ci": "docker compose -f ./devenv/docker-compose.e2e.yaml up --build -d",
     "server:ci:down": "docker compose -f ./devenv/docker-compose.e2e.yaml down",
+    "server:react19": "GRAFANA_VERSION=dev-preview-react19 GRAFANA_IMAGE=grafana-enterprise GF_FEATURE_TOGGLES_ENABLE=react19 docker compose -f ./devenv/docker-compose.yaml up --build",
     "start": "yarn install && yarn dev",
     "sign": "npx --yes @grafana/sign-plugin@latest"
   },
@@ -24,6 +25,11 @@
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@babel/core": "7.28.5",
+    "@rc-component/cascader": "^1.14.0",
+    "@rc-component/picker": "^1.9.0",
+    "@rc-component/drawer": "^1.0.0",
+    "@rc-component/slider": "^1.0.0",
+    "@rc-component/tooltip": "^1.0.0",
     "@grafana/e2e-selectors": "12.1.0",
     "@grafana/eslint-config": "8.1.0",
     "@grafana/plugin-e2e": "2.1.8",
@@ -104,7 +110,8 @@
     "js-yaml": "4.1.1",
     "@remix-run/router": "1.23.2",
     "lodash": "4.17.23",
-    "react-router": "6.30.3"
+    "react-router": "6.30.3",
+    "rtl-css-js": "1.16.0"
   },
   "packageManager": "yarn@1.22.22"
 }
