@@ -4,7 +4,7 @@ import { Button, Stack, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import React from 'react';
 import { getFiltersVariable } from '../../../utils/utils';
-import { addToFilters, filterExistsForKey } from '../actions/AddToFiltersAction';
+import { addToFilters } from '../actions/AddToFiltersAction';
 import { computeHighestDifference } from '../../../utils/comparison';
 
 interface HighestDifferencePanelState extends SceneObjectState {
@@ -46,20 +46,34 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
     return valueField?.values[this.state.maxDifferenceIndex || 0];
   }
 
-  private onAddToFilters() {
+  private onIncludeClick = () => {
     const variable = getFiltersVariable(this);
     const attribute = this.getAttribute();
     if (attribute) {
-      addToFilters(variable, attribute, this.getValue());
+      addToFilters(variable, attribute, this.getValue(), '=');
     }
-  }
+  };
+
+  private onExcludeClick = () => {
+    const variable = getFiltersVariable(this);
+    const attribute = this.getAttribute();
+    if (attribute) {
+      addToFilters(variable, attribute, this.getValue(), '!=');
+    }
+  };
 
   public static Component = ({ model }: SceneComponentProps<HighestDifferencePanel>) => {
     const { maxDifference, maxDifferenceIndex, panel } = model.useState();
     const styles = useStyles2(getStyles);
     const value = model.getValue();
     const key = model.state.frame.name ?? '';
-    const filterExists = filterExistsForKey(getFiltersVariable(model), key, value.replace(/"/g, ''));
+    const variable = getFiltersVariable(model);
+    const includeFilterExists = variable.state.filters.find(
+      (f) => f.key === key && f.value === value.replace(/"/g, '') && f.operator === '='
+    );
+    const excludeFilterExists = variable.state.filters.find(
+      (f) => f.key === key && f.value === value.replace(/"/g, '') && f.operator === '!='
+    );
 
     return (
       <div className={styles.container}>
@@ -69,17 +83,18 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
             <>
               <Stack gap={1} justifyContent={'space-between'} alignItems={'center'}>
                 <div className={styles.title}>Highest difference</div>
-                {!filterExists && (
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    icon={'search-plus'}
-                    fill="text"
-                    onClick={() => model.onAddToFilters()}
-                  >
-                    Add to filters
-                  </Button>
-                )}
+                <Stack gap={0.5}>
+                  {!includeFilterExists && (
+                    <Button size="sm" variant="primary" fill="text" onClick={() => model.onIncludeClick()}>
+                      Include
+                    </Button>
+                  )}
+                  {!excludeFilterExists && (
+                    <Button size="sm" variant="primary" fill="text" onClick={() => model.onExcludeClick()}>
+                      Exclude
+                    </Button>
+                  )}
+                </Stack>
               </Stack>
               <div className={styles.differenceValue}>
                 {(Math.abs(maxDifference) * 100).toFixed(maxDifference === 0 ? 0 : 2)}%
