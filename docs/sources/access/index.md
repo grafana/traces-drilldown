@@ -1,10 +1,11 @@
 ---
 description: Access or install Traces Drilldown.
-canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/tempo/access/
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/access/
 keywords:
   - Install
   - Configure
   - Traces Drilldown
+title: Access or install Traces Drilldown
 menuTitle: Access or install
 weight: 150
 refs:
@@ -19,8 +20,8 @@ refs:
 
 You can access Grafana Traces Drilldown using any of these:
 
- - [Grafana Cloud](#set-up-in-grafana-cloud): The easiest method, since no setup or installation is required.
- - Self-managed [Grafana](#set-up-in-self-managed-grafana) open source or Enterprise: You must install the Traces Drilldown plugin.
+- [Grafana Cloud](#set-up-in-grafana-cloud): The easiest method, since no setup or installation is required.
+- Self-managed [Grafana](#set-up-in-self-managed-grafana) open source or Enterprise: You must install the Traces Drilldown plugin.
 
 Traces Drilldown requires Grafana Tempo 2.6 or later with [TraceQL metrics configured](https://grafana.com/docs/tempo/<TEMPO_VERSION>/operations/traceql-metrics/).
 
@@ -35,7 +36,7 @@ To use Traces Drilldown with Grafana Cloud, you need the following:
 
 To use Traces Drilldown with self-managed Grafana open source or Grafana Enterprise, you need:
 
-- Your own Grafana instance running 11.2 or later
+- Your own Grafana instance running 11.6 or later
 - Tempo 2.6 or later with [TraceQL metrics configured](https://grafana.com/docs/tempo/<TEMPO_VERSION>/operations/traceql-metrics/)
 - Configured [Tempo data source](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/) receiving tracing data
 
@@ -44,11 +45,10 @@ Next, [access Traces Drilldown](#access-traces-drilldown).
 ### Install the Traces Drilldown plugin
 
 {{< admonition type="note" >}}
-If you are using Grafana v12 or later, Traces Drilldown is already installed, go to [Access Traces Drilldown](#access-traces-drilldown).
-To check, refer to [Access Traces Drilldown](#access-traces-drilldown).
-{{</ admonition >}}
+Grafana v12 and later includes all Drilldown apps, including Traces Drilldown. No separate installation is required. Go to [Access Traces Drilldown](#access-traces-drilldown).
+{{< /admonition >}}
 
-Traces Drilldown is distributed as a Grafana Plugin.
+Traces Drilldown is distributed as a Grafana plugin.
 You can find it in the official [Grafana Plugin Directory](https://grafana.com/grafana/plugins/grafana-exploretraces-app/).
 
 ### Install in your Grafana instance
@@ -56,7 +56,7 @@ You can find it in the official [Grafana Plugin Directory](https://grafana.com/g
 You can install Traces Drilldown in your Grafana instance using `grafana cli`:
 
 ```shell
-grafana cli --pluginUrl=https://storage.googleapis.com/integration-artifacts/grafana-exploretraces-app/grafana-exploretraces-app-latest.zip plugins install grafana-traces-app
+grafana cli plugins install grafana-exploretraces-app
 ```
 
 Alternatively, follow these steps to install Traces Drilldown in Grafana:
@@ -73,7 +73,7 @@ The plugin is automatically activated after installation.
 To install the app in a Docker container, configure the following environment variable:
 
 ```shell
-GF_INSTALL_PLUGINS=https://storage.googleapis.com/integration-artifacts/grafana-exploretraces-app/grafana-exploretraces-app-latest.zip;grafana-traces-app
+GF_INSTALL_PLUGINS=grafana-exploretraces-app
 ```
 
 ## Access Traces Drilldown
@@ -82,3 +82,14 @@ To access Traces Drilldown, use the following steps:
 
 1. Open your Grafana stack in a web browser.
 1. In the main menu, select **Drilldown** > **Traces**.
+
+## Next steps
+
+To learn how to use Traces Drilldown to explore your tracing data:
+
+- [Concepts](../concepts/)
+- [Get started with Traces Drilldown](../get-started/)
+- [Determine your use case](../determine-use-case/)
+- [Investigate trends and spikes](../investigate/)
+- [Use signals together](/docs/grafana-cloud/telemetry-signals/use-signals-together/)
+- [Telemetry signal workflows](/docs/grafana-cloud/telemetry-signals/workflows/)

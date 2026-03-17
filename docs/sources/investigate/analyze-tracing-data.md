@@ -1,6 +1,6 @@
 ---
 description: Analyze tracing data using comparison, root cause analysis, and traces view to investigate trends and spikes.
-canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/intigate/analyze-tracing-data/
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/investigate/analyze-tracing-data/
 keywords:
   - Traces Drilldown
   - Analyze
@@ -11,7 +11,7 @@ weight: 500
 
 # Analyze tracing data
 
-To further analyze the filtered spans, use the dynamically changing tabs, **Comparison**, **Structure**, **Root cause analysis**, **Exceptions** (Errors only), and **Trace list**.
+To further analyze filtered spans, use tabs that change with the selected metric, such as **Breakdown**, **Comparison**, **Service structure**, **Root cause errors**, **Root cause latency**, **Exceptions**, and **Trace list**.
 
 When you select a RED metric, the tabs change to match the context.
 
@@ -20,19 +20,19 @@ Each tab provides a brief explanation about the information provided.
 ## Use the Breakdown tab
 
 The **Breakdown** tab splits the selected metric by the values of a chosen resource or span attribute.
-When you're using **Duration** metrics, **Breakdown** shows the 90th percentile duration for every value of the selected attribute orders the sequence of attributes by their average duration.
+When you're using **Duration** metrics, **Breakdown** shows the 90th percentile duration for every value of the selected attribute and orders values by average duration.
 When you select **Rate**, **Breakdown** orders the sequence of attributes by their rate of requests per second, with errors colored red.
 
 You can change the **Scope** to show **Resource** or **Span**.
 
 Using the **Attributes** sidebar, you can group the selected metric by different attributes.
-For example, if you have selected **Errors** as a metric type and then choose the `service.name` attribute, the displayed results show the number of errors sorted by the `service.name` with the most matches.
+For example, if you have selected **Errors** as a metric type and then choose the `resource.service.name` attribute, the displayed results show the number of errors sorted by the `resource.service.name` with the most matches.
 
 Use the **Attributes** sidebar to select the attribute for **Group by**.
 You can search, scope by **Resource** or **Span**, and use **Favorites** for quick access.
-Attributes already in your **Filters** are listed at the top of the Attribute sidebar.
+Attributes already in your **Filters** are listed at the top of the **Attributes** sidebar.
 
-![Errors metric showing the **Breakdown** tab without filters](/media/docs/explore-traces/traces-drilldown-breakdown-tab-v1.2.png)
+![Errors metric showing the Breakdown tab without filters](/media/docs/explore-traces/traces-drilldown-breakdown-tab-v1.2.png)
 
 By default, the selected attribute is your first **Favorite** or `resource.service.name`.
 You can reorder **Favorites** to change this default.
@@ -56,7 +56,7 @@ The **Comparison** tab helps you surface and rank which span attributes are mos
 Upon selecting a metric, the tab computes, for each resource or span attribute, how strongly that attribute value differs between the selected subset (**selection**) and all other spans (**baseline**).
 It lists attribute‑value pairs in descending order of that difference, so the top entries are those most uniquely associated with your signal of interest.
 
-- If you're viewing the **Span rate** or **Errors** metrics, the **selection** contains all spans with errors, while the **baseline** contains all spans without errors.
+- If you're viewing the **Rate** or **Errors** metrics, the **selection** contains all spans with errors, while the **baseline** contains all spans without errors.
 
 - If you're viewing the **Duration** metric, by default the **selection** contains the slowest spans above the 90th percentile, while the **baseline** contains all other spans. You can manually adjust the selection on the duration heatmap.
 
@@ -68,23 +68,24 @@ Use the **Attributes** sidebar to switch between **All** (overall differences) a
 
 ### Focus on individual attributes with **Inspect**
 
-**Inspect** lets you breakdown and see the individual attribute values from a given comparison
-If you have a comparison like this, you can highlight the value with the highest difference (here, `attribute=value` is `span.app.product.id=OLJCESPC7Z` ), but you can't easily see all other values.
+**Inspect** lets you break down and view individual attribute values from a comparison.
+The overview shows each attribute with its single highest-difference value and an **Inspect** button, but you can't see all values for that attribute at once.
 
-![Select Inspect on an attribute](/media/docs/explore-traces/traceas-drilldown-comparison-inspect-example.png)
+![Select Inspect on an attribute](/media/docs/explore-traces/2.0/analyze-comparison-inspect-example.png)
 
-When selecting **Inspect**, the app shows only one attribute, `span.app.product.id`, but with a visualization for every value.
+When you select **Inspect**, the app focuses on that one attribute and shows a visualization for every value it contains.
+For example, selecting **Inspect** on `resource.service.name` shows every service with its baseline and selection bars, so you can immediately see which services are most correlated with the selected metric.
 
-![Inspect focuses the results on the selected attribute](/media/docs/explore-traces/traces-drilldown-comparison-inspect-post-select.png)
+![Inspect focuses the results on the selected attribute](/media/docs/explore-traces/2.0/analyze-comparison-inspect-post-select.png)
 
 ## Use the Structure tab
 
-The Structure tab lets you extract and view aggregate data from your traces.
-The name of the tab differs depending on the metric you are viewing:
+The **Structure** tab lets you extract and view aggregate data from your traces.
+The tab name differs depending on the metric you're viewing:
 
-- Rate provides **Service structure**
-- Errors provides **Root cause errors**
-- Duration metrics provides **Root cause latency**
+- **Rate** provides **Service structure**
+- **Errors** provides **Root cause errors**
+- **Duration** provides **Root cause latency**
 
 For **Rate**, the **Service structure** tab shows you how your applications talk to each other to fulfill requests.
 Use this tab to analyze the service structure of the traces that match the current filters.
@@ -99,27 +100,28 @@ When you select **Duration** metrics, the **Root cause latency** tab shows the s
 
 The pictured spans are an aggregated view compiled using spans from multiple traces.
 
-![Duration metric showing root cause latency](/media/docs/explore-traces/traces-drilldown-traces-view-v1.2.png)
+![Duration metric showing root cause latency](/media/docs/explore-traces/2.0/analyze-root-cause-latency.png)
 
 ## Use the Exceptions tab (Errors metric only)
 
 Use the **Exceptions** tab to see which exception messages are occurring within your current filters and time range. Exceptions are grouped by message so you can identify the most frequent failures and access the affected traces.
 
 Examples:
+
 - Inspect individual exceptions by clicking a message to open the **Trace list** pre-filtered for that message, so you can inspect individual traces immediately.
 - Narrow exceptions by service, environment, namespace, or any span/resource attribute by combining with the **Filters** bar.
 
-![Exceptions tab](/media/docs/explore-traces/traces-drilldown-error-exceptions-v1.2.png)
+![Exceptions tab](/media/docs/explore-traces/2.0/analyze-exceptions-tab.png)
 
 The Exceptions tab has a table with the following columns:
-- **Message**: Exception text grouped by unique message
-- **Type**: Exception class or code when available
-- **Trace service**: Service emitting the exception
+
+- **Exception Details**: Exception type, message text, emitting service, and last seen time grouped by unique exception
 - **Occurrences**: Count of matching exceptions for the selected range
 - **Frequency**: Sparkline of occurrences over time
-- **Last seen**: The most recent occurrence
 
-The **Exceptions** tab is available when the **Errors** metics is selected and exceptions are present.
+Each row includes **Include** and **Exclude** buttons so you can filter the current investigation to focus on or eliminate a specific exception.
+
+The **Exceptions** tab is available when the **Errors** metric is selected and exceptions are present.
 The tab respects the current time range and filters.
 For example, when Errors are selected, **Exceptions** works with both **Root spans** and **All spans** selections. The results reflect the data in scope.
 
@@ -137,12 +139,12 @@ Each RED metric has a trace list:
 
 - **Rate** provides a tab that lists **Traces**.
 - **Errors** provides a list of traces with errors.
-- **Duration** (**spans**) lists **Slow traces**.
+- **Duration** provides a list of **Slow traces**.
 
 From this view, you can add additional attributes to new columns using **Add extra columns**.
 
 Use the **Attributes** sidebar to add columns. Select multiple attributes to include them as table columns. Use **Search attributes** and **Favorites** to find attributes.
-Attributes already in your **Filters** are listed at the top of the Attribute sidebar.
+Attributes already in your **Filters** are listed at the top of the **Attributes** sidebar.
 
 ## Change the selected time range
 
@@ -159,10 +161,9 @@ For more information about the time range picker, refer to [Use dashboards](http
 Use the header's Trace ID input to open a specific trace:
 
 1. Paste a trace ID into the Trace ID input in the header.
-1. Press Enter or click **Submit** to open the trace in the drawer.
-1. Click **Clear** to remove the current value.
+1. Press Enter to open the trace in the drawer.
 
-The **Clear** and **Submit** buttons appear only when the input contains text. When you open a trace from the results list, the Trace ID input clears to avoid stale values.
+When you open a trace from the results list, the Trace ID input clears to avoid stale values.
 
 If a time range is selected, Traces Drilldown searches within the currently selected time range. Otherwise, it searches across all time.
 If a trace isn't found, an error message appears—verify the ID and widen the time range if necessary.
