@@ -1,6 +1,8 @@
 # Traces Drilldown documentation
 
-This directory contains the source code for the Grafana Traces Drilldown documentation.
+This directory contains **published user-facing docs** (under `sources/`) that ship with Grafana—get started, concepts, investigate, etc. It is **not** the same as `docs/project-intent.md` (why we built the app) or `docs/application-structure.md` (internal product map for agents). For an index of all agent and doc files, see **`AGENTS.md`** in the repo root.
+
+---
 
 Some key things to know about the Traces Drilldown documentation source:
 
