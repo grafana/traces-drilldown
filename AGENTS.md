@@ -56,6 +56,8 @@ Before changing behavior or “fixing” something, decide whether it’s:
 
 Refer to **`.config/AGENTS/instructions.md`** for Grafana plugin–specific rules (documentation indexes, critical rules). **Never modify anything inside the `.config` folder;** it is managed by Grafana plugin tools.
 
+- **Edits** — Tradeoff: **Large replacements** (many lines in one go) are fewer tool calls when they succeed but often fail on whitespace or formatting, forcing retries and re-reads. **Smaller, incremental steps** (one logical change per edit) match more reliably and are easier to retry. Prefer smaller steps for big or multi-part changes; a single large replace is fine when the snippet is short and you have the exact content from the file.
+
 - **Frontend security** — Follow workspace rules for HTML sanitization (DOMPurify), URLs (safe URL APIs / `textUtil.sanitizeUrl` where applicable), and avoiding unsafe DOM APIs.
 
 ### Scenes in Traces Drilldown
