@@ -39,7 +39,7 @@ Refer to [Choose root or full span data](../../investigate/choose-span-data/) fo
 ### Select Errors metric
 
 1. In the **Select metric type** section, you'll see three options:
-   - **Span rate**: Overall request/span rate
+   - **Rate**: Overall request/span rate
    - **Errors**: Failed requests/spans
    - **Duration**: Latency distribution (heatmap)
 1. Click **Errors** to focus on failed requests.

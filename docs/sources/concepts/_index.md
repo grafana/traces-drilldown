@@ -29,7 +29,7 @@ The Traces Drilldown app lets you explore rate, error, and duration (RED) metric
 | Useful for investigating                 | Metric   | Meaning                                                        |
 | ---------------------------------------- | -------- | -------------------------------------------------------------- |
 | Unusual spikes in activity               | Rate     | Number of requests per second                                  |
-| Overall issues in your tracing ecosystem | Error    | Number of those requests that are failing                      |
+| Overall issues in your tracing ecosystem | Errors   | Number of those requests that are failing                      |
 | Response times and latency issues        | Duration | Amount of time those requests take, represented as a histogram |
 
 For more information about the RED method, refer to [The RED Method: how to instrument your services](https://grafana.com/blog/2018/08/02/the-red-method-how-to-instrument-your-services/).

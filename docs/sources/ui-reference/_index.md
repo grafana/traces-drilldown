@@ -48,7 +48,7 @@ For details on workflows, refer to [Analyze tracing data](../investigate/analyze
 1. **Time range selector**:
    At the top right, you can adjust the time range for displayed data using the time picker. In this example, the time range is set to the last 24 hours. Refer to [Set dashboard time range](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range) for more information.
 
-   You can also open a specific trace by ID by entering the trace ID into the **Trace ID** input and pressing Enter. Refer to [Open a trace by ID](../investigate/analyze-tracing-data#open-a-trace-by-id) for more information.
+   You can also open a specific trace by ID by entering the trace ID into the **Trace ID** input and pressing Enter. Refer to [Open a trace by ID](../investigate/analyze-tracing-data/#open-a-trace-by-id) for more information.
 
 1. **Attributes sidebar**:
     Use the **Attributes** sidebar to select and manage attributes across views. Search attributes with regular expressions. Press **Escape** or click **Clear** to reset the search.
