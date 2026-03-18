@@ -6,7 +6,7 @@
 
 ### Sidebar navigation
 
-The primary entry is **Drilldown → Traces** in Grafana’s menu. That loads the main exploration route (`/a/<plugin-id>/explore`) with the selected Tempo data source (last-used datasource is remembered in local storage when possible).
+The primary entry is **Drilldown → Traces** in Grafana’s menu. That loads the main exploration route (`/a/grafana-exploretraces-app/explore`) with the selected Tempo data source (last-used datasource is remembered in local storage when possible).
 
 ### Extension links
 

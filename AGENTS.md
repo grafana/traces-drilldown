@@ -7,7 +7,7 @@
 | File | What it's for |
 |------|----------------|
 | **`AGENTS.md`** (this file) | **Entry point.** Tempo & TraceQL workflow, expected vs bug, Scenes patterns, security. Points to every other doc below. |
-| **`.config/AGENTS/instructions.md`** | **Plugin tooling only** — webpack, `plugin.json`, E2E, rules about `.config`. Do not modify `.config`. |
+| **`.config/AGENTS/instructions.md`** | **Plugin tooling only** — webpack, `plugin.json`, E2E, rules about `.config`. |
 | **`docs/project-intent.md`** | **Why** we built the app — philosophy, principles. Use when reasoning about tradeoffs or scope. |
 | **`docs/application-structure.md`** | **How the product is organized** — user journeys, screens, tabs, trace view, links in/out. Use when changing UI or URL behavior. |
 | **`docs/sources/`** | **Shipped user docs** (get started, concepts, investigate). Use when updating customer-facing copy. |
@@ -57,7 +57,7 @@
 - **Commands** — After code changes: `yarn lint`, `yarn typecheck`.
 - **Edits** — Large replacements (many lines) are fewer tool calls when they succeed but often fail on whitespace/formatting. Smaller, incremental steps match more reliably. Prefer smaller steps for big or multi-part changes; one large replace is fine when the snippet is short and you have the exact content from the file.
 - **Avoid** — Reading whole large files for a small change (see Code anchors; grep first). One giant multi-file replace without verifying exact content.
-- **Frontend security** — Follow workspace rules: HTML sanitization (DOMPurify), safe URL APIs / `textUtil.sanitizeUrl`.
+- **Frontend security** — Follow workspace rules: HTML sanitization (DOMPurify), safe URL APIs / `textUtil.sanitizeUrl` and whatever else you think is necessary.
 
 ### Scenes in Traces Drilldown
 
