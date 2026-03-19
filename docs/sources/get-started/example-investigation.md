@@ -48,6 +48,7 @@ Refer to [Choose root or full span data](../../investigate/choose-span-data/) fo
 ### View traces with errors
 
 1. Click the **Errored traces** tab to see individual traces with errors.
+1. Use the **Search** field to filter the table by any visible column (for example service name, trace name, or status).
 1. The table shows traces with columns:
    - **Start time**: When the request occurred
    - **Status**: Shows `error` for all traces in this view
