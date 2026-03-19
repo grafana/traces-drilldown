@@ -10,17 +10,17 @@ refs:
       destination: /docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range
     - pattern: /docs/grafana-cloud/
       destination: /docs/grafana-cloud/visualizations/dashboards/use-dashboards/
-title: Add filters
+title: Refine your investigation with filters
 menuTitle: Add filters
 weight: 600
 ---
 
-# Refine your investigation using filters
+# Refine your investigation with filters
 
-Use filters to refine your investigation.
+Use filters to focus your investigation on specific data.
 
 Filters are available on the **Breakdown** and **Comparison** views.
-Refer to [Analyze tracing data](../analyze-tracing-data/) for how to use these views.
+Refer to [Analyze tracing data](../analyze-tracing-data/) to learn how to use these views.
 
 ## Add filters
 
@@ -29,33 +29,33 @@ The list of filters expands as you investigate and explore your tracing data usi
 
 1. Refine your investigation by adding filters.
 1. Optional: Use the tabs underneath the metrics selection to provide insights into breakdowns, comparisons, latency, and other explorations.
-1. Choose filters to hone in on the problem areas. Each filter that you select adds to the **Filter** bar at the top of the page. You can select filters on the **Comparison** and **Breakdown** tabs in the following ways:
+1. Choose filters to focus on problem areas. Each selected filter is added to the **Filters** bar at the top of the page. You can select filters on the **Comparison** and **Breakdown** tabs in the following ways:
    - Select **Add to filters**.
-   - Use the **Filter** bar near the top.
+   - Use the **Filters** bar near the top.
    - Attributes shown with a filter icon in the **Attributes** sidebar are already applied in your current **Filters**. The **Attributes** sidebar helps you pick and favorite attributes used for grouping, comparison, and **Trace list** columns. Refer to the [UI reference](../../ui-reference/).
 
-![Change filters for your investigation](/media/docs/explore-traces/traces-drilldown-filters-ga-1.png)
+![Change filters for your investigation](/media/docs/explore-traces/2.0/add-filters-span-duration-gt-200ms.png)
 
 ### Example
 
-Let's say that you want to investigate a spike in errored root spans longer than 200ms.
+Let's say that you want to investigate a spike in root spans with errors that are longer than 200ms.
 
 1. Select **Root spans**.
 1. Select the **Errored traces** tab.
-1. In the Filter by labeled values, enter `span:duration`, select greater than (`>`) from the drop-down list, and then enter `200ms`.
-1. After the data updates, sort the **Errored traces** table by the **Duration** column.
+1. In **Filter by label values**, enter `span:duration`, select greater than (`>`) from the drop-down list, and then enter `200ms`.
+1. After the data updates, sort the table by the **Duration** column.
 
 ## Modify a filter
 
 Selecting an option for a filter automatically updates the displayed data.
-If there are no matches, the app displays a “No data for selected query” message.
+If there are no matches, the app displays a "No data for selected query" message.
 
 To modify an applied filter:
 
 1. Select the filter to modify in the filter bar.
 1. Select an option from the drop-down list.
 
-You can also click in the **Filter** bar to add filters using drop-down lists.
+You can also click in the **Filters** bar to add filters using drop-down lists.
 
 ## Remove filters
 
