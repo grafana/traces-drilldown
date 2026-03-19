@@ -33,7 +33,7 @@ jobs:
   CD:
     name: Deploy plugin
     needs: bump-version
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v6.0.0
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main # zizmor: ignore[unpinned-uses] - required for prod-targets-all until next release
     permissions:
       contents: write
       id-token: write
@@ -41,6 +41,7 @@ jobs:
       pull-requests: read
     with:
       environment: prod
+      prod-targets-all: false
       attestation: true
       grafana-cloud-deployment-type: provisioned
       auto-merge-environments: dev,ops
