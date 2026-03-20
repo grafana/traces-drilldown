@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.0.0
+
+##### Chores
+
+* **deps:**
+  *  fix all dependency vulnerabilities (minimatch, ajv, @tootallnate/once) (#674) (d9168e50)
+  *  bump undici from 7.18.2 to 7.24.4 (#669) (2f771b89)
+*  Fix release action (#672) (f5326ea7)
+
+##### Documentation Changes
+
+*  Update Traces Drilldown doc and screenshots (#670) (f655b157)
+
+##### New Features
+
+*  Add AGENTS.md and surrounding files (#671) (ea7313bf)
+*  Support Saved Queries (#653) (1ad5ea70)
+
+
 ## 1.4.1
 
 
