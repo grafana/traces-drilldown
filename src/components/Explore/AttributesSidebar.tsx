@@ -80,7 +80,7 @@ export function AttributesSidebar({
       // Try to use the search value as a regex pattern (case-insensitive)
       const regex = new RegExp(search, 'i');
       return regex.test(label);
-    } catch (error) {
+    } catch {
       // If regex is invalid, fall back to simple case-insensitive string matching
       return label.toLowerCase().includes(search.toLowerCase());
     }
