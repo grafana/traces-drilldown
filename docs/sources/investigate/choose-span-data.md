@@ -28,15 +28,15 @@ Using **Root spans**, you get exactly one span per trace (the root span or the f
 
 When to use:
 
-- High‑level or service‑level investigations (e.g. error rate by root operation).
-- Fast filtering by trace‑wide metrics (e.g. trace duration, success vs. failure at the entry point).
+- High-level or service-level investigations, for example, error rate by root operation.
+- Fast filtering by trace-wide metrics, for example, trace duration, and success versus failure at the entry point.
 
 Benefits:
 
-- End-to-end view: Root spans represent the complete, end‑to‑end request or job. Querying just roots ensures you measure the full request lifecycle, exactly what your RED (Rate, Errors, Duration) metrics are built on. Duration and error‑rate histograms reflect user‑facing operations.
+- End-to-end view: Root spans represent the complete, end‑to‑end request or job. Querying only root spans ensures you measure the full request lifecycle, exactly what your RED (Rate, Errors, Duration) metrics are built on. Duration and error‑rate histograms reflect user‑facing operations.
 - Speed: Only inspects the first span per trace.
 
-![The Span rate metric view showing Root spans selected](/media/docs/explore-traces/traces-drilldown-root-spans-v1.2.png "The Span rate metric view showing Root spans selected")
+![The Rate metric view showing Root spans selected](/media/docs/explore-traces/2.0/choose-span-data-root-spans.png)
 
 ## Query all spans
 
@@ -57,4 +57,4 @@ Trade‑offs:
 Errors can cascade through downstream services, and error counts differ from error rates. When using **All spans**, verify the error type on spans and consider rate (errors/requests) to avoid overestimating the impact.
 {{< /admonition >}}
 
-![The Span rate metric view showing All spans selected](/media/docs/explore-traces/traces-drilldown-all-spans-v1.2.png "The Span rate metric view showing All spans selected")
+![The Rate metric view showing All spans selected](/media/docs/explore-traces/2.0/choose-span-data-all-spans.png)

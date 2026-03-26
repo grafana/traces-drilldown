@@ -33,7 +33,7 @@ To use Grafana Traces Drilldown with Grafana Cloud, you need:
 
 To use Traces Drilldown with self-managed Grafana, you need:
 
-- Your own Grafana v11.2 or later instance with a configured Tempo data source
+- Your own Grafana v11.6 or later instance with a configured Tempo data source
 - Installed Traces Drilldown plugin
 
 For more details, refer to [Access Traces Drilldown](../access/).
@@ -57,11 +57,11 @@ This example demonstrates investigation techniques and patterns you can use when
 
 For a hands-on walkthrough you can follow step-by-step, refer to the [Investigation walkthrough](./example-investigation/).
 
-As an example, you want to uncover the source of errors in your spans. You need to compare the errors in the traces to locate the problem trace. Here's how this works.
+For example, you want to uncover the source of errors in your spans. You need to compare the errors in the traces to locate the problem trace. Here's how this works.
 
 ### Choose the level of data and a metric
 
-To identify the trouble spot, you want to use raw tracing data instead of just the root span, which is the first span of every trace.
+To identify the trouble spot, you want to use raw tracing data instead of only the root span, which is the first span of every trace.
 Select **All spans** in the Filters, then choose the **Errors** metric.
 
 ![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors-red-v1.2.png 'Select All spans to view all raw span data and Errors as your metric')
@@ -70,9 +70,9 @@ Select **All spans** in the Filters, then choose the **Errors** metric.
 
 If you're seeing errors in your traces, here are three common misunderstandings to avoid.
 
-First, not all red spans are application failures. A span marked 'error' might just indicate a timeout or expected validation failure. Check the error message and type before assuming something's broken.
+First, not all red spans are application failures. A span marked 'error' might indicate a timeout or expected validation failure. Check the error message and type before assuming something's broken.
 
-Second, errors cascade. When one service fails, downstream spans inherit that error status. Look for the root span with the error to find the actual source, not just the last service in the chain.
+Second, errors cascade. When one service fails, downstream spans inherit that error status. Look for the root span with the error to find the actual source, not only the last service in the chain.
 
 Finally, remember that error count isn't the same as error rate. Ten errors might seem alarming, but if you handled ten thousand requests, that's only 0.1%. Always consider the context.
 
@@ -129,9 +129,9 @@ To view additional details, click the link icon and select **View linked span** 
 
 ![View linked spans to see details of errors](/media/docs/explore-traces/traces-drilldown-root-cause-trace-drawer-v1.2.png 'View linked spans to see details of errors')
 
-Errors spans have a red icon next to them. Select the down arrow next to the errored span to see details.
+Error spans have a red icon next to them. Select the down arrow next to the span with an error to see details.
 
-![Select the down arrow next to the errored span to see details](/media/docs/explore-traces/traces-drilldown-root-cause-trace-expanded-v1.2.png 'Select the down arrow next to the errored span to see details')
+![Select the down arrow next to the span with an error to see details](/media/docs/explore-traces/traces-drilldown-root-cause-trace-expanded-v1.2.png 'Select the down arrow next to the span with an error to see details')
 
 ## What you learned
 

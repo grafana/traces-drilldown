@@ -7,7 +7,9 @@ services:
       context: ../.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana-dev}
-        grafana_version: ${GRAFANA_VERSION:-12.2.0-17432607250}
+        grafana_version: ${GRAFANA_VERSION:-12.3.0}
+    environment:
+      - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-}
     ports:
       - 3000:3000/tcp
     volumes:
@@ -17,7 +19,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   tempo:
-    image: grafana/tempo:latest@sha256:6d4f1f3f223f949d008944164a822cde8bdc84618e4db2f165772473c13758fc
+    image: grafana/tempo:latest@sha256:5aa154fa48559125e89a99154fb9a1c39cdb1f971d9bd922c5588b00dc30e16d
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
@@ -124,7 +126,7 @@ services:
 
   # A microservice that consumes requests from the mythical-queue
   mythical-recorder:
-    image: grafana/intro-to-mltp:mythical-beasts-recorder-latest@sha256:1420cd8421e76140d91ae43db2c12d233a4476ab142bf4a4fb0a1e1095fe6833
+    image: grafana/intro-to-mltp:mythical-beasts-recorder-latest@sha256:82cd1496fd5bdf346bcab547d977e036873a963ea2944292322f54c2d9911b3f
     restart: always
     depends_on:
       mythical-queue:

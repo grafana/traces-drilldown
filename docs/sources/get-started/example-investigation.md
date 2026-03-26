@@ -2,6 +2,7 @@
 title: Investigation walkthrough
 menuTitle: Investigation walkthrough
 description: A hands-on walkthrough of investigating errors using Traces Drilldown on play.grafana.org.
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/traces/get-started/example-investigation/
 weight: 265
 keywords:
   - Traces Drilldown
@@ -15,40 +16,39 @@ Follow this step-by-step walkthrough to investigate errors using Grafana Traces 
 
 {{< docs/play title="the Grafana Play site" url="https://play.grafana.org/a/grafana-exploretraces-app/explore" >}}
 
-Because `play.grafana.org` is a public demo, data changes over time and may reset. If you don’t see data, try refreshing and ensure the time range and data source are correct.
+Because `play.grafana.org` is a public demo, data changes over time and may reset. If you don't see data, try refreshing and ensure the time range and data source are correct.
 
 ## Scenario
 
 You've noticed errors in your application and want to investigate which requests are failing and why.
 
-## Investigate on play.grafana.org
-
-Use the public demo environment to explore traces with Traces Drilldown.
+![Investigation walkthrough steps](../investigation-walkthrough-workflow.svg)
 
 ### Open Traces Drilldown
 
 1. Open [play.grafana.org](https://play.grafana.org).
-1. In the left menu, navigate to **Drilldown > Traces**.
-1. Traces Drilldown opens with the **grafanacloud-demoinfra-traces** data source selected.
+1. In the main menu, select **Drilldown** > **Traces**.
+1. Traces Drilldown opens with a tracing data source selected.
 
 ### Choose span data
 
-By default, Traces Drilldown shows **Root spans** (one span per trace) for accurate, service‑level insight.
+By default, Traces Drilldown shows **Root spans** (one span per trace) for accurate, service-level insight.
 For deeper error investigations, start with **Root spans**, then switch to **All spans** to include downstream or internal errors in child spans.
 Refer to [Choose root or full span data](../../investigate/choose-span-data/) for more information.
 
 ### Select Errors metric
 
 1. In the **Select metric type** section, you'll see three options:
-   - **Spans (rate)**: Overall request/span rate
+   - **Rate**: Overall request/span rate
    - **Errors**: Failed requests/spans
    - **Duration**: Latency distribution (heatmap)
 1. Click **Errors** to focus on failed requests.
 1. The view updates to show error-specific tabs: **Breakdown**, **Root cause errors**, **Comparison**, **Exceptions**, and **Errored traces**.
 
-### View errored traces
+### View traces with errors
 
 1. Click the **Errored traces** tab to see individual traces with errors.
+1. Use the **Search** field to filter the table by any visible column (for example service name, trace name, or status).
 1. The table shows traces with columns:
    - **Start time**: When the request occurred
    - **Status**: Shows `error` for all traces in this view
@@ -56,6 +56,11 @@ Refer to [Choose root or full span data](../../investigate/choose-span-data/) fo
    - **Trace Name**: The operation name (for example, `GET /api/quotes`, `POST /api/pizza`)
 
 ### Examine a specific trace
+
+A trace is a tree of spans that represents a single request as it moves through your services. Each span captures one operation, and child spans nest inside their parent to show the call chain.
+By understanding the trace structure, you can identify the root cause of errors.
+
+![Trace anatomy diagram showing a root span, a child span, and an error span nested in a timeline](../trace-anatomy.svg)
 
 1. Click **Open in new tab** on a trace row to view the full trace details.
 1. The trace view opens in Explore showing:
@@ -87,7 +92,7 @@ Refer to [Choose root or full span data](../../investigate/choose-span-data/) fo
 By following this walkthrough, you learned how to:
 
 - Navigate Traces Drilldown and select the **Errors** metric.
-- View errored traces in a table format.
+- View traces with errors in a table format.
 - Examine individual trace details.
 - Use **Breakdown** to identify error patterns.
 
@@ -102,3 +107,10 @@ Now that you've completed the basic walkthrough:
 - [Add filters](../../investigate/add-filters/) to refine the scope of your investigation.
 - [Analyze tracing data](../../investigate/analyze-tracing-data/) with Breakdown, Comparison, and Root cause views.
 - [Choose root or full span data](../../investigate/choose-span-data/) depending on your use case.
+
+### Use traces with other telemetry signals
+
+Do you have data from other telemetry signals?
+
+- Refer to [Use signals together](https://grafana.com/docs/grafana-cloud/telemetry-signals/use-signals-together/) to learn about using metrics with other telemetry data and why correlation matters.
+- Refer to [Telemetry signal workflows](https://grafana.com/docs/grafana-cloud/telemetry-signals/workflows/) to explore workflows across all the Drilldown apps.
