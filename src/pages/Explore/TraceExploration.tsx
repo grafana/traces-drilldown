@@ -42,6 +42,7 @@ import {
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
+import { getKgSceneProps } from '../../utils/kgAnnotations';
 import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { primarySignalOptions } from './primary-signals';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
@@ -79,15 +80,25 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
 
   public constructor(state: Partial<TraceExplorationState>) {
+    const serviceName = state.initialFilters
+      ?.find((f) => f.key === 'resource.service.name' && (f.operator === '=' || f.operator === '=~'))
+      ?.value?.replace(/"/g, '');
+    const kg = getKgSceneProps('Service', serviceName);
+
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
       $variables: state.$variables ?? getVariableSet(state as TraceExplorationState),
-      controls: state.controls ?? [new SceneTimePicker({}), new SceneRefreshPicker({})],
+      controls: state.controls ?? [
+        ...(kg ? [kg.controls] : []),
+        new SceneTimePicker({}),
+        new SceneRefreshPicker({}),
+      ],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
       issueDetector: new TraceQLIssueDetector(),
       loadSearchScene: state.loadSearchScene ?? new LoadSearchScene({}),
       ...state,
+      ...(kg ? { $data: kg.$data } : {}),
     });
 
     this.addActivationHandler(this._onActivate.bind(this));
