@@ -166,7 +166,7 @@ export function parseTraceQLQuery(query: string): TraceQLParseResult | null {
       filters: combinedFilters,
       errors
     };
-  } catch (error) {
+  } catch {
     // If parsing fails completely, return null to fallback gracefully
     return null;
   }

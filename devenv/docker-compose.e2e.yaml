@@ -92,7 +92,7 @@ services:
   playwright:
     profiles:
       - playwright
-    image: mcr.microsoft.com/playwright:v1.55.1-noble
+    image: mcr.microsoft.com/playwright:v1.55.1-noble@sha256:2f29369043d81d6d69a815ceb80760f55e85f5020371ad06a4d996f18503ad1c
     working_dir: /app
     volumes:
       - ..:/app
