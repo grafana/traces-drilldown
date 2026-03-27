@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { DataFrame } from '@grafana/data';
+import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, AdHocFiltersVariable } from '@grafana/scenes';
-import { Button } from '@grafana/ui';
+import { useStyles2 } from '@grafana/ui';
+import { css } from '@emotion/css';
 import { getFiltersVariable, getLabelValue } from '../../../utils/utils';
 import { DATABASE_CALLS_KEY } from 'pages/Explore/primary-signals';
 
@@ -44,16 +45,54 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
   };
 
   public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
+    const styles = useStyles2(getStyles);
+
     return (
-      <>
-        <Button variant="primary" size="sm" fill="text" onClick={model.onIncludeClick}>
+      <div className={styles.group} role="group" aria-label="Add to filters">
+        <button type="button" className={styles.segment} onClick={model.onIncludeClick}>
           Include
-        </Button>
-        <Button variant="primary" size="sm" fill="text" onClick={model.onExcludeClick}>
+        </button>
+        <button type="button" className={styles.segment} onClick={model.onExcludeClick}>
           Exclude
-        </Button>
-      </>
+        </button>
+      </div>
     );
+  };
+}
+
+function getStyles(theme: GrafanaTheme2) {
+  return {
+    group: css({
+      display: 'inline-flex',
+      alignItems: 'stretch',
+      border: `1px solid ${theme.colors.border.medium}`,
+      borderRadius: theme.shape.radius.default,
+      backgroundColor: theme.colors.background.canvas,
+      padding: 0,
+      gap: theme.spacing(1.5),
+      overflow: 'hidden',
+    }),
+    segment: css({
+      ...theme.typography.bodySmall,
+      fontWeight: theme.typography.fontWeightBold,
+      lineHeight: 1.2,
+      color: theme.colors.text.primary,
+      background: 'transparent',
+      border: 'none',
+      margin: 0,
+      cursor: 'pointer',
+      display: 'inline-flex',
+      alignItems: 'center',
+      alignSelf: 'stretch',
+      padding: theme.spacing(0.5, 1),
+      '&:hover': {
+        backgroundColor: theme.colors.background.secondary,
+      },
+      '&:focus-visible': {
+        outline: `2px solid ${theme.colors.primary.border}`,
+        outlineOffset: 1,
+      },
+    }),
   };
 }
 
