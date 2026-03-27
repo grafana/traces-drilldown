@@ -112,7 +112,7 @@
     "lodash": "4.17.23",
     "react-router": "6.30.3",
     "rtl-css-js": "1.16.0",
-    "serialize-javascript": "7.0.4",
+    "serialize-javascript": "7.0.5",
     "flatted": "3.4.2",
     "immutable": "5.1.5",
     "dompurify": "3.3.2",
