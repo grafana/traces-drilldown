@@ -18,13 +18,12 @@ const additionalESModules = [
 module.exports = {
   // Jest configuration provided by Grafana scaffolding
   ...require('./.config/jest.config'),
+  // Equivalent to jest-environment-jsdom; this form is recognized by Knip's Jest plugin
+  testEnvironment: 'jsdom',
   // Override transformIgnorePatterns to include additional ES modules
   transformIgnorePatterns: [nodeModulesToTransform(additionalESModules)],
   moduleNameMapper: {
     '\\.(css|scss|sass)$': 'identity-obj-proxy',
     '\\.(svg|png|jpg|jpeg|gif)$': '<rootDir>/.config/jest/mocks/fileMock.js', // Mock static file imports
-    resetMocks: true,
-    clearMocks: true,
-    resetModules: true,
   },
 };
