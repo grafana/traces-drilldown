@@ -19,7 +19,7 @@ weight: 600
 
 Grafana Traces Drilldown helps you focus your tracing data exploration.
 Some sections change based on the metric you choose.
-For details on workflows, refer to [Analyze tracing data](../investigate/analyze-tracing-data).
+For details on workflows, refer to [Analyze tracing data](../investigate/analyze-tracing-data/).
 
 ![Numbered sections of the Traces Drilldown app](/media/docs/explore-traces/traces-drilldown-screen-parts-numbered-v1.2.png)
 
@@ -31,14 +31,14 @@ For details on workflows, refer to [Analyze tracing data](../investigate/analyze
    You can select the type of trace data, either **Root spans** or **All spans**. You can also add specific label values to narrow the scope of your investigation.
 
 1. **Select metric type**:
-   Choose between **Rate** (spans), **Errors**, or **Duration** metrics. In this example, the **Span rate** metric is selected, showing the number of spans per second.
-   - The **Span rate** graph (top left) shows the rate of spans over time.
+   Choose between **Rate**, **Errors**, or **Duration** metrics. In this example, the **Rate** metric is selected, showing the number of spans per second.
+   - The **Rate** graph (top left) shows the rate of spans over time.
    - The **Errors** graph (top right) displays the error rate over time, with red bars indicating errors.
    - The **Duration** heatmap (bottom right) visualizes the distribution of span durations and can help identify latency patterns.
 
 1. **Investigation-focused tabs**:
    Each metric type has its own set of tabs that help you explore your tracing data. These tabs differ depending on the metric type you've selected.
-   For example, when you use Span rate, then the Investigation type tabs show **Breakdown**, **Service structure**, **Comparison**, and **Traces**.
+   For example, when you use **Rate**, the investigation tabs show **Breakdown**, **Service structure**, **Comparison**, and **Traces**.
    - **Exceptions** (**Errors** only): Group exception messages with counts, trend sparkline, emitting service, and last-seen.
     - Percentiles (Duration only): Choose `p50`, `p75`, `p90`, `p95`, `p99` for Duration views. Default: `p90`. If you clear all, `p90` applies automatically.
 
@@ -46,18 +46,18 @@ For details on workflows, refer to [Analyze tracing data](../investigate/analyze
    Each attribute group includes an **Add to filters** option, so you can add your selections into the current investigation.
 
 1. **Time range selector**:
-   At the top right, you can adjust the time range for the displayed data using the time picker. In this example, the time range is set to the last 30 minutes. Refer to [Set dashboard time range](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range) for more information.
+   At the top right, you can adjust the time range for displayed data using the time picker. In this example, the time range is set to the last 24 hours. Refer to [Set dashboard time range](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range) for more information.
 
-   You can also open a specific trace by ID by entering the trace ID into the **Trace ID** input and pressing Enter or clicking **Submit**. Refer to [Open a trace by ID](../investigate/analyze-tracing-data#open-a-trace-by-id) for more information.
+   You can also open a specific trace by ID by entering the trace ID into the **Trace ID** input and pressing Enter. Refer to [Open a trace by ID](../investigate/analyze-tracing-data/#open-a-trace-by-id) for more information.
 
 1. **Attributes sidebar**:
-    Use the Attributes sidebar to select and manage attributes across views. Search attributes with regular expressions. Press **Escape** or click **Clear** to reset the search.
+    Use the **Attributes** sidebar to select and manage attributes across views. Search attributes with regular expressions. Press **Escape** or click **Clear** to reset the search.
 
     Click the star icon to add or remove a favorite. Drag and drop favorites to reorder them. Switch between scopes: **Favorites**, **All**, **Resource**, **Span**. A filter icon marks attributes already applied in the **Filters** bar.
 
     In **Breakdown** and **Comparison** views, selecting an attribute sets the current **Group by** attribute. In **Trace list** view, select multiple attributes to add or remove table columns. The app saves favorites in your browser.
 
-## Streaming query results
+## Query result streaming
 
 When you first open Traces Drilldown, you may notice a green dot on the upper right corner of any of the metrics graphs.
 
@@ -67,6 +67,6 @@ Streaming lets you view partial query results before the entire query completes.
 ## Open in Explore app
 
 You can open a trace in the Explore app by clicking the **Open in Explore** button.
-This will open the trace in the Explore app, where you can use the full power of the Explore app to analyze the trace.
+This opens the trace in the Explore app, where you can use the full power of Explore to analyze the trace.
 
-If you are using Explore, you can open a trace in Traces Drilldown by clicking the **Open in Traces Drilldown** button.
+If you're using Explore, you can open a trace in Traces Drilldown by clicking the **Open in Traces Drilldown** button.

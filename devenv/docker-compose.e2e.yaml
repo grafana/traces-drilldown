@@ -1,5 +1,3 @@
-version: '3.0'
-
 services:
   grafana:
     container_name: 'grafana-explore-traces-e2e'
@@ -9,7 +7,7 @@ services:
       context: ../.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana}
-        grafana_version: ${GRAFANA_VERSION:-latest}
+        grafana_version: ${GRAFANA_VERSION:-12.3.0}
     ports:
       - 3001:3000/tcp
     volumes:
@@ -78,7 +76,7 @@ services:
 
   # A microservice that consumes requests from the mythical-queue
   mythical-recorder:
-    image: grafana/intro-to-mltp:mythical-beasts-recorder-latest@sha256:dae10980a1f422d659d0862275f77dca42a735681c4c65a27d78eb719190e13d
+    image: grafana/intro-to-mltp:mythical-beasts-recorder-latest@sha256:82cd1496fd5bdf346bcab547d977e036873a963ea2944292322f54c2d9911b3f
     restart: always
     depends_on:
       mythical-queue:
@@ -89,3 +87,18 @@ services:
       - TRACING_COLLECTOR_PORT=4317
       - OTEL_EXPORTER_OTLP_TRACES_INSECURE=true
       - OTEL_RESOURCE_ATTRIBUTES=ip=1.2.3.5
+
+  # Used by plugin-ci-workflows: docker compose --profile playwright up playwright --exit-code-from playwright
+  playwright:
+    profiles:
+      - playwright
+    image: mcr.microsoft.com/playwright:v1.55.1-noble@sha256:2f29369043d81d6d69a815ceb80760f55e85f5020371ad06a4d996f18503ad1c
+    working_dir: /app
+    volumes:
+      - ..:/app
+    environment:
+      BASE_URL: http://grafana:3000
+      CI: "true"
+    depends_on:
+      - grafana
+    command: sh -c "yarn install --frozen-lockfile && sleep 30 && yarn e2e:fast"

@@ -14,9 +14,15 @@ import {
   VariableDependencyConfig,
   VariableValue,
 } from '@grafana/scenes';
-import { getTheme, Stack, useStyles2 } from '@grafana/ui';
+import { Checkbox, getTheme, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 
-import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL } from '../../../../../utils/shared';
+import {
+  VAR_FILTERS,
+  VAR_PRIMARY_SIGNAL,
+  explorationDS,
+  VAR_FILTERS_EXPR,
+  ALL,
+} from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -40,8 +46,12 @@ import { AttributesDescription } from '../Breakdown/AttributesDescription';
 import { isEqual } from 'lodash';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 
+const HIDE_BASELINE_ONLY_LS_KEY = 'grafana.drilldown.traces.hideBaselineOnly';
+
 export interface AttributesComparisonSceneState extends SceneObjectState {
   body?: SceneObject;
+  /** When true, hide panels that only have baseline percentage and no selection value */
+  hideBaselineOnlyPanels?: boolean;
 }
 
 export class AttributesComparisonScene extends SceneObjectBase<AttributesComparisonSceneState> {
@@ -51,8 +61,11 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
   });
 
   constructor(state: Partial<AttributesComparisonSceneState>) {
+    const stored = localStorage.getItem(HIDE_BASELINE_ONLY_LS_KEY);
+    const hideBaselineOnlyPanels = state.hideBaselineOnlyPanels ?? (stored === 'true');
     super({
       ...state,
+      hideBaselineOnlyPanels,
     });
 
     this.addActivationHandler(this._onActivate.bind(this));
@@ -68,6 +81,15 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     variable.subscribeToState((newState, prevState) => {
       if (newState.value !== prevState.value) {
         this.setBody(variable);
+      }
+    });
+
+    this.subscribeToState((newState, prevState) => {
+      if (newState.hideBaselineOnlyPanels !== prevState.hideBaselineOnlyPanels) {
+        localStorage.setItem(HIDE_BASELINE_ONLY_LS_KEY, String(newState.hideBaselineOnlyPanels ?? false));
+        this.updateData(newState.hideBaselineOnlyPanels, true);
+        // Reusing the same query runner: data is already in memory, just re-filtered.
+        this.setBody(variable)
       }
     });
 
@@ -94,39 +116,50 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     return primarySignal === 'nestedSetParent<0' ? ['rootName', 'rootServiceName'] : [];
   };
 
-  private updateData() {
+  private updateData(hideBaselineOnly?: boolean, reuseQueryRunner?: boolean) {
     const byServiceScene = getTraceByServiceScene(this);
     const sceneTimeRange = sceneGraph.getTimeRange(this);
     const from = sceneTimeRange.state.value.from.unix();
     const to = sceneTimeRange.state.value.to.unix();
     const primarySignal = getPrimarySignalVariable(this).state.value;
     const filteredAttributes = this.getFilteredAttributes(primarySignal);
+    const hideBaselineOnlyPanels = hideBaselineOnly ?? this.state.hideBaselineOnlyPanels ?? false;
 
-    this.setState({
-      $data: new SceneDataTransformer({
-        $data: new SceneQueryRunner({
-          datasource: explorationDS,
-          queries: [buildQuery(from, to, comparisonQuery(byServiceScene.state.selection))],
-        }),
-        transformations: [
-          () => (source: Observable<DataFrame[]>) => {
-            return source.pipe(
-              map((data: DataFrame[]) => {
-                const groupedFrames = groupFrameListByAttribute(data);
-                return Object.entries(groupedFrames)
-                  .filter(([attribute, _]) => !filteredAttributes.includes(attribute))
-                  .map(([attribute, frames]) => frameGroupToDataframe(attribute, frames))
-                  .sort((a, b) => {
-                    const aCompare = computeHighestDifference(a);
-                    const bCompare = computeHighestDifference(b);
-                    return Math.abs(bCompare.maxDifference) - Math.abs(aCompare.maxDifference);
-                  });
-              })
-            );
-          },
-        ],
-      }),
+    const existingRunner = this.state.$data?.state?.$data as SceneQueryRunner | undefined;
+    const queryRunner =
+      reuseQueryRunner && existingRunner
+        ? existingRunner
+        : new SceneQueryRunner({
+            datasource: explorationDS,
+            queries: [buildQuery(from, to, comparisonQuery(byServiceScene.state.selection))],
+          });
+
+    const $data = new SceneDataTransformer({
+      $data: queryRunner,
+      transformations: [
+        () => (source: Observable<DataFrame[]>) => {
+          return source.pipe(
+            map((data: DataFrame[]) => {
+              const groupedFrames = groupFrameListByAttribute(data ?? []);
+              let result = Object.entries(groupedFrames)
+                .filter(([attribute, _]) => !filteredAttributes.includes(attribute))
+                .map(([attribute, frames]) => frameGroupToDataframe(attribute, frames));
+
+              if (hideBaselineOnlyPanels) {
+                result = result.filter(hasSelectionValues);
+              }
+              return result.sort((a, b) => {
+                const aCompare = computeHighestDifference(a);
+                const bCompare = computeHighestDifference(b);
+                return Math.abs(bCompare.maxDifference) - Math.abs(aCompare.maxDifference);
+              });
+            })
+          );
+        },
+      ],
     });
+
+    this.setState({ $data });
   }
 
   private onReferencedVariableValueChanged() {
@@ -183,7 +216,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
   };
 
   public static Component = ({ model }: SceneComponentProps<AttributesComparisonScene>) => {
-    const { body } = model.useState();
+    const { body, hideBaselineOnlyPanels } = model.useState();
     const variable = getGroupByVariable(model);
     const traceExploration = getTraceExplorationScene(model);
     const { attributes } = getTraceByServiceScene(model).useState();
@@ -211,11 +244,19 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
               },
             ]}
           />
-          {body instanceof LayoutSwitcher && (
-            <div className={styles.controlsRight}>
-              <body.Selector model={body} />
-            </div>
-          )}
+          <div className={styles.controlsRight}>
+            <Tooltip content="Hide panels that only have baseline percentage and no selection">
+              <div>
+                <Checkbox
+                  data-testid="comparison-hide-baseline-only"
+                  value={hideBaselineOnlyPanels ?? false}
+                  onChange={(ev) => model.setState({ hideBaselineOnlyPanels: ev.currentTarget.checked ?? false })}
+                  label="Hide baseline-only"
+                />
+              </div>
+            </Tooltip>
+            {body instanceof LayoutSwitcher && <body.Selector model={body} />}
+          </div>
         </div>
         <div className={styles.content}>
           <Stack direction="row" gap={2} width="100%">
@@ -248,6 +289,11 @@ export function buildQuery(from: number, to: number, compareQuery: string) {
     spss: 10,
     filters: [],
   };
+}
+
+export function hasSelectionValues(df: DataFrame): boolean {
+  const selectionField = df.fields.find((f) => f.name === 'Selection');
+  return selectionField?.values?.some((v) => (v ?? 0) > 0) ?? false;
 }
 
 const groupFrameListByAttribute = (frames: DataFrame[]) => {
@@ -366,13 +412,15 @@ function getStyles(theme: GrafanaTheme2) {
     controls: css({
       flexGrow: 0,
       display: 'flex',
-      alignItems: 'top',
+      alignItems: 'center',
       gap: theme.spacing(2),
     }),
     controlsRight: css({
-      flexGrow: 0,
+      marginLeft: 'auto',
       display: 'flex',
-      justifyContent: 'flex-end',
+      alignItems: 'center',
+      gap: theme.spacing(2),
+      padding: `${theme.spacing(1)} 0 ${theme.spacing(2)} 0`,
     }),
     controlsLeft: css({
       display: 'flex',

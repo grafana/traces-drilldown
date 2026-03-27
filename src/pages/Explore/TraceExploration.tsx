@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { GrafanaTheme2, AdHocVariableFilter } from '@grafana/data';
 import {
@@ -51,6 +51,8 @@ import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWi
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
 import { DataLinksCustomContext } from './DataLinksCustomContext';
+import { LoadSearchScene } from '../../components/Explore/SavedSearches/LoadSearchScene';
+import { SaveSearchButton } from '../../components/Explore/SavedSearches/SaveSearchButton';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -65,6 +67,7 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   spanId?: string;
 
   issueDetector?: TraceQLIssueDetector;
+  loadSearchScene?: LoadSearchScene;
 }
 
 const version = process.env.VERSION;
@@ -83,6 +86,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
       issueDetector: new TraceQLIssueDetector(),
+      loadSearchScene: state.loadSearchScene ?? new LoadSearchScene({}),
       ...state,
     });
 
@@ -177,14 +181,16 @@ export class TraceExplorationScene extends SceneObjectBase {
       traceId,
       issueDetector,
       embedded,
+      $timeRange,
     } = traceExploration.useState();
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
     const styles = useStyles2(getStyles);
 
-    const state = traceExploration.useState();
-    const timeRangeState = state.$timeRange?.useState();
+    const timeRangeState = $timeRange?.useState();
+
+    const onClose = useCallback(() => traceExploration.closeDrawer(), [traceExploration]);
 
     return (
       <div className={styles.container} id="trace-exploration">
@@ -194,7 +200,7 @@ export class TraceExplorationScene extends SceneObjectBase {
         <DataLinksCustomContext embedded={embedded} timeRange={timeRangeState?.value}>
           <SmartDrawer
             isOpen={!!drawerScene && !!traceId}
-            onClose={() => traceExploration.closeDrawer()}
+            onClose={onClose}
             title={`View trace ${traceId}`}
             embedded={embedded}
             forceNoDrawer={embedded}
@@ -365,6 +371,10 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
         </Stack>
         <div className={styles.controls}>
           <EntityAssertionsWidget serviceName={serviceName || ''} model={model} />
+          <SaveSearchButton sceneRef={model} />
+          {traceExploration.state.loadSearchScene && (
+            <traceExploration.state.loadSearchScene.Component model={traceExploration.state.loadSearchScene} />
+          )}
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
             <Button variant="secondary" icon="info-circle">
               Need help

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 240" width="100%" style="max-width: 540px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="540" height="240" fill="#FAFBFC" rx="8"/>
+
+  <!-- Title -->
+  <text x="270" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#1F1F23">Trace anatomy</text>
+  <text x="270" y="44" text-anchor="middle" font-size="11" fill="#6E6D7A">How spans represent a request through services</text>
+
+  <!-- Trace header -->
+  <g filter="url(#shadow)">
+    <rect x="15" y="58" width="510" height="28" rx="6" fill="#ffffff" stroke="#E0E0E0" stroke-width="1"/>
+    <text x="25" y="76" font-size="10">
+      <tspan font-weight="600" fill="#1F1F23">Trace: frontend &#xB7; GET /api/quotes</tspan>
+      <tspan fill="#6E6D7A"> &#xB7; Status: error &#xB7; 250ms</tspan>
+    </text>
+  </g>
+
+  <!-- Time axis -->
+  <line x1="30" y1="98" x2="520" y2="98" stroke="#E8E8E8" stroke-width="1"/>
+  <line x1="30" y1="95" x2="30" y2="101" stroke="#D0D0D0" stroke-width="1"/>
+  <line x1="275" y1="95" x2="275" y2="101" stroke="#D0D0D0" stroke-width="1"/>
+  <line x1="520" y1="95" x2="520" y2="101" stroke="#D0D0D0" stroke-width="1"/>
+  <text x="30" y="93" text-anchor="start" font-size="8" fill="#9E9E9E">0ms</text>
+  <text x="275" y="93" text-anchor="middle" font-size="8" fill="#9E9E9E">125ms</text>
+  <text x="520" y="93" text-anchor="end" font-size="8" fill="#9E9E9E">250ms</text>
+
+  <!-- Span 1: Root span (full duration) -->
+  <text x="30" y="112" font-size="8" font-weight="600" fill="#6E6D7A">Root span</text>
+  <rect x="30" y="115" width="490" height="22" rx="3" fill="#3D71D9"/>
+  <text x="40" y="130" font-size="10" font-weight="500" fill="#ffffff">frontend  GET /api/quotes</text>
+
+  <!-- Connector 1 to 2 -->
+  <line x1="128" y1="137" x2="128" y2="153" stroke="#D0D0D0" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- Span 2: Child span (starts later, ends earlier) -->
+  <text x="128" y="150" font-size="8" font-weight="600" fill="#6E6D7A">Child span</text>
+  <rect x="128" y="153" width="352" height="22" rx="3" fill="#3D71D9"/>
+  <text x="138" y="168" font-size="10" font-weight="500" fill="#ffffff">HTTP GET</text>
+
+  <!-- Connector 2 to 3 -->
+  <line x1="226" y1="175" x2="226" y2="191" stroke="#D0D0D0" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- Span 3: Error span (deepest child, error) -->
+  <text x="226" y="188" font-size="8" font-weight="600" fill="#E53935">Error span</text>
+  <rect x="226" y="191" width="216" height="22" rx="3" fill="#E53935"/>
+  <text x="236" y="206" font-size="10" font-weight="500" fill="#ffffff">recommendations  GET /api/recs</text>
+
+  <!-- Legend -->
+  <rect x="30" y="224" width="10" height="10" rx="2" fill="#3D71D9"/>
+  <text x="45" y="233" font-size="9" fill="#6E6D7A">Normal span</text>
+  <rect x="130" y="224" width="10" height="10" rx="2" fill="#E53935"/>
+  <text x="145" y="233" font-size="9" fill="#6E6D7A">Error span</text>
+</svg>
