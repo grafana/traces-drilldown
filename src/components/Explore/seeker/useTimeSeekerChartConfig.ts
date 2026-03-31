@@ -2,6 +2,7 @@ import React, { useMemo, RefObject, Dispatch, SetStateAction } from 'react';
 import { AbsoluteTimeRange, GrafanaTheme2 } from '@grafana/data';
 import { AxisPlacement, DrawStyle, UPlotConfigBuilder } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
+import { getMetricColor } from './getMetricColor';
 import type uPlot from 'uplot';
 
 type InteractionMode = 'idle' | 'dragging' | 'panning' | 'programmatic';
@@ -67,7 +68,6 @@ export function useTimeSeekerChartConfig({
     });
 
     // Add series with metric-specific style and color
-    const isErrorsMetric = metric === 'errors';
     const isDurationMetric = metric === 'duration';
 
     b.addSeries({
@@ -82,15 +82,7 @@ export function useTimeSeekerChartConfig({
     // Apply color override for the series
     const internalConfig = b.getConfig();
     if (internalConfig.series && internalConfig.series[1]) {
-      let seriesColor: string;
-      if (isDurationMetric) {
-        seriesColor = theme.visualization.getColorByName('blue');
-      } else if (isErrorsMetric) {
-        seriesColor = theme.visualization.getColorByName('semi-dark-red');
-      } else {
-        seriesColor = theme.visualization.getColorByName('green');
-      }
-
+      const seriesColor = getMetricColor(theme, metric);
       internalConfig.series[1].stroke = seriesColor;
       internalConfig.series[1].fill = seriesColor;
     }

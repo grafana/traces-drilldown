@@ -8,7 +8,7 @@ export const TimeSeekerLoadingOverlay: React.FC = () => {
   const theme = useTheme2();
   const styles = useStyles2(() => getLoadingOverlayStyles(theme));
 
-  const { loadingRanges, uplotRef } = useTimeSeeker();
+  const { loadingRanges, uplotRef, chartHeight } = useTimeSeeker();
 
   if (!loadingRanges || loadingRanges.length === 0) {
     return null;
@@ -34,6 +34,7 @@ export const TimeSeekerLoadingOverlay: React.FC = () => {
             style={{
               left,
               width: rangeWidth,
+              height: chartHeight,
             }}
           />
         );
@@ -46,7 +47,6 @@ const getLoadingOverlayStyles = (theme: GrafanaTheme2) => ({
   loadingOverlay: css({
     position: 'absolute',
     top: 0,
-    height: '29px',
     background: `repeating-linear-gradient(
       -45deg,
       ${theme.colors.primary.shade},

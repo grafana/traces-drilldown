@@ -9,7 +9,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from 'react';
-import { AbsoluteTimeRange, durationToMilliseconds, GrafanaTheme2, parseDuration, PanelData } from '@grafana/data';
+import { AbsoluteTimeRange, durationToMilliseconds, parseDuration, PanelData } from '@grafana/data';
 import { UPlotConfigBuilder, useTheme2 } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 import { DragStyles } from './types';
@@ -129,10 +129,10 @@ function areRangesEqual(
 }
 
 /**
- * Parses a relative time string like "now-1h" and returns the duration in ms.
- * Returns null if parsing fails or the format doesn't match.
+ * When the dashboard time range is relative with `to: "now"` and `from` like `"now-1h"`,
+ * returns the duration token (e.g. `"1h"`) for `parseDuration`. Otherwise null.
  */
-function parseRelativeTimeRange(raw: { from: unknown; to: unknown }): string | null {
+function parseRelativeDashboardBrushDuration(raw: { from: unknown; to: unknown }): string | null {
   if (typeof raw.from !== 'string' || typeof raw.to !== 'string' || raw.to !== 'now') {
     return null;
   }
@@ -195,6 +195,12 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       if (suppressDashboardUpdate) {
         suppressNextTimeRangeUpdate.current = true;
         interactionMode.current = 'programmatic';
+        isProgrammaticSelect.current = true;
+        skipNextSelectUpdate.current = true;
+        // Transition back to idle once the programmatic selection is consumed.
+        requestAnimationFrame(() => {
+          interactionMode.current = 'idle';
+        });
       }
     },
     [onVisibleRangeChange]
@@ -204,7 +210,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   // Handle relative time ranges (e.g., "now-1h") and sync dashboard changes
   // -------------------------------------------------------------------------
   useEffect(() => {
-    const relativeDuration = parseRelativeTimeRange(data.timeRange.raw);
+    const relativeDuration = parseRelativeDashboardBrushDuration(data.timeRange.raw);
     if (relativeDuration && relativeDuration !== lastProcessedRelativeDuration.current) {
       applyRelativeContextWindow.current = relativeDuration;
     } else if (!relativeDuration) {
@@ -456,18 +462,6 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   const isProgrammaticSelect = useRef(false);
   const skipNextSelectUpdate = useRef(false);
 
-  // Sync programmatic flags when interaction mode changes
-  useEffect(() => {
-    if (interactionMode.current === 'programmatic') {
-      isProgrammaticSelect.current = true;
-      skipNextSelectUpdate.current = true;
-      // Reset to idle after a frame
-      requestAnimationFrame(() => {
-        interactionMode.current = 'idle';
-      });
-    }
-  });
-
   const chartConfig = useTimeSeekerChartConfig({
     theme,
     metric,
@@ -586,17 +580,4 @@ export function useTimeSeeker(): TimeSeekerContextValue {
     throw new Error('useTimeSeeker must be used within a TimeSeekerProvider');
   }
   return context;
-}
-
-// ============================================================================
-// Helper function to get theme-based styles (for compatibility)
-// ============================================================================
-
-export function getMetricColor(theme: GrafanaTheme2, metric?: MetricFunction): string {
-  if (metric === 'duration') {
-    return theme.visualization.getColorByName('blue');
-  } else if (metric === 'errors') {
-    return theme.visualization.getColorByName('semi-dark-red');
-  }
-  return theme.visualization.getColorByName('green');
 }

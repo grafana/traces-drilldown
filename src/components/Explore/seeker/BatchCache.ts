@@ -329,7 +329,8 @@ export class BatchDataCache {
         })),
       };
 
-      // Collect all time-value pairs and deduplicate
+      // Collect all time-value pairs. Duplicate timestamps keep the first row seen (batch order after sort);
+      // overlapping Tempo metric steps at the same bucket should agree; if not, this policy drops later values.
       const timeValueMap = new Map<number, unknown[]>();
 
       for (const frame of group) {

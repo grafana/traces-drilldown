@@ -26,15 +26,19 @@ export const TimeSeekerControls: React.FC = () => {
     const oldVisibleFrom = visibleRange.from;
     const oldVisibleTo = visibleRange.to;
     const visibleSpan = oldVisibleTo - oldVisibleFrom;
-
-    const relFrom = (timelineRange.from - oldVisibleFrom) / visibleSpan;
-    const relTo = (timelineRange.to - oldVisibleFrom) / visibleSpan;
-
     const newVisibleFrom = r.from;
     const newVisibleTo = r.to;
+    const newVisibleSpan = newVisibleTo - newVisibleFrom;
 
-    const newTimelineFrom = newVisibleFrom + relFrom * (newVisibleTo - newVisibleFrom);
-    const newTimelineTo = newVisibleFrom + relTo * (newVisibleTo - newVisibleFrom);
+    let newTimelineFrom = newVisibleFrom;
+    let newTimelineTo = newVisibleTo;
+
+    if (visibleSpan > 0 && Number.isFinite(visibleSpan) && Number.isFinite(newVisibleSpan)) {
+      const relFrom = (timelineRange.from - oldVisibleFrom) / visibleSpan;
+      const relTo = (timelineRange.to - oldVisibleFrom) / visibleSpan;
+      newTimelineFrom = newVisibleFrom + relFrom * newVisibleSpan;
+      newTimelineTo = newVisibleFrom + relTo * newVisibleSpan;
+    }
 
     setVisibleRange(r, true);
     requestAnimationFrame(() => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
-import { TimeSeekerProvider, useTimeSeeker, getMetricColor } from './TimeSeekerContext';
+import { TimeSeekerProvider, useTimeSeeker } from './TimeSeekerContext';
+import { getMetricColor } from './getMetricColor';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
 const createMockData = () => ({

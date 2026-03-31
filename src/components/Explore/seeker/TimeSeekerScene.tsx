@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { AbsoluteTimeRange, GrafanaTheme2, LoadingState, TimeRange, dateTime } from '@grafana/data';
+import { AbsoluteTimeRange, DataFrame, GrafanaTheme2, LoadingState, TimeRange, dateTime } from '@grafana/data';
 import {
   SceneObjectState,
   SceneObjectBase,
@@ -184,7 +184,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
   /**
    * Get concatenated data for the visible range from cache.
    */
-  public getCachedData(): { series: any[]; loading: boolean } {
+  public getCachedData(): { series: DataFrame[]; loading: boolean } {
     if (!this.visibleRange) {
       return { series: [], loading: false };
     }
