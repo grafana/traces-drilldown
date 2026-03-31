@@ -70,7 +70,7 @@ const getTimeSeekerStyles = (theme: GrafanaTheme2) => ({
     position: 'relative',
     overflow: 'hidden',
     paddingTop: theme.spacing(2),
-    height: theme.spacing(8),
+    height: theme.spacing(6),
   }),
   chartContainer: css({
     position: 'relative',
