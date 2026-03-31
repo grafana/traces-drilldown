@@ -46,23 +46,27 @@ export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({
     return null;
   }
 
+  // Pass a string label only: a JSX/ReactElement in `label` is deep-cloned by the extension
+  // and can trigger RangeError (max call stack).
   return (
-    <InsightsTimelineWidgetExternal
-      serviceName={serviceName}
-      start={startTime}
-      end={endTime}
-      filterBySeverity={filterBySeverity}
-      filterBySummaryKeywords={filterBySummaryKeywords}
-      label={<div className={styles.label}>Insights</div>}
-    />
+    <div className={styles.container}>
+      <InsightsTimelineWidgetExternal
+        serviceName={serviceName}
+        start={startTime}
+        end={endTime}
+        filterBySeverity={filterBySeverity}
+        filterBySummaryKeywords={filterBySummaryKeywords}
+        label={'Insights'}
+      />
+    </div>
   );
 });
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  label: css({
+  container: css({
+    marginLeft: '35px',
+    marginTop: '-3px',
     fontSize: '12px',
     color: theme.colors.text.secondary,
-    marginLeft: '35px', // we are also passing an axisWidth of 70 to barsPanelConfig()
-    marginTop: '-3px',
   }),
 });
