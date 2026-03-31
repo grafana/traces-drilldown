@@ -67,7 +67,6 @@ function getStyles(theme: GrafanaTheme2) {
       alignItems: 'stretch',
       border: `1px solid ${theme.colors.border.medium}`,
       borderRadius: theme.shape.radius.default,
-      backgroundColor: theme.colors.background.canvas,
       padding: 0,
       gap: theme.spacing(1.5),
       overflow: 'hidden',
@@ -89,8 +88,8 @@ function getStyles(theme: GrafanaTheme2) {
         backgroundColor: theme.colors.background.secondary,
       },
       '&:focus-visible': {
-        outline: `2px solid ${theme.colors.primary.border}`,
-        outlineOffset: 1,
+        outline: 'none',
+        boxShadow: `inset 0 0 0 2px ${theme.colors.primary.border}`,
       },
     }),
   };
@@ -118,9 +117,4 @@ export const addToFilters = (variable: AdHocFiltersVariable, label: string, valu
       },
     ],
   });
-};
-
-export const filterExistsForKey = (model: AdHocFiltersVariable, key: string, value: string) => {
-  const variable = getFiltersVariable(model);
-  return variable.state.filters.find((f) => f.key === key && f.value === value);
 };

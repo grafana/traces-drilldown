@@ -46,11 +46,20 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
     return valueField?.values[this.state.maxDifferenceIndex || 0];
   }
 
+  /** Comparison frame Value cells can include Prometheus-style quotes; filters must store the raw label (see getLabelValue). */
+  private getNormalizedFilterValue(): string {
+    const raw = this.getValue();
+    if (raw === undefined || raw === null) {
+      return '';
+    }
+    return String(raw).replace(/"/g, '');
+  }
+
   private onIncludeClick = () => {
     const variable = getFiltersVariable(this);
     const attribute = this.getAttribute();
     if (attribute) {
-      addToFilters(variable, attribute, this.getValue(), '=');
+      addToFilters(variable, attribute, this.getNormalizedFilterValue(), '=');
     }
   };
 
@@ -58,7 +67,7 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
     const variable = getFiltersVariable(this);
     const attribute = this.getAttribute();
     if (attribute) {
-      addToFilters(variable, attribute, this.getValue(), '!=');
+      addToFilters(variable, attribute, this.getNormalizedFilterValue(), '!=');
     }
   };
 
@@ -66,13 +75,14 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
     const { maxDifference, maxDifferenceIndex, panel } = model.useState();
     const styles = useStyles2(getStyles);
     const value = model.getValue();
+    const normalizedFilterValue = model.getNormalizedFilterValue();
     const key = model.state.frame.name ?? '';
     const variable = getFiltersVariable(model);
     const includeFilterExists = variable.state.filters.find(
-      (f) => f.key === key && f.value === value.replace(/"/g, '') && f.operator === '='
+      (f) => f.key === key && f.value === normalizedFilterValue && f.operator === '='
     );
     const excludeFilterExists = variable.state.filters.find(
-      (f) => f.key === key && f.value === value.replace(/"/g, '') && f.operator === '!='
+      (f) => f.key === key && f.value === normalizedFilterValue && f.operator === '!='
     );
 
     return (
