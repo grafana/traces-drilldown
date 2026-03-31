@@ -1,5 +1,5 @@
-import {dateTime, PluginExtensionPanelContext} from '@grafana/data';
-import { contextToLink, TraceqlFilter } from './links';
+import { dateTime, PluginExtensionPanelContext } from '@grafana/data';
+import { contextToLink, traceqlFiltersToAdHoc, TraceqlFilter } from './links';
 import { RESOURCE, SPAN } from './shared';
 
 describe('contextToLink', () => {
@@ -244,6 +244,89 @@ describe('contextToLink', () => {
       expect(result?.path).not.toContain('actionView=traceList');
       expect(result?.path).toContain('var-filters=' + encodeURIComponent('resource.service.name|=|my-service'));
     });
+  });
+});
+
+describe('traceqlFiltersToAdHoc', () => {
+  it('should convert resource/span filters with dot separator', () => {
+    const filters: TraceqlFilter[] = [
+      { scope: 'resource', tag: 'service.name', operator: '=', value: 'api' },
+      { scope: 'span', tag: 'http.status_code', operator: '=', value: '200' },
+    ];
+    const result = traceqlFiltersToAdHoc(filters);
+    expect(result).toEqual([
+      { key: 'resource.service.name', operator: '=', value: 'api' },
+      { key: 'span.http.status_code', operator: '=', value: '200' },
+    ]);
+  });
+
+  it('should use colon separator for intrinsic fields', () => {
+    const filters: TraceqlFilter[] = [
+      { scope: 'span', tag: 'status', operator: '=', value: 'error' },
+      { scope: 'span', tag: 'duration', operator: '>', value: '100ms' },
+    ];
+    const result = traceqlFiltersToAdHoc(filters);
+    expect(result).toEqual([
+      { key: 'span:status', operator: '=', value: 'error' },
+      { key: 'span:duration', operator: '>', value: '100ms' },
+    ]);
+  });
+
+  it('should use tag-only key for intrinsic scope so saved query format is preserved (e.g. kind=server)', () => {
+    const filters: TraceqlFilter[] = [
+      { scope: 'intrinsic', tag: 'kind', operator: '=', value: 'server' },
+    ];
+    const result = traceqlFiltersToAdHoc(filters);
+    expect(result).toEqual([{ key: 'kind', operator: '=', value: 'server' }]);
+  });
+
+  it('should filter out incomplete filters', () => {
+    const filters: TraceqlFilter[] = [
+      { scope: 'resource', tag: 'service.name', operator: '=', value: 'ok' },
+      { scope: 'span', tag: 'status' }, // missing operator and value
+      { scope: 'resource', operator: '=', value: 'x' }, // missing tag
+      { tag: 'x', operator: '=', value: 'y' }, // missing scope
+      { scope: 'span', tag: 'status', operator: '=', value: '' }, // empty value
+      { scope: 'span', tag: 'status', operator: '=', value: '   ' }, // whitespace-only value
+      { scope: 'span', tag: 'status', operator: '=', value: [] }, // empty array
+    ];
+    const result = traceqlFiltersToAdHoc(filters);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual({ key: 'resource.service.name', operator: '=', value: 'ok' });
+  });
+
+  it('should join array values with pipe', () => {
+    const filters: TraceqlFilter[] = [
+      { scope: 'resource', tag: 'service.name', operator: '=~', value: ['api', 'web'] },
+    ];
+    const result = traceqlFiltersToAdHoc(filters);
+    expect(result).toEqual([
+      { key: 'resource.service.name', operator: '=~', value: 'api|web' },
+    ]);
+  });
+
+  it('should return empty array for empty input', () => {
+    expect(traceqlFiltersToAdHoc([])).toEqual([]);
+  });
+
+  it('should exclude filters missing operator', () => {
+    const filters: TraceqlFilter[] = [
+      { scope: 'resource', tag: 'service.name', value: 'svc' },
+    ];
+    const result = traceqlFiltersToAdHoc(filters);
+    expect(result).toHaveLength(0);
+  });
+
+  it('should handle mixed intrinsic and non-intrinsic filters', () => {
+    const filters: TraceqlFilter[] = [
+      { scope: 'span', tag: 'status', operator: '=', value: 'error' },
+      { scope: 'resource', tag: 'service.name', operator: '=', value: 'frontend' },
+    ];
+    const result = traceqlFiltersToAdHoc(filters);
+    expect(result).toEqual([
+      { key: 'span:status', operator: '=', value: 'error' },
+      { key: 'resource.service.name', operator: '=', value: 'frontend' },
+    ]);
   });
 });
 

@@ -1,6 +1,8 @@
 # Traces Drilldown documentation
 
-This directory contains the source code for the Grafana Traces Drilldown documentation.
+This directory contains **published user-facing docs** (under `sources/`) that ship with Grafana.
+
+---
 
 Some key things to know about the Traces Drilldown documentation source:
 

@@ -4,7 +4,7 @@ canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploratio
 keywords:
   - Traces Drilldown
   - Investigate
-title: Choose a metric for your investigation
+title: Choose a RED metric
 menuTitle: Choose a RED metric
 weight: 300
 ---
@@ -18,16 +18,18 @@ In this context, RED metrics mean:
 * **Errors** show spans that are failing.
 * **Duration** displays the amount of time those spans take; represented as a heat map that shows response time and latency.
 
-When you select a RED metric, the tabs underneath the metrics selection changes match the context.
-For example, selecting **Duration** displays **Root cause latency** and **Slow traces** tabs.
-Choosing **Errors** changes the tabs to **Exceptions**, **Root cause errors**, and **Errored traces**. Rate provides **Service structure**, and **Traces** tabs.
-These tabs are used when you [analyze tracing data](../analyze-tracing-data).
+When you select a RED metric, the tabs underneath the metric selection change to match the context.
+**Breakdown** and **Comparison** tabs are always present regardless of which metric you choose.
+For example, selecting **Duration** displays **Root cause latency** and **Slow traces** tabs in addition to **Breakdown** and **Comparison**.
+Choosing **Errors** shows **Root cause errors**, **Exceptions**, and **Errored traces** tabs in addition to **Breakdown** and **Comparison**.
+**Rate** shows **Service structure** and **Traces** tabs in addition to **Breakdown** and **Comparison**.
+These tabs are used when you [analyze tracing data](../analyze-tracing-data/).
 
 {{< video-embed src="/media/docs/explore-traces/traces-drilldown-select-metric-type-v1.2.mp4" >}}
 
 To choose a RED metric:
 
-1. Select a graph to select a **Spans** (rate), **Errors**, or **Duration** metric type. Notice that your selection changes the first drop-down list on the filter bar.
+1. Select a graph to select a **Rate**, **Errors**, or **Duration** metric type. Notice that your selection changes the first drop-down list on the filter bar.
 1. Optional: Select the signal you want to observe. **Root spans** is the default selection.
 1. Look for spikes or trends in the data to help identify issues.
 

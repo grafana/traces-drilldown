@@ -275,7 +275,7 @@ const getStyles = (theme: GrafanaTheme2) => {
     mask: css({
       // The !important here is to override the default .rc-drawer-mask styles
       backgroundColor: 'transparent !important',
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+       
       position: 'absolute !important' as 'absolute',
 
       '&:before': {

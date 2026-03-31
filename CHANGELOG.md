@@ -1,5 +1,78 @@
 # Changelog
 
+## 2.0.0
+
+##### Chores
+
+* **deps:**
+  *  fix all dependency vulnerabilities (minimatch, ajv, @tootallnate/once) (#674) (d9168e50)
+  *  bump undici from 7.18.2 to 7.24.4 (#669) (2f771b89)
+*  Fix release action (#672) (f5326ea7)
+
+##### Documentation Changes
+
+*  Update Traces Drilldown doc and screenshots (#670) (f655b157)
+
+##### New Features
+
+*  Add AGENTS.md and surrounding files (#671) (ea7313bf)
+*  Support Saved Queries (#653) (1ad5ea70)
+
+
+## 1.4.1
+
+
+## 1.4.0
+
+##### Chores
+
+*  React 19 upgrade (#666) (e9db5d4f)
+
+
+## 1.3.3
+
+##### Chores
+
+*  Resolve react-router (#665) (23f24805)
+*  Remove spellcheck (#648) (03e5068c)
+*  Update brace expansion (#644) (3efce86e)
+* **deps:**
+  *  bump qs from 6.14.1 to 6.14.2 (#651) (90247275)
+  *  update actions/checkout digest to 34e1148 (#636) (3564c51d)
+  *  update grafana/grafana-enterprise:latest docker digest to 9dedb4a (#637) (26e31535)
+  *  update grafana/intro-to-mltp:mythical-beasts-recorder-latest docker digest to 1420cd8 (#638) (4867cbde)
+  *  pin dependency @testing-library/react to 16.3.1 (#635) (0ee83dc4)
+* **deps-dev:**  bump webpack from 5.101.0 to 5.104.1 (#647) (bcd785df)
+
+##### New Features
+
+*  Hide baseline only panels in the comparison tab (#664) (56a7e3eb)
+*  Enhanced exceptions tab (#627) (733eec3d)
+*  Send filters to EntityAssertionsWidget (#626) (057ddf2e)
+
+##### Bug Fixes
+
+*  resolves the addition of extra pipelines in trace explorer (#650) (24f820d9)
+
+
+## 1.3.2
+
+##### Chores
+
+*  Upgrade lodash (#643) (433559b)
+
+
+## 1.3.1
+
+##### Chores
+
+*  Upgrade react-router (#621) (eec1df9e)
+
+##### Bug Fixes
+
+*  Check if usePluginFunctions is available (#616) (99112e44)
+
+
 ## 1.3.0
 
 ##### Chores
