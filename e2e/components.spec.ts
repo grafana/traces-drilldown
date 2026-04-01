@@ -20,7 +20,8 @@ test.describe('components', () => {
   test('in header are visible', async ({ page }) => {
     await expect(page.getByText('Data source')).toBeVisible();
     await expect(page.getByRole('button', { name: /Need help/i })).toBeVisible();
-    await expect(page.getByTestId('data-testid TimePicker Open Button')).toBeVisible();
+    // Toolbar time picker only — seeker also mounts TimeRangeInput with the same test id
+    await expect(page.getByRole('button', { name: /Time range selected/ })).toBeVisible();
     await expect(page.getByTestId('data-testid RefreshPicker run button')).toBeVisible();
     await expect(page.getByTestId('data-testid RefreshPicker interval button')).toBeVisible();
   });

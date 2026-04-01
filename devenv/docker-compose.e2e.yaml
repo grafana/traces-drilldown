@@ -9,7 +9,7 @@ services:
         grafana_image: ${GRAFANA_IMAGE:-grafana}
         grafana_version: ${GRAFANA_VERSION:-12.3.0}
     ports:
-      - 3001:3000/tcp
+      - 3030:3000/tcp
     volumes:
       - ../dist:/var/lib/grafana/plugins/grafana-explore-traces-e2e
       - ../provisioning:/etc/grafana/provisioning

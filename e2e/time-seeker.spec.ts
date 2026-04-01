@@ -1,5 +1,11 @@
 import { expect, test } from '@grafana/plugin-e2e';
+import { Page } from '@playwright/test';
 import { ExplorePage } from './fixtures/explore';
+
+/** Seeker time picker panel (@grafana/ui TimePickerContent). Quick options use visually hidden checkboxes — assert visible labels instead. */
+function seekerTimePickerContent(page: Page) {
+  return page.locator('#TimePickerContent').first();
+}
 
 test.describe('time seeker', () => {
   let explorePage: ExplorePage;
@@ -39,20 +45,19 @@ test.describe('time seeker', () => {
     // Click the calendar button to open the context window selector
     await page.getByRole('button', { name: 'Set range', exact: true }).click();
 
-    // The context window selector should show preset options
-    await expect(page.getByRole('button', { name: 'Last 12 hours' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Last 24 hours' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Last 3 days' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Last 1 week' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Last 2 weeks' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Same as timepicker' })).toBeVisible();
+    // Quick range inputs are opacity-0 (custom list); visible text is on the label
+    const picker = seekerTimePickerContent(page);
+    await expect(picker.getByText('Last 5 minutes', { exact: true })).toBeVisible();
+    await expect(picker.getByText('Last 15 minutes', { exact: true })).toBeVisible();
+    await expect(picker.getByText('Last 30 minutes', { exact: true })).toBeVisible();
+    await expect(picker.getByText('Last 1 hour', { exact: true })).toBeVisible();
 
     // From and To fields should be visible
     await expect(page.getByLabel('From', { exact: true })).toBeVisible();
     await expect(page.getByLabel('To', { exact: true })).toBeVisible();
 
-    // Apply button should be visible
-    await expect(page.getByRole('button', { name: 'Apply Absolute Range' })).toBeVisible();
+    // Apply button should be visible (@grafana/ui TimeRangeContent)
+    await expect(page.getByRole('button', { name: 'Apply time range' })).toBeVisible();
   });
 
   test('context window selector closes when clicking outside', async ({ page }) => {
@@ -61,13 +66,14 @@ test.describe('time seeker', () => {
 
     // Open the context window selector
     await page.getByRole('button', { name: 'Set range', exact: true }).click();
-    await expect(page.getByRole('button', { name: 'Last 12 hours' })).toBeVisible();
+    const picker = seekerTimePickerContent(page);
+    await expect(picker.getByText('Last 5 minutes', { exact: true })).toBeVisible();
 
     // Click outside to close it
     await page.mouse.click(10, 10);
 
     // The selector should be hidden
-    await expect(page.getByRole('button', { name: 'Last 12 hours' })).toBeHidden();
+    await expect(picker).not.toBeVisible();
   });
 
   test('pan left button adjusts the visible range', async ({ page }) => {
@@ -131,11 +137,11 @@ test.describe('time seeker', () => {
     // Open the context window selector
     await page.getByRole('button', { name: 'Set range', exact: true }).click();
 
-    // Click "Last 24 hours" preset
-    await page.getByRole('button', { name: 'Last 24 hours' }).click();
+    const picker = seekerTimePickerContent(page);
+    await picker.getByText('Last 24 hours', { exact: true }).click();
 
     // The popover should close after selection
-    await expect(page.getByRole('button', { name: 'Last 12 hours' })).toBeHidden();
+    await expect(picker).not.toBeVisible();
 
     // The seeker controls should still be visible
     await expect(page.getByRole('button', { name: 'Set range', exact: true })).toBeVisible();

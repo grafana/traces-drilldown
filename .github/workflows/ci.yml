@@ -42,4 +42,4 @@ jobs:
       run-playwright-with-skip-grafana-dev-image: true
       playwright-report-path: e2e/test-reports/
       playwright-docker-compose-file: devenv/docker-compose.e2e.yaml
-      playwright-grafana-url: http://localhost:3001
+      playwright-grafana-url: http://localhost:3030
