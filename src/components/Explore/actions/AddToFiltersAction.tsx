@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { DataFrame } from '@grafana/data';
+import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, AdHocFiltersVariable } from '@grafana/scenes';
-import { Button } from '@grafana/ui';
+import { useStyles2 } from '@grafana/ui';
+import { css } from '@emotion/css';
 import { getFiltersVariable, getLabelValue } from '../../../utils/utils';
 import { DATABASE_CALLS_KEY } from 'pages/Explore/primary-signals';
 
@@ -13,7 +14,7 @@ interface AddToFiltersActionState extends SceneObjectState {
 }
 
 export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState> {
-  public onClick = () => {
+  private handleFilterAction = (operator: '=' | '!=') => {
     const variable = getFiltersVariable(this);
 
     const labels = this.state.frame.fields.find((f) => f.labels)?.labels ?? {};
@@ -30,25 +31,67 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
     const labelName = this.state.labelKey ?? Object.keys(labels)[0];
     const value = getLabelValue(this.state.frame, this.state.labelKey);
 
-    addToFilters(variable, labelName, value);
+    addToFilters(variable, labelName, value, operator);
 
     this.state.onClick({ labelName });
   };
 
-  public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
-    const key = model.state?.labelKey ?? '';
-    const field = model.state?.frame.fields.filter((x) => x.type !== 'time');
-    const value = field?.[0]?.labels?.[key] ?? '';
-    const filterExists = filterExistsForKey(getFiltersVariable(model), key, value.replace(/"/g, ''));
+  public onIncludeClick = () => {
+    this.handleFilterAction('=');
+  };
 
-    if (!filterExists) {
-      return (
-        <Button variant="primary" size="sm" fill="text" onClick={model.onClick} icon={'search-plus'}>
-          Add to filters
-        </Button>
-      );
-    }
-    return <></>;
+  public onExcludeClick = () => {
+    this.handleFilterAction('!=');
+  };
+
+  public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
+    const styles = useStyles2(getStyles);
+
+    return (
+      <div className={styles.group} role="group" aria-label="Add to filters">
+        <button type="button" className={styles.segment} onClick={model.onIncludeClick}>
+          Include
+        </button>
+        <button type="button" className={styles.segment} onClick={model.onExcludeClick}>
+          Exclude
+        </button>
+      </div>
+    );
+  };
+}
+
+function getStyles(theme: GrafanaTheme2) {
+  return {
+    group: css({
+      display: 'inline-flex',
+      alignItems: 'stretch',
+      border: `1px solid ${theme.colors.border.medium}`,
+      borderRadius: theme.shape.radius.default,
+      padding: 0,
+      gap: theme.spacing(1.5),
+      overflow: 'hidden',
+    }),
+    segment: css({
+      ...theme.typography.bodySmall,
+      fontWeight: theme.typography.fontWeightBold,
+      lineHeight: 1.2,
+      color: theme.colors.text.primary,
+      background: 'transparent',
+      border: 'none',
+      margin: 0,
+      cursor: 'pointer',
+      display: 'inline-flex',
+      alignItems: 'center',
+      alignSelf: 'stretch',
+      padding: theme.spacing(0.5, 1),
+      '&:hover': {
+        backgroundColor: theme.colors.background.secondary,
+      },
+      '&:focus-visible': {
+        outline: 'none',
+        boxShadow: `inset 0 0 0 2px ${theme.colors.primary.border}`,
+      },
+    }),
   };
 }
 
@@ -74,9 +117,4 @@ export const addToFilters = (variable: AdHocFiltersVariable, label: string, valu
       },
     ],
   });
-};
-
-export const filterExistsForKey = (model: AdHocFiltersVariable, key: string, value: string) => {
-  const variable = getFiltersVariable(model);
-  return variable.state.filters.find((f) => f.key === key && f.value === value);
 };
