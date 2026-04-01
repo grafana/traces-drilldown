@@ -103,7 +103,7 @@
     "rxjs": "7.8.2"
   },
   "resolutions": {
-    "nwsapi": "2.2.22",
+    "nwsapi": "2.2.23",
     "@tootallnate/once": ">=3.0.1",
     "schema-utils/ajv": "8.18.0",
     "rxjs": "^7.8.1",
