@@ -153,10 +153,21 @@ export class BatchDataCache {
 
   /**
    * Store loaded batch data in the cache.
+   * @param finalize - When false, updates cached frames for in-progress streaming queries without
+   *   releasing {@link loadingBatchId} (so the next batch does not start until the stream completes).
    */
-  public storeBatch(batchId: number, from: number, to: number, data: DataFrame[], error?: string): void {
+  public storeBatch(
+    batchId: number,
+    from: number,
+    to: number,
+    data: DataFrame[],
+    error?: string,
+    finalize = true
+  ): void {
     this.cache.set(batchId, { batchId, from, to, data, error });
-    this.clearLoadingBatchIfMatch(batchId);
+    if (finalize) {
+      this.clearLoadingBatchIfMatch(batchId);
+    }
     // Enforce cache size limit, but protect the batch we just stored
     this.enforceCacheLimit(batchId);
   }

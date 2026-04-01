@@ -141,40 +141,56 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 
     // Subscribe to data updates
     const data = sceneGraph.getData(this);
-    let hasProcessedBatch = false;
+    /** True after terminal outcome (Done or Error) for this query; streaming can emit many times before that. */
+    let batchCompleted = false;
 
-    const subscription = data.subscribeToState((state) => {
-      // Prevent processing the same batch multiple times
-      if (hasProcessedBatch) {
+    const processQueryState = (state: { data?: { state: LoadingState; series: DataFrame[]; errors?: Array<{ message?: string }> } }) => {
+      if (batchCompleted) {
         return;
       }
 
-      // Only process if this batch is still the one we're waiting for
       if (cache.getLoadingBatchId() !== batchId) {
         return;
       }
 
-      if (state.data?.state === LoadingState.Done || state.data?.state === LoadingState.Streaming) {
-        hasProcessedBatch = true;
+      const panelData = state.data;
+      if (!panelData) {
+        return;
+      }
 
-        // Store the batch data (even if empty - it means no data for that time range)
-        cache.storeBatch(batchId, batchFrom, batchTo, state.data.series);
-        forceRenderFn();
-
-        // Load next batch if needed
-        setTimeout(() => loadNextBatchFn(), 0);
-      } else if (state.data?.state === LoadingState.Error) {
-        hasProcessedBatch = true;
-
-        // Store the error for this batch
-        const errorMessage = state.data.errors?.[0]?.message || 'Failed to load data';
+      if (panelData.state === LoadingState.Error) {
+        batchCompleted = true;
+        const errorMessage = panelData.errors?.[0]?.message || 'Failed to load data';
         cache.storeBatchError(batchId, batchFrom, batchTo, errorMessage);
         forceRenderFn();
+        setTimeout(() => loadNextBatchFn(), 0);
+        return;
+      }
 
-        // Try to load the next batch even if this one failed
+      // Streaming: refresh the cached snapshot when frames arrive, but keep this batch "loading"
+      // until Done so we do not start the next batch early and so we do not miss later packets.
+      if (panelData.state === LoadingState.Streaming) {
+        if ((panelData.series?.length ?? 0) > 0) {
+          cache.storeBatch(batchId, batchFrom, batchTo, panelData.series, undefined, false);
+          forceRenderFn();
+        }
+        return;
+      }
+
+      if (panelData.state === LoadingState.Done) {
+        batchCompleted = true;
+        cache.storeBatch(batchId, batchFrom, batchTo, panelData.series);
+        forceRenderFn();
         setTimeout(() => loadNextBatchFn(), 0);
       }
+    };
+
+    const subscription = data.subscribeToState((state) => {
+      processQueryState(state);
     });
+
+    // subscribeToState does not emit the current value; process it so we never miss a sync or very fast Done.
+    processQueryState(data.state);
 
     // Store subscription for cleanup
     this.currentBatchSubscription = () => subscription.unsubscribe();
