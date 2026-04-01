@@ -1,10 +1,13 @@
 import React from 'react';
-import { ControlsLabel, SceneDataLayerSet, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { ControlsLabel, SceneDataLayerSet, SceneObjectBase, SceneObjectRef, SceneObjectState } from '@grafana/scenes';
 import { InlineSwitch } from '@grafana/ui';
 
+export const KG_INSIGHTS_DESCRIPTION =
+  'Overlay health states (critical, warning, info) from the Knowledge Graph on timeseries panels';
+
 export interface KgAnnotationToggleState extends SceneObjectState {
-  layerSet: SceneDataLayerSet;
   isEnabled: boolean;
+  layerSetRef: SceneObjectRef<SceneDataLayerSet>;
 }
 
 export class KgAnnotationToggle extends SceneObjectBase<KgAnnotationToggleState> {
@@ -13,18 +16,30 @@ export class KgAnnotationToggle extends SceneObjectBase<KgAnnotationToggleState>
   public toggleEnabled = () => {
     const next = !this.state.isEnabled;
     this.setState({ isEnabled: next });
-    for (const layer of this.state.layerSet.state.layers) {
+    for (const layer of this.state.layerSetRef.resolve().state.layers) {
       layer.setState({ isEnabled: next });
+    }
+  };
+
+  public syncLayerEnabledState = () => {
+    for (const layer of this.state.layerSetRef.resolve().state.layers) {
+      layer.setState({ isEnabled: this.state.isEnabled });
     }
   };
 }
 
 function KgAnnotationToggleRenderer({ model }: { model: KgAnnotationToggle }) {
-  const { isEnabled } = model.useState();
+  const { isEnabled, layerSetRef } = model.useState();
+  const { layers } = layerSetRef.resolve().useState();
+
+  if (layers.length === 0) {
+    return null;
+  }
+
   return (
-    <div style={{ display: 'flex' }}>
-      <ControlsLabel label="Insights" />
-      <InlineSwitch value={isEnabled} onChange={model.toggleEnabled} />
+    <div style={{ display: 'flex', alignSelf: 'flex-end' }}>
+      <ControlsLabel label="Insights" description={KG_INSIGHTS_DESCRIPTION} />
+      <InlineSwitch value={isEnabled} onChange={model.toggleEnabled} aria-label="Insights" />
     </div>
   );
 }

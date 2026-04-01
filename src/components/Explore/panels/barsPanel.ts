@@ -6,6 +6,7 @@ export const barsPanelConfig = (metric: MetricFunction, axisWidth?: number) => {
   const isErrorsMetric = metric === 'errors' || false;
   
   const builder = PanelBuilders.timeseries()
+    .setOption('annotations', { multiLane: true })
     .setOption('legend', { showLegend: false })
     .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
     .setCustomFieldConfig('stacking', { mode: StackingMode.Normal })

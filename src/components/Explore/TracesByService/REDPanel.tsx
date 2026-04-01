@@ -39,8 +39,6 @@ import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
-import { useServiceName } from 'pages/Explore/TraceExploration';
-import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 import { locationService } from '@grafana/runtime';
 
 export interface RateMetricsPanelState extends SceneObjectState {
@@ -267,8 +265,6 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const { value: metric } = getMetricVariable(model).useState();
     const traceExploration = getTraceExplorationScene(model);
     const styles = useStyles2(getStyles);
-    const serviceName = useServiceName(model);
-    const timeRange = sceneGraph.getTimeRange(model).useState();
 
     if (!panel) {
       return;
@@ -327,14 +323,6 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           </div>
         )}
         <panel.Component model={panel}  />
-        {!embeddedMini && timeRange && (
-          <InsightsTimelineWidget
-            serviceName={serviceName || ''}
-            metric={metric as MetricFunction}
-            startTime={timeRange.from.valueOf()}
-            endTime={timeRange.to.valueOf()}
-          />
-        )}
       </div>
     );
   };

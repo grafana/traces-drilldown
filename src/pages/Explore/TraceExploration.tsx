@@ -80,10 +80,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
 
   public constructor(state: Partial<TraceExplorationState>) {
-    const serviceName = state.initialFilters
-      ?.find((f) => f.key === 'resource.service.name' && (f.operator === '=' || f.operator === '=~'))
-      ?.value?.replace(/"/g, '');
-    const kg = getKgSceneProps('Service', serviceName);
+    const kg = getKgSceneProps();
 
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
@@ -98,7 +95,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       issueDetector: new TraceQLIssueDetector(),
       loadSearchScene: state.loadSearchScene ?? new LoadSearchScene({}),
       ...state,
-      ...(kg ? { $data: kg.$data } : {}),
+      ...(kg ? { $data: kg.$data, $behaviors: [...(state.$behaviors ?? []), ...kg.behaviors] } : {}),
     });
 
     this.addActivationHandler(this._onActivate.bind(this));
