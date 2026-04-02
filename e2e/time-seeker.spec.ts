@@ -1,8 +1,16 @@
+/**
+ * TODO: Uncomment the suite below when e2e runs against Grafana 13+ (feature toggle
+ * `tracesDrilldownTimeSeeker` in core — https://github.com/grafana/grafana/pull/121650) and
+ * plugin `@grafana/*` packages are aligned to 13.x. The seeker stays hidden on the default
+ * Grafana 12.3 e2e image, so these tests would fail until then.
+ */
+
+/*
 import { expect, test } from '@grafana/plugin-e2e';
 import { Page } from '@playwright/test';
 import { ExplorePage } from './fixtures/explore';
 
-/** Seeker time picker panel (@grafana/ui TimePickerContent). Quick options use visually hidden checkboxes — assert visible labels instead. */
+// Seeker time picker panel (@grafana/ui TimePickerContent). Quick options use visually hidden checkboxes — assert visible labels instead.
 function seekerTimePickerContent(page: Page) {
   return page.locator('#TimePickerContent').first();
 }
@@ -164,3 +172,4 @@ test.describe('time seeker', () => {
     await expect(canvas.first()).toBeVisible({ timeout: 10000 });
   });
 });
+*/

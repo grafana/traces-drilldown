@@ -3,6 +3,7 @@ import { AppRootProps, PageLayoutType, usePluginContext } from '@grafana/data';
 import { AppRoutes } from '../Routes';
 import { PluginPage } from '@grafana/runtime';
 import { JsonData } from '../AppConfig/AppConfig';
+import { OpenFeaturePluginScope } from 'featureFlags/openFeature';
 
 /**
  * Hook to access plugin configuration following Grafana's recommended approach.
@@ -17,7 +18,9 @@ class App extends React.PureComponent<AppRootProps<JsonData>> {
   render() {
     return (
       <PluginPage layout={PageLayoutType.Custom}>
-        <AppRoutes />
+        <OpenFeaturePluginScope>
+          <AppRoutes />
+        </OpenFeaturePluginScope>
       </PluginPage>
     );
   }

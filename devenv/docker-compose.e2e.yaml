@@ -3,6 +3,8 @@ services:
     container_name: "grafana-explore-traces-e2e"
     environment:
       - GF_PLUGINS_PREINSTALL_DISABLED=true
+      # Time seeker (grafana/grafana#121650). Requires Grafana 13+ where the toggle is registered.
+      - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker
     build:
       context: ../.config
       args:

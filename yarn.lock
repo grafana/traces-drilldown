@@ -1411,7 +1411,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@openfeature/core@^1.9.0":
+"@openfeature/core@^1.9.0", "@openfeature/core@^1.9.2":
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/@openfeature/core/-/core-1.9.2.tgz#ec49e1e0e5d6bd5bf9b13f63ea5e410f7bc823e0"
   integrity sha512-0lX0xYTflLrjiYNlareYmdV98xEddR5+PhcuoGvH+BMIqpZ2icAC7us9Uv86KRVqofXvpAUwpP32wgqmtUFs8Q==
@@ -1421,6 +1421,11 @@
   resolved "https://registry.yarnpkg.com/@openfeature/ofrep-core/-/ofrep-core-2.0.0.tgz#e4d2931e2e4e96d4bd8f43144bb77087bc1b3492"
   integrity sha512-7adN+3lvx7aAM/4BG8CHBGoRoePPtTa6EVygnNFMECcJvXiXFRcUTUq5lezvYdVG0LGSaw7zkd+hkc8Uwu3HNg==
 
+"@openfeature/ofrep-core@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@openfeature/ofrep-core/-/ofrep-core-2.1.0.tgz#39c6ff587aa7bd970be1460248fd791dbcbdf1a5"
+  integrity sha512-UVRb7IS4c9i2kQrSO1yKLIMFBjEBLgHFaOhhcSXc4E2Q93SjUPspcoWMx+Qf5yyjuW6i93d6ynSQ3+KzB3evTw==
+
 "@openfeature/ofrep-web-provider@^0.3.3":
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/@openfeature/ofrep-web-provider/-/ofrep-web-provider-0.3.5.tgz#02c884862cf7f8f7b2e8e798fee1726aab43a5bf"
@@ -1428,7 +1433,19 @@
   dependencies:
     "@openfeature/ofrep-core" "^2.0.0"
 
-"@openfeature/web-sdk@^1.6.1":
+"@openfeature/ofrep-web-provider@^0.3.5":
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/@openfeature/ofrep-web-provider/-/ofrep-web-provider-0.3.6.tgz#cc46234c24aa26c702b1be86b69ade934a5b0e67"
+  integrity sha512-fV4BHab6gg0IMPeJJZ3lxtyfStSpea7N81sHJeBjgf7wYrU/SIYmdWV9Vy5HwlONjcsV58EKtOndV3WdkCqnAQ==
+  dependencies:
+    "@openfeature/ofrep-core" "^2.1.0"
+
+"@openfeature/react-sdk@^1.2.0":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@openfeature/react-sdk/-/react-sdk-1.2.1.tgz#76691248eaee4e8660282852571591e47e5c1313"
+  integrity sha512-W4vRe76HVB/PkCJQGycllIcHCT4q3C++8wFXxL3XZC3VWm7NEnFAzmboXfsMg/6N9KNWh0KRJYQAj0XTWAiyww==
+
+"@openfeature/web-sdk@^1.6.1", "@openfeature/web-sdk@^1.7.2":
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/@openfeature/web-sdk/-/web-sdk-1.7.3.tgz#e7e4b5735621cb1441ab18c00b6d506f749cc399"
   integrity sha512-WrerPh3KwtpyNGHtWfWgbBnIv3iyOimnsljXJnx2UMcFzQNmj3xgsUZRvE/gAb+BTgz22+kvks1EXA/DJRmhpg==

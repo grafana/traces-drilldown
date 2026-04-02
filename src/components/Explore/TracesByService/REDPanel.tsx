@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   SceneComponentProps,
@@ -42,6 +42,8 @@ import { exemplarsTransformations, removeExemplarsTransformation } from '../../.
 import { useServiceName } from 'pages/Explore/TraceExploration';
 import { locationService } from '@grafana/runtime';
 import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
+import { TIME_SEEKER_FEATURE_FLAG_KEY, useTimeSeekerFeatureEnabled } from 'featureFlags/openFeature';
+import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -273,6 +275,23 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const serviceName = useServiceName(model);
     const timeRange = sceneGraph.getTimeRange(model).useState();
     const { timeSeekerScene } = traceExploration.useState();
+    const timeSeekerEnabled = useTimeSeekerFeatureEnabled();
+    const embedded = traceExploration.state.embedded === true;
+    // Mini embedded layout never shows the seeker (only full RED / full embed).
+    const showTimeSeeker = !embeddedMini && Boolean(timeSeekerScene) && timeSeekerEnabled;
+
+    // One event per RED “view”: primary metric (rate / errors / duration) or embed mode change — not on every OFREP/boot flag tick.
+    useEffect(() => {
+      reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.time_seeker_toggle_state, {
+        flag_key: TIME_SEEKER_FEATURE_FLAG_KEY,
+        metric,
+        embeddedMini: embeddedMini !== undefined ? embeddedMini : false,
+        timeSeekerEnabled,
+        showTimeSeeker,
+        embedded,
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally sampled: metric + embed surface, not toggle polling
+    }, [embedded, embeddedMini, metric]);
 
     if (!panel) {
       return;
@@ -332,12 +351,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
             </div>
           </div>
         )}
-        {!embeddedMini && timeSeekerScene && (
-          <div className={styles.seekerContainer}>
-            <div className={styles.seekerLabel}>Seeker</div>
-            <timeSeekerScene.Component model={timeSeekerScene} />
-          </div>
-        )}
+        {showTimeSeeker && timeSeekerScene != null && <timeSeekerScene.Component model={timeSeekerScene} />}
         <panel.Component model={panel} />
         {!embeddedMini && serviceName && (
           <InsightsTimelineWidget
@@ -425,21 +439,6 @@ function getStyles(theme: GrafanaTheme2) {
       '& svg': {
         margin: '0 2px',
       },
-    }),
-    seekerContainer: css({
-      display: 'flex',
-      flexDirection: 'row',
-      marginLeft: '35px',
-      marginTop: '-8px',
-    }),
-    seekerLabel: css({
-      height: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: theme.spacing(1),
-      fontSize: theme.typography.bodySmall.fontSize,
-      color: theme.colors.text.secondary,
     }),
   };
 }

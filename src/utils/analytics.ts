@@ -60,5 +60,6 @@ export const USER_EVENTS_ACTIONS = {
     metric_docs_link_clicked: 'metric_docs_link_clicked',
     feedback_link_clicked: 'feedback_link_clicked',
     go_to_full_app_clicked: 'go_to_full_app_clicked',
+    time_seeker_toggle_state: 'time_seeker_toggle_state',
   },
 } as const;
