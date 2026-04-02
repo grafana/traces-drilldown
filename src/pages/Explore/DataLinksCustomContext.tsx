@@ -63,7 +63,7 @@ export function DataLinksCustomContext(props: Props) {
     const dataSourceType = getDataSourceSrv().getInstanceSettings(linkDataSourceUid)?.type;
 
     if (query && linkModel && dataSourceType === 'loki' && timeRange) {
-      const extensionLink = ext.fn({
+      const extensionLink = logsDrilldownExtension.fn({
         targets: [
           {
             ...query,

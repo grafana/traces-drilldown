@@ -16,6 +16,9 @@ export const DATASOURCE_LS_KEY = 'grafana.drilldown.traces.datasource';
 export const HOMEPAGE_FILTERS_LS_KEY = 'grafana.drilldown.traces.homepage.filters';
 export const BOOKMARKS_LS_KEY = 'grafana.drilldown.traces.bookmarks';
 
+// Default query range for Time Seeker batches
+export const DEFAULT_QUERY_RANGE_HOURS = 24;
+
 export const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 
 export const EMPTY_STATE_ERROR_MESSAGE = 'No data for selected query';

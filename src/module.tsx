@@ -4,11 +4,12 @@ import { AppPlugin } from '@grafana/data';
 import { EmbeddedTraceExplorationState, OpenInExploreTracesButtonProps } from 'exposedComponents/types';
 import { SuspendedEmbeddedTraceExploration, SuspendedOpenInExploreTracesButton } from 'exposedComponents';
 import { linkConfigs } from 'utils/links';
+import { JsonData } from './components/AppConfig/AppConfig';
 
 const App = lazy(() => import('./components/App/App'));
 const AppConfig = lazy(() => import('./components/AppConfig/AppConfig'));
 
-export const plugin = new AppPlugin<{}>()
+export const plugin = new AppPlugin<JsonData>()
   .setRootPage(App)
   .addConfigPage({
     title: 'Configuration',

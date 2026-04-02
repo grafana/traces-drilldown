@@ -51,11 +51,16 @@ export function getExceptionsScene(model: SceneObject): ExceptionsScene | undefi
   return tracesByServiceScene?.state.exceptionsScene;
 }
 
-export function newTracesExploration(initialDS?: string, initialFilters?: AdHocVariableFilter[]): TraceExploration {
+export function newTracesExploration(
+  initialDS?: string,
+  queryRangeHours?: number,
+  initialFilters?: AdHocVariableFilter[]
+): TraceExploration {
   return new TraceExploration({
     initialDS,
     initialFilters: initialFilters ?? [],
     $timeRange: new SceneTimeRange({ from: 'now-30m', to: 'now' }),
+    queryRangeHours,
   });
 }
 
