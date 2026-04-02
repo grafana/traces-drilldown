@@ -39,19 +39,23 @@ export function DataLinksCustomContext(props: Props) {
   });
 
   const logsDrilldownExtension = extensions?.functions?.[0] ?? undefined;
+  const logsDrilldownFn =
+    logsDrilldownExtension && typeof logsDrilldownExtension.fn === 'function'
+      ? logsDrilldownExtension.fn
+      : undefined;
 
   // Use refs to keep stable callback identity regardless of whether upstream hooks return new references
   const dataLinksContextRef = useRef(dataLinksContext);
   dataLinksContextRef.current = dataLinksContext;
 
-  const logsDrilldownExtensionRef = useRef(logsDrilldownExtension);
-  logsDrilldownExtensionRef.current = logsDrilldownExtension;
+  const logsDrilldownFnRef = useRef(logsDrilldownFn);
+  logsDrilldownFnRef.current = logsDrilldownFn;
 
   const dataLinkPostProcessor: DataLinkPostProcessor = useCallback((options) => {
     const ctx = dataLinksContextRef.current;
-    const ext = logsDrilldownExtensionRef.current;
+    const extensionInvoke = logsDrilldownFnRef.current;
 
-    if (!ctx || !ext) {
+    if (!ctx || !extensionInvoke) {
       return options.linkModel;
     }
 
@@ -63,7 +67,7 @@ export function DataLinksCustomContext(props: Props) {
     const dataSourceType = getDataSourceSrv().getInstanceSettings(linkDataSourceUid)?.type;
 
     if (query && linkModel && dataSourceType === 'loki' && timeRange) {
-      const extensionLink = logsDrilldownExtension.fn({
+      const extensionLink = extensionInvoke({
         targets: [
           {
             ...query,
@@ -86,7 +90,7 @@ export function DataLinksCustomContext(props: Props) {
 
   const contextValue = useMemo(() => ({ dataLinkPostProcessor }), [dataLinkPostProcessor]);
 
-  if (embedded || !postProcessingSupported || !logsDrilldownExtension || !timeRange) {
+  if (embedded || !postProcessingSupported || !logsDrilldownFn || !timeRange) {
     return <>{children}</>;
   }
 
