@@ -1416,24 +1416,12 @@
   resolved "https://registry.yarnpkg.com/@openfeature/core/-/core-1.9.2.tgz#ec49e1e0e5d6bd5bf9b13f63ea5e410f7bc823e0"
   integrity sha512-0lX0xYTflLrjiYNlareYmdV98xEddR5+PhcuoGvH+BMIqpZ2icAC7us9Uv86KRVqofXvpAUwpP32wgqmtUFs8Q==
 
-"@openfeature/ofrep-core@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@openfeature/ofrep-core/-/ofrep-core-2.0.0.tgz#e4d2931e2e4e96d4bd8f43144bb77087bc1b3492"
-  integrity sha512-7adN+3lvx7aAM/4BG8CHBGoRoePPtTa6EVygnNFMECcJvXiXFRcUTUq5lezvYdVG0LGSaw7zkd+hkc8Uwu3HNg==
-
 "@openfeature/ofrep-core@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@openfeature/ofrep-core/-/ofrep-core-2.1.0.tgz#39c6ff587aa7bd970be1460248fd791dbcbdf1a5"
   integrity sha512-UVRb7IS4c9i2kQrSO1yKLIMFBjEBLgHFaOhhcSXc4E2Q93SjUPspcoWMx+Qf5yyjuW6i93d6ynSQ3+KzB3evTw==
 
-"@openfeature/ofrep-web-provider@^0.3.3":
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/@openfeature/ofrep-web-provider/-/ofrep-web-provider-0.3.5.tgz#02c884862cf7f8f7b2e8e798fee1726aab43a5bf"
-  integrity sha512-BhFaEANBhd9GO8sIq/NBcdpQUP7R1QtFE8HjPdXWv6m3DabZ2LiGlCdpAUfVZEkq4cCuxaR0SehyVdheOKP/0w==
-  dependencies:
-    "@openfeature/ofrep-core" "^2.0.0"
-
-"@openfeature/ofrep-web-provider@^0.3.5":
+"@openfeature/ofrep-web-provider@^0.3.3", "@openfeature/ofrep-web-provider@^0.3.5":
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/@openfeature/ofrep-web-provider/-/ofrep-web-provider-0.3.6.tgz#cc46234c24aa26c702b1be86b69ade934a5b0e67"
   integrity sha512-fV4BHab6gg0IMPeJJZ3lxtyfStSpea7N81sHJeBjgf7wYrU/SIYmdWV9Vy5HwlONjcsV58EKtOndV3WdkCqnAQ==
@@ -2413,10 +2401,10 @@
   dependencies:
     undici-types "~7.18.0"
 
-"@types/node@22.16.5":
-  version "22.16.5"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.16.5.tgz#cc46ac3994cd957000d0c11095a0b1dae2ea2368"
-  integrity sha512-bJFoMATwIGaxxx8VJPeM8TonI8t579oRvgAuT8zFugJsJZgzqv0Fu8Mhp68iecjzG7cnN3mO2dJQ5uUM2EFrgQ==
+"@types/node@22.19.15":
+  version "22.19.15"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.19.15.tgz#6091d99fdf7c08cb57dc8b1345d407ba9a1df576"
+  integrity sha512-F0R/h2+dsy5wJAUe3tAU6oqa2qbWY5TpNfL/RGmo1y38hiyO1w3x2jPtt76wmuaJI4DQnOBu21cNXQ2STIUUWg==
   dependencies:
     undici-types "~6.21.0"
 
