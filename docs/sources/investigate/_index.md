@@ -19,6 +19,7 @@ Using these steps, you can use the tracing data to investigate issues.
 1. [Choose the metric](./choose-red-metric/) you want to use: rates, errors, or duration.
 1. [Analyze data](./analyze-tracing-data/) using **Breakdown**, **Comparison**, **Service structure** (Rate), **Root cause errors** and **Exceptions** (Errors), **Root cause latency** (Duration), and **Traces** tabs.
 1. [Add filters](./add-filters/) to refine the view of your data.
+1. [Save and load queries](./save-load-queries/) to preserve and reuse filter configurations.
 
 You can use these steps in any order and move between them as many times as needed.
 Depending on what you find, you may start with root spans, delve into error data, and then select **All spans** to access all of the tracing data.

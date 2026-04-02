@@ -66,6 +66,7 @@ Using the app, you can:
 - Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate issues
 - Uncover related issues and monitor changes over time
 - Browse automatic visualizations of your data based on its characteristics
+- Save and load filter configurations to quickly return to previous investigations
 - Do all of this without writing TraceQL queries
 
 {{< docs/learning-journeys title="Explore traces using Traces Drilldown" url="https://grafana.com/docs/learning-journeys/drilldown-traces/" >}}
