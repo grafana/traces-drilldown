@@ -8,7 +8,7 @@ import {
   SceneTimeRange,
   sceneGraph,
 } from '@grafana/scenes';
-import { Text, useStyles2, Spinner, Alert } from '@grafana/ui';
+import { Text, useStyles2, Spinner } from '@grafana/ui';
 import { css } from '@emotion/css';
 
 import { TimeSeeker } from './TimeSeeker';
@@ -395,56 +395,58 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
       };
     }, [hasData, series, loading, visibleRange, selectionTimeRange]);
 
-    // Show error state if we have errors and no data
+    const errorDetail = displayError ?? (errors.length > 0 ? errors.join('; ') : 'Unknown error');
+
+    React.useEffect(() => {
+      if (!hasErrors) {
+        return;
+      }
+      if (!hasData) {
+        console.error('Failed to load time seeker data', errorDetail);
+      } else {
+        console.warn('Some time seeker data failed to load', errorDetail);
+      }
+    }, [hasErrors, hasData, errorDetail]);
+
+    // Hide the seeker row entirely on load failure; details are logged to the console (see effect above).
     if (hasErrors && !hasData) {
-      return (
-        <div className={styles.container} ref={containerRef}>
-          <Alert title="Failed to load time seeker data" severity="error" className={styles.error}>
-            <div className={styles.errorContent}>
-              <Text variant="bodySmall">{displayError}</Text>
-            </div>
-          </Alert>
-        </div>
-      );
+      return null;
     }
+
+    const wrapSeekerRow = (body: React.ReactNode) => (
+      <div className={styles.seekerRow}>
+        <div className={styles.seekerLabel}>Seeker</div>
+        <div className={styles.container} ref={containerRef}>
+          {body}
+        </div>
+      </div>
+    );
 
     // Show loading state if no data yet
     if (!seekerData) {
-      return (
-        <div className={styles.container} ref={containerRef}>
-          <div className={styles.placeholder}>
-            <Spinner size={16} />
-            <Text variant="bodySmall" color="secondary">
-              Loading time seeker…
-            </Text>
-          </div>
+      return wrapSeekerRow(
+        <div className={styles.placeholder}>
+          <Spinner size={16} />
+          <Text variant="bodySmall" color="secondary">
+            Loading time seeker…
+          </Text>
         </div>
       );
     }
 
-    return (
-      <div className={styles.container} ref={containerRef}>
-        {/* Show inline error if we have data but also errors */}
-        {hasErrors && (
-          <Alert title="" severity="warning" className={styles.inlineError}>
-            <div className={styles.errorContent}>
-              <Text variant="bodySmall">Some data failed to load: {displayError}</Text>
-            </div>
-          </Alert>
-        )}
-        {width > 0 && (
-          <TimeSeeker
-            data={seekerData}
-            width={width}
-            metric={metricValue as MetricFunction}
-            initialVisibleRange={visibleRange}
-            onChangeTimeRange={onRangeChange}
-            onVisibleRangeChange={onVisibleRangeChange}
-            loadingRanges={loadingRanges}
-            hasLargeBatchWarning={hasLargeBatchWarning}
-          />
-        )}
-      </div>
+    return wrapSeekerRow(
+      width > 0 ? (
+        <TimeSeeker
+          data={seekerData}
+          width={width}
+          metric={metricValue as MetricFunction}
+          initialVisibleRange={visibleRange}
+          onChangeTimeRange={onRangeChange}
+          onVisibleRangeChange={onVisibleRangeChange}
+          loadingRanges={loadingRanges}
+          hasLargeBatchWarning={hasLargeBatchWarning}
+        />
+      ) : null
     );
   };
 
@@ -453,7 +455,24 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
+  seekerRow: css({
+    display: 'flex',
+    flexDirection: 'row',
+    marginLeft: '35px',
+    marginTop: '-8px',
+  }),
+  seekerLabel: css({
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing(1),
+    fontSize: theme.typography.bodySmall.fontSize,
+    color: theme.colors.text.secondary,
+  }),
   container: css({
+    flex: 1,
+    minWidth: 0,
     width: '100%',
     height: '100%',
     display: 'flex',
@@ -467,19 +486,5 @@ const getStyles = (theme: GrafanaTheme2) => ({
     height: '100%',
     padding: theme.spacing(1),
     color: theme.colors.text.secondary,
-  }),
-  error: css({
-    margin: 0,
-  }),
-  inlineError: css({
-    margin: 0,
-    marginBottom: theme.spacing(0.5),
-    padding: theme.spacing(0.5, 1),
-  }),
-  errorContent: css({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: theme.spacing(1),
   }),
 });
