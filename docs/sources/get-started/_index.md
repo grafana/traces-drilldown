@@ -95,7 +95,7 @@ The visualization highlights that:
 - There were 500 traces containing HTTP 500 status codes during the error period
 - This represents a 100% deviation from normal behavior
 
-Click **Add to filters** to narrow the investigation to these values, or choose **Inspect** to explore the full distribution.
+Select **Include** to narrow the investigation to these values, or choose **Inspect** to explore the full distribution.
 
 ![Errors are immediately visible by the large red bars](/media/docs/explore-traces/traces-drilldown-errors-comparison-http-status-code-v1.2.png 'Errors are immediately visible by the large red bars')
 
@@ -112,7 +112,7 @@ In this example, selecting **Inspect** on `span.http.status_code` shows the dist
 - Error state: Significant portion return `500` errors
 - Root cause: something caused the internal server errors during the selected time frame
 
-Use **Add to filters** on the `500` card to keep only error spans and continue the investigation.
+Select **Include** on the `500` card to keep only error spans and continue the investigation.
 
 ![Inspect the HTTP 500 errors](/media/docs/explore-traces/traces-drilldown-errors-comparison-http-status-attr-selected-v1.2.png 'Inspect the HTTP 500 errors')
 

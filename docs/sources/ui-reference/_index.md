@@ -36,14 +36,29 @@ For details on workflows, refer to [Analyze tracing data](../investigate/analyze
    - The **Errors** graph (top right) displays the error rate over time, with red bars indicating errors.
    - The **Duration** heatmap (bottom right) visualizes the distribution of span durations and can help identify latency patterns.
 
+<!-- TODO: Uncomment when Grafana 13 ships and tracesDrilldownTimeSeeker toggle reaches GA.
+1. **Time range seeker**:
+   Below the RED metric panel, the time range seeker displays a compact overview chart spanning a wider time window (up to several days) so you can spot spikes and trends beyond the currently selected range.
+
+   Drag across the chart to select a time window, then use the floating controls to refine it:
+   - **Pan left / Pan right**: Shift the visible window in either direction.
+   - **Zoom in / Zoom out**: Narrow or widen the context around your selection.
+   - **Focus selection**: Reset the visible window to your current selection.
+   - **Set range**: Open the time range picker to enter an exact range.
+
+   The seeker loads data in batches and uses sampling for faster responses over long time ranges. A warning icon appears if the time range requires loading a large amount of data.
+
+   The time range seeker requires the `tracesDrilldownTimeSeeker` feature toggle to be enabled. Refer to [Grafana feature toggles](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/feature-toggles/) for more information.
+-->
+
 1. **Investigation-focused tabs**:
    Each metric type has its own set of tabs that help you explore your tracing data. These tabs differ depending on the metric type you've selected.
    For example, when you use **Rate**, the investigation tabs show **Breakdown**, **Service structure**, **Comparison**, and **Traces**.
    - **Exceptions** (**Errors** only): Group exception messages with counts, trend sparkline, emitting service, and last-seen.
     - Percentiles (Duration only): Choose `p50`, `p75`, `p90`, `p95`, `p99` for Duration views. Default: `p90`. If you clear all, `p90` applies automatically.
 
-1. **Add to filters**:
-   Each attribute group includes an **Add to filters** option, so you can add your selections into the current investigation.
+1. **Include and Exclude**:
+   Each attribute group includes **Include** and **Exclude** buttons. Select **Include** to add a matching filter (`=`) or **Exclude** to add a negating filter (`!=`) to your current investigation.
 
 1. **Time range selector**:
    At the top right, you can adjust the time range for displayed data using the time picker. In this example, the time range is set to the last 24 hours. Refer to [Set dashboard time range](https://grafana.com/docs/grafana/<GRAFANA_VERSION>/dashboards/use-dashboards/#set-dashboard-time-range) for more information.
