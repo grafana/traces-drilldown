@@ -32,6 +32,7 @@ import {
   VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
   VAR_DURATION_PERCENTILES,
+  DEFAULT_QUERY_RANGE_HOURS,
 } from '../../utils/shared';
 import {
   getTraceExplorationScene,
@@ -43,6 +44,7 @@ import { TraceDrawerScene } from '../../components/Explore/TracesByService/Trace
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { getKgSceneProps } from '../../utils/kgAnnotations';
+import { evaluateKgAnnotationsFlag } from '../../featureFlags/openFeature';
 import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { primarySignalOptions } from './primary-signals';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
@@ -52,6 +54,7 @@ import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWi
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
 import { DataLinksCustomContext } from './DataLinksCustomContext';
+import { TimeSeekerScene } from 'components/Explore/seeker/TimeSeekerScene';
 import { LoadSearchScene } from '../../components/Explore/SavedSearches/LoadSearchScene';
 import { SaveSearchButton } from '../../components/Explore/SavedSearches/SaveSearchButton';
 
@@ -62,12 +65,16 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   body: SceneObject;
 
   drawerScene?: TraceDrawerScene;
+  timeSeekerScene?: TimeSeekerScene;
 
   // details scene
   traceId?: string;
   spanId?: string;
 
   issueDetector?: TraceQLIssueDetector;
+
+  // Plugin configuration
+  queryRangeHours?: number;
   loadSearchScene?: LoadSearchScene;
 }
 
@@ -78,24 +85,27 @@ const compositeVersion = `${buildTime?.split('T')[0]} (${commitSha})`;
 
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
+  private _kgInitialized = false;
 
   public constructor(state: Partial<TraceExplorationState>) {
-    const kg = getKgSceneProps();
+    // Get query range from state or use default
+    // Note: queryRangeHours should be passed from React components using usePluginJsonData() hook
+    // See: https://grafana.com/developers/plugin-tools/tutorials/build-an-app-plugin#configuration-page
+    const queryRangeHours = state.queryRangeHours ?? DEFAULT_QUERY_RANGE_HOURS;
 
     super({
       $timeRange: state.$timeRange ?? new SceneTimeRange({}),
       $variables: state.$variables ?? getVariableSet(state as TraceExplorationState),
       controls: state.controls ?? [
-        ...(kg ? [kg.controls] : []),
         new SceneTimePicker({}),
         new SceneRefreshPicker({}),
       ],
       body: new TraceExplorationScene({}),
       drawerScene: new TraceDrawerScene({}),
+      timeSeekerScene: new TimeSeekerScene({ queryRangeHours }),
       issueDetector: new TraceQLIssueDetector(),
       loadSearchScene: state.loadSearchScene ?? new LoadSearchScene({}),
       ...state,
-      ...(kg ? { $data: kg.$data, $behaviors: [...(state.$behaviors ?? []), ...kg.behaviors] } : {}),
     });
 
     this.addActivationHandler(this._onActivate.bind(this));
@@ -104,6 +114,22 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   public _onActivate() {
     if (!this.state.topScene) {
       this.setState({ topScene: getTopScene() });
+    }
+
+    if (!this._kgInitialized) {
+      this._kgInitialized = true;
+      evaluateKgAnnotationsFlag().then((enabled) => {
+        if (enabled) {
+          const kg = getKgSceneProps();
+          if (kg) {
+            this.setState({
+              $data: this.state.$data ?? kg.$data,
+              $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
+              controls: [kg.controls, ...this.state.controls],
+            });
+          }
+        }
+      });
     }
 
     this._subs.add(

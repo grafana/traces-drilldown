@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   SceneComponentProps,
@@ -39,7 +39,11 @@ import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
+import { useServiceName } from 'pages/Explore/TraceExploration';
 import { locationService } from '@grafana/runtime';
+import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
+import { TIME_SEEKER_FEATURE_FLAG_KEY, useTimeSeekerFeatureEnabled } from 'featureFlags/openFeature';
+import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -190,9 +194,10 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
           datasource: explorationDS,
           queries: [this.isDuration() ? buildHistogramQuery() : getMetricsTempoQuery({ metric, sample: true })],
         }),
-        transformations: this.isDuration() || this.state.embeddedMini
-          ? [...removeExemplarsTransformation()]
-          : [...exemplarsTransformations(getOpenTrace(this))],
+        transformations:
+          this.isDuration() || this.state.embeddedMini
+            ? [...removeExemplarsTransformation()]
+            : [...exemplarsTransformations(getOpenTrace(this))],
       }),
       panel: this.getVizPanel(),
     });
@@ -208,7 +213,9 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
   }
 
   private getRateOrErrorVizPanel(type: MetricFunction) {
-    const panel = barsPanelConfig(type, this.state.embeddedMini ? undefined : 70).setHoverHeader(true).setDisplayMode('transparent');
+    const panel = barsPanelConfig(type, this.state.embeddedMini ? undefined : 70)
+      .setHoverHeader(true)
+      .setDisplayMode('transparent');
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
@@ -254,8 +261,8 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     frame.name = 'xymark';
     frame.meta = {
       ...frame.meta,
-      dataTopic: DataTopic.Annotations
-    }
+      dataTopic: DataTopic.Annotations,
+    };
 
     return [frame];
   }
@@ -265,6 +272,26 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const { value: metric } = getMetricVariable(model).useState();
     const traceExploration = getTraceExplorationScene(model);
     const styles = useStyles2(getStyles);
+    const serviceName = useServiceName(model);
+    const timeRange = sceneGraph.getTimeRange(model).useState();
+    const { timeSeekerScene } = traceExploration.useState();
+    const timeSeekerEnabled = useTimeSeekerFeatureEnabled();
+    const embedded = traceExploration.state.embedded === true;
+    // Mini embedded layout never shows the seeker (only full RED / full embed).
+    const showTimeSeeker = !embeddedMini && Boolean(timeSeekerScene) && timeSeekerEnabled;
+
+    // One event per RED “view”: primary metric (rate / errors / duration) or embed mode change — not on every OFREP/boot flag tick.
+    useEffect(() => {
+      reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.time_seeker_toggle_state, {
+        flag_key: TIME_SEEKER_FEATURE_FLAG_KEY,
+        metric,
+        embeddedMini: embeddedMini !== undefined ? embeddedMini : false,
+        timeSeekerEnabled,
+        showTimeSeeker,
+        embedded,
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally sampled: metric + embed surface, not toggle polling
+    }, [embedded, embeddedMini, metric]);
 
     if (!panel) {
       return;
@@ -318,11 +345,22 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
             </div>
             <div className={styles.actions}>
               {isStreaming && <StreamingIndicator isStreaming={true} iconSize={10} />}
-              {actions?.map((action) => <action.Component model={action} key={action.state.key} />)}
+              {actions?.map((action) => (
+                <action.Component model={action} key={action.state.key} />
+              ))}
             </div>
           </div>
         )}
-        <panel.Component model={panel}  />
+        {showTimeSeeker && timeSeekerScene != null && <timeSeekerScene.Component model={timeSeekerScene} />}
+        <panel.Component model={panel} />
+        {!embeddedMini && serviceName && (
+          <InsightsTimelineWidget
+            serviceName={serviceName}
+            metric={metric as MetricFunction}
+            startTime={String(timeRange.value.from.valueOf())}
+            endTime={String(timeRange.value.to.valueOf())}
+          />
+        )}
       </div>
     );
   };
@@ -356,6 +394,7 @@ function getStyles(theme: GrafanaTheme2) {
       border: `1px solid ${theme.colors.border.weak}`,
       borderRadius: '2px',
       background: theme.colors.background.primary,
+      overflow: 'hidden',
 
       '.show-on-hover': {
         display: 'none',
@@ -371,7 +410,7 @@ function getStyles(theme: GrafanaTheme2) {
       width: '100%',
       display: 'flex',
       flexDirection: 'row',
-      padding: '8px',
+      padding: '8px 8px 0 8px',
       gap: '8px',
       justifyContent: 'space-between',
       alignItems: 'flex-start',

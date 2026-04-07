@@ -20,7 +20,8 @@ test.describe('components', () => {
   test('in header are visible', async ({ page }) => {
     await expect(page.getByText('Data source')).toBeVisible();
     await expect(page.getByRole('button', { name: /Need help/i })).toBeVisible();
-    await expect(page.getByTestId('data-testid TimePicker Open Button')).toBeVisible();
+    // Toolbar time picker only — seeker also mounts TimeRangeInput with the same test id
+    await expect(page.getByRole('button', { name: /Time range selected/ })).toBeVisible();
     await expect(page.getByTestId('data-testid RefreshPicker run button')).toBeVisible();
     await expect(page.getByTestId('data-testid RefreshPicker interval button')).toBeVisible();
   });
@@ -48,12 +49,19 @@ test.describe('components', () => {
 
   test('for breakdown tab are visible', async ({ page }) => {
     await expect(page.getByText('Attributes are ordered by')).toBeVisible();
-    await expect(page.getByText('Resource', { exact: true })).toBeVisible();
-    await expect(page.getByText('Span', { exact: true })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Favorites' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'All' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Resource' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Span' })).toBeVisible();
+
+    await expect(page.getByTitle('service.name')).toBeVisible();
+
     await expect(page.getByText('View', { exact: true })).toBeVisible();
     await expect(page.getByLabel('Single')).toBeVisible();
     await expect(page.getByLabel('Grid')).toBeVisible();
     await expect(page.getByLabel('Rows')).toBeVisible();
-    await expect(page.getByPlaceholder('Search attributes...')).toBeVisible();
+
+    await page.getByPlaceholder('Search', { exact: true }).fill('mythical');
+    await expect(page.getByTitle('mythical-requester')).toBeVisible();
   });
 });

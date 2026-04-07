@@ -1,12 +1,7 @@
 apiVersion: 1
 
 apps:
-  - type: 'grafana-exploretraces-app'
-    org_id: 1
-    org_name: 'Grafana'
+  - type: grafana-exploretraces-app
     disabled: false
     jsonData:
-      apiUrl: http://default-url.com
-      isApiKeySet: true
-    secureJsonData:
-      apiKey: secret-key
+      queryRangeHours: 24

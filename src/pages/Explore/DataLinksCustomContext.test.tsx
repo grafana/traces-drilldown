@@ -126,6 +126,19 @@ describe('DataLinksCustomContext', () => {
       expect(capturedContext).toBeNull();
     });
 
+    it('when extension entry exists but fn is missing', () => {
+      mockedUsePluginFunctions.mockReturnValue({ functions: [{} as any] });
+
+      render(
+        <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
+          <TestConsumer />
+        </DataLinksCustomContext>
+      );
+
+      expect(screen.getByTestId('child')).toBeInTheDocument();
+      expect(capturedContext).toBeNull();
+    });
+
     it('when timeRange is not provided', () => {
       render(
         <DataLinksCustomContext>

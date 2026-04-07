@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react'; 
+import { render, fireEvent } from '@testing-library/react'; 
 import { AddToFiltersAction, addToFilters } from './AddToFiltersAction';
 import { DataFrame } from '@grafana/data';
 import { AdHocFiltersVariable } from '@grafana/scenes';
@@ -34,18 +34,17 @@ describe('AddToFiltersAction', () => {
     mockGetLabelValue.mockReturnValue('value1'); 
   });
 
-  it('should render the button and trigger onClick', async () => {
-    const { getByRole } = render(<AddToFiltersAction.Component model={{ onClick } as any} />);
-    await waitFor(() => {
-      const button = getByRole('button', { name: /add to filters/i });
-      fireEvent.click(button);
-      expect(onClick).toHaveBeenCalled();
-    });
+  it('should render both Include and Exclude buttons', () => {
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'label1' });
+    const { getByRole } = render(<AddToFiltersAction.Component model={action} />);
+    
+    expect(getByRole('button', { name: /include/i })).toBeInTheDocument();
+    expect(getByRole('button', { name: /exclude/i })).toBeInTheDocument();
   });
 
-  it('should add filter when labelKey is provided and exists in labels', () => {
+  it('should add include filter when labelKey is provided and exists in labels', () => {
     const action = new AddToFiltersAction({ frame, onClick, labelKey: 'label1' });
-    action.onClick();
+    action.onIncludeClick();
 
     expect(variable.setState).toHaveBeenCalledWith({
       filters: [{ key: 'label1', operator: '=', value: 'value1' }],
@@ -53,40 +52,82 @@ describe('AddToFiltersAction', () => {
     expect(onClick).toHaveBeenCalledWith({ labelName: 'label1' });
   });
 
-  it('should not add filter when labelKey is provided and does not exist in labels', () => {
+  it('should add exclude filter when labelKey is provided and exists in labels', () => {
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'label1' });
+    action.onExcludeClick();
+
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [{ key: 'label1', operator: '!=', value: 'value1' }],
+    });
+    expect(onClick).toHaveBeenCalledWith({ labelName: 'label1' });
+  });
+
+  it('should not add include filter when labelKey is provided and does not exist in labels', () => {
     const action = new AddToFiltersAction({frame, onClick, labelKey: 'nonExistentLabel'});
-    action.onClick();
+    action.onIncludeClick();
 
     expect(variable.setState).not.toHaveBeenCalled();
     expect(onClick).not.toHaveBeenCalled();
   });
 
-  it('should add filter when no labelKey and exactly one label exists', () => {
+  it('should not add exclude filter when labelKey is provided and does not exist in labels', () => {
+    const action = new AddToFiltersAction({frame, onClick, labelKey: 'nonExistentLabel'});
+    action.onExcludeClick();
+
+    expect(variable.setState).not.toHaveBeenCalled();
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('should add include filter when no labelKey and exactly one label exists', () => {
     const action = new AddToFiltersAction({ frame, onClick });
     frame.fields[0].labels = { label1: 'value1' };
-    action.onClick();
+    action.onIncludeClick();
 
     expect(variable.setState).toHaveBeenCalledWith({
       filters: [{ key: 'label1', operator: '=', value: 'value1' }],
+    });
+    expect(onClick).toHaveBeenCalledWith({ labelName: 'label1' });
+  });
+
+  it('should add exclude filter when no labelKey and exactly one label exists', () => {
+    const action = new AddToFiltersAction({ frame, onClick });
+    frame.fields[0].labels = { label1: 'value1' };
+    action.onExcludeClick();
+
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [{ key: 'label1', operator: '!=', value: 'value1' }],
     });
     expect(onClick).toHaveBeenCalledWith({ labelName: 'label1' });
   });
 
   it('should not add filter when no labelKey and more than one label exists', () => {
     const action = new AddToFiltersAction({ frame, onClick });
-    action.onClick();
+    action.onIncludeClick();
 
     expect(variable.setState).not.toHaveBeenCalled();
     expect(onClick).not.toHaveBeenCalled();
   });
 
-  it('should not render button when filter already exists', () => {
-    variable.state.filters = [{ key: 'label1', operator: '=', value: 'value1' }];
+  it('should trigger onIncludeClick when Include button is clicked', () => {
     const action = new AddToFiltersAction({ frame, onClick, labelKey: 'label1' });
-    const { queryByRole } = render(<AddToFiltersAction.Component model={action} />);
+    const onIncludeClickSpy = jest.spyOn(action, 'onIncludeClick');
+    const { getByRole } = render(<AddToFiltersAction.Component model={action} />);
     
-    const button = queryByRole('button', { name: /add to filters/i });
-    expect(button).not.toBeInTheDocument();
+    const includeButton = getByRole('button', { name: /include/i });
+    fireEvent.click(includeButton);
+    
+    expect(onIncludeClickSpy).toHaveBeenCalled();
+  });
+
+  it('should trigger onExcludeClick when Exclude button is clicked', () => {
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'label1' });
+    const onExcludeClickSpy = jest.spyOn(action, 'onExcludeClick');
+    const { getByRole } = render(<AddToFiltersAction.Component model={action} />);
+    
+    const excludeButton = getByRole('button', { name: /exclude/i });
+    fireEvent.click(excludeButton);
+    
+    expect(onExcludeClickSpy).toHaveBeenCalled();
   });
 });
 
@@ -135,6 +176,17 @@ describe('addToFilters', () => {
       filters: [
         { key: 'existingKey', operator: '=', value: 'existingValue' },
         { key: 'existingKey', operator: '=', value: 'newValue' },
+      ],
+    });
+  });
+
+  it('should add exclude filter with != operator', () => {
+    addToFilters(variable, 'newKey', 'excludeValue', '!=');
+
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [
+        { key: 'otherKey', operator: '=', value: 'value2' },
+        { key: 'newKey', operator: '!=', value: 'excludeValue' },
       ],
     });
   });

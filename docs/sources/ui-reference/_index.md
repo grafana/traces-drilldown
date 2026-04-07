@@ -50,6 +50,10 @@ For details on workflows, refer to [Analyze tracing data](../investigate/analyze
 
    You can also open a specific trace by ID by entering the trace ID into the **Trace ID** input and pressing Enter. Refer to [Open a trace by ID](../investigate/analyze-tracing-data/#open-a-trace-by-id) for more information.
 
+   Use the **Save** (save icon) and **Load** (folder-open icon) buttons in the header to save your current filters as a named query or load a previously saved one.
+   The **Save** button appears when at least one filter is applied.
+   Refer to [Save and load queries](../investigate/save-load-queries/) for more information.
+
 1. **Attributes sidebar**:
     Use the **Attributes** sidebar to select and manage attributes across views. Search attributes with regular expressions. Press **Escape** or click **Clear** to reset the search.
 

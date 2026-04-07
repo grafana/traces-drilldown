@@ -22,10 +22,7 @@ interface KgSceneProps {
   controls: KgAnnotationToggle;
 }
 
-function isKgAnnotationsAvailable(): boolean {
-  if (!(config.featureToggles as Record<string, boolean | undefined>)['kgAnnotationsInExploreTraces']) {
-    return false;
-  }
+function isKgDatasourceAvailable(): boolean {
   return Object.values(config.datasources).some((d) => d.uid === KG_DATASOURCE_UID);
 }
 
@@ -176,7 +173,7 @@ class KgAnnotationBehavior extends SceneObjectBase<KgAnnotationBehaviorState> {
 }
 
 export function getKgSceneProps(): KgSceneProps | undefined {
-  if (!isKgAnnotationsAvailable()) {
+  if (!isKgDatasourceAvailable()) {
     return undefined;
   }
 

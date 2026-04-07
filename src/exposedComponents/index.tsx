@@ -1,4 +1,5 @@
 import { LinkButton } from '@grafana/ui';
+import { OpenFeaturePluginScope } from 'featureFlags/openFeature';
 import { OpenInExploreTracesButtonProps, EmbeddedTraceExplorationState } from 'exposedComponents/types';
 import React, { lazy, Suspense } from 'react';
 const OpenInExploreTracesButton = lazy(
@@ -25,7 +26,9 @@ export function SuspendedOpenInExploreTracesButton(props: OpenInExploreTracesBut
 export function SuspendedEmbeddedTraceExploration(props: EmbeddedTraceExplorationState) {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <EmbeddedTraceExploration {...props} />
+      <OpenFeaturePluginScope>
+        <EmbeddedTraceExploration {...props} />
+      </OpenFeaturePluginScope>
     </Suspense>
   );
 }

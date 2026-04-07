@@ -2,7 +2,7 @@ server:
   http_listen_port: 3200
 
 distributor:
-  receivers:                           # this configuration will listen on all ports and protocols that tempo is capable of.
+  receivers: # this configuration will listen on all ports and protocols that tempo is capable of.
     otlp:
       protocols:
         http:
@@ -12,8 +12,8 @@ distributor:
 
 compactor:
   compaction:
-    compaction_window: 1h              # blocks in this time window will be compacted together
-    max_block_bytes: 100_000_000       # maximum size of compacted blocks
+    compaction_window: 1h # blocks in this time window will be compacted together
+    max_block_bytes: 100_000_000 # maximum size of compacted blocks
     block_retention: 1h
     compacted_block_retention: 10m
 
@@ -29,14 +29,14 @@ metrics_generator:
 
 storage:
   trace:
-    backend: local                     # backend configuration to use
+    backend: local # backend configuration to use
     block:
       bloom_filter_false_positive: .05 # bloom filter false positive rate.  lower values create larger filters but fewer false positives
-      v2_index_downsample_bytes: 1000     # number of bytes per index record
-      v2_encoding: zstd                   # block encoding/compression.  options: none, gzip, lz4-64k, lz4-256k, lz4-1M, lz4, snappy, zstd, s2
+      v2_index_downsample_bytes: 1000 # number of bytes per index record
+      v2_encoding: zstd # block encoding/compression.  options: none, gzip, lz4-64k, lz4-256k, lz4-1M, lz4, snappy, zstd, s2
     wal:
-      path: /tmp/tempo/wal             # where to store the wal locally
-      v2_encoding: snappy              # wal encoding/compression.  options: none, gzip, lz4-64k, lz4-256k, lz4-1M, lz4, snappy, zstd, s2
+      path: /tmp/tempo/wal # where to store the wal locally
+      v2_encoding: snappy # wal encoding/compression.  options: none, gzip, lz4-64k, lz4-256k, lz4-1M, lz4, snappy, zstd, s2
     local:
       path: /tmp/tempo/blocks
 
@@ -46,3 +46,7 @@ overrides:
       processors: [local-blocks, span-metrics]
 
 stream_over_http_enabled: true
+
+query_frontend:
+  metrics:
+    max_duration: 24h
