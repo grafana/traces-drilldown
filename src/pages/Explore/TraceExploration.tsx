@@ -44,7 +44,7 @@ import { TraceDrawerScene } from '../../components/Explore/TracesByService/Trace
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { getKgSceneProps } from '../../utils/kgAnnotations';
-import { evaluateKgAnnotationsFlag } from '../../featureFlags/openFeature';
+import { isKgAnnotationsFeatureEnabled } from '../../featureFlags/openFeature';
 import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { primarySignalOptions } from './primary-signals';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
@@ -118,18 +118,16 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
     if (!this._kgInitialized) {
       this._kgInitialized = true;
-      evaluateKgAnnotationsFlag().then((enabled) => {
-        if (enabled) {
-          const kg = getKgSceneProps();
-          if (kg) {
-            this.setState({
-              $data: this.state.$data ?? kg.$data,
-              $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
-              controls: [kg.controls, ...this.state.controls],
-            });
-          }
+      if (isKgAnnotationsFeatureEnabled()) {
+        const kg = getKgSceneProps();
+        if (kg) {
+          this.setState({
+            $data: this.state.$data ?? kg.$data,
+            $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
+            controls: [kg.controls, ...this.state.controls],
+          });
         }
-      });
+      }
     }
 
     this._subs.add(

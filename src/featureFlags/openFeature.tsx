@@ -122,8 +122,7 @@ export function useKgAnnotationsFeatureEnabled(): boolean {
   return fromOpenFeature || fromBootConfig;
 }
 
-export async function evaluateKgAnnotationsFlag(): Promise<boolean> {
-  await ensureOpenFeaturePluginInitialized();
+export function isKgAnnotationsFeatureEnabled(): boolean {
   const client = OpenFeature.getClient(DOMAIN);
   const fromOpenFeature = client.getBooleanValue(KG_ANNOTATIONS_FEATURE_FLAG_KEY, false);
   const fromBootConfig = readBootBooleanFeatureToggle(KG_ANNOTATIONS_FEATURE_FLAG_KEY, false);
