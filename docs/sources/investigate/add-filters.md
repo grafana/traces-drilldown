@@ -30,7 +30,7 @@ The list of filters expands as you investigate and explore your tracing data usi
 1. Refine your investigation by adding filters.
 1. Optional: Use the tabs underneath the metrics selection to provide insights into breakdowns, comparisons, latency, and other explorations.
 1. Choose filters to focus on problem areas. Each selected filter is added to the **Filters** bar at the top of the page. You can select filters on the **Comparison** and **Breakdown** tabs in the following ways:
-   - Select **Add to filters**.
+   - Select **Include** to add a matching filter (`=`) or **Exclude** to add a negating filter (`!=`).
    - Use the **Filters** bar near the top.
    - Attributes shown with a filter icon in the **Attributes** sidebar are already applied in your current **Filters**. The **Attributes** sidebar helps you pick and favorite attributes used for grouping, comparison, and **Trace list** columns. Refer to the [UI reference](../../ui-reference/).
 

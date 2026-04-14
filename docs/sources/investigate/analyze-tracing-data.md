@@ -49,7 +49,7 @@ The selector appears only when **Duration** is selected.
 
 ## Use the Comparison tab
 
-The **Comparison** tab helps you surface and rank which span attributes are most correlated with the selected metric so you can immediately spot what's driving your trace-level issues.
+The **Comparison** tab helps you surface and rank which span attributes are most correlated with the selected metric so you can spot what's driving your trace-level issues.
 
 ![Comparison view](/media/docs/explore-traces/traces-drilldown-root-spans-duration-comparison-tab-v1.2.png)
 
@@ -133,6 +133,17 @@ If you notice a rise in the Errors metric, you can use the **Exceptions** tab to
 4. Click the message to jump to the Trace list pre-filtered by that exception.
 5. Sort by Duration to find the most impacted requests, then open a trace to inspect retries and upstream dependencies.
 
+
+## Use the Adaptive Traces tab 
+
+The **Adaptive Traces** tab appears when both of the following conditions are met:
+
+- [Adaptive Traces](https://grafana.com/docs/grafana-cloud/adaptive-telemetry/adaptive-traces/) is enabled and configured on your Grafana Cloud stack.
+- You've applied an `instrumentation.tailsampling.policy` filter in the **Filters** bar.
+
+When these conditions are met, the tab displays span latency data for the selected tail-sampling policy, helping you understand how the policy affects trace collection and latency distribution within the current time range.
+
+If Adaptive Traces isn't enabled or no tail-sampling policy filter is applied, the tab doesn't appear.
 ## Use the Trace list tab
 
 Each RED metric has a trace list:
@@ -145,6 +156,26 @@ From this view, you can add additional attributes to new columns using **Add ext
 
 Use the **Attributes** sidebar to add columns. Select multiple attributes to include them as table columns. Use **Search attributes** and **Favorites** to find attributes.
 Attributes already in your **Filters** are listed at the top of the **Attributes** sidebar.
+
+<!-- TODO: Uncomment when Grafana 13 ships and tracesDrilldownTimeSeeker toggle reaches GA.
+## Use the time range seeker
+
+The time range seeker helps you find spikes and anomalies across a wider time window than the main RED metric panel. It appears below the RED panel and displays a compact, sampled overview of your selected metric over a longer period (up to several days).
+
+To use the time range seeker:
+
+1. Look for spikes or patterns in the overview chart.
+1. Drag across the chart to select a time window. The main RED panel and all tabs update to reflect the selected range.
+1. Use the floating controls to refine the window:
+   - Pan left or right to shift the visible window.
+   - Zoom in or out to narrow or widen the context.
+   - Select **Focus selection** (crosshair icon) to reset the view to your current selection.
+   - Select **Set range** (calendar icon) to open the time range picker and enter an exact range.
+
+The seeker loads data in sampled batches (24 hours by default) for faster responses. You can configure the batch range in the plugin's configuration page to match your Tempo instance's maximum query range. A warning icon appears when the seeker needs to load a large amount of data.
+
+The time range seeker requires the `tracesDrilldownTimeSeeker` feature toggle. Refer to [Grafana feature toggles](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/feature-toggles/) for more information.
+-->
 
 ## Change the selected time range
 
