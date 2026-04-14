@@ -10,7 +10,7 @@ import { ToolbarButton, useStyles2 } from '@grafana/ui';
 import { LoadSearchModal } from './LoadSearchModal';
 import { getDatasourceVariable, getTraceExplorationScene } from '../../../utils/utils';
 import { DataQuery } from '@grafana/schema';
-import { OpenQueryLibraryComponentProps, useHasSavedSearches, isQueryLibrarySupported, applySavedSearchToScene } from './saveSearch';
+import { OpenQueryLibraryComponentProps, useHasSavedSearches, useQueryLibrarySupported, applySavedSearchToScene } from './saveSearch';
 
 export interface LoadSearchSceneState extends SceneObjectState {
   dsName: string;
@@ -61,6 +61,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
     const { dsName, dsUid, isOpen } = model.useState();
     const styles = useStyles2(getStyles);
     const hasSavedSearches = useHasSavedSearches(dsUid);
+    const queryLibrarySupported = useQueryLibrarySupported();
 
     const { component: OpenQueryLibraryComponent, isLoading: isLoadingExposedComponent } =
       usePluginComponent<OpenQueryLibraryComponentProps>('grafana/query-library-context/v1');
@@ -111,7 +112,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
       return null;
     }
 
-    if (!isQueryLibrarySupported()) {
+    if (!queryLibrarySupported) {
       return fallbackComponent;
     } else if (isLoadingExposedComponent || !OpenQueryLibraryComponent) {
       return null;

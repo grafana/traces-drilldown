@@ -1,14 +1,14 @@
 import React from 'react';
 import { render, renderHook, screen, waitFor } from '@testing-library/react';
 import { OpenFeature } from '@openfeature/web-sdk';
-import { config, logWarning } from '@grafana/runtime';
+import { logWarning } from '@grafana/runtime';
 
+import { TIME_SEEKER_FEATURE_FLAG_KEY, useFlagTracesDrilldownTimeSeeker } from './featureFlags';
 import {
   ensureOpenFeaturePluginInitialized,
   OpenFeaturePluginScope,
+  PLUGIN_OPEN_FEATURE_DOMAIN,
   resetOpenFeaturePluginStateForTesting,
-  TIME_SEEKER_FEATURE_FLAG_KEY,
-  useTimeSeekerFeatureEnabled,
 } from './openFeature';
 
 jest.mock('@grafana/runtime', () => {
@@ -20,7 +20,6 @@ jest.mock('@grafana/runtime', () => {
       namespace: 'test-ns',
       appSubUrl: '',
       openFeatureContext: {},
-      featureToggles: {} as Record<string, boolean | undefined>,
     },
     logWarning: jest.fn(),
   };
@@ -34,8 +33,6 @@ jest.mock('@openfeature/ofrep-web-provider', () => ({
   },
 }));
 
-const featureToggles = config.featureToggles as Record<string, boolean | undefined>;
-
 function OpenFeatureTestWrapper({ children }: { children: React.ReactNode }) {
   return <OpenFeaturePluginScope>{children}</OpenFeaturePluginScope>;
 }
@@ -47,9 +44,6 @@ describe('openFeature', () => {
     resetOpenFeaturePluginStateForTesting();
     jest.clearAllMocks();
     await OpenFeature.clearProviders();
-    for (const key of Object.keys(featureToggles)) {
-      delete featureToggles[key];
-    }
     setProviderAndWaitSpy = jest.spyOn(OpenFeature, 'setProviderAndWait').mockResolvedValue(undefined);
   });
 
@@ -65,6 +59,12 @@ describe('openFeature', () => {
     });
   });
 
+  describe('PLUGIN_OPEN_FEATURE_DOMAIN', () => {
+    it('is stable for OFREP / provider binding', () => {
+      expect(PLUGIN_OPEN_FEATURE_DOMAIN).toBe('traces-drilldown');
+    });
+  });
+
   describe('OpenFeaturePluginScope', () => {
     it('renders children', () => {
       render(
@@ -76,20 +76,12 @@ describe('openFeature', () => {
     });
   });
 
-  describe('useTimeSeekerFeatureEnabled', () => {
-    it('returns false when the toggle is unset and evaluation is false', () => {
-      const { result } = renderHook(() => useTimeSeekerFeatureEnabled(), {
+  describe('useFlagTracesDrilldownTimeSeeker', () => {
+    it('returns false when the toggle evaluates false', () => {
+      const { result } = renderHook(() => useFlagTracesDrilldownTimeSeeker(), {
         wrapper: OpenFeatureTestWrapper,
       });
       expect(result.current).toBe(false);
-    });
-
-    it('returns true when config.featureToggles enables the key', () => {
-      featureToggles[TIME_SEEKER_FEATURE_FLAG_KEY] = true;
-      const { result } = renderHook(() => useTimeSeekerFeatureEnabled(), {
-        wrapper: OpenFeatureTestWrapper,
-      });
-      expect(result.current).toBe(true);
     });
   });
 
@@ -99,19 +91,17 @@ describe('openFeature', () => {
       expect(logWarning).not.toHaveBeenCalled();
     });
 
-    it('logs and installs the boot fallback provider when OFREP registration fails', async () => {
+    it('logs when OFREP registration fails and leaves defaults', async () => {
       setProviderAndWaitSpy.mockRejectedValue(new Error('ofrep-down'));
-      const setProviderSpy = jest.spyOn(OpenFeature, 'setProvider');
 
       await ensureOpenFeaturePluginInitialized();
 
       await waitFor(() => {
         expect(logWarning).toHaveBeenCalledWith(
-          'OpenFeature OFREP provider failed; using config.featureToggles fallback',
+          'OpenFeature OFREP provider failed; feature flags remain at default values',
           expect.objectContaining({ error: 'ofrep-down' })
         );
       });
-      expect(setProviderSpy).toHaveBeenCalled();
     });
 
     it('returns the same promise when called repeatedly', async () => {

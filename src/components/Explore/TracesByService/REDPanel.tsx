@@ -42,7 +42,7 @@ import { exemplarsTransformations, removeExemplarsTransformation } from '../../.
 import { useServiceName } from 'pages/Explore/TraceExploration';
 import { locationService } from '@grafana/runtime';
 import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
-import { TIME_SEEKER_FEATURE_FLAG_KEY, useTimeSeekerFeatureEnabled } from 'featureFlags/openFeature';
+import { TIME_SEEKER_FEATURE_FLAG_KEY, useFlagTracesDrilldownTimeSeeker } from 'featureFlags/featureFlags';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 
 export interface RateMetricsPanelState extends SceneObjectState {
@@ -275,7 +275,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const serviceName = useServiceName(model);
     const timeRange = sceneGraph.getTimeRange(model).useState();
     const { timeSeekerScene } = traceExploration.useState();
-    const timeSeekerEnabled = useTimeSeekerFeatureEnabled();
+    const timeSeekerEnabled = useFlagTracesDrilldownTimeSeeker();
     const embedded = traceExploration.state.embedded === true;
     // Mini embedded layout never shows the seeker (only full RED / full embed).
     const showTimeSeeker = !embeddedMini && Boolean(timeSeekerScene) && timeSeekerEnabled;

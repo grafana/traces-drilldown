@@ -2,25 +2,27 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { config } from '@grafana/runtime';
 
+import { useFlagQueryLibrary } from '../../../featureFlags/featureFlags';
 import {
   applySavedSearchToScene,
-  isQueryLibrarySupported,
   narrowSavedSearches,
   SAVED_SEARCHES_KEY,
   SavedSearch,
   useCheckForExistingSearch,
   useHasSavedSearches,
+  useQueryLibrarySupported,
   useSavedSearches,
 } from './saveSearch';
+
+jest.mock('../../../featureFlags/featureFlags', () => ({
+  useFlagQueryLibrary: jest.fn(() => true),
+}));
 
 jest.mock('@grafana/runtime', () => ({
   ...jest.requireActual('@grafana/runtime'),
   config: {
     buildInfo: {
       version: '12.4.0',
-    },
-    featureToggles: {
-      queryLibrary: true,
     },
   },
 }));
@@ -144,20 +146,28 @@ describe('useHasSavedSearches', () => {
   });
 });
 
-describe('isQueryLibrarySupported', () => {
+const mockedUseFlagQueryLibrary = jest.mocked(useFlagQueryLibrary);
+
+describe('useQueryLibrarySupported', () => {
   test('Returns true when supported', () => {
-    expect(isQueryLibrarySupported()).toBe(true);
+    mockedUseFlagQueryLibrary.mockReturnValue(true);
+    config.buildInfo.version = '12.4.0';
+    const { result } = renderHook(() => useQueryLibrarySupported());
+    expect(result.current).toBe(true);
   });
 
   test('Returns false if the feature is not enabled', () => {
-    config.featureToggles.queryLibrary = false;
-    expect(isQueryLibrarySupported()).toBe(false);
+    mockedUseFlagQueryLibrary.mockReturnValue(false);
+    config.buildInfo.version = '12.4.0';
+    const { result } = renderHook(() => useQueryLibrarySupported());
+    expect(result.current).toBe(false);
   });
 
   test('Returns false if the Grafana version is not supported', () => {
-    config.featureToggles.queryLibrary = true;
+    mockedUseFlagQueryLibrary.mockReturnValue(true);
     config.buildInfo.version = '12.3.0';
-    expect(isQueryLibrarySupported()).toBe(false);
+    const { result } = renderHook(() => useQueryLibrarySupported());
+    expect(result.current).toBe(false);
   });
 });
 
