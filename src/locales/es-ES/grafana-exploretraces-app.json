@@ -1,0 +1,10 @@
+{
+  "app": {
+    "page-title": "Exploración de trazas"
+  },
+  "grafana-ui": {
+    "drawer": {
+      "close": "Cerrar"
+    }
+  }
+}

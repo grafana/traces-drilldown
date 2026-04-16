@@ -5,6 +5,7 @@
   "id": "grafana-exploretraces-app",
   "preload": true,
   "autoEnabled": true,
+  "languages": ["en-US"],
   "info": {
     "keywords": ["app", "tempo", "traces", "explore"],
     "description": "Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate errors within complex distributed systems.",
