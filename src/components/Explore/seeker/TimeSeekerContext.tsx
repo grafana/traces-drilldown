@@ -58,10 +58,10 @@ interface TimeSeekerContextValue {
   chartConfig: UPlotConfigBuilder;
 
   // Refs
-  uplotRef: React.RefObject<uPlot | null>;
-  wheelListenerRef: React.RefObject<((e: WheelEvent) => void) | null>;
-  suppressNextTimeRangeUpdate: React.RefObject<boolean>;
-  applyRelativeContextWindow: React.RefObject<string | null>;
+  uplotRef: React.MutableRefObject<uPlot | null>;
+  wheelListenerRef: React.MutableRefObject<((e: WheelEvent) => void) | null>;
+  suppressNextTimeRangeUpdate: React.MutableRefObject<boolean>;
+  applyRelativeContextWindow: React.MutableRefObject<string | null>;
 
   // Actions
   setVisibleRange: (range: AbsoluteTimeRange, suppressDashboardUpdate?: boolean) => void;

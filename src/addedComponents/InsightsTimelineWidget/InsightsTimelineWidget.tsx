@@ -56,7 +56,7 @@ export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({
         end={endTime}
         filterBySeverity={filterBySeverity}
         filterBySummaryKeywords={filterBySummaryKeywords}
-        label={'Insights'}
+        label={<>Insights</>}
       />
     </div>
   );
