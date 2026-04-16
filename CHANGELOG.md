@@ -1,5 +1,53 @@
 # Changelog
 
+## 2.0.1
+
+##### Build System / Dependencies
+
+*  add support for mise package manager (#684) (53ede010)
+
+##### Chores
+
+* **deps:**
+  *  update dependency dompurify to v3.4.0 [security] (#715) (3296adb8)
+  *  update dependency knip to v5.88.1 (#706) (2536ab60)
+  *  update dependency @types/node to v22.19.15 (#705) (47eacfa9)
+  *  update dependency lodash to v4.18.1 [security] (#707) (5f7b8089)
+  *  update dependency sass-loader to v16.0.7 (#699) (3abf9f9a)
+  *  update dependency nwsapi to v2.2.23 (#698) (0b73206c)
+  *  update dependency semver to v7.7.4 (#700) (c392be0a)
+  *  update swc monorepo (#701) (f7ade26d)
+  *  update dependency @types/lodash to v4.17.24 (#695) (865c175f)
+  *  update dependency css-loader to v7.1.4 (#696) (937d0b6a)
+  *  update dependency eslint-plugin-jsdoc to v62.8.1 (#697) (62e3f515)
+  *  update rabbitmq:management docker digest to 23fe4f2 (#694) (baa8d266)
+  *  update grafana/tempo:latest docker digest to 112d818 (#693) (99d2c503)
+  *  pin dependencies (#660) (79e5589c)
+  *  lock file maintenance (#652) (fc21531c)
+  *  update grafana/tempo:latest docker digest to 5aa154f (#663) (c8bf14cc)
+  *  update grafana/intro-to-mltp:mythical-beasts-recorder-latest docker digest to 82cd149 (#662) (c83d2803)
+*  Remove unused dependencies (#675) (88e7ff7b)
+* **eslint:**  migrate to ESLint 9 flat config (#681) (c7eed48c)
+
+##### Documentation Changes
+
+*  Update for Include/Exclude, Adaptive Traces tab, and time seeker (#709) (aea3d093)
+*  Update for save queries (#688) (e59eb9b5)
+
+##### New Features
+
+*  Time range seeker (#611) (eb283c9d)
+*  Support include / exclude for panels (#624) (5edbe889)
+
+##### Bug Fixes
+
+*  upgrade `terser-webpack-plugin` to resolve CVE (#714) (bfe4c44d)
+*  Fix issue with logsDrilldownExtension.fn (#708) (d2264fde)
+*  add packages to resolutions in package.json (#683) (8f24f6b0)
+*  update levignore to pass grafana runtime compatibility check (#682) (5c097dff)
+* **deps:**  update resolutions to fix `yarn audit` vulnerabilities (#690) (ca57dd08)
+
+
 ## 2.0.0
 
 ##### Chores
