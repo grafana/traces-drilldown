@@ -13,7 +13,7 @@ const config: UserConfig = {
     tsx: ['JsxLexer'],
   },
   lineEnding: 'auto',
-  locales: ['en-US', 'es-ES'],
+  locales: ['en-US'],
   namespaceSeparator: false,
   output: 'src/locales/$LOCALE/$NAMESPACE.json',
   pluralSeparator: '_',

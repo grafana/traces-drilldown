@@ -21,16 +21,6 @@ describe('loadResources', () => {
         },
       });
     });
-
-    it('should load specific language resources when available', async () => {
-      const result = await loadResources('es-ES');
-
-      expect(result).toMatchObject({
-        app: {
-          'page-title': 'Exploración de trazas',
-        },
-      });
-    });
   });
 
   describe('fallback behavior', () => {
