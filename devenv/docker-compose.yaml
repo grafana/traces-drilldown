@@ -6,25 +6,26 @@ services:
     build:
       context: ../.config
       args:
-        grafana_image: ${GRAFANA_IMAGE:-grafana-dev}
+        grafana_image: ${GRAFANA_IMAGE:-grafana}
         grafana_version: ${GRAFANA_VERSION:-12.3.0}
     environment:
       - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-}
     ports:
       - 3000:3000/tcp
     volumes:
-      - ../dist:/var/lib/grafana/plugins/grafana-explore-traces
+      - ../dist:/var/lib/grafana/plugins/grafana-exploretraces-app
       - ../provisioning:/etc/grafana/provisioning
+      - ./grafana.ini:/etc/grafana/grafana.ini
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
 
   tempo:
-    image: grafana/tempo:latest@sha256:112d818cc82ad33052e42868fc7b2557f5962eaa5ba35d19878402675479e09d
-    command: [ "-config.file=/etc/tempo.yaml" ]
+    image: grafana/tempo:2.10.4@sha256:a6616c9d224770c883a67b50e4941e99c5df81b076ef05f516bb7cce5a96cec0
+    command: ['-config.file=/etc/tempo.yaml']
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
     ports:
-      - "3200:3200"   # tempo
+      - '3200:3200' # tempo
 
   # generates uninteresting traces, but is useful for testing
   k6-tracing:
@@ -46,8 +47,8 @@ services:
     image: rabbitmq:management@sha256:23fe4f224d3d4d4e3c3904e82fb8a47824f0ee03412c33b7b21e6bf00b9852fa
     restart: always
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - '5672:5672'
+      - '15672:15672'
     healthcheck:
       test: rabbitmq-diagnostics check_running
       interval: 5s
@@ -59,9 +60,9 @@ services:
     image: postgres:14.5@sha256:135c62a8134dcef829a1e4f5568bfae44bcfa2c75659ff948f43c71964366aa4
     restart: always
     environment:
-      POSTGRES_PASSWORD: "mythical"
+      POSTGRES_PASSWORD: 'mythical'
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   # A microservice that makes requests to the API server microservice. Requests are also pushed onto the mythical-queue.
   mythical-requester-A:
@@ -93,7 +94,7 @@ services:
       - OTEL_EXPORTER_OTLP_TRACES_INSECURE=true
       - OTEL_RESOURCE_ATTRIBUTES=ip=1.2.3.5,region=eu-east
 
-   # A microservice that makes requests to the API server microservice. Requests are also pushed onto the mythical-queue.
+    # A microservice that makes requests to the API server microservice. Requests are also pushed onto the mythical-queue.
   mythical-requester-B:
     image: grafana/intro-to-mltp:mythical-beasts-requester-0.3.1@sha256:2643fb2e2cd1100e9edecb44d67c82cfa436ea97ff23aeeb646ea063776e539b
     restart: always
