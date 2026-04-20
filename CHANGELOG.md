@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.2
+
+##### Chores
+
+*  Add refresh control to embedded header (#716) (510b360b)
+* **deps:**
+  *  bump protocol-buffers-schema from 3.6.0 to 3.6.1 (#717) (b07a4926)
+  *  bump protobufjs from 7.5.4 to 7.5.5 (#719) (96ce8403)
+
+
 ## 2.0.1
 
 ##### Build System / Dependencies
