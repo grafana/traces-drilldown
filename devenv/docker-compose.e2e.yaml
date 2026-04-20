@@ -103,4 +103,4 @@ services:
       CI: "true"
     depends_on:
       - grafana
-    command: sh -c "yarn install --frozen-lockfile && sleep 30 && yarn e2e:fast"
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile && sleep 30 && pnpm e2e:fast"
