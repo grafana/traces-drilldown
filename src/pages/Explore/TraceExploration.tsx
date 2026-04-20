@@ -260,6 +260,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
+  const refreshControl = traceExploration.state.controls.find((control) => control instanceof SceneRefreshPicker);
 
   const timeRangeState = traceExploration.state.$timeRange?.useState();
   const filtersVariableState = filtersVariable.useState();
@@ -295,6 +296,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
             Traces Drilldown
           </LinkButton>
           {timeRangeControl && <timeRangeControl.Component model={timeRangeControl} />}
+          {refreshControl && <refreshControl.Component model={refreshControl} />}
         </Stack>
       </Stack>
     </div>
