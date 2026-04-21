@@ -6,7 +6,7 @@ import { usePluginComponent } from '@grafana/runtime';
 import { DataSourceVariable, sceneGraph, SceneObject, SceneTimeRange } from '@grafana/scenes';
 
 import { LoadSearchScene } from './LoadSearchScene';
-import { useHasSavedSearches, useSavedSearches, isQueryLibrarySupported } from './saveSearch';
+import { useHasSavedSearches, useSavedSearches, useQueryLibrarySupported } from './saveSearch';
 import { getDatasourceVariable, getFiltersVariable, getTraceExplorationScene } from '../../../utils/utils';
 import { DataQuery } from '@grafana/schema';
 
@@ -79,7 +79,7 @@ describe('LoadSearchScene', () => {
       state: { value: { from: 'now-1h', to: 'now', raw: { from: 'now-1h', to: 'now' } } },
     } as unknown as SceneTimeRange);
     jest.mocked(usePluginComponent).mockReturnValue({ component: undefined, isLoading: false });
-    jest.mocked(isQueryLibrarySupported).mockReturnValue(false);
+    jest.mocked(useQueryLibrarySupported).mockReturnValue(false);
   });
 
   test('Disables button when there are no saved searches', () => {
@@ -132,7 +132,7 @@ describe('LoadSearchScene', () => {
 
   test('Uses the exposed component if available', () => {
     const component = () => <div>Exposed component</div>;
-    jest.mocked(isQueryLibrarySupported).mockReturnValue(true);
+    jest.mocked(useQueryLibrarySupported).mockReturnValue(true);
     jest.mocked(usePluginComponent).mockReturnValue({ component, isLoading: false });
 
     const scene = new LoadSearchScene({ dsUid: 'test-datasource-uid', dsName: 'test-datasource-uid' });
@@ -143,7 +143,7 @@ describe('LoadSearchScene', () => {
 
   describe('Loading a search', () => {
     beforeEach(() => {
-      jest.mocked(isQueryLibrarySupported).mockReturnValue(true);
+      jest.mocked(useQueryLibrarySupported).mockReturnValue(true);
       // @ts-expect-error
       jest.mocked(usePluginComponent).mockReturnValue({ component: FakeExposedComponent, isLoading: false });
       mockUseHasSavedSearches.mockReturnValue(true);
