@@ -1,5 +1,18 @@
 import { AdHocVariableFilter } from '@grafana/data';
 
+/**
+ * Escapes a value for use inside TraceQL double-quoted string literals.
+ * Raw newlines (and tabs/CR) break parsing with "literal not terminated"; they must be written as \\n etc.
+ */
+export function escapeTraceQlStringLiteral(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t');
+}
+
 export function renderTraceQLLabelFilters(filters: AdHocVariableFilter[]) {
   const expr = filters
     .filter((f) => f.key && f.operator && f.value)
@@ -29,9 +42,7 @@ function renderFilter(filter: AdHocVariableFilter) {
       !isQuotedNumericString(val)
   ) {
     if (typeof val === 'string') {
-      // Escape " and \ to \" and \\ respectively
-      val = val.replace(/["\\]/g, (s) => `\\${s}`);
-      val = `"${val}"`;
+      val = `"${escapeTraceQlStringLiteral(val)}"`;
     }
   }
 
