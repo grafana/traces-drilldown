@@ -11,7 +11,6 @@ const queryLibraryKey = 'queryLibrary' satisfies keyof FeatureToggles;
 const TRACES_DRILLDOWN_TIME_SEEKER = 'tracesDrilldownTimeSeeker' as const;
 const tracesDrilldownTimeSeekerKey = TRACES_DRILLDOWN_TIME_SEEKER as keyof FeatureToggles;
 
-/** Stable string for analytics and other non-hook call sites. */
 export const TIME_SEEKER_FEATURE_FLAG_KEY = TRACES_DRILLDOWN_TIME_SEEKER;
 
 export function useFlagTracesDrilldownTimeSeeker(): boolean {

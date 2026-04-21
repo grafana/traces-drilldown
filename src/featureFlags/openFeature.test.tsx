@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, renderHook, screen, waitFor } from '@testing-library/react';
+import { OpenFeatureTestProvider } from '@openfeature/react-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
 import { logWarning } from '@grafana/runtime';
 
@@ -32,10 +33,6 @@ jest.mock('@openfeature/ofrep-web-provider', () => ({
     runsOn = 'client';
   },
 }));
-
-function OpenFeatureTestWrapper({ children }: { children: React.ReactNode }) {
-  return <OpenFeaturePluginScope>{children}</OpenFeaturePluginScope>;
-}
 
 describe('openFeature', () => {
   let setProviderAndWaitSpy: jest.SpiedFunction<(typeof OpenFeature)['setProviderAndWait']>;
@@ -77,11 +74,27 @@ describe('openFeature', () => {
   });
 
   describe('useFlagTracesDrilldownTimeSeeker', () => {
-    it('returns false when the toggle evaluates false', () => {
+    it('returns the hook default when the flag is unset in the test provider', () => {
       const { result } = renderHook(() => useFlagTracesDrilldownTimeSeeker(), {
-        wrapper: OpenFeatureTestWrapper,
+        wrapper: ({ children }) => (
+          <OpenFeatureTestProvider domain={PLUGIN_OPEN_FEATURE_DOMAIN}>{children}</OpenFeatureTestProvider>
+        ),
       });
       expect(result.current).toBe(false);
+    });
+
+    it('returns true when the test provider maps the Grafana registry flag on', () => {
+      const { result } = renderHook(() => useFlagTracesDrilldownTimeSeeker(), {
+        wrapper: ({ children }) => (
+          <OpenFeatureTestProvider
+            domain={PLUGIN_OPEN_FEATURE_DOMAIN}
+            flagValueMap={{ [TIME_SEEKER_FEATURE_FLAG_KEY]: true }}
+          >
+            {children}
+          </OpenFeatureTestProvider>
+        ),
+      });
+      expect(result.current).toBe(true);
     });
   });
 
