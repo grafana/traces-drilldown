@@ -20,6 +20,7 @@ import {
   SceneTimeRangeLike,
   SceneVariableSet,
 } from '@grafana/scenes';
+import { t } from '@grafana/i18n';
 import { useStyles2 } from '@grafana/ui';
 
 import {
@@ -112,7 +113,7 @@ export class Home extends SceneObjectBase<HomeState> {
                     query: `{nestedSetParent < 0 && status = error ${renderedFilters}} | count_over_time() by (resource.service.name)`,
                     step: durString,
                   },
-                  title: 'Errored services',
+                  title: t('home.errored-services', 'Errored services'),
                   type: 'errored-services',
                 }),
               }),
@@ -122,7 +123,7 @@ export class Home extends SceneObjectBase<HomeState> {
                     query: `{nestedSetParent < 0 ${renderedFilters}} | quantile_over_time(duration, 0.9) by (resource.service.name)`,
                     step: durString,
                   },
-                  title: 'Slow services',
+                  title: t('home.slow-services', 'Slow services'),
                   type: 'slowest-services',
                 }),
               }),
@@ -131,7 +132,7 @@ export class Home extends SceneObjectBase<HomeState> {
                   query: {
                     query: `{nestedSetParent<0 ${renderedFilters}} | histogram_over_time(duration)`,
                   },
-                  title: 'Slow traces',
+                  title: t('home.slow-traces', 'Slow traces'),
                   type: 'slowest-traces',
                   filter: renderedFilters,
                 }),
@@ -161,7 +162,7 @@ function getVariableSet(initialFilters: AdHocVariableFilter[], initialDS?: strin
     variables: [
       new DataSourceVariable({
         name: VAR_DATASOURCE,
-        label: 'Data source',
+        label: t('home.data-source-label', 'Data source'),
         value: initialDS,
         pluginId: 'tempo',
       }),

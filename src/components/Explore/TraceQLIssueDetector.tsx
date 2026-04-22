@@ -7,6 +7,7 @@ import {
 } from '@grafana/scenes';
 import { getDatasourceVariable } from '../../utils/utils';
 import { Alert, LinkButton } from '@grafana/ui';
+import { t, Trans } from '@grafana/i18n';
 import React from 'react';
 
 interface TraceQLIssueDetectorState extends SceneObjectState {
@@ -85,9 +86,6 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
   }
 } 
 
-const TraceQLWarningTitle = 'TraceQL metrics not configured';
-const TraceQLWarningMessage = 'We found an error running a TraceQL metrics query: "localblocks processor not found". This typically means the "local-blocks" processor is not configured in Tempo, which is required for Grafana Traces Drilldown to work.';
-
 export const TraceQLConfigWarning: React.FC<{ detector: TraceQLIssueDetector }> = ({ detector }) => {
   const { hasIssue } = detector.useState();
 
@@ -98,10 +96,10 @@ export const TraceQLConfigWarning: React.FC<{ detector: TraceQLIssueDetector }> 
   return (
     <Alert
       severity="warning"
-      title={TraceQLWarningTitle}
+      title={t('traceql-issue-detector.warning-title', 'TraceQL metrics not configured')}
     >
       <p>
-        {TraceQLWarningMessage}
+        {t('traceql-issue-detector.warning-message', 'We found an error running a TraceQL metrics query: "localblocks processor not found". This typically means the "local-blocks" processor is not configured in Tempo, which is required for Grafana Traces Drilldown to work.')}
         <LinkButton
           icon="external-link-alt"
           fill="text"
@@ -109,7 +107,7 @@ export const TraceQLConfigWarning: React.FC<{ detector: TraceQLIssueDetector }> 
           target="_blank"
           href="https://grafana.com/docs/tempo/latest/operations/traceql-metrics"
         >
-          Read documentation
+          <Trans i18nKey="traceql-issue-detector.read-documentation">Read documentation</Trans>
         </LinkButton>
       </p>
     </Alert>

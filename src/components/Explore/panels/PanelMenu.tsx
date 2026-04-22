@@ -1,4 +1,5 @@
 import { PanelMenuItem, toURLRange, urlUtil } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import {
   SceneObjectBase,
   VizPanelMenu,
@@ -24,11 +25,11 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
     this.addActivationHandler(() => {
       const items: PanelMenuItem[] = [
         {
-          text: 'Navigation',
+          text: t('panel-menu.navigation', 'Navigation'),
           type: 'group',
         },
         {
-          text: 'Explore',
+          text: t('panel-menu.explore', 'Explore'),
           iconClassName: 'compass',
           href: getExploreHref(this),
           onClick: () => onExploreClick(),

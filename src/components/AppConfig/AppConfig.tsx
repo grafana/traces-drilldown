@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Field, useStyles2, FieldSet, Combobox } from '@grafana/ui';
+import { t, Trans } from '@grafana/i18n';
 import { PluginConfigPageProps, AppPluginMeta, PluginMeta, GrafanaTheme2 } from '@grafana/data';
 import { FetchResponse, getBackendSrv, locationService } from '@grafana/runtime';
 import { css } from '@emotion/css';
@@ -41,10 +42,10 @@ const AppConfig = ({ plugin }: Props) => {
   return (
     <div data-testid={testIds.appConfig.container}>
       {/* ENABLE / DISABLE PLUGIN */}
-      <FieldSet label="Enable / Disable">
+      <FieldSet label={t('app-config.fieldset.enable-disable', 'Enable / Disable')}>
         {!enabled && (
           <>
-            <div className={s.colorWeak}>The plugin is currently not enabled.</div>
+            <div className={s.colorWeak}><Trans i18nKey="app-config.plugin-not-enabled">The plugin is currently not enabled.</Trans></div>
             <Button
               className={s.marginTop}
               variant="primary"
@@ -56,7 +57,7 @@ const AppConfig = ({ plugin }: Props) => {
                 })
               }
             >
-              Enable plugin
+              <Trans i18nKey="app-config.enable-plugin">Enable plugin</Trans>
             </Button>
           </>
         )}
@@ -64,7 +65,7 @@ const AppConfig = ({ plugin }: Props) => {
         {/* Disable the plugin */}
         {enabled && (
           <>
-            <div className={s.colorWeak}>The plugin is currently enabled.</div>
+            <div className={s.colorWeak}><Trans i18nKey="app-config.plugin-enabled">The plugin is currently enabled.</Trans></div>
             <Button
               className={s.marginTop}
               variant="destructive"
@@ -76,17 +77,17 @@ const AppConfig = ({ plugin }: Props) => {
                 })
               }
             >
-              Disable plugin
+              <Trans i18nKey="app-config.disable-plugin">Disable plugin</Trans>
             </Button>
           </>
         )}
       </FieldSet>
 
       {/* CUSTOM SETTINGS */}
-      <FieldSet label="Time Seeker Settings" className={s.marginTopXl}>
+      <FieldSet label={t('app-config.fieldset.time-seeker-settings', 'Time Seeker Settings')} className={s.marginTopXl}>
         <Field
-          label="Query Range"
-          description="The time range for each cached batch in the Time Seeker. Larger values mean fewer queries but more data per query."
+          label={t('app-config.field.query-range', 'Query Range')}
+          description={t('app-config.field.query-range-description', 'The time range for each cached batch in the Time Seeker. Larger values mean fewer queries but more data per query.')}
         >
           <Combobox<number>
             width={30}
@@ -112,7 +113,7 @@ const AppConfig = ({ plugin }: Props) => {
               })
             }
           >
-            Save settings
+            <Trans i18nKey="app-config.save-settings">Save settings</Trans>
           </Button>
         </div>
       </FieldSet>

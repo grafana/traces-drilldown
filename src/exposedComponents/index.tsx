@@ -1,3 +1,4 @@
+import { Trans } from '@grafana/i18n';
 import { LinkButton } from '@grafana/ui';
 import { OpenFeaturePluginScope } from 'featureFlags/openFeature';
 import { OpenInExploreTracesButtonProps, EmbeddedTraceExplorationState } from 'exposedComponents/types';
@@ -14,7 +15,7 @@ export function SuspendedOpenInExploreTracesButton(props: OpenInExploreTracesBut
     <Suspense
       fallback={
         <LinkButton variant="secondary" disabled>
-          Open in Traces Drilldown
+          <Trans i18nKey="exposed-components.open-in-traces-drilldown">Open in Traces Drilldown</Trans>
         </LinkButton>
       }
     >
@@ -25,7 +26,7 @@ export function SuspendedOpenInExploreTracesButton(props: OpenInExploreTracesBut
 
 export function SuspendedEmbeddedTraceExploration(props: EmbeddedTraceExplorationState) {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div><Trans i18nKey="exposed-components.loading">Loading...</Trans></div>}>
       <OpenFeaturePluginScope>
         <EmbeddedTraceExploration {...props} />
       </OpenFeaturePluginScope>

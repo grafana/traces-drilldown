@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { t } from '@grafana/i18n';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, SceneObject } from '@grafana/scenes';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { TraceViewPanelScene } from '../panels/TraceViewPanelScene';
@@ -48,7 +49,7 @@ export class TraceDrawerScene extends SceneObjectBase<DetailsSceneState> {
     } else {
       this.setState({
         body: new EmptyStateScene({
-          message: 'No trace selected',
+          message: t('trace-drawer-scene.no-trace-selected', 'No trace selected'),
         }),
       });
     }

@@ -10,6 +10,7 @@ import {
   SceneQueryRunner,
 } from '@grafana/scenes';
 import { GrafanaTheme2, LoadingState, PanelData } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { EmptyState } from 'components/states/EmptyState/EmptyState';
@@ -168,7 +169,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.description}>
-            View exception details from errored traces for the current set of filters.
+            <Trans i18nKey="exceptions-scene.description">View exception details from errored traces for the current set of filters.</Trans>
           </div>
         </div>
         <div className={styles.content}>

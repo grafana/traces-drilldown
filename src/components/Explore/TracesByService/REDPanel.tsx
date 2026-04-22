@@ -11,6 +11,7 @@ import {
   SceneObjectState,
 } from '@grafana/scenes';
 import { arrayToDataFrame, DataFrame, GrafanaTheme2, LoadingState, DataTopic } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { ComparisonSelection, EMPTY_STATE_ERROR_MESSAGE, explorationDS, MetricFunction } from 'utils/shared';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
@@ -255,7 +256,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
         lineWidth: 1,
         lineStyle: 'solid',
         color: SelectionColor,
-        text: 'Comparison selection',
+        text: t('red-panel.comparison-selection', 'Comparison selection'),
       },
     ]);
     frame.name = 'xymark';

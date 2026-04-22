@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { CustomVariable } from '@grafana/scenes';
 import { Label, MultiCombobox, Stack, useStyles2 } from '@grafana/ui';
+import { t, Trans } from '@grafana/i18n';
 import React, { useEffect } from 'react';
 
 export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable: CustomVariable }) => {
@@ -9,11 +10,11 @@ export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable
   const styles = useStyles2(getStyles);
 
   const options = [
-    { label: 'p50', value: '0.5' },
-    { label: 'p75', value: '0.75' },
-    { label: 'p90', value: '0.9', description: 'Default' },
-    { label: 'p95', value: '0.95' },
-    { label: 'p99', value: '0.99' },
+    { label: t('percentiles-select.p50', 'p50'), value: '0.5' },
+    { label: t('percentiles-select.p75', 'p75'), value: '0.75' },
+    { label: t('percentiles-select.p90', 'p90'), value: '0.9', description: t('percentiles-select.default', 'Default') },
+    { label: t('percentiles-select.p95', 'p95'), value: '0.95' },
+    { label: t('percentiles-select.p99', 'p99'), value: '0.99' },
   ];
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable
 
   return (
     <Stack>
-      <Label className={styles.label}>Percentiles</Label>
+      <Label className={styles.label}><Trans i18nKey="percentiles-select.label">Percentiles</Trans></Label>
       <MultiCombobox<string>
         width={'auto'}
         minWidth={20}

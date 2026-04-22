@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { AbsoluteTimeRange, GrafanaTheme2, TimeRange, dateTime } from '@grafana/data';
 import { Icon, IconButton, TimeRangeInput, Tooltip, useStyles2, useTheme2 } from '@grafana/ui';
+import { t } from '@grafana/i18n';
 import { useTimeSeeker } from './TimeSeekerContext';
 import { css } from '@emotion/css';
 
@@ -91,48 +92,48 @@ export const TimeSeekerControls: React.FC = () => {
       <div className={styles.floatingControlsContent}>
         {hasLargeBatchWarning && (
           <Tooltip
-            content="The time seeker needs to load a large amount of data. Performance may be impacted."
+            content={t('time-seeker-controls.large-batch-warning', 'The time seeker needs to load a large amount of data. Performance may be impacted.')}
             placement="bottom"
           >
             <Icon name="exclamation-triangle" size="sm" style={{ color: theme.colors.warning.main }} />
           </Tooltip>
         )}
         <IconButton
-          tooltip="Pan left"
+          tooltip={t('time-seeker-controls.pan-left', 'Pan left')}
           name="arrow-left"
           onClick={() => panContextWindow('left')}
           size="sm"
           variant="secondary"
         />
         <IconButton
-          tooltip="Zoom out context"
+          tooltip={t('time-seeker-controls.zoom-out', 'Zoom out context')}
           name="search-minus"
           onClick={() => zoomContextWindow(2)}
           size="sm"
           variant="secondary"
         />
         <IconButton
-          tooltip="Zoom in context"
+          tooltip={t('time-seeker-controls.zoom-in', 'Zoom in context')}
           name="search-plus"
           onClick={() => zoomContextWindow(0.5)}
           size="sm"
           variant="secondary"
         />
         <IconButton
-          tooltip="Pan right"
+          tooltip={t('time-seeker-controls.pan-right', 'Pan right')}
           name="arrow-right"
           onClick={() => panContextWindow('right')}
           size="sm"
           variant="secondary"
         />
         <IconButton
-          tooltip="Focus selection"
+          tooltip={t('time-seeker-controls.focus-selection', 'Focus selection')}
           name="crosshair"
           onClick={resetContextWindow}
           size="sm"
           variant="secondary"
         />
-        <IconButton name="calendar-alt" tooltip="Set range" onClick={handleButtonClick} size="sm" variant="secondary" />
+        <IconButton name="calendar-alt" tooltip={t('time-seeker-controls.set-range', 'Set range')} onClick={handleButtonClick} size="sm" variant="secondary" />
         <div ref={timeRangeInputContainerRef} className={styles.timeRangeInputContainer}>
           <TimeRangeInput
             value={timeRangeValue}

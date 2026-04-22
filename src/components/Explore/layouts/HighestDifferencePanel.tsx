@@ -1,5 +1,6 @@
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, VizPanel } from '@grafana/scenes';
 import { DataFrame, GrafanaTheme2 } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { Button, Stack, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import React from 'react';
@@ -92,16 +93,16 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
           {maxDifference !== undefined && maxDifferenceIndex !== undefined && (
             <>
               <Stack gap={1} justifyContent={'space-between'} alignItems={'center'}>
-                <div className={styles.title}>Highest difference</div>
+                <div className={styles.title}><Trans i18nKey="highest-difference-panel.title">Highest difference</Trans></div>
                 <Stack gap={0.5}>
                   {!includeFilterExists && (
                     <Button size="sm" variant="primary" fill="text" onClick={() => model.onIncludeClick()}>
-                      Include
+                      <Trans i18nKey="highest-difference-panel.include">Include</Trans>
                     </Button>
                   )}
                   {!excludeFilterExists && (
                     <Button size="sm" variant="primary" fill="text" onClick={() => model.onExcludeClick()}>
-                      Exclude
+                      <Trans i18nKey="highest-difference-panel.exclude">Exclude</Trans>
                     </Button>
                   )}
                 </Stack>

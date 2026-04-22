@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 
 import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { CustomVariable, SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { t } from '@grafana/i18n';
 import { Stack, useStyles2 } from '@grafana/ui';
 
 import { MetricFunction } from '../../../../../utils/shared';
@@ -124,8 +125,8 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
               metric === 'duration'
                 ? []
                 : [
-                    { label: 'Rate', color: 'green' },
-                    { label: 'Error', color: 'red' },
+                    { label: t('attributes-breakdown-scene.rate-label', 'Rate'), color: 'green' },
+                    { label: t('attributes-breakdown-scene.error-label', 'Error'), color: 'red' },
                   ]
             }
           />

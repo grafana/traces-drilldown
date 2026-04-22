@@ -14,11 +14,12 @@ export default [
     },
   },
   {
+    name: 'grafana/i18n-rules',
     files: ['src/**/*.{ts,tsx}'],
     ignores: ['src/**/*.test.{ts,tsx}', 'src/**/__tests__/**'],
     plugins: { '@grafana/i18n': grafanaI18nPlugin },
     rules: {
-      '@grafana/i18n/no-untranslated-strings': ['warn', { calleesToIgnore: ['^css$', 'use[A-Z].*'] }],
+      '@grafana/i18n/no-untranslated-strings': ['error', { calleesToIgnore: ['^css$', 'use[A-Z].*'] }],
       '@grafana/i18n/no-translation-top-level': 'error',
     },
   },

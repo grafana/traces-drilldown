@@ -16,6 +16,7 @@ import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateSc
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
+import { t, Trans } from '@grafana/i18n';
 import { Icon, Link, Stack, TableCellDisplayMode, TableCustomCellOptions, useStyles2, useTheme2 } from '@grafana/ui';
 import { map, Observable } from 'rxjs';
 import {
@@ -95,7 +96,7 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
                       >
                         {name}
                       </div>
-                      <Link href={this.getLinkToExplore(traceId, spanId)} target={'_blank'} title={'Open in new tab'}>
+                      <Link href={this.getLinkToExplore(traceId, spanId)} target={'_blank'} title={t('span-list-scene.open-in-new-tab', 'Open in new tab')}>
                         <Icon name={'external-link-alt'} size={'sm'} />
                       </Link>
                     </div>
@@ -238,7 +239,7 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <div className={styles.description}>View a list of spans for the current set of filters.</div>
+          <div className={styles.description}><Trans i18nKey="span-list-scene.description">View a list of spans for the current set of filters.</Trans></div>
         </div>
         <div className={styles.content}>
           <Stack direction="row" gap={2} width="100%">

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { GrafanaTheme2, toOption } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { Stack, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { SceneObject } from '@grafana/scenes';
@@ -33,7 +34,7 @@ export const ExceptionAccordionContent = ({ row, scene }: ExceptionAccordionProp
         <div className={styles.message}>
           {row.message && (
             <div>
-              <span className={styles.errorLabel}>Error:</span>{' '}
+              <span className={styles.errorLabel}><Trans i18nKey="exception-accordion.error-label">Error:</Trans></span>{' '}
               {(() => {
                 const highlight = getMessageHighlight(row.message);
                 if (!highlight) {

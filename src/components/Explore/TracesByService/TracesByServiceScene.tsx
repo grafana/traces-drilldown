@@ -48,6 +48,7 @@ import {
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../utils/analytics';
 import { MiniREDPanel } from './MiniREDPanel';
 import { Icon, LinkButton, Stack, Tooltip, useStyles2 } from '@grafana/ui';
+import { Trans } from '@grafana/i18n';
 import { css } from '@emotion/css';
 import { getDefaultSelectionForMetric } from '../../../utils/comparison';
 import { map, Observable } from 'rxjs';
@@ -298,7 +299,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
         <div className={styles.title}>
           <Tooltip content={<MetricTypeTooltip />} placement={'right-start'} interactive>
             <span className={styles.hand}>
-              Select metric type <Icon name={'info-circle'} />
+              <Trans i18nKey="traces-by-service.select-metric-type">Select metric type</Trans> <Icon name={'info-circle'} />
             </span>
           </Tooltip>
         </div>
@@ -313,22 +314,19 @@ const MetricTypeTooltip = () => {
 
   return (
     <Stack direction={'column'} gap={1}>
-      <div className={styles.tooltip.title}>RED metrics for traces</div>
+      <div className={styles.tooltip.title}><Trans i18nKey="traces-by-service.tooltip.title">RED metrics for traces</Trans></div>
       <span className={styles.tooltip.subtitle}>
-        Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.
+        <Trans i18nKey="traces-by-service.tooltip.subtitle">Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.</Trans>
       </span>
       <div className={styles.tooltip.text}>
         <div>
-          <span className={styles.tooltip.emphasize}>Rate</span> - Spans per second that match your filter, useful to
-          find unusual spikes in activity
+          <span className={styles.tooltip.emphasize}><Trans i18nKey="traces-by-service.tooltip.rate-label">Rate</Trans></span> <Trans i18nKey="traces-by-service.tooltip.rate-description">- Spans per second that match your filter, useful to find unusual spikes in activity</Trans>
         </div>
         <div>
-          <span className={styles.tooltip.emphasize}>Errors</span> -Spans that are failing, overall issues in tracing
-          ecosystem
+          <span className={styles.tooltip.emphasize}><Trans i18nKey="traces-by-service.tooltip.errors-label">Errors</Trans></span> <Trans i18nKey="traces-by-service.tooltip.errors-description">-Spans that are failing, overall issues in tracing ecosystem</Trans>
         </div>
         <div>
-          <span className={styles.tooltip.emphasize}>Duration</span> - Amount of time those spans take, represented as a
-          heat map (responds time, latency)
+          <span className={styles.tooltip.emphasize}><Trans i18nKey="traces-by-service.tooltip.duration-label">Duration</Trans></span> <Trans i18nKey="traces-by-service.tooltip.duration-description">- Amount of time those spans take, represented as a heat map (responds time, latency)</Trans>
         </div>
       </div>
 
@@ -345,7 +343,7 @@ const MetricTypeTooltip = () => {
             reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.metric_docs_link_clicked)
           }
         >
-          Read documentation
+          <Trans i18nKey="traces-by-service.tooltip.read-documentation">Read documentation</Trans>
         </LinkButton>
       </div>
     </Stack>
@@ -367,7 +365,7 @@ function getStyles(theme: GrafanaTheme2) {
       cursor: 'pointer',
     }),
     tooltip: {
-      label: 'tooltip',
+      label: 'tooltip' as const,
       title: css({
         fontSize: '14px',
         fontWeight: 500,
