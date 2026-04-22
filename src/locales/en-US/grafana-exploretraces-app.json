@@ -1,0 +1,10 @@
+{
+  "app": {
+    "page-title": "Traces Drilldown"
+  },
+  "grafana-ui": {
+    "drawer": {
+      "close": "Close"
+    }
+  }
+}

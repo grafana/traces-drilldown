@@ -1,12 +1,26 @@
 import { lazy } from 'react';
 import { AppPlugin } from '@grafana/data';
+import { config } from '@grafana/runtime';
+import { lt } from 'semver';
 
 import { EmbeddedTraceExplorationState, OpenInExploreTracesButtonProps } from 'exposedComponents/types';
 import { SuspendedEmbeddedTraceExploration, SuspendedOpenInExploreTracesButton } from 'exposedComponents';
 import { linkConfigs } from 'utils/links';
 import { JsonData } from './components/AppConfig/AppConfig';
+import pluginJson from './plugin.json';
 
-const App = lazy(() => import('./components/App/App'));
+const App = lazy(async () => {
+  const { initPluginTranslations } = await import('@grafana/i18n');
+
+  const { loadResources: scenesLoadResources } = await import('@grafana/scenes');
+  await initPluginTranslations('grafana-scenes', [scenesLoadResources]);
+
+  const { loadResources } = await import('./i18n/loadResources');
+  const pluginLoaders = lt(config?.buildInfo?.version || '0.0.0', '12.1.0') ? [loadResources] : [];
+  await initPluginTranslations(pluginJson.id, pluginLoaders);
+
+  return import('./components/App/App');
+});
 const AppConfig = lazy(() => import('./components/AppConfig/AppConfig'));
 
 export const plugin = new AppPlugin<JsonData>()
