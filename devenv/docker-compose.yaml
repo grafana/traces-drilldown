@@ -9,7 +9,7 @@ services:
         grafana_image: ${GRAFANA_IMAGE:-grafana}
         grafana_version: ${GRAFANA_VERSION:-12.3.0}
     environment:
-      - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-}
+      - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-localizationForPlugins}
     ports:
       - 3000:3000/tcp
     volumes:

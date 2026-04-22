@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppRootProps, PageLayoutType, usePluginContext } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { AppRoutes } from '../Routes';
 import { PluginPage } from '@grafana/runtime';
 import { JsonData } from '../AppConfig/AppConfig';
@@ -17,7 +18,7 @@ export const usePluginJsonData = (): JsonData => {
 class App extends React.PureComponent<AppRootProps<JsonData>> {
   render() {
     return (
-      <PluginPage layout={PageLayoutType.Custom}>
+      <PluginPage layout={PageLayoutType.Custom} pageNav={{ text: t('app.page-title', 'Traces Drilldown') }}>
         <OpenFeaturePluginScope>
           <AppRoutes />
         </OpenFeaturePluginScope>

@@ -7,6 +7,7 @@ import { config } from '@grafana/runtime';
 import { SceneObject } from '@grafana/scenes';
 import { DataQuery } from '@grafana/schema';
 
+import { useFlagQueryLibrary } from '../../../featureFlags/featureFlags';
 import pluginJson from '../../../plugin.json';
 import { TraceqlFilter, traceqlFiltersToAdHoc } from '../../../utils/links';
 import { parseTraceQLQuery } from '../../../utils/lezer-traceql-parser';
@@ -21,8 +22,9 @@ function notifySavedSearchesChanged() {
   window.dispatchEvent(new CustomEvent(SAVED_SEARCHES_CHANGED_EVENT));
 }
 
-export function isQueryLibrarySupported() {
-  return !semver.ltr(config.buildInfo.version, MIN_VERSION) && config.featureToggles.queryLibrary;
+export function useQueryLibrarySupported(): boolean {
+  const queryLibrary = useFlagQueryLibrary();
+  return !semver.ltr(config.buildInfo.version, MIN_VERSION) && queryLibrary;
 }
 
 export function useCheckForExistingSearch(dsUid: string, query: string) {

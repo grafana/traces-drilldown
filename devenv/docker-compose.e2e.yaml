@@ -4,7 +4,7 @@ services:
     environment:
       - GF_PLUGINS_PREINSTALL_DISABLED=true
       # Time seeker (grafana/grafana#121650). Requires Grafana 13+ where the toggle is registered.
-      - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker
+      - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker,localizationForPlugins
     build:
       context: ../.config
       args:
