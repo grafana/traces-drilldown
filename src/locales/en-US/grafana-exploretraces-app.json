@@ -1,10 +1,298 @@
 {
+  "adaptive-traces-scene": {
+    "loading": "Loading Adaptive Traces..."
+  },
+  "add-to-filters-action": {
+    "aria-label": "Add to filters",
+    "exclude": "Exclude",
+    "include": "Include"
+  },
   "app": {
     "page-title": "Traces Drilldown"
+  },
+  "app-config": {
+    "disable-plugin": "Disable plugin",
+    "enable-plugin": "Enable plugin",
+    "field": {
+      "query-range": "Query Range",
+      "query-range-description": "The time range for each cached batch in the Time Seeker. Larger values mean fewer queries but more data per query."
+    },
+    "fieldset": {
+      "enable-disable": "Enable / Disable",
+      "time-seeker-settings": "Time Seeker Settings"
+    },
+    "plugin-enabled": "The plugin is currently enabled.",
+    "plugin-not-enabled": "The plugin is currently not enabled.",
+    "save-settings": "Save settings"
+  },
+  "attribute-breakdown": {
+    "layout-grid": "Grid",
+    "layout-rows": "Rows",
+    "layout-single": "Single"
+  },
+  "attribute-panel-rows": {
+    "no-series-data": "No series data"
+  },
+  "attributes-breakdown-scene": {
+    "error-label": "Error",
+    "rate-label": "Rate"
+  },
+  "attributes-comparison-scene": {
+    "baseline-label": "Baseline",
+    "description": "Attributes are ordered by the difference between the baseline and selection values for each value.",
+    "hide-baseline-only-label": "Hide baseline-only",
+    "hide-baseline-only-tooltip": "Hide panels that only have baseline percentage and no selection",
+    "selection-label": "Selection"
+  },
+  "attributes-sidebar": {
+    "add-to-favorites": "Add to favorites",
+    "all-button": "All",
+    "clear-search": "Clear search",
+    "drop-here": "Drop here",
+    "drop-here-below": "Drop here",
+    "no-available": "No attributes available",
+    "no-match": "No attributes match your criteria",
+    "none": "None",
+    "remove-from-favorites": "Remove from favorites",
+    "scope": {
+      "all": "All",
+      "favorites": "Favorites",
+      "resource": "Resource",
+      "span": "Span"
+    },
+    "search-placeholder": "Search attributes...",
+    "selected": "Selected:",
+    "selected-count_one": "Selected ({{count}}):",
+    "selected-count_other": "Selected ({{count}}):"
+  },
+  "bookmark-icon": {
+    "bookmark": "Bookmark",
+    "remove-bookmark": "Remove bookmark"
+  },
+  "bookmark-item": {
+    "description": "<0>{{metric}}</0> of <2>{{signal}}</2> ({{actionView}})"
+  },
+  "bookmarks": {
+    "loading": "Loading bookmarks...",
+    "no-bookmarks": "Bookmark your favorite queries to view them here.",
+    "or-view-bookmarks": "Or view bookmarks",
+    "remove-bookmark": "Remove bookmark"
+  },
+  "by-frame-repeater": {
+    "no-data-for-search": "No data for search term"
+  },
+  "duration-comparison-control": {
+    "select-slowest-traces": "Select slowest traces",
+    "slowest-traces-selected": "Slowest traces selected"
+  },
+  "error-state-scene": {
+    "query-error": "Query error"
+  },
+  "exception-accordion": {
+    "error-label": "Error:"
+  },
+  "exception-comparison": {
+    "percent-title": "{{percent}}%"
+  },
+  "exceptions-scene": {
+    "description": "View exception details from errored traces for the current set of filters."
+  },
+  "exceptions-table": {
+    "exclude": "Exclude",
+    "exclude-aria-label": "Exclude exception message",
+    "header": {
+      "exception-details": "Exception Details",
+      "exception-details-tooltip": "Exception type, message, service, and last seen timestamp. Use the include/exclude buttons to include or exclude exception messages, or click on type or message to filter.",
+      "frequency": "Frequency",
+      "frequency-tooltip": "Visual representation of exception frequency over time",
+      "occurrences": "Occurrences",
+      "occurrences-tooltip": "Total number of times this exception has occurred"
+    },
+    "include": "Include",
+    "include-aria-label": "Include exception message"
+  },
+  "exemplars": {
+    "view-trace": "View trace"
+  },
+  "exposed-components": {
+    "loading": "Loading...",
+    "open-in-traces-drilldown": "Open in Traces Drilldown"
   },
   "grafana-ui": {
     "drawer": {
       "close": "Close"
+    }
+  },
+  "header-scene": {
+    "data-source": "Data source",
+    "filter": "Filter",
+    "lets-start": "Let's start",
+    "quick-start": "Or quick-start into your tracing data",
+    "read-documentation": "Read documentation",
+    "subtitle": "Drilldown and visualize your trace data without writing a query.",
+    "title": "Start your traces exploration!"
+  },
+  "highest-difference-panel": {
+    "exclude": "Exclude",
+    "include": "Include",
+    "title": "Highest difference"
+  },
+  "home": {
+    "data-source-label": "Data source",
+    "errored-services": "Errored services",
+    "slow-services": "Slow services",
+    "slow-traces": "Slow traces"
+  },
+  "insights-timeline-widget": {
+    "label": "Insights"
+  },
+  "inspect-attribute-action": {
+    "inspect": "Inspect"
+  },
+  "layout-switcher": {
+    "view-label": "View"
+  },
+  "load-search-modal": {
+    "no-saved-searches": "No saved searches to display.",
+    "remove-tooltip": "Remove",
+    "select-button": "Select",
+    "title": "Load a previously saved search"
+  },
+  "load-search-scene": {
+    "load-saved-query": "Load saved query",
+    "load-saved-search": "Load saved search",
+    "no-saved-searches": "No saved searches to load"
+  },
+  "open-in-explore-traces-button": {
+    "label": "Open in Traces Drilldown"
+  },
+  "panel-menu": {
+    "explore": "Explore",
+    "navigation": "Navigation"
+  },
+  "percentiles-select": {
+    "default": "Default",
+    "label": "Percentiles",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
+  },
+  "primary-signal-variable": {
+    "primary-signal": "Primary signal",
+    "primary-signal-label": "Primary signal"
+  },
+  "red-panel": {
+    "comparison-selection": "Comparison selection"
+  },
+  "save-search-button": {
+    "save-in-saved-queries": "Save in Saved Queries",
+    "save-search": "Save search"
+  },
+  "save-search-modal": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "existing-search-warning": "There is a previously saved search with the same query: {{title}}",
+    "field": {
+      "description": "Description",
+      "title": "Title"
+    },
+    "info-alert": "Saved searches are stored locally in your browser and will only be available on this device.",
+    "save": "Save",
+    "success-message": "Search successfully saved.",
+    "success-title": "Success",
+    "title": "Save current search"
+  },
+  "search": {
+    "placeholder": "Search"
+  },
+  "smart-drawer": {
+    "back-to-all-traces": "Back to all traces"
+  },
+  "span-list-scene": {
+    "description": "View a list of spans for the current set of filters.",
+    "open-in-new-tab": "Open in new tab"
+  },
+  "sparkline-cell": {
+    "no-data": "No data",
+    "not-enough-data": "Not enough data"
+  },
+  "streaming-indicator": {
+    "tooltip": "Streaming"
+  },
+  "structure-scene": {
+    "duration-description": "Analyse the structure of slow spans from the traces that match the current filters.",
+    "duration-panel-info": "Each panel represents an aggregate view compiled using spans from multiple traces.",
+    "errors-description": "Analyse the errors structure of the traces that match the current filters.",
+    "errors-panel-info": "Each panel represents an aggregate view compiled using spans from multiple traces.",
+    "no-data-message": "The structure tab shows {{emptyMsg}} spans beneath what you are currently investigating. Currently, there are no descendant {{emptyMsg}} spans beneath the spans you are investigating.",
+    "open-trace": "Open trace",
+    "rate-description": "Analyse the service structure of the traces that match the current filters.",
+    "rate-panel-info": "Each panel represents an aggregate view compiled using spans from multiple traces.",
+    "read-more": "Read more about",
+    "works-best": "The structure tab works best with full traces."
+  },
+  "time-seeker-controls": {
+    "focus-selection": "Focus selection",
+    "large-batch-warning": "The time seeker needs to load a large amount of data. Performance may be impacted.",
+    "pan-left": "Pan left",
+    "pan-right": "Pan right",
+    "set-range": "Set range",
+    "zoom-in": "Zoom in context",
+    "zoom-out": "Zoom out context"
+  },
+  "time-seeker-scene": {
+    "loading": "Loading time seeker…",
+    "seeker-label": "Seeker"
+  },
+  "trace-drawer-scene": {
+    "no-trace-selected": "No trace selected"
+  },
+  "trace-exploration": {
+    "drawer": {
+      "view-trace": "View trace {{traceId}}"
+    },
+    "embedded-header": {
+      "traces-drilldown": "Traces Drilldown"
+    },
+    "header": {
+      "data-source": "Data source",
+      "filters": "Filters",
+      "need-help": "Need help",
+      "trace-id": "Trace ID",
+      "trace-id-placeholder": "Enter an ID and press Enter"
+    },
+    "menu": {
+      "documentation": "Documentation",
+      "give-feedback": "Give feedback"
+    },
+    "variable": {
+      "data-source": "Data source",
+      "duration-percentiles": "Duration Percentiles"
+    },
+    "version-header": {
+      "last-update": "Last update: {{compositeVersion}}",
+      "title": "Grafana Traces Drilldown v{{version}}"
+    }
+  },
+  "traceql-issue-detector": {
+    "read-documentation": "Read documentation",
+    "warning-message": "We found an error running a TraceQL metrics query: \"localblocks processor not found\". This typically means the \"local-blocks\" processor is not configured in Tempo, which is required for Grafana Traces Drilldown to work.",
+    "warning-title": "TraceQL metrics not configured"
+  },
+  "traces-by-service": {
+    "select-metric-type": "Select metric type",
+    "tooltip": {
+      "duration-description": "- Amount of time those spans take, represented as a heat map (responds time, latency)",
+      "duration-label": "Duration",
+      "errors-description": "-Spans that are failing, overall issues in tracing ecosystem",
+      "errors-label": "Errors",
+      "rate-description": "- Spans per second that match your filter, useful to find unusual spikes in activity",
+      "rate-label": "Rate",
+      "read-documentation": "Read documentation",
+      "subtitle": "Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.",
+      "title": "RED metrics for traces"
     }
   }
 }

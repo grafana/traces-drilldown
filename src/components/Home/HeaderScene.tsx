@@ -7,6 +7,7 @@ import {
   SceneObjectBase,
 } from '@grafana/scenes';
 import { Button, Icon, LinkButton, Stack, useStyles2, useTheme2 } from '@grafana/ui';
+import { Trans } from '@grafana/i18n';
 
 import {
   EXPLORATIONS_ROUTE,
@@ -34,16 +35,16 @@ export class HeaderScene extends SceneObjectBase {
         <div className={styles.header}>
           <div className={styles.headerTitleContainer}>
             {theme.isDark ? <DarkModeRocket /> : <LightModeRocket />}
-            <h2 className={styles.title}>Start your traces exploration!</h2>
+            <h2 className={styles.title}><Trans i18nKey="header-scene.title">Start your traces exploration!</Trans></h2>
           </div>
           <div>
-            <p>Drilldown and visualize your trace data without writing a query.</p>
+            <p><Trans i18nKey="header-scene.subtitle">Drilldown and visualize your trace data without writing a query.</Trans></p>
             <div className={styles.headerActions}>
               <Button variant='primary' onClick={() => {
                   reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.explore_traces_clicked);
                   navigate(EXPLORATIONS_ROUTE);
                 }}>
-                Let’s start
+                <Trans i18nKey="header-scene.lets-start">{"Let's start"}</Trans>
                 <Icon name='arrow-right' size='lg' />
               </Button>
               <LinkButton
@@ -57,7 +58,7 @@ export class HeaderScene extends SceneObjectBase {
                 className={styles.documentationLink}
                 onClick={() => reportAppInteraction(USER_EVENTS_PAGES.home, USER_EVENTS_ACTIONS.home.read_documentation_clicked)}
               >
-                Read documentation
+                <Trans i18nKey="header-scene.read-documentation">Read documentation</Trans>
               </LinkButton>
             </div>
           </div>
@@ -66,7 +67,7 @@ export class HeaderScene extends SceneObjectBase {
         <Bookmarks />
 
         <div className={styles.subHeader}>
-          <h4>Or quick-start into your tracing data</h4>
+          <h4><Trans i18nKey="header-scene.quick-start">Or quick-start into your tracing data</Trans></h4>
         </div>
 
         <Stack gap={2}>
@@ -74,13 +75,13 @@ export class HeaderScene extends SceneObjectBase {
             <div className={styles.variables}>
               {dsVariable && (
                 <Stack gap={1} alignItems={'center'}>
-                  <div className={styles.label}>Data source</div>
+                  <div className={styles.label}><Trans i18nKey="header-scene.data-source">Data source</Trans></div>
                   <dsVariable.Component model={dsVariable} />
                 </Stack>
               )}
               {filterVariable && (
                 <Stack gap={1} alignItems={'center'}>
-                  <div className={styles.label}>Filter</div>
+                  <div className={styles.label}><Trans i18nKey="header-scene.filter">Filter</Trans></div>
                   <filterVariable.Component model={filterVariable} />
                 </Stack>
               )}

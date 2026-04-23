@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import React from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { Button, useStyles2 } from '@grafana/ui';
 import { Drawer } from './Drawer';
 
@@ -41,7 +42,7 @@ export const SmartDrawer = ({
     <div className={styles.container}>
       <div className={styles.drawerHeader}>
         <Button variant="primary" fill="text" size="md" icon={'arrow-left'} onClick={onClose}>
-          Back to all traces
+          <Trans i18nKey="smart-drawer.back-to-all-traces">Back to all traces</Trans>
         </Button>
       </div>
       {children}

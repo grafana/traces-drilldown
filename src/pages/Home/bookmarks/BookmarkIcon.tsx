@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { ToolbarButton, Icon } from '@grafana/ui';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import React, { useEffect, useState } from 'react';
@@ -107,7 +108,7 @@ export const BookmarkIcon = ({ model }: SceneComponentProps<TraceExplorationScen
           <Icon name={'star'} type={'default'} size={'lg'} />
         )
       }
-      tooltip={isBookmarked ? 'Remove bookmark' : 'Bookmark'}
+      tooltip={isBookmarked ? t('bookmark-icon.remove-bookmark', 'Remove bookmark') : t('bookmark-icon.bookmark', 'Bookmark')}
       onClick={toggleBookmarkClicked}
       disabled={isLoading}
     />

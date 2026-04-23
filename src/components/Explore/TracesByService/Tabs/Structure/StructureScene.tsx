@@ -26,6 +26,7 @@ import { mergeTraces } from '../../../../../utils/trace-merge/merge';
 import { createDataFrame, Field, FieldType, GrafanaTheme2, LinkModel, LoadingState } from '@grafana/data';
 import { TreeNode } from '../../../../../utils/trace-merge/tree-node';
 import { Icon, LinkButton, Stack, Text, useTheme2 } from '@grafana/ui';
+import { t, Trans } from '@grafana/i18n';
 import Skeleton from 'react-loading-skeleton';
 import { EmptyState } from '../../../../states/EmptyState/EmptyState';
 import { css } from '@emotion/css';
@@ -110,7 +111,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       .setTitle(`Structure for ${tree.serviceName} [${countSpans(tree)} spans used]`)
       .setOption('createFocusSpanLink' as any, (traceId: string, spanId: string): LinkModel<Field> => {
         return {
-          title: 'Open trace',
+          title: t('structure-scene.open-trace', 'Open trace'),
           href: '#',
           onClick: () => openTrace(traceId, spanId),
           origin: {} as Field,
@@ -254,8 +255,8 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       case 'rate':
         description = (
           <>
-            <div>Analyse the service structure of the traces that match the current filters.</div>
-            <div>Each panel represents an aggregate view compiled using spans from multiple traces.</div>
+            <div><Trans i18nKey="structure-scene.rate-description">Analyse the service structure of the traces that match the current filters.</Trans></div>
+            <div><Trans i18nKey="structure-scene.rate-panel-info">Each panel represents an aggregate view compiled using spans from multiple traces.</Trans></div>
           </>
         );
         emptyMsg = 'server';
@@ -263,8 +264,8 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       case 'errors':
         description = (
           <>
-            <div>Analyse the errors structure of the traces that match the current filters.</div>
-            <div>Each panel represents an aggregate view compiled using spans from multiple traces.</div>
+            <div><Trans i18nKey="structure-scene.errors-description">Analyse the errors structure of the traces that match the current filters.</Trans></div>
+            <div><Trans i18nKey="structure-scene.errors-panel-info">Each panel represents an aggregate view compiled using spans from multiple traces.</Trans></div>
           </>
         );
         emptyMsg = 'error';
@@ -272,8 +273,8 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       case 'duration':
         description = (
           <>
-            <div>Analyse the structure of slow spans from the traces that match the current filters.</div>
-            <div>Each panel represents an aggregate view compiled using spans from multiple traces.</div>
+            <div><Trans i18nKey="structure-scene.duration-description">Analyse the structure of slow spans from the traces that match the current filters.</Trans></div>
+            <div><Trans i18nKey="structure-scene.duration-panel-info">Each panel represents an aggregate view compiled using spans from multiple traces.</Trans></div>
           </>
         );
         emptyMsg = 'slow';
@@ -289,19 +290,18 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         </Text>
         <Text textAlignment={'center'} variant="body">
           <div className={styles.longText}>
-            The structure tab shows {emptyMsg} spans beneath what you are currently investigating. Currently, there are
-            no descendant {emptyMsg} spans beneath the spans you are investigating.
+            <Trans i18nKey="structure-scene.no-data-message">The structure tab shows {{ emptyMsg }} spans beneath what you are currently investigating. Currently, there are no descendant {{ emptyMsg }} spans beneath the spans you are investigating.</Trans>
           </div>
         </Text>
         <Stack gap={0.5} alignItems={'center'}>
           <Icon name="info-circle" />
           <Text textAlignment={'center'} variant="body">
-            The structure tab works best with full traces.
+            <Trans i18nKey="structure-scene.works-best">The structure tab works best with full traces.</Trans>
           </Text>
         </Stack>
 
         <div className={styles.actionContainer}>
-          Read more about
+          <Trans i18nKey="structure-scene.read-more">Read more about</Trans>
           <div className={styles.action}>
             <LinkButton
               icon="external-link-alt"

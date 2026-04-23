@@ -1,5 +1,6 @@
 import React from 'react';
 import { FieldType, GrafanaTheme2 } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { Sparkline, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { GraphDrawStyle, VisibilityMode } from '@grafana/schema';
@@ -12,7 +13,7 @@ interface SparklineCellProps {
 export const SparklineCell = ({ seriesData, theme }: SparklineCellProps) => {
   const styles = useStyles2(getStyles);
   if (!seriesData || !seriesData.length) {
-    return <div className={styles.message}>No data</div>;
+    return <div className={styles.message}><Trans i18nKey="sparkline-cell.no-data">No data</Trans></div>;
   }
 
   const countValues = seriesData.map((point) => point.count);
@@ -22,7 +23,7 @@ export const SparklineCell = ({ seriesData, theme }: SparklineCellProps) => {
   const validTimeValues = timeValues.filter((v) => isFinite(v) && !isNaN(v));
 
   if (validCountValues.length < 2 || validTimeValues.length < 2) {
-    return <div className={styles.message}>Not enough data</div>;
+    return <div className={styles.message}><Trans i18nKey="sparkline-cell.not-enough-data">Not enough data</Trans></div>;
   }
 
   const minCount = Math.min(...validCountValues);

@@ -5,6 +5,7 @@ import { css } from '@emotion/css';
 import { AppEvents, GrafanaTheme2 } from '@grafana/data';
 import { getAppEvents, reportInteraction, usePluginComponent } from '@grafana/runtime';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { t } from '@grafana/i18n';
 import { ToolbarButton, useStyles2 } from '@grafana/ui';
 
 import { LoadSearchModal } from './LoadSearchModal';
@@ -78,7 +79,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
             onClick={model.toggleOpen}
             className={styles.button}
             tooltip={
-              hasSavedSearches ? 'Load saved search' : 'No saved searches to load'
+              hasSavedSearches ? t('load-search-scene.load-saved-search', 'Load saved search') : t('load-search-scene.no-saved-searches', 'No saved searches to load')
             }
           />
           {isOpen && <LoadSearchModal sceneRef={model} onClose={model.toggleClosed} />}
@@ -125,7 +126,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
         datasourceFilters={[dsName]}
         icon="folder-open"
         onSelectQuery={onSelectQuery}
-        tooltip="Load saved query"
+        tooltip={t('load-search-scene.load-saved-query', 'Load saved query')}
       />
     );
   };

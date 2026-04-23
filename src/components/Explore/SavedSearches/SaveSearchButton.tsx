@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { usePluginComponent } from '@grafana/runtime';
 import { SceneObject } from '@grafana/scenes';
 import { DataQuery } from '@grafana/schema';
+import { t } from '@grafana/i18n';
 import { ToolbarButton } from '@grafana/ui';
 
 import { getDatasourceVariable, getFiltersVariable, getTraceExplorationScene } from '../../../utils/utils';
@@ -42,7 +43,7 @@ export function SaveSearchButton({ sceneRef }: Props) {
           variant="canvas"
           icon="save"
           onClick={() => setSaving(true)}
-          tooltip="Save search"
+          tooltip={t('save-search-button.save-search', 'Save search')}
         />
         {saving && <SaveSearchModal dsUid={dsUid} sceneRef={sceneRef} onClose={() => setSaving(false)} />}
       </>
@@ -81,7 +82,7 @@ export function SaveSearchButton({ sceneRef }: Props) {
     <OpenQueryLibraryComponent
       datasourceFilters={[dsName]}
       query={query}
-      tooltip="Save in Saved Queries"
+      tooltip={t('save-search-button.save-in-saved-queries', 'Save in Saved Queries')}
     />
   );
 }

@@ -1,3 +1,4 @@
+import { Trans } from '@grafana/i18n';
 import { useReturnToPrevious } from '@grafana/runtime';
 import { LinkButton } from '@grafana/ui';
 import React, { useMemo } from 'react';
@@ -52,7 +53,7 @@ export default function OpenInExploreTracesButton({
       href={href}
       onClick={() => setReturnToPrevious(returnToPreviousSource || 'previous')}
     >
-      Open in Traces Drilldown
+      <Trans i18nKey="open-in-explore-traces-button.label">Open in Traces Drilldown</Trans>
     </LinkButton>
   );
 }
