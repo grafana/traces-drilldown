@@ -8,6 +8,7 @@ import {
   SceneTimeRange,
   sceneGraph,
 } from '@grafana/scenes';
+import { Trans } from '@grafana/i18n';
 import { Text, useStyles2, Spinner } from '@grafana/ui';
 import { css } from '@emotion/css';
 
@@ -415,7 +416,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 
     const wrapSeekerRow = (body: React.ReactNode) => (
       <div className={styles.seekerRow}>
-        <div className={styles.seekerLabel}>Seeker</div>
+        <div className={styles.seekerLabel}><Trans i18nKey="time-seeker-scene.seeker-label">Seeker</Trans></div>
         <div className={styles.container} ref={containerRef}>
           {body}
         </div>
@@ -428,7 +429,7 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
         <div className={styles.placeholder}>
           <Spinner size={16} />
           <Text variant="bodySmall" color="secondary">
-            Loading time seeker…
+            <Trans i18nKey="time-seeker-scene.loading">Loading time seeker…</Trans>
           </Text>
         </div>
       );

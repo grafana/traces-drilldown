@@ -2,6 +2,7 @@ import React from 'react';
 
 import { SceneObjectBase, SceneComponentProps, SceneObjectState } from '@grafana/scenes';
 import { GrafanaTheme2 } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { Button, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { getMetricValue, getTraceByServiceScene, shouldShowSelection } from 'utils/utils';
@@ -50,7 +51,7 @@ export class DurationComparisonControl extends SceneObjectBase<ComparisonControl
           onClick={model.startInvestigation}
           tooltip={tooltip}
         >
-          {isDisabled ? 'Slowest traces selected' : 'Select slowest traces'}
+          {isDisabled ? <Trans i18nKey="duration-comparison-control.slowest-traces-selected">Slowest traces selected</Trans> : <Trans i18nKey="duration-comparison-control.select-slowest-traces">Select slowest traces</Trans>}
         </Button>
       </div>
     );

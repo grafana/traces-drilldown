@@ -1,5 +1,6 @@
 import React from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 
@@ -19,7 +20,7 @@ export const StreamingIndicator = ({
   }
 
   return (
-    <Tooltip content={'Streaming'}>
+    <Tooltip content={t('streaming-indicator.tooltip', 'Streaming')}>
       <Icon name={'circle-mono'} size="md" className={styles.streamingIndicator} />
     </Tooltip>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { CustomVariable, MultiValueVariable, MultiValueVariableState, SceneComponentProps } from '@grafana/scenes';
 import { primarySignalOptions } from './primary-signals';
+import { t, Trans } from '@grafana/i18n';
 import { Icon, RadioButtonGroup, Select, useStyles2, Text } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { components, DropdownIndicatorProps } from 'react-select';
@@ -24,7 +25,7 @@ const GroupHeading = () => {
   return (
     <div className={styles.heading}>
       <Text weight="bold" variant="bodySmall" color="secondary">
-        Primary signal
+        <Trans i18nKey="primary-signal-variable.primary-signal">Primary signal</Trans>
       </Text>
     </div>
   );
@@ -76,7 +77,7 @@ export class PrimarySignalVariable extends CustomVariable {
           className={styles.buttonGroup}
         />
         <Select
-          options={[{ label: 'Primary signal', options: selectOptions }]}
+          options={[{ label: t('primary-signal-variable.primary-signal-label', 'Primary signal'), options: selectOptions }]}
           value={''}
           placeholder=""
           isSearchable={false}

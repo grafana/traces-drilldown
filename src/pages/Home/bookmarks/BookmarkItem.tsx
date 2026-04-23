@@ -1,5 +1,6 @@
 import { EVENT_ATTR, FILTER_SEPARATOR, RESOURCE_ATTR, SPAN_ATTR } from "utils/shared";
 import React from "react";
+import { Trans } from '@grafana/i18n';
 import { capitalizeFirstChar } from "utils/utils";
 import { css } from "@emotion/css";
 import { useStyles2 } from "@grafana/ui";
@@ -39,7 +40,8 @@ export const BookmarkItem = ({ bookmark }: { bookmark: Bookmark }) => {
   return (
     <div title={filters}>
       <div>
-        <b>{capitalizeFirstChar(metric)}</b> of <b>{primarySignal.replace('_', ' ')}</b> ({actionView})
+        <Trans i18nKey="bookmark-item.description" values={{ metric: capitalizeFirstChar(metric), signal: primarySignal.replace('_', ' '), actionView }}>
+          <b>{'{{metric}}'}</b>{' of '}<b>{'{{signal}}'}</b>{' ({{actionView}})'}</Trans>
       </div>
       <div className={styles.filters}>
         {filters}

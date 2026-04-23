@@ -1,6 +1,7 @@
 import { Field, Input, Icon, useStyles2 } from "@grafana/ui"
 import React from "react"
 import { GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { css } from "@emotion/css";
 
 type Props = {
@@ -15,7 +16,7 @@ export const Search = (props: Props) => {
   return (
     <Field className={styles.searchField}>
       <Input
-        placeholder='Search'
+        placeholder={t('search.placeholder', 'Search')}
         prefix={<Icon name={'search'} />}
         value={searchQuery}
         onChange={onSearchQueryChange}

@@ -7,6 +7,7 @@ import {
   SceneObjectState,
   sceneGraph,
 } from '@grafana/scenes';
+import { t } from '@grafana/i18n';
 import { useStyles2, LoadingPlaceholder } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { TimeRange } from '@grafana/data';
@@ -65,7 +66,7 @@ export class AdaptiveTracesScene extends SceneObjectBase<AdaptiveTracesSceneStat
     if (isLoading) {
       return (
         <div className={styles.container}>
-          <LoadingPlaceholder text="Loading Adaptive Traces..." />
+          <LoadingPlaceholder text={t('adaptive-traces-scene.loading', 'Loading Adaptive Traces...')} />
         </div>
       );
     }

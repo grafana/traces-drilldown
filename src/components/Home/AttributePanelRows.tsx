@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { DataFrame, GrafanaTheme2 } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { Icon, useStyles2 } from '@grafana/ui';
 import React from 'react';
 import { HomepagePanelType } from './AttributePanel';
@@ -38,7 +39,7 @@ export const AttributePanelRows = (props: Props) => {
         return <SlowestServicesRows series={series} type={type} />;
     }
   }
-  return <div className={styles.container}>No series data</div>;
+  return <div className={styles.container}><Trans i18nKey="attribute-panel-rows.no-series-data">No series data</Trans></div>;
 };
 
 function getStyles(theme: GrafanaTheme2) {

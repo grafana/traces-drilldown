@@ -5,6 +5,7 @@ import { css } from '@emotion/css';
 import { dateTime, GrafanaTheme2 } from '@grafana/data';
 import { reportInteraction } from '@grafana/runtime';
 import { SceneObject } from '@grafana/scenes';
+import { t, Trans } from '@grafana/i18n';
 import { Modal, Box, useStyles2, Stack, Text, Divider, ScrollContainer, IconButton, Button } from '@grafana/ui';
 
 import { SavedSearch, useSavedSearches, applySavedSearchToScene } from './saveSearch';
@@ -64,10 +65,10 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
   }, [onClose, sceneRef, selectedSearch]);
 
   return (
-    <Modal title="Load a previously saved search" isOpen={true} onDismiss={onClose}>
+    <Modal title={t('load-search-modal.title', 'Load a previously saved search')} isOpen={true} onDismiss={onClose}>
       {!isLoading && searches.length === 0 && (
         <Box backgroundColor="secondary" padding={1.5} marginBottom={2}>
-          <Text variant="body">No saved searches to display.</Text>
+          <Text variant="body"><Trans i18nKey="load-search-modal.no-saved-searches">No saved searches to display.</Trans></Text>
         </Box>
       )}
       {searches.length > 0 && (
@@ -113,10 +114,10 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
                         size="xl"
                         name="trash-alt"
                         onClick={onDelete}
-                        tooltip="Remove"
+                        tooltip={t('load-search-modal.remove-tooltip', 'Remove')}
                       />
                       <Button onClick={onSelectClick} variant="primary">
-                        Select
+                        <Trans i18nKey="load-search-modal.select-button">Select</Trans>
                       </Button>
                     </Stack>
                   </Box>

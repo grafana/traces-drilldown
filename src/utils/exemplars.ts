@@ -1,5 +1,6 @@
 import { map, Observable } from 'rxjs';
 import { DataFrame, DataTopic, Field } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { CustomTransformerDefinition } from '@grafana/scenes';
 
 export const exemplarsTransformations = (
@@ -18,7 +19,7 @@ export const exemplarsTransformations = (
                 // Then, onClick we retrieve the traceId from the url and navigate to the trace exploration scene by setting the state
                 traceIDField.config.links = [
                   {
-                    title: 'View trace',
+                    title: t('exemplars.view-trace', 'View trace'),
                     url: '#${__value.raw}',
                     onClick: (event) => {
                       event.e.stopPropagation(); // Prevent the click event from propagating to the parent anchor

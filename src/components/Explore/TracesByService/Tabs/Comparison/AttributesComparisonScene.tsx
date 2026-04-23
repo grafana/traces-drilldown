@@ -14,6 +14,7 @@ import {
   VariableDependencyConfig,
   VariableValue,
 } from '@grafana/scenes';
+import { t } from '@grafana/i18n';
 import { Checkbox, getTheme, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 
 import {
@@ -226,17 +227,17 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
       <div className={styles.container}>
         <div className={styles.controls}>
           <AttributesDescription
-            description="Attributes are ordered by the difference between the baseline and selection values for each value."
+            description={t('attributes-comparison-scene.description', 'Attributes are ordered by the difference between the baseline and selection values for each value.')}
             tags={[
               {
-                label: 'Baseline',
+                label: t('attributes-comparison-scene.baseline-label', 'Baseline'),
                 color:
                   traceExploration.getMetricFunction() === 'duration'
                     ? BaselineColor
                     : getTheme().visualization.getColorByName('semi-dark-green'),
               },
               {
-                label: 'Selection',
+                label: t('attributes-comparison-scene.selection-label', 'Selection'),
                 color:
                   traceExploration.getMetricFunction() === 'duration'
                     ? SelectionColor
@@ -245,13 +246,13 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
             ]}
           />
           <div className={styles.controlsRight}>
-            <Tooltip content="Hide panels that only have baseline percentage and no selection">
+            <Tooltip content={t('attributes-comparison-scene.hide-baseline-only-tooltip', 'Hide panels that only have baseline percentage and no selection')}>
               <div>
                 <Checkbox
                   data-testid="comparison-hide-baseline-only"
                   value={hideBaselineOnlyPanels ?? false}
                   onChange={(ev) => model.setState({ hideBaselineOnlyPanels: ev.currentTarget.checked ?? false })}
-                  label="Hide baseline-only"
+                  label={t('attributes-comparison-scene.hide-baseline-only-label', 'Hide baseline-only')}
                 />
               </div>
             </Tooltip>
