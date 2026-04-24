@@ -171,6 +171,7 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       paddingTop: theme.spacing(0),
       height: 'calc(100vh - 550px)',
+      minHeight: '500px',
     }),
     controls: css({
       flexGrow: 0,

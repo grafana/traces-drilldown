@@ -307,7 +307,10 @@ export function AttributesSidebar({
   ];
 
   if (showFavorites) {
-    scopeButtons.unshift({ label: t('attributes-sidebar.scope.favorites', 'Favorites'), value: 'Favorites' as ScopeType });
+    scopeButtons.unshift({
+      label: t('attributes-sidebar.scope.favorites', 'Favorites'),
+      value: 'Favorites' as ScopeType,
+    });
   }
 
   return (
@@ -320,12 +323,21 @@ export function AttributesSidebar({
           <div className={styles.selectedAttributeLabel}>
             {isMulti ? (
               <>
-                <strong>{t('attributes-sidebar.selected-count', 'Selected ({{count}}):', { count: getSelectedAttributes().length })}</strong>{' '}
-                {getSelectedAttributes().length > 0 ? getSelectedAttributes().join(', ') : t('attributes-sidebar.none', 'None')}
+                <strong>
+                  {t('attributes-sidebar.selected-count', 'Selected ({{count}}):', {
+                    count: getSelectedAttributes().length,
+                  })}
+                </strong>{' '}
+                {getSelectedAttributes().length > 0
+                  ? getSelectedAttributes().join(', ')
+                  : t('attributes-sidebar.none', 'None')}
               </>
             ) : (
               <>
-                <strong><Trans i18nKey="attributes-sidebar.selected">Selected:</Trans></strong> {selected}
+                <strong>
+                  <Trans i18nKey="attributes-sidebar.selected">Selected:</Trans>
+                </strong>{' '}
+                {selected}
               </>
             )}
           </div>
@@ -378,7 +390,9 @@ export function AttributesSidebar({
       <ul className={styles.attributesList} onDragOver={handleListDragOver} onDragLeave={handleListDragLeave}>
         {filteredAttributes.length === 0 ? (
           <div className={styles.emptyState}>
-            {searchValue || selectedScope !== 'All' ? t('attributes-sidebar.no-match', 'No attributes match your criteria') : t('attributes-sidebar.no-available', 'No attributes available')}
+            {searchValue || selectedScope !== 'All'
+              ? t('attributes-sidebar.no-match', 'No attributes match your criteria')
+              : t('attributes-sidebar.no-available', 'No attributes available')}
           </div>
         ) : (
           filteredAttributes.map((attribute, index) => {
@@ -395,7 +409,9 @@ export function AttributesSidebar({
                 {/* Ghost element above */}
                 {showGhostAbove && (
                   <li className={styles.ghostElement} onDrop={() => handleDrop(index)}>
-                    <div className={styles.ghostContent}><Trans i18nKey="attributes-sidebar.drop-here">Drop here</Trans></div>
+                    <div className={styles.ghostContent}>
+                      <Trans i18nKey="attributes-sidebar.drop-here">Drop here</Trans>
+                    </div>
                   </li>
                 )}
 
@@ -437,7 +453,11 @@ export function AttributesSidebar({
                       variant="secondary"
                       size="sm"
                       className={`${styles.starButton} ${isFavorites ? styles.starButtonActive : ''}`}
-                      tooltip={isFavorites ? t('attributes-sidebar.remove-from-favorites', 'Remove from favorites') : t('attributes-sidebar.add-to-favorites', 'Add to favorites')}
+                      tooltip={
+                        isFavorites
+                          ? t('attributes-sidebar.remove-from-favorites', 'Remove from favorites')
+                          : t('attributes-sidebar.add-to-favorites', 'Add to favorites')
+                      }
                       onClick={(event) => toggleStar(attribute.value, event)}
                     />
                   )}
@@ -446,7 +466,9 @@ export function AttributesSidebar({
                 {/* Ghost element below */}
                 {showGhostBelow && (
                   <li className={styles.ghostElement} onDrop={() => handleDrop(index)}>
-                    <div className={styles.ghostContent}><Trans i18nKey="attributes-sidebar.drop-here-below">Drop here</Trans></div>
+                    <div className={styles.ghostContent}>
+                      <Trans i18nKey="attributes-sidebar.drop-here-below">Drop here</Trans>
+                    </div>
                   </li>
                 )}
               </React.Fragment>
@@ -466,12 +488,16 @@ function getStyles(theme: GrafanaTheme2) {
       backgroundColor: theme.colors.background.primary,
       width: '300px',
       minWidth: '300px',
+      minHeight: '500px',
       border: `1px solid ${theme.colors.border.weak}`,
       borderRadius: theme.shape.radius.default,
+      alignSelf: 'stretch',
+      overflow: 'hidden',
     }),
     header: css({
       display: 'flex',
       flexDirection: 'column',
+      flexShrink: 0,
       width: '100%',
       gap: theme.spacing(1),
       padding: theme.spacing(1),

@@ -17,13 +17,7 @@ import {
 import { t } from '@grafana/i18n';
 import { Checkbox, getTheme, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 
-import {
-  VAR_FILTERS,
-  VAR_PRIMARY_SIGNAL,
-  explorationDS,
-  VAR_FILTERS_EXPR,
-  ALL,
-} from '../../../../../utils/shared';
+import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -63,7 +57,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
 
   constructor(state: Partial<AttributesComparisonSceneState>) {
     const stored = localStorage.getItem(HIDE_BASELINE_ONLY_LS_KEY);
-    const hideBaselineOnlyPanels = state.hideBaselineOnlyPanels ?? (stored === 'true');
+    const hideBaselineOnlyPanels = state.hideBaselineOnlyPanels ?? stored === 'true';
     super({
       ...state,
       hideBaselineOnlyPanels,
@@ -90,7 +84,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
         localStorage.setItem(HIDE_BASELINE_ONLY_LS_KEY, String(newState.hideBaselineOnlyPanels ?? false));
         this.updateData(newState.hideBaselineOnlyPanels, true);
         // Reusing the same query runner: data is already in memory, just re-filtered.
-        this.setBody(variable)
+        this.setBody(variable);
       }
     });
 
@@ -227,7 +221,10 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
       <div className={styles.container}>
         <div className={styles.controls}>
           <AttributesDescription
-            description={t('attributes-comparison-scene.description', 'Attributes are ordered by the difference between the baseline and selection values for each value.')}
+            description={t(
+              'attributes-comparison-scene.description',
+              'Attributes are ordered by the difference between the baseline and selection values for each value.'
+            )}
             tags={[
               {
                 label: t('attributes-comparison-scene.baseline-label', 'Baseline'),
@@ -246,7 +243,12 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
             ]}
           />
           <div className={styles.controlsRight}>
-            <Tooltip content={t('attributes-comparison-scene.hide-baseline-only-tooltip', 'Hide panels that only have baseline percentage and no selection')}>
+            <Tooltip
+              content={t(
+                'attributes-comparison-scene.hide-baseline-only-tooltip',
+                'Hide panels that only have baseline percentage and no selection'
+              )}
+            >
               <div>
                 <Checkbox
                   data-testid="comparison-hide-baseline-only"
@@ -409,6 +411,7 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       paddingTop: theme.spacing(0),
       height: 'calc(100vh - 550px)',
+      minHeight: '500px',
     }),
     controls: css({
       flexGrow: 0,
