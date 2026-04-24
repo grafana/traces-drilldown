@@ -75,6 +75,10 @@ export function Drawer({
   // Adds body class while open so the toolbar nav can hide some actions while drawer is open
   useBodyClassWhileOpen();
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   const content = <div className={styles.content}>{children}</div>;
   const overrideWidth = drawerWidth ?? drawerSizes[size].width;
   const minWidth = drawerSizes[size].minWidth;
