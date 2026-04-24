@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import React, { SVGProps } from 'react';
-import SVG from 'react-inlinesvg';
+import InlineSVG from 'react-inlinesvg';
 
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2, useTheme2 } from '@grafana/ui';
@@ -9,6 +9,12 @@ import dark404 from './img/grot-404-dark.svg';
 import light404 from './img/grot-404-light.svg';
 
 import useMousePosition from './useMousePosition';
+
+// TODO: Remove `as any` cast when upgrading to React 19 — react-inlinesvg@4.3.0
+// ships types compiled against @types/react@19 (ReactNode includes bigint),
+// which is incompatible with our @types/react@18.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SVG = InlineSVG as any;
 
 const MIN_ARM_ROTATION = -20;
 const MAX_ARM_ROTATION = 5;
