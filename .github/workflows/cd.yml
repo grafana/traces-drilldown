@@ -3,7 +3,7 @@ run-name: Deploy main to dev,ops by @${{ github.actor }}
 
 on:
   workflow_dispatch:
-  workflow_run:
+  workflow_run: # zizmor: ignore[dangerous-triggers] only triggers from CI on main, no untrusted input
     workflows: ["CI"]
     types: [completed]
     branches: [main]
