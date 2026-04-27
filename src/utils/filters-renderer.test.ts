@@ -125,6 +125,19 @@ describe('filters-renderer', () => {
         const filters: AdHocVariableFilter[] = [{ key: 'name', operator: '=', value: 'some "query" \\ ' }];
         expect(renderTraceQLLabelFilters(filters)).toBe('name="some \\"query\\" \\\\ "');
       });
+
+      it('should escape newlines tabs and carriage returns so TraceQL string literals stay closed', () => {
+        const filters: AdHocVariableFilter[] = [
+          {
+            key: 'event.exception.message',
+            operator: '=',
+            value: 'No result found for query [\n        SELECT a FROM stores a \n        WHERE x = 1\n        ]',
+          },
+        ];
+        expect(renderTraceQLLabelFilters(filters)).toBe(
+          'event.exception.message="No result found for query [\\n        SELECT a FROM stores a \\n        WHERE x = 1\\n        ]"'
+        );
+      });
     });
   });
 });

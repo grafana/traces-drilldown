@@ -114,10 +114,6 @@ export function normalizeExceptionMessage(message: string): string {
   return message.replace(/\s+/g, ' ').trim();
 }
 
-export function escapeTraceQlString(value: string) {
-  return value.replace(/["\\]/g, (s) => `\\${s}`);
-}
-
 export function getDatasourceUidOrThrow(scene: SceneObject) {
   const datasourceUid = getDatasourceVariable(scene).state.value?.toString();
   if (!datasourceUid) {

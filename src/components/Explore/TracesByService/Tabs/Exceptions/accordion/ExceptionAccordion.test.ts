@@ -5,9 +5,13 @@ jest.mock('utils/utils', () => ({
   getFiltersVariable: () => ({ state: { filters: [{ key: 'foo', operator: '=', value: 'bar' }] } }),
 }));
 
-jest.mock('utils/filters-renderer', () => ({
-  renderTraceQLLabelFilters: () => 'foo="bar"',
-}));
+jest.mock('utils/filters-renderer', () => {
+  const actual = jest.requireActual<typeof import('utils/filters-renderer')>('utils/filters-renderer');
+  return {
+    ...actual,
+    renderTraceQLLabelFilters: () => 'foo="bar"',
+  };
+});
 
 describe('ExceptionAccordion helpers', () => {
   describe('getMessageHighlight', () => {
