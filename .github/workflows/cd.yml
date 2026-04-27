@@ -2,9 +2,11 @@ name: CD
 run-name: Deploy main to dev,ops by @${{ github.actor }}
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: "write"
@@ -14,14 +16,15 @@ permissions:
 
 jobs:
   CD:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     name: Deploy plugin
     uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v7.0.0
     with:
-      branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
+      branch: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.event.workflow_run.head_branch }}
       environment: dev,ops
       attestation: true
       run-playwright: false
       grafana-cloud-deployment-type: provisioned
       auto-merge-environments: dev,ops
       argo-workflow-slack-channel: "#proj-tracesdrilldown-cd"
-      plugin-version-suffix: ${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}
+      plugin-version-suffix: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
