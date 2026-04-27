@@ -65,7 +65,7 @@ test.describe('components', () => {
     const breakdownPanelSearch = page.locator('#searchFieldInput');
     await expect(breakdownPanelSearch).toBeVisible({ timeout: 20000 });
     await breakdownPanelSearch.fill('mythical');
-    await expect(page.locator('#trace-exploration').getByText('mythical-requester', { exact: true })).toBeVisible({
+    await expect(page.locator('#trace-exploration').getByText('mythical-server', { exact: true })).toBeVisible({
       timeout: 20000,
     });
   });
