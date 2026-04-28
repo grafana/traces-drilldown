@@ -207,6 +207,9 @@ function getStyles() {
       display: 'flex',
       flexDirection: 'column',
       flexGrow: 1,
+      ['& div:nth-child(2)']: {
+        overflow: 'auto',
+      },
     }),
   };
 }

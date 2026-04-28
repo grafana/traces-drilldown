@@ -21,6 +21,8 @@ export const DEFAULT_QUERY_RANGE_HOURS = 24;
 
 export const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 
+export const MIN_PANEL_HEIGHT = '500px';
+
 export const EMPTY_STATE_ERROR_MESSAGE = 'No data for selected query';
 export const EMPTY_STATE_ERROR_REMEDY_MESSAGE = 'Please try removing some filters or changing your query.';
 

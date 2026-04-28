@@ -6,7 +6,7 @@ import { CustomVariable, SceneComponentProps, SceneObject, SceneObjectBase, Scen
 import { t } from '@grafana/i18n';
 import { Stack, useStyles2 } from '@grafana/ui';
 
-import { MetricFunction } from '../../../../../utils/shared';
+import { MetricFunction, MIN_PANEL_HEIGHT } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -171,6 +171,7 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       paddingTop: theme.spacing(0),
       height: 'calc(100vh - 550px)',
+      minHeight: MIN_PANEL_HEIGHT,
     }),
     controls: css({
       flexGrow: 0,

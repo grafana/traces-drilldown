@@ -29,6 +29,7 @@ import {
   EMPTY_STATE_ERROR_MESSAGE,
   EMPTY_STATE_ERROR_REMEDY_MESSAGE,
   EventTraceOpened,
+  MIN_PANEL_HEIGHT,
 } from '../../../../../utils/shared';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
@@ -96,7 +97,11 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
                       >
                         {name}
                       </div>
-                      <Link href={this.getLinkToExplore(traceId, spanId)} target={'_blank'} title={t('span-list-scene.open-in-new-tab', 'Open in new tab')}>
+                      <Link
+                        href={this.getLinkToExplore(traceId, spanId)}
+                        target={'_blank'}
+                        title={t('span-list-scene.open-in-new-tab', 'Open in new tab')}
+                      >
                         <Icon name={'external-link-alt'} size={'sm'} />
                       </Link>
                     </div>
@@ -239,7 +244,9 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <div className={styles.description}><Trans i18nKey="span-list-scene.description">View a list of spans for the current set of filters.</Trans></div>
+          <div className={styles.description}>
+            <Trans i18nKey="span-list-scene.description">View a list of spans for the current set of filters.</Trans>
+          </div>
         </div>
         <div className={styles.content}>
           <Stack direction="row" gap={2} width="100%">
@@ -313,6 +320,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       display: 'flex',
       paddingTop: theme.spacing(0),
       height: 'calc(100vh - 550px)',
+      minHeight: MIN_PANEL_HEIGHT,
     }),
   };
 };
