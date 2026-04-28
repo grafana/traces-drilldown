@@ -4,7 +4,7 @@ import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { TabsBar, Tab, Input, Icon, IconButton, useStyles2, Badge, Checkbox, Button, useTheme2 } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
-import { RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
+import { MIN_PANEL_HEIGHT, RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
 import { getFiltersVariable } from 'utils/utils';
 import { SceneObject } from '@grafana/scenes';
 import { useFavoriteAttributes } from 'hooks';
@@ -488,7 +488,7 @@ function getStyles(theme: GrafanaTheme2) {
       backgroundColor: theme.colors.background.primary,
       width: '300px',
       minWidth: '300px',
-      minHeight: '500px',
+      minHeight: MIN_PANEL_HEIGHT,
       border: `1px solid ${theme.colors.border.weak}`,
       borderRadius: theme.shape.radius.default,
       alignSelf: 'stretch',

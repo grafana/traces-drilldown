@@ -29,6 +29,7 @@ import {
   EMPTY_STATE_ERROR_MESSAGE,
   EMPTY_STATE_ERROR_REMEDY_MESSAGE,
   EventTraceOpened,
+  MIN_PANEL_HEIGHT,
 } from '../../../../../utils/shared';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
@@ -319,7 +320,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       display: 'flex',
       paddingTop: theme.spacing(0),
       height: 'calc(100vh - 550px)',
-      minHeight: '500px',
+      minHeight: MIN_PANEL_HEIGHT,
     }),
   };
 };

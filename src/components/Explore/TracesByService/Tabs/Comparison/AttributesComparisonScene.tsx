@@ -17,7 +17,7 @@ import {
 import { t } from '@grafana/i18n';
 import { Checkbox, getTheme, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 
-import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL } from '../../../../../utils/shared';
+import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL, MIN_PANEL_HEIGHT } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
@@ -411,7 +411,7 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       paddingTop: theme.spacing(0),
       height: 'calc(100vh - 550px)',
-      minHeight: '500px',
+      minHeight: MIN_PANEL_HEIGHT,
     }),
     controls: css({
       flexGrow: 0,
