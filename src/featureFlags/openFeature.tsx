@@ -8,8 +8,6 @@ import { config, logWarning } from '@grafana/runtime';
 
 /** OpenFeature domain for this plugin’s evaluations (OFREP to Grafana’s feature API). */
 export const PLUGIN_OPEN_FEATURE_DOMAIN = 'traces-drilldown';
-export const KG_ANNOTATIONS_FEATURE_FLAG_KEY = 'kgAnnotationsInExploreTraces' as const;
-export const TIME_SEEKER_FEATURE_FLAG_KEY = 'tracesDrilldownTimeSeeker' as const;
 
 /** OFREP base URL for Grafana’s feature API (same host as the app, respects `appSubUrl`). Browser-only. */
 function getFeaturesOfrepBaseUrl(): string | undefined {
@@ -96,25 +94,6 @@ export function ensureOpenFeaturePluginInitialized(): Promise<void> {
     }
   })();
   return initOnce;
-}
-
-export function useTimeSeekerFeatureEnabled(): boolean {
-  const fromOpenFeature = useBooleanFlagValue(TIME_SEEKER_FEATURE_FLAG_KEY, false);
-  const fromBootConfig = readBootBooleanFeatureToggle(TIME_SEEKER_FEATURE_FLAG_KEY, false);
-  return fromOpenFeature || fromBootConfig;
-}
-
-export function useKgAnnotationsFeatureEnabled(): boolean {
-  const fromOpenFeature = useBooleanFlagValue(KG_ANNOTATIONS_FEATURE_FLAG_KEY, false);
-  const fromBootConfig = readBootBooleanFeatureToggle(KG_ANNOTATIONS_FEATURE_FLAG_KEY, false);
-  return fromOpenFeature || fromBootConfig;
-}
-
-export function isKgAnnotationsFeatureEnabled(): boolean {
-  const client = OpenFeature.getClient(DOMAIN);
-  const fromOpenFeature = client.getBooleanValue(KG_ANNOTATIONS_FEATURE_FLAG_KEY, false);
-  const fromBootConfig = readBootBooleanFeatureToggle(KG_ANNOTATIONS_FEATURE_FLAG_KEY, false);
-  return fromOpenFeature || fromBootConfig;
 }
 
 /**
