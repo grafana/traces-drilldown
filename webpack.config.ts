@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { Configuration, DefinePlugin } from 'webpack';
 import { merge } from 'webpack-merge';
 import packageJson from './package.json';
@@ -12,6 +14,12 @@ const config = async (env): Promise<Configuration> => {
   const baseConfig = await grafanaConfig(env);
 
   return merge(baseConfig, {
+    resolve: {
+      alias: {
+        // Ensure single instance when using pnpm to prevent i18n state duplication
+        '@grafana/i18n': path.resolve(process.cwd(), 'node_modules/@grafana/i18n'),
+      },
+    },
     plugins: [
       new DefinePlugin({
         'process.env.VERSION': JSON.stringify(packageJson.version),

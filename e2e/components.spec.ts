@@ -61,7 +61,12 @@ test.describe('components', () => {
     await expect(page.getByLabel('Grid')).toBeVisible();
     await expect(page.getByLabel('Rows')).toBeVisible();
 
-    await page.getByPlaceholder('Search', { exact: true }).fill('mythical');
-    await expect(page.getByTitle('mythical-requester')).toBeVisible();
+    // Breakdown grid filter (ByFrameRepeater); debounced ~250ms before panels re-render.
+    const breakdownPanelSearch = page.locator('#searchFieldInput');
+    await expect(breakdownPanelSearch).toBeVisible({ timeout: 20000 });
+    await breakdownPanelSearch.fill('mythical');
+    await expect(page.locator('#trace-exploration').getByText('mythical-server', { exact: true })).toBeVisible({
+      timeout: 20000,
+    });
   });
 });

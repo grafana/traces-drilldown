@@ -3,7 +3,8 @@ import React, { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { TabsBar, Tab, Input, Icon, IconButton, useStyles2, Badge, Checkbox, Button, useTheme2 } from '@grafana/ui';
-import { RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
+import { t, Trans } from '@grafana/i18n';
+import { MIN_PANEL_HEIGHT, RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
 import { getFiltersVariable } from 'utils/utils';
 import { SceneObject } from '@grafana/scenes';
 import { useFavoriteAttributes } from 'hooks';
@@ -300,13 +301,16 @@ export function AttributesSidebar({
   };
 
   const scopeButtons = [
-    { label: 'All', value: 'All' as ScopeType },
-    { label: 'Resource', value: 'Resource' as ScopeType },
-    { label: 'Span', value: 'Span' as ScopeType },
+    { label: t('attributes-sidebar.scope.all', 'All'), value: 'All' as ScopeType },
+    { label: t('attributes-sidebar.scope.resource', 'Resource'), value: 'Resource' as ScopeType },
+    { label: t('attributes-sidebar.scope.span', 'Span'), value: 'Span' as ScopeType },
   ];
 
   if (showFavorites) {
-    scopeButtons.unshift({ label: 'Favorites', value: 'Favorites' as ScopeType });
+    scopeButtons.unshift({
+      label: t('attributes-sidebar.scope.favorites', 'Favorites'),
+      value: 'Favorites' as ScopeType,
+    });
   }
 
   return (
@@ -319,18 +323,27 @@ export function AttributesSidebar({
           <div className={styles.selectedAttributeLabel}>
             {isMulti ? (
               <>
-                <strong>Selected ({getSelectedAttributes().length}):</strong>{' '}
-                {getSelectedAttributes().length > 0 ? getSelectedAttributes().join(', ') : 'None'}
+                <strong>
+                  {t('attributes-sidebar.selected-count', 'Selected ({{count}}):', {
+                    count: getSelectedAttributes().length,
+                  })}
+                </strong>{' '}
+                {getSelectedAttributes().length > 0
+                  ? getSelectedAttributes().join(', ')
+                  : t('attributes-sidebar.none', 'None')}
               </>
             ) : (
               <>
-                <strong>Selected:</strong> {selected}
+                <strong>
+                  <Trans i18nKey="attributes-sidebar.selected">Selected:</Trans>
+                </strong>{' '}
+                {selected}
               </>
             )}
           </div>
           {allowAllOption && selected !== 'All' && (
             <Button variant="secondary" size="sm" onClick={() => handleAttributeSelect('All')}>
-              All
+              <Trans i18nKey="attributes-sidebar.all-button">All</Trans>
             </Button>
           )}
         </div>
@@ -340,7 +353,7 @@ export function AttributesSidebar({
           <Input
             className={styles.searchInput}
             prefix={<Icon name="search" />}
-            placeholder="Search attributes..."
+            placeholder={t('attributes-sidebar.search-placeholder', 'Search attributes...')}
             value={searchValue}
             onChange={(e) => setSearchValue(e.currentTarget.value)}
             onKeyDown={handleSearchKeyDown}
@@ -349,7 +362,7 @@ export function AttributesSidebar({
                 <IconButton
                   name="times"
                   variant="secondary"
-                  tooltip="Clear search"
+                  tooltip={t('attributes-sidebar.clear-search', 'Clear search')}
                   onClick={() => setSearchValue('')}
                 />
               )
@@ -377,7 +390,9 @@ export function AttributesSidebar({
       <ul className={styles.attributesList} onDragOver={handleListDragOver} onDragLeave={handleListDragLeave}>
         {filteredAttributes.length === 0 ? (
           <div className={styles.emptyState}>
-            {searchValue || selectedScope !== 'All' ? 'No attributes match your criteria' : 'No attributes available'}
+            {searchValue || selectedScope !== 'All'
+              ? t('attributes-sidebar.no-match', 'No attributes match your criteria')
+              : t('attributes-sidebar.no-available', 'No attributes available')}
           </div>
         ) : (
           filteredAttributes.map((attribute, index) => {
@@ -394,7 +409,9 @@ export function AttributesSidebar({
                 {/* Ghost element above */}
                 {showGhostAbove && (
                   <li className={styles.ghostElement} onDrop={() => handleDrop(index)}>
-                    <div className={styles.ghostContent}>Drop here</div>
+                    <div className={styles.ghostContent}>
+                      <Trans i18nKey="attributes-sidebar.drop-here">Drop here</Trans>
+                    </div>
                   </li>
                 )}
 
@@ -436,7 +453,11 @@ export function AttributesSidebar({
                       variant="secondary"
                       size="sm"
                       className={`${styles.starButton} ${isFavorites ? styles.starButtonActive : ''}`}
-                      tooltip={isFavorites ? 'Remove from favorites' : 'Add to favorites'}
+                      tooltip={
+                        isFavorites
+                          ? t('attributes-sidebar.remove-from-favorites', 'Remove from favorites')
+                          : t('attributes-sidebar.add-to-favorites', 'Add to favorites')
+                      }
                       onClick={(event) => toggleStar(attribute.value, event)}
                     />
                   )}
@@ -445,7 +466,9 @@ export function AttributesSidebar({
                 {/* Ghost element below */}
                 {showGhostBelow && (
                   <li className={styles.ghostElement} onDrop={() => handleDrop(index)}>
-                    <div className={styles.ghostContent}>Drop here</div>
+                    <div className={styles.ghostContent}>
+                      <Trans i18nKey="attributes-sidebar.drop-here-below">Drop here</Trans>
+                    </div>
                   </li>
                 )}
               </React.Fragment>
@@ -465,12 +488,16 @@ function getStyles(theme: GrafanaTheme2) {
       backgroundColor: theme.colors.background.primary,
       width: '300px',
       minWidth: '300px',
+      minHeight: MIN_PANEL_HEIGHT,
       border: `1px solid ${theme.colors.border.weak}`,
       borderRadius: theme.shape.radius.default,
+      alignSelf: 'stretch',
+      overflow: 'hidden',
     }),
     header: css({
       display: 'flex',
       flexDirection: 'column',
+      flexShrink: 0,
       width: '100%',
       gap: theme.spacing(1),
       padding: theme.spacing(1),

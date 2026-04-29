@@ -10,6 +10,7 @@ import {
   SceneObject,
   VizPanelState,
 } from '@grafana/scenes';
+import { t } from '@grafana/i18n';
 import { LayoutSwitcher } from '../LayoutSwitcher';
 import { explorationDS, GRID_TEMPLATE_COLUMNS, MetricFunction } from '../../../utils/shared';
 import { ByFrameRepeater } from '../ByFrameRepeater';
@@ -57,9 +58,9 @@ export function buildNormalLayout(
       ],
     }),
     options: [
-      { value: 'single', label: 'Single' },
-      { value: 'grid', label: 'Grid' },
-      { value: 'rows', label: 'Rows' },
+      { value: 'single', label: t('attribute-breakdown.layout-single', 'Single') },
+      { value: 'grid', label: t('attribute-breakdown.layout-grid', 'Grid') },
+      { value: 'rows', label: t('attribute-breakdown.layout-rows', 'Rows') },
     ],
     active: 'grid',
     layouts: [

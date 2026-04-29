@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { DataFrame, FieldType, GrafanaTheme2, LoadingState, PanelData, sortDataFrame } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import {
   SceneComponentProps,
   SceneCSSGridLayout,
@@ -127,7 +128,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
         children: [
           new SceneFlexItem({
             body: new EmptyStateScene({
-              message: 'No data for search term',
+              message: t('by-frame-repeater.no-data-for-search', 'No data for search term'),
               padding: '32px',
             }),
           }),
@@ -206,6 +207,9 @@ function getStyles() {
       display: 'flex',
       flexDirection: 'column',
       flexGrow: 1,
+      ['& div:nth-child(2)']: {
+        overflow: 'auto',
+      },
     }),
   };
 }

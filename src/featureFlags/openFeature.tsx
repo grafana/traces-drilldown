@@ -1,55 +1,40 @@
 import React, { useEffect } from 'react';
-import { OpenFeatureProvider, useBooleanFlagValue } from '@openfeature/react-sdk';
+import { OpenFeatureProvider } from '@openfeature/react-sdk';
 import { OFREPWebProvider } from '@openfeature/ofrep-web-provider';
 import { StandardResolutionReasons } from '@openfeature/core';
 import { OpenFeature, type Provider, type ResolutionDetails } from '@openfeature/web-sdk';
 
 import { config, logWarning } from '@grafana/runtime';
 
-const DOMAIN = 'traces-drilldown';
-
-/**
- * Grafana core feature toggle (`pkg/services/featuremgmt/registry.go`). Shipped in Grafana 13+;
- * see https://github.com/grafana/grafana/pull/121650
- *
- * Enable for an instance:
- * - Env: `GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker`
- * - Or `custom.ini`: `[feature_toggles]` → `tracesDrilldownTimeSeeker = true`
- *
- * After bumping `@grafana/data` to a release that regenerates types from that registry, you can
- * narrow this constant with `satisfies keyof FeatureToggles` (import from `@grafana/data`).
- */
-export const TIME_SEEKER_FEATURE_FLAG_KEY = 'tracesDrilldownTimeSeeker' as const;
+/** OpenFeature domain for this plugin’s evaluations (OFREP to Grafana’s feature API). */
+export const PLUGIN_OPEN_FEATURE_DOMAIN = 'traces-drilldown';
 export const KG_ANNOTATIONS_FEATURE_FLAG_KEY = 'kgAnnotationsInExploreTraces' as const;
+export const TIME_SEEKER_FEATURE_FLAG_KEY = 'tracesDrilldownTimeSeeker' as const;
 
-/**
- * Reads a boolean from Grafana’s boot `config.featureToggles` without asserting the whole object’s shape.
- * Only actual booleans count; anything else falls back to `defaultValue` (avoids treating `"true"` etc. as on).
- */
-function readBootBooleanFeatureToggle(flagKey: string, defaultValue: boolean): boolean {
-  const togglesUnknown: unknown = config.featureToggles;
-  if (togglesUnknown == null || typeof togglesUnknown !== 'object') {
-    return defaultValue;
+/** OFREP base URL for Grafana’s feature API (same host as the app, respects `appSubUrl`). Browser-only. */
+function getFeaturesOfrepBaseUrl(): string | undefined {
+  if (typeof window === 'undefined') {
+    return undefined;
   }
-  const raw = (togglesUnknown as Record<string, unknown>)[flagKey];
-  return typeof raw === 'boolean' ? raw : defaultValue;
+  const sub = (config.appSubUrl ?? '').replace(/\/$/, '');
+  const path = `${sub}/apis/features.grafana.app/v0alpha1/namespaces/${encodeURIComponent(config.namespace)}`;
+  const pathname = path.startsWith('/') ? path : `/${path}`;
+  return new URL(pathname, window.location.origin).toString();
 }
 
 function defaultDetails<T>(value: T): ResolutionDetails<T> {
   return { value, reason: StandardResolutionReasons.DEFAULT };
 }
 
-/** Used when the Grafana feature API (OFREP) is unavailable — e.g. older OSS, network error. */
-const grafanaBootFallbackProvider: Provider = {
-  metadata: { name: 'grafana-boot-feature-toggles-fallback' },
+/**
+ * Resolves every flag to the evaluator’s default until a live provider (OFREP) is ready.
+ * Does not read boot config; avoids stale values vs the feature API.
+ */
+const defaultOnlyProvider: Provider = {
+  metadata: { name: 'traces-drilldown-default-flags' },
   runsOn: 'client',
-  resolveBooleanEvaluation(flagKey, defaultValue, _ctx, _log): ResolutionDetails<boolean> {
-    const value = readBootBooleanFeatureToggle(flagKey, defaultValue);
-    return {
-      value,
-      reason: StandardResolutionReasons.STATIC,
-      variant: value ? 'true' : 'false',
-    };
+  resolveBooleanEvaluation(_flagKey, defaultValue): ResolutionDetails<boolean> {
+    return { value: defaultValue, reason: StandardResolutionReasons.DEFAULT };
   },
   resolveStringEvaluation: (_k, defaultValue) => defaultDetails(defaultValue),
   resolveNumberEvaluation: (_k, defaultValue) => defaultDetails(defaultValue),
@@ -57,30 +42,30 @@ const grafanaBootFallbackProvider: Provider = {
 };
 
 let initOnce: Promise<void> | null = null;
-let syncFallbackRegistered = false;
+let defaultProviderRegistered = false;
 
 /** Clears init/latch state between tests. Do not use in production code. */
 export function resetOpenFeaturePluginStateForTesting(): void {
   initOnce = null;
-  syncFallbackRegistered = false;
+  defaultProviderRegistered = false;
 }
 
 /**
- * Registers the sync boot provider on the OpenFeature client for `DOMAIN`.
- * Called at module load (below) so a resolver exists before any `useBooleanFlagValue` runs.
- * `OpenFeaturePluginScope` calls this again idempotently so tests can re-install after
+ * Ensures a synchronous provider exists before any OpenFeature hooks run.
+ * Re-asserted from `OpenFeaturePluginScope` so tests can re-install after
  * `resetOpenFeaturePluginStateForTesting()` + `OpenFeature.clearProviders()`.
  */
-function ensureSyncFallbackProviderRegistered(): void {
-  if (syncFallbackRegistered) {
+function ensureDefaultOnlyProviderRegistered(): void {
+  if (defaultProviderRegistered) {
     return;
   }
-  OpenFeature.setProvider(DOMAIN, grafanaBootFallbackProvider);
-  syncFallbackRegistered = true;
+  OpenFeature.setProvider(PLUGIN_OPEN_FEATURE_DOMAIN, defaultOnlyProvider);
+  defaultProviderRegistered = true;
 }
 
 /**
- * Registers OFREP against Grafana’s feature API, or `config.featureToggles` on failure.
+ * Registers OFREP against Grafana’s feature API. On failure, the default-only provider
+ * stays in place so hooks keep returning their declared defaults.
  */
 export function ensureOpenFeaturePluginInitialized(): Promise<void> {
   initOnce ??= (async () => {
@@ -89,10 +74,14 @@ export function ensureOpenFeaturePluginInitialized(): Promise<void> {
       namespace: config.namespace,
       ...config.openFeatureContext,
     };
-    const baseUrl = `${config.appSubUrl ?? ''}/apis/features.grafana.app/v0alpha1/namespaces/${config.namespace}`;
+    const baseUrl = getFeaturesOfrepBaseUrl();
+    if (!baseUrl) {
+      logWarning('OpenFeature OFREP skipped; not in a browser context', {});
+      return;
+    }
     try {
       await OpenFeature.setProviderAndWait(
-        DOMAIN,
+        PLUGIN_OPEN_FEATURE_DOMAIN,
         new OFREPWebProvider({
           baseUrl,
           pollInterval: -1,
@@ -101,10 +90,9 @@ export function ensureOpenFeaturePluginInitialized(): Promise<void> {
         evaluationContext
       );
     } catch (error: unknown) {
-      logWarning('OpenFeature OFREP provider failed; using config.featureToggles fallback', {
+      logWarning('OpenFeature OFREP provider failed; feature flags remain at default values', {
         error: error instanceof Error ? error.message : String(error),
       });
-      OpenFeature.setProvider(DOMAIN, grafanaBootFallbackProvider);
     }
   })();
   return initOnce;
@@ -130,17 +118,20 @@ export function isKgAnnotationsFeatureEnabled(): boolean {
 }
 
 /**
- * Wraps the app with OpenFeature. Supplies React context for hooks; re-asserts the boot
- * provider after test resets. OFREP is registered asynchronously and may refine flag values when ready.
+ * Wraps the app with OpenFeature for {@link PLUGIN_OPEN_FEATURE_DOMAIN}.
+ *
+ * Any component that calls `useBooleanFlag*` / `useFlag*` from `featureFlags.tsx` must render
+ * under this scope (or tests must wrap with the same provider), otherwise React OpenFeature
+ * hooks will not resolve a client.
  */
 export function OpenFeaturePluginScope({ children }: { children: React.ReactNode }) {
-  ensureSyncFallbackProviderRegistered();
+  ensureDefaultOnlyProviderRegistered();
 
   useEffect(() => {
     void ensureOpenFeaturePluginInitialized();
   }, []);
 
-  return <OpenFeatureProvider domain={DOMAIN}>{children}</OpenFeatureProvider>;
+  return <OpenFeatureProvider domain={PLUGIN_OPEN_FEATURE_DOMAIN}>{children}</OpenFeatureProvider>;
 }
 
-ensureSyncFallbackProviderRegistered();
+ensureDefaultOnlyProviderRegistered();

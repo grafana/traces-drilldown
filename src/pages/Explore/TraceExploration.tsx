@@ -19,6 +19,7 @@ import {
 } from '@grafana/scenes';
 import { config, useReturnToPrevious } from '@grafana/runtime';
 import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
+import { t, Trans } from '@grafana/i18n';
 
 import {
   DATASOURCE_LS_KEY,
@@ -233,7 +234,7 @@ export class TraceExplorationScene extends SceneObjectBase {
           <SmartDrawer
             isOpen={!!drawerScene && !!traceId}
             onClose={onClose}
-            title={`View trace ${traceId}`}
+            title={t('trace-exploration.drawer.view-trace', 'View trace {{traceId}}', { traceId })}
             embedded={embedded}
             forceNoDrawer={embedded}
           >
@@ -280,6 +281,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
   const timeRangeControl = traceExploration.state.controls.find((control) => control instanceof SceneTimePicker);
+  const refreshControl = traceExploration.state.controls.find((control) => control instanceof SceneRefreshPicker);
 
   const timeRangeState = traceExploration.state.$timeRange?.useState();
   const filtersVariableState = filtersVariable.useState();
@@ -312,9 +314,10 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
               reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.go_to_full_app_clicked);
             }}
           >
-            Traces Drilldown
+            <Trans i18nKey="trace-exploration.embedded-header.traces-drilldown">Traces Drilldown</Trans>
           </LinkButton>
           {timeRangeControl && <timeRangeControl.Component model={timeRangeControl} />}
+          {refreshControl && <refreshControl.Component model={refreshControl} />}
         </Stack>
       </Stack>
     </div>
@@ -349,8 +352,8 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
 
     return (
       <div className={styles.menuHeader}>
-        <h5>Grafana Traces Drilldown v{version}</h5>
-        <div className={styles.menuHeaderSubtitle}>Last update: {compositeVersion}</div>
+        <h5><Trans i18nKey="trace-exploration.version-header.title">Grafana Traces Drilldown v{{ version }}</Trans></h5>
+        <div className={styles.menuHeaderSubtitle}><Trans i18nKey="trace-exploration.version-header.last-update">Last update: {{ compositeVersion }}</Trans></div>
       </div>
     );
   }
@@ -360,8 +363,8 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
       <div className={styles.menu}>
         {config.feedbackLinksEnabled && (
           <Menu.Item
-            label="Give feedback"
-            ariaLabel="Give feedback"
+            label={t('trace-exploration.menu.give-feedback', 'Give feedback')}
+            ariaLabel={t('trace-exploration.menu.give-feedback', 'Give feedback')}
             icon={'comment-alt-message'}
             url="https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS"
             target="_blank"
@@ -371,8 +374,8 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           />
         )}
         <Menu.Item
-          label="Documentation"
-          ariaLabel="Documentation"
+          label={t('trace-exploration.menu.documentation', 'Documentation')}
+          ariaLabel={t('trace-exploration.menu.documentation', 'Documentation')}
           icon={'external-link-alt'}
           url="https://grafana.com/docs/grafana/next/explore/simplified-exploration/traces/"
           target="_blank"
@@ -396,7 +399,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
         <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
           {dsVariable && (
             <Stack gap={0} alignItems={'center'}>
-              <div className={styles.datasourceLabel}>Data source</div>
+              <div className={styles.datasourceLabel}><Trans i18nKey="trace-exploration.header.data-source">Data source</Trans></div>
               <dsVariable.Component model={dsVariable} />
             </Stack>
           )}
@@ -409,7 +412,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           )}
           <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
             <Button variant="secondary" icon="info-circle">
-              Need help
+              <Trans i18nKey="trace-exploration.header.need-help">Need help</Trans>
               <Icon className={styles.helpIcon} name={menuVisible ? 'angle-up' : 'angle-down'} size="lg" />
             </Button>
           </Dropdown>
@@ -421,7 +424,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
       <Stack gap={1} alignItems={'flex-start'} justifyContent={'space-between'}>
         <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
           <Stack gap={0} alignItems={'center'}>
-            <div className={styles.datasourceLabel}>Filters</div>
+            <div className={styles.datasourceLabel}><Trans i18nKey="trace-exploration.header.filters">Filters</Trans></div>
             {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
           </Stack>
           {filtersVariable && (
@@ -431,9 +434,9 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           )}
         </Stack>
         <Stack gap={0} alignItems={'center'}>
-          <div className={styles.datasourceLabel}>Trace ID</div>
+          <div className={styles.datasourceLabel}><Trans i18nKey="trace-exploration.header.trace-id">Trace ID</Trans></div>
           <Input
-            placeholder="Enter an ID and press Enter"
+            placeholder={t('trace-exploration.header.trace-id-placeholder', 'Enter an ID and press Enter')}
             value={localTraceId ?? ''}
             suffix={
               <Stack direction="row" alignItems="center" gap={1} width="40px">
@@ -473,7 +476,7 @@ function getVariableSet(state: TraceExplorationState) {
     variables: [
       new DataSourceVariable({
         name: VAR_DATASOURCE,
-        label: 'Data source',
+        label: t('trace-exploration.variable.data-source', 'Data source'),
         value: state.initialDS,
         pluginId: 'tempo',
         isReadOnly: state.embedded,
@@ -510,7 +513,7 @@ function getVariableSet(state: TraceExplorationState) {
       }),
       new CustomVariable({
         name: VAR_DURATION_PERCENTILES,
-        label: 'Duration Percentiles',
+        label: t('trace-exploration.variable.duration-percentiles', 'Duration Percentiles'),
         value: ['0.9'], // Default to 90th percentile
         isMulti: true,
         includeAll: false,

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Icon, useStyles2, Tooltip } from '@grafana/ui';
+import { t, Trans } from '@grafana/i18n';
 import { css } from '@emotion/css';
 import { SparklineCell } from './SparklineCell';
 import { ExceptionAccordionContent } from './accordion/ExceptionAccordion';
@@ -98,20 +99,20 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
         <thead>
           <tr className={styles.headerRow}>
             <th className={styles.headerCell}>
-              <span>Exception Details</span>
-              <Tooltip content="Exception type, message, service, and last seen timestamp. Use the include/exclude buttons to include or exclude exception messages, or click on type or message to filter.">
+              <span><Trans i18nKey="exceptions-table.header.exception-details">Exception Details</Trans></span>
+              <Tooltip content={t('exceptions-table.header.exception-details-tooltip', 'Exception type, message, service, and last seen timestamp. Use the include/exclude buttons to include or exclude exception messages, or click on type or message to filter.')}>
                 <Icon name="info-circle" size="sm" className={styles.headerIcon} />
               </Tooltip>
             </th>
             <th className={styles.headerCellOccurrences}>
-              <span>Occurrences</span>
-              <Tooltip content="Total number of times this exception has occurred">
+              <span><Trans i18nKey="exceptions-table.header.occurrences">Occurrences</Trans></span>
+              <Tooltip content={t('exceptions-table.header.occurrences-tooltip', 'Total number of times this exception has occurred')}>
                 <Icon name="info-circle" size="sm" className={styles.headerIcon} />
               </Tooltip>
             </th>
             <th className={styles.headerCellFrequency}>
-              <span>Frequency</span>
-              <Tooltip content="Visual representation of exception frequency over time">
+              <span><Trans i18nKey="exceptions-table.header.frequency">Frequency</Trans></span>
+              <Tooltip content={t('exceptions-table.header.frequency-tooltip', 'Visual representation of exception frequency over time')}>
                 <Icon name="info-circle" size="sm" className={styles.headerIcon} />
               </Tooltip>
             </th>
@@ -176,16 +177,16 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                           <button
                             className={styles.filterButton}
                             onClick={(e) => handleIncludeClick(row.message, e)}
-                            aria-label="Include exception message"
+                            aria-label={t('exceptions-table.include-aria-label', 'Include exception message')}
                           >
-                            Include
+                            <Trans i18nKey="exceptions-table.include">Include</Trans>
                           </button>
                           <button
                             className={styles.filterButton}
                             onClick={(e) => handleExcludeClick(row.message, e)}
-                            aria-label="Exclude exception message"
+                            aria-label={t('exceptions-table.exclude-aria-label', 'Exclude exception message')}
                           >
-                            Exclude
+                            <Trans i18nKey="exceptions-table.exclude">Exclude</Trans>
                           </button>
                         </div>
                       </div>

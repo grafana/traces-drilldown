@@ -1,0 +1,30 @@
+name: CD
+run-name: Deploy main to dev,ops by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+  workflow_run: # zizmor: ignore[dangerous-triggers] only triggers from CI on main, no untrusted input
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: "write"
+  id-token: "write"
+  attestations: "write"
+  pull-requests: "read"
+
+jobs:
+  CD:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository) }}
+    name: Deploy plugin
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v7.0.0
+    with:
+      branch: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.event.workflow_run.head_branch }}
+      environment: dev,ops
+      attestation: true
+      run-playwright: false
+      grafana-cloud-deployment-type: provisioned
+      auto-merge-environments: dev,ops
+      argo-workflow-slack-channel: "#proj-tracesdrilldown-cd"
+      plugin-version-suffix: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}

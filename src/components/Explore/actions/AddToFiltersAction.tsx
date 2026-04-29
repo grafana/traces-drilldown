@@ -2,6 +2,7 @@ import React from 'react';
 
 import { DataFrame, GrafanaTheme2 } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, AdHocFiltersVariable } from '@grafana/scenes';
+import { t, Trans } from '@grafana/i18n';
 import { useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { getFiltersVariable, getLabelValue } from '../../../utils/utils';
@@ -48,12 +49,12 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
     const styles = useStyles2(getStyles);
 
     return (
-      <div className={styles.group} role="group" aria-label="Add to filters">
+      <div className={styles.group} role="group" aria-label={t('add-to-filters-action.aria-label', 'Add to filters')}>
         <button type="button" className={styles.segment} onClick={model.onIncludeClick}>
-          Include
+          <Trans i18nKey="add-to-filters-action.include">Include</Trans>
         </button>
         <button type="button" className={styles.segment} onClick={model.onExcludeClick}>
-          Exclude
+          <Trans i18nKey="add-to-filters-action.exclude">Exclude</Trans>
         </button>
       </div>
     );

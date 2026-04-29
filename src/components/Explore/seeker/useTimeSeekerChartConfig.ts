@@ -1,4 +1,4 @@
-import React, { useMemo, RefObject, Dispatch, SetStateAction } from 'react';
+import React, { useMemo, MutableRefObject, Dispatch, SetStateAction } from 'react';
 import { AbsoluteTimeRange, GrafanaTheme2 } from '@grafana/data';
 import { AxisPlacement, DrawStyle, UPlotConfigBuilder } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
@@ -17,12 +17,12 @@ interface UseTimeSeekerChartConfigParams {
   metric?: MetricFunction;
   visibleRange: AbsoluteTimeRange;
   timelineRange: { from: number; to: number };
-  uplotRef: RefObject<uPlot | null>;
-  wheelListenerRef: RefObject<((e: WheelEvent) => void) | null>;
-  isProgrammaticSelect: RefObject<boolean>;
-  skipNextSelectUpdate: RefObject<boolean>;
-  interactionMode: RefObject<InteractionMode>;
-  suppressNextTimeRangeUpdate: RefObject<boolean>;
+  uplotRef: MutableRefObject<uPlot | null>;
+  wheelListenerRef: MutableRefObject<((e: WheelEvent) => void) | null>;
+  isProgrammaticSelect: MutableRefObject<boolean>;
+  skipNextSelectUpdate: MutableRefObject<boolean>;
+  interactionMode: MutableRefObject<InteractionMode>;
+  suppressNextTimeRangeUpdate: MutableRefObject<boolean>;
   setVisibleRange: (range: AbsoluteTimeRange, suppressDashboardUpdate?: boolean) => void;
   setTimelineRange: Dispatch<SetStateAction<{ from: number; to: number }>>;
   handlePanStart: (e: MouseEvent | React.MouseEvent) => void;

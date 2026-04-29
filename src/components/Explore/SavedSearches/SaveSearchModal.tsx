@@ -6,6 +6,7 @@ import { AppEvents, GrafanaTheme2 } from '@grafana/data';
 import { getAppEvents, reportInteraction } from '@grafana/runtime';
 import { SceneObject } from '@grafana/scenes';
 import { Modal, Button, Box, Field, Input, Stack, useStyles2, Alert } from '@grafana/ui';
+import { t, Trans } from '@grafana/i18n';
 
 import { getFiltersVariable, getTraceExplorationScene } from '../../../utils/utils';
 import { renderTraceQLLabelFilters } from '../../../utils/filters-renderer';
@@ -69,9 +70,9 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
   );
 
   return (
-    <Modal title="Save current search" isOpen={true} onDismiss={onClose}>
+    <Modal title={t('save-search-modal.title', 'Save current search')} isOpen={true} onDismiss={onClose}>
       <Alert title="" severity="info">
-        Saved searches are stored locally in your browser and will only be available on this device.
+        <Trans i18nKey="save-search-modal.info-alert">Saved searches are stored locally in your browser and will only be available on this device.</Trans>
       </Alert>
       <Box marginBottom={2}>
         <code className={styles.query}>{query}</code>
@@ -82,10 +83,10 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
             <Box flex={1} marginBottom={2}>
               {existingSearch && (
                 <Alert title="" severity="warning">
-                  There is a previously saved search with the same query: {existingSearch.title}
+                  <Trans i18nKey="save-search-modal.existing-search-warning">There is a previously saved search with the same query: {{ title: existingSearch.title }}</Trans>
                 </Alert>
               )}
-              <Field label="Title" noMargin htmlFor="save-search-title">
+              <Field label={t('save-search-modal.field.title', 'Title')} noMargin htmlFor="save-search-title">
                 <Input
                   id="save-search-title"
                   required
@@ -96,7 +97,7 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
               </Field>
             </Box>
             <Box flex={1} marginBottom={2}>
-              <Field label="Description" noMargin htmlFor="save-search-description">
+              <Field label={t('save-search-modal.field.description', 'Description')} noMargin htmlFor="save-search-description">
                 <Input
                   id="save-search-description"
                   value={description}
@@ -108,21 +109,21 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
           </Stack>
           <Modal.ButtonRow>
             <Button variant="secondary" fill="outline" onClick={onClose} disabled={state === 'saving'}>
-              Cancel
+              <Trans i18nKey="save-search-modal.cancel">Cancel</Trans>
             </Button>
             <Button type="submit" disabled={!title || state === 'saving'}>
-              Save
+              <Trans i18nKey="save-search-modal.save">Save</Trans>
             </Button>
           </Modal.ButtonRow>
         </form>
       ) : (
         <>
-          <Alert title="Success" severity="success">
-            Search successfully saved.
+          <Alert title={t('save-search-modal.success-title', 'Success')} severity="success">
+            <Trans i18nKey="save-search-modal.success-message">Search successfully saved.</Trans>
           </Alert>
           <Modal.ButtonRow>
             <Button variant="secondary" fill="outline" onClick={onClose}>
-              Close
+              <Trans i18nKey="save-search-modal.close">Close</Trans>
             </Button>
           </Modal.ButtonRow>
         </>

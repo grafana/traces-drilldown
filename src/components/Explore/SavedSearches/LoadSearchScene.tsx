@@ -5,12 +5,13 @@ import { css } from '@emotion/css';
 import { AppEvents, GrafanaTheme2 } from '@grafana/data';
 import { getAppEvents, reportInteraction, usePluginComponent } from '@grafana/runtime';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { t } from '@grafana/i18n';
 import { ToolbarButton, useStyles2 } from '@grafana/ui';
 
 import { LoadSearchModal } from './LoadSearchModal';
 import { getDatasourceVariable, getTraceExplorationScene } from '../../../utils/utils';
 import { DataQuery } from '@grafana/schema';
-import { OpenQueryLibraryComponentProps, useHasSavedSearches, isQueryLibrarySupported, applySavedSearchToScene } from './saveSearch';
+import { OpenQueryLibraryComponentProps, useHasSavedSearches, useQueryLibrarySupported, applySavedSearchToScene } from './saveSearch';
 
 export interface LoadSearchSceneState extends SceneObjectState {
   dsName: string;
@@ -61,6 +62,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
     const { dsName, dsUid, isOpen } = model.useState();
     const styles = useStyles2(getStyles);
     const hasSavedSearches = useHasSavedSearches(dsUid);
+    const queryLibrarySupported = useQueryLibrarySupported();
 
     const { component: OpenQueryLibraryComponent, isLoading: isLoadingExposedComponent } =
       usePluginComponent<OpenQueryLibraryComponentProps>('grafana/query-library-context/v1');
@@ -77,7 +79,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
             onClick={model.toggleOpen}
             className={styles.button}
             tooltip={
-              hasSavedSearches ? 'Load saved search' : 'No saved searches to load'
+              hasSavedSearches ? t('load-search-scene.load-saved-search', 'Load saved search') : t('load-search-scene.no-saved-searches', 'No saved searches to load')
             }
           />
           {isOpen && <LoadSearchModal sceneRef={model} onClose={model.toggleClosed} />}
@@ -111,7 +113,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
       return null;
     }
 
-    if (!isQueryLibrarySupported()) {
+    if (!queryLibrarySupported) {
       return fallbackComponent;
     } else if (isLoadingExposedComponent || !OpenQueryLibraryComponent) {
       return null;
@@ -124,7 +126,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
         datasourceFilters={[dsName]}
         icon="folder-open"
         onSelectQuery={onSelectQuery}
-        tooltip="Load saved query"
+        tooltip={t('load-search-scene.load-saved-query', 'Load saved query')}
       />
     );
   };

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Trans } from '@grafana/i18n';
 import {
   SceneObjectState,
   SceneObjectBase,
@@ -20,7 +21,7 @@ export class InspectAttributeAction extends SceneObjectBase<InspectAttributeActi
 
     return (
       <Button variant="secondary" size="sm" fill="solid" onClick={() => model.state.onClick()}>
-        Inspect
+        <Trans i18nKey="inspect-attribute-action.inspect">Inspect</Trans>
       </Button>
     );
   };

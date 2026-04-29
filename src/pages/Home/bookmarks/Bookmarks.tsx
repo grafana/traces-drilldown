@@ -1,5 +1,6 @@
 import { css } from "@emotion/css";
 import { GrafanaTheme2 } from "@grafana/data";
+import { t, Trans } from '@grafana/i18n';
 import { Button, useStyles2, LoadingPlaceholder } from "@grafana/ui";
 import React, { useEffect, useState } from "react";
 import { BookmarkItem } from "./BookmarkItem";
@@ -52,10 +53,10 @@ export const Bookmarks = () => {
     return (
       <div>
         <div className={styles.header}>
-          <h4>Or view bookmarks</h4>
+          <h4><Trans i18nKey="bookmarks.or-view-bookmarks">Or view bookmarks</Trans></h4>
         </div>
         <div className={styles.loading}>
-          <LoadingPlaceholder text="Loading bookmarks..." />
+          <LoadingPlaceholder text={t('bookmarks.loading', 'Loading bookmarks...')} />
         </div>
       </div>
     );
@@ -64,10 +65,10 @@ export const Bookmarks = () => {
   return (
     <div>
       <div className={styles.header}>
-        <h4>Or view bookmarks</h4>
+        <h4><Trans i18nKey="bookmarks.or-view-bookmarks">Or view bookmarks</Trans></h4>
       </div>
       {bookmarks.length === 0 ? (
-        <p className={styles.noBookmarks}>Bookmark your favorite queries to view them here.</p>
+        <p className={styles.noBookmarks}><Trans i18nKey="bookmarks.no-bookmarks">Bookmark your favorite queries to view them here.</Trans></p>
       ) : (
         <div className={styles.bookmarks}>
           {bookmarks.map((bookmark: Bookmark, i: number) => (
@@ -81,7 +82,7 @@ export const Bookmarks = () => {
               </div>
               <div className={styles.remove}>
                 <Button
-                  aria-label="Remove bookmark"
+                  aria-label={t('bookmarks.remove-bookmark', 'Remove bookmark')}
                   variant='secondary' 
                   fill='text' 
                   icon='trash-alt'

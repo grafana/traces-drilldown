@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Label, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../utils/analytics';
@@ -21,7 +22,7 @@ export class LayoutSwitcher extends SceneObjectBase<LayoutSwitcherState> {
 
     return (
       <Stack>
-        <Label className={styles.label}>View</Label>
+        <Label className={styles.label}><Trans i18nKey="layout-switcher.view-label">View</Trans></Label>
         <RadioButtonGroup options={options} value={active} onChange={model.onLayoutChange} />
       </Stack>
     );

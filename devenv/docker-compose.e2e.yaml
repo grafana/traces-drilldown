@@ -4,7 +4,7 @@ services:
     environment:
       - GF_PLUGINS_PREINSTALL_DISABLED=true
       # Time seeker (grafana/grafana#121650). Requires Grafana 13+ where the toggle is registered.
-      - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker
+      - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker,localizationForPlugins
     build:
       context: ../.config
       args:
@@ -103,4 +103,4 @@ services:
       CI: "true"
     depends_on:
       - grafana
-    command: sh -c "yarn install --frozen-lockfile && sleep 30 && yarn e2e:fast"
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile && sleep 30 && pnpm e2e:fast"

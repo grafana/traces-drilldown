@@ -1,5 +1,6 @@
 import React, { memo, ReactElement } from 'react';
 
+import { t } from '@grafana/i18n';
 import { usePluginComponent } from '@grafana/runtime';
 import { InsightsTimelineWidgetProps } from '@grafana/plugin-types/grafana-asserts-app/';
 import { MetricFunction } from 'utils/shared';
@@ -56,7 +57,7 @@ export const InsightsTimelineWidget = memo(function InsightsTimelineWidget({
         end={endTime}
         filterBySeverity={filterBySeverity}
         filterBySummaryKeywords={filterBySummaryKeywords}
-        label={'Insights'}
+        label={<>{t('insights-timeline-widget.label', 'Insights')}</>}
       />
     </div>
   );
