@@ -1,0 +1,37 @@
+name: Plugins - CI / CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions: {}
+
+jobs:
+  ci-cd:
+    name: CI / CD
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v7.0.0
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+      pull-requests: read
+    with:
+      branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
+      # On push to main: deploy to dev,ops (CI runs first inside the CD workflow).
+      # On PRs and workflow_dispatch: run CI only, no publish/deploy.
+      environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'dev,ops' || 'none' }}
+      attestation: true
+      grafana-cloud-deployment-type: provisioned
+      auto-merge-environments: dev,ops
+      argo-workflow-slack-channel: "#proj-tracesdrilldown-cd"
+      plugin-version-suffix: ${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}
+      run-playwright: false
+      run-playwright-docker: true
+      upload-playwright-artifacts: true
+      run-playwright-with-skip-grafana-dev-image: true
+      playwright-report-path: e2e/test-reports/
+      playwright-docker-compose-file: devenv/docker-compose.e2e.yaml
+      playwright-grafana-url: http://localhost:3030
