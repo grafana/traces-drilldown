@@ -58,9 +58,8 @@
     "plugins": [],
     "extensions": {
       "exposedComponents": [
-        "grafana-asserts-app/entity-assertions-widget/v1", 
-        "grafana-asserts-app/insights-timeline-widget/v1", 
-        "grafana-adaptivetraces-app/span-latency/v1", 
+        "grafana-asserts-app/entity-assertions-widget/v1",
+        "grafana-adaptivetraces-app/span-latency/v1",
         "grafana/query-library-context/v1"
       ]
     }
@@ -83,11 +82,6 @@
         "targets": ["grafana-asserts-app/entity-assertions-widget/v1"],
         "title": "Asserts widget",
         "description": "A block with assertions for a given service"
-      },
-      {
-        "targets": ["grafana-asserts-app/insights-timeline-widget/v1"],
-        "title": "Insights Timeline Widget",
-        "description": "Widget for displaying insights timeline in other apps"
       },
       {
         "targets": ["grafana-adaptivetraces-app/span-latency/v1"],

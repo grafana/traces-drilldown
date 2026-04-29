@@ -44,6 +44,8 @@ import {
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
 import { VariableHide } from '@grafana/schema';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
+import { getKgSceneProps } from '../../utils/kgAnnotations';
+import { isKgAnnotationsFeatureEnabled } from '../../featureFlags/featureFlags';
 import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { primarySignalOptions } from './primary-signals';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
@@ -84,6 +86,7 @@ const compositeVersion = `${buildTime?.split('T')[0]} (${commitSha})`;
 
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
+  private _kgInitialized = false;
 
   public constructor(state: Partial<TraceExplorationState>) {
     // Get query range from state or use default
@@ -109,6 +112,20 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   public _onActivate() {
     if (!this.state.topScene) {
       this.setState({ topScene: getTopScene() });
+    }
+
+    if (!this._kgInitialized) {
+      this._kgInitialized = true;
+      if (isKgAnnotationsFeatureEnabled()) {
+        const kg = getKgSceneProps();
+        if (kg) {
+          this.setState({
+            $data: this.state.$data ?? kg.$data,
+            $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
+            controls: [kg.controls, ...this.state.controls],
+          });
+        }
+      }
     }
 
     this._subs.add(
@@ -187,15 +204,8 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const {
-      controls,
-      topScene,
-      drawerScene,
-      traceId,
-      issueDetector,
-      embedded,
-      $timeRange,
-    } = traceExploration.useState();
+    const { controls, topScene, drawerScene, traceId, issueDetector, embedded, $timeRange } =
+      traceExploration.useState();
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
@@ -332,8 +342,12 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
 
     return (
       <div className={styles.menuHeader}>
-        <h5><Trans i18nKey="trace-exploration.version-header.title">Grafana Traces Drilldown v{{ version }}</Trans></h5>
-        <div className={styles.menuHeaderSubtitle}><Trans i18nKey="trace-exploration.version-header.last-update">Last update: {{ compositeVersion }}</Trans></div>
+        <h5>
+          <Trans i18nKey="trace-exploration.version-header.title">Grafana Traces Drilldown v{{ version }}</Trans>
+        </h5>
+        <div className={styles.menuHeaderSubtitle}>
+          <Trans i18nKey="trace-exploration.version-header.last-update">Last update: {{ compositeVersion }}</Trans>
+        </div>
       </div>
     );
   }
@@ -379,7 +393,9 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
         <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
           {dsVariable && (
             <Stack gap={0} alignItems={'center'}>
-              <div className={styles.datasourceLabel}><Trans i18nKey="trace-exploration.header.data-source">Data source</Trans></div>
+              <div className={styles.datasourceLabel}>
+                <Trans i18nKey="trace-exploration.header.data-source">Data source</Trans>
+              </div>
               <dsVariable.Component model={dsVariable} />
             </Stack>
           )}
@@ -404,7 +420,9 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
       <Stack gap={1} alignItems={'flex-start'} justifyContent={'space-between'}>
         <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
           <Stack gap={0} alignItems={'center'}>
-            <div className={styles.datasourceLabel}><Trans i18nKey="trace-exploration.header.filters">Filters</Trans></div>
+            <div className={styles.datasourceLabel}>
+              <Trans i18nKey="trace-exploration.header.filters">Filters</Trans>
+            </div>
             {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
           </Stack>
           {filtersVariable && (
@@ -414,7 +432,9 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           )}
         </Stack>
         <Stack gap={0} alignItems={'center'}>
-          <div className={styles.datasourceLabel}><Trans i18nKey="trace-exploration.header.trace-id">Trace ID</Trans></div>
+          <div className={styles.datasourceLabel}>
+            <Trans i18nKey="trace-exploration.header.trace-id">Trace ID</Trans>
+          </div>
           <Input
             placeholder={t('trace-exploration.header.trace-id-placeholder', 'Enter an ID and press Enter')}
             value={localTraceId ?? ''}

@@ -149,6 +149,11 @@
   "inspect-attribute-action": {
     "inspect": "Inspect"
   },
+  "kg-annotation-toggle": {
+    "aria-label": "Insights",
+    "description": "Overlay health states (critical, warning, info) from the Knowledge Graph on timeseries panels",
+    "label": "Insights"
+  },
   "layout-switcher": {
     "view-label": "View"
   },
