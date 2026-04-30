@@ -1,5 +1,5 @@
 import { AdHocVariableFilter } from '@grafana/data';
-import { renderTraceQLLabelFilters } from './filters-renderer';
+import { renderTraceQLAdHocFilters, renderTraceQLLabelFilters, renderTraceQLOrFilterPrefix } from './filters-renderer';
 
 describe('filters-renderer', () => {
   describe('renderTraceQLLabelFilters', () => {
@@ -138,6 +138,44 @@ describe('filters-renderer', () => {
           'event.exception.message="No result found for query [\\n        SELECT a FROM stores a \\n        WHERE x = 1\\n        ]"'
         );
       });
+    });
+  });
+
+  describe('renderTraceQLAdHocFilters', () => {
+    it('joins with ||', () => {
+      const filters: AdHocVariableFilter[] = [
+        { key: 'service.name', operator: '=', value: 'a' },
+        { key: 'service.name', operator: '=', value: 'b' },
+      ];
+      expect(renderTraceQLAdHocFilters(filters, '||')).toBe('service.name="a"||service.name="b"');
+    });
+
+    it('joins with &&', () => {
+      const filters: AdHocVariableFilter[] = [
+        { key: 'service.name', operator: '=', value: 'a' },
+        { key: 'kind', operator: '=', value: 'server' },
+      ];
+      expect(renderTraceQLAdHocFilters(filters, '&&')).toBe('service.name="a"&&kind=server');
+    });
+  });
+
+  describe('renderTraceQLOrFilterPrefix', () => {
+    it('returns empty when undefined or empty', () => {
+      expect(renderTraceQLOrFilterPrefix(undefined)).toBe('');
+      expect(renderTraceQLOrFilterPrefix([])).toBe('');
+    });
+
+    it('wraps a single filter in parentheses with trailing &&', () => {
+      const filters: AdHocVariableFilter[] = [{ key: 'service.name', operator: '=', value: 'a' }];
+      expect(renderTraceQLOrFilterPrefix(filters)).toBe('(service.name="a") && ');
+    });
+
+    it('joins multiple filters with ||', () => {
+      const filters: AdHocVariableFilter[] = [
+        { key: 'service.name', operator: '=', value: 'a' },
+        { key: 'service.name', operator: '=', value: 'b' },
+      ];
+      expect(renderTraceQLOrFilterPrefix(filters)).toBe('(service.name="a"||service.name="b") && ');
     });
   });
 });

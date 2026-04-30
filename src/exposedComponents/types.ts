@@ -31,6 +31,8 @@ export interface SharedExplorationState {
   // just for the starting data source
   initialDS?: string;
   initialFilters?: AdHocVariableFilter[];
+  // Combined with `||`, parenthesized, and prepended before primary signal and ad-hoc filters (which stay `&&`)
+  initialOrFilters?: AdHocVariableFilter[];
 
   initialGroupBy?: string;
   initialActionView?: ActionViewType;

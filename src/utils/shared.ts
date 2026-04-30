@@ -32,7 +32,11 @@ export const VAR_DATASOURCE = 'ds';
 export const VAR_DATASOURCE_EXPR = '${ds}';
 export const VAR_PRIMARY_SIGNAL = 'primarySignal';
 export const VAR_FILTERS = 'filters';
-export const VAR_FILTERS_EXPR = '${primarySignal} && ${filters}';
+/** Hidden scene variable name (`filtersOrPrefix`): `(a||b) && ` or empty; interpolated at the start of {@link VAR_FILTERS_EXPR}. */
+export const VAR_FILTERS_OR_PREFIX = 'filtersOrPrefix';
+/** Read-only ad-hoc combobox for embedded `initialOrFilters` (manual apply; not used in query strings). */
+export const VAR_OR_FILTERS = 'orFilters';
+export const VAR_FILTERS_EXPR = '${filtersOrPrefix}${primarySignal} && ${filters}';
 export const VAR_HOME_FILTER = 'homeFilter';
 export const VAR_GROUPBY = 'groupBy';
 export const VAR_SPAN_LIST_COLUMNS = 'spanListColumns';
