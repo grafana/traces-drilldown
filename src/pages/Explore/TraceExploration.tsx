@@ -517,6 +517,7 @@ function hasInitialOrFilters(state: TraceExplorationState): boolean {
 }
 
 function getVariableSet(state: TraceExplorationState) {
+  const filtersOrPrefixExpr = renderTraceQLOrFilterPrefix(state.initialOrFilters);
   return new SceneVariableSet({
     variables: [
       new DataSourceVariable({
@@ -533,7 +534,8 @@ function getVariableSet(state: TraceExplorationState) {
       new CustomVariable({
         name: VAR_FILTERS_OR_PREFIX,
         hide: VariableHide.hideVariable,
-        value: renderTraceQLOrFilterPrefix(state.initialOrFilters),
+        query: filtersOrPrefixExpr,
+        value: filtersOrPrefixExpr,
       }),
       ...(state.embedded && hasInitialOrFilters(state)
         ? [new InitialOrFiltersVariable(state.initialOrFilters!)]
