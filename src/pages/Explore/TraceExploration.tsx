@@ -150,6 +150,18 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
         this.state.issueDetector.activate();
       }
     }
+
+    this._subs.add(
+      this.subscribeToState((newState, prevState) => {
+        if (newState.hideRedPanels === prevState.hideRedPanels) {
+          return;
+        }
+        const top = newState.topScene;
+        if (top instanceof TracesByServiceScene) {
+          top.updateBody();
+        }
+      })
+    );
   }
 
   getUrlState() {
@@ -493,7 +505,7 @@ function OrFiltersBar({ model }: { model: SceneObject }) {
         <Tooltip
           content={t(
             'trace-exploration.header.or-filters-tooltip',
-            'From the page that embedded this view. These filters use OR (match any one). Use the Filters row to narrow further; those conditions are combined with AND.'
+            'From the page that embedded this view. These filters use OR (match any one). Use the Filters row below to narrow further; those conditions are combined with AND.'
           )}
           placement="right"
         >
