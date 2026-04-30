@@ -1,5 +1,38 @@
 # Changelog
 
+## 2.0.3
+
+##### Build System / Dependencies
+
+*  add pull request template file (#737) (c6e9b66b)
+*  migrate to pnpm (#722) (c9c2ed25)
+
+##### Chores
+
+*  fix @tootallnate/once CVE-2026-3449 via pnpm override (#736) (3f5dbaff)
+*  fix CVE warnings (#733) (8f3fd8ee)
+*  Fix flaky test (#724) (779f1509)
+*  Use OpenFeature for all feature flags (#713) (11958ffe)
+*  bump Node.js requirement to 22 (#721) (8e7f11d9)
+* **i18n:**
+  *  add Crowdin GitHub Actions workflows (#726) (b6afa0c7)
+  *  add ESLint rules and translate all user-facing strings (#725) (7f5d5c0e)
+  *  add @grafana/i18n infrastructure (#718) (5cc3fe48)
+
+##### New Features
+
+*  add Knowledge Graph insights annotations to timeseries (#685) (6e10303b)
+
+##### Bug Fixes
+
+* **ci:**  consolidate CI/CD into single workflow to fix deploy race condition (#739) (deab60e0)
+*  ensure AttributesSidebar displays correctly on smaller screens (#728) (7fd6a4ea)
+*  add webpack alias for `@grafana/i18n` to prevent pnpm module duplication (#735) (50273acb)
+*  gate deploy on CI success via `workflow_run` (#734) (e8426e3b)
+*  Escape filters with newlines etc (#723) (ee3778b7)
+* **i18n:**  use correct i18next-cli binary and config format (#730) (21fde20d)
+
+
 ## 2.0.2
 
 ##### Chores
