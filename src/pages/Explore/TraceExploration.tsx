@@ -52,7 +52,8 @@ import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { primarySignalOptions } from './primary-signals';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
-import { SharedExplorationState } from 'exposedComponents/types';
+import { actionViewsDefinitions } from 'components/Explore/TracesByService/Tabs/TabsBarScene';
+import { ActionViewType, SharedExplorationState } from 'exposedComponents/types';
 import { renderTraceQLOrFilterPrefix } from 'utils/filters-renderer';
 import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWidget/EntityAssertionsWidget';
 import { SmartDrawer } from './SmartDrawer';
@@ -115,7 +116,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
   public _onActivate() {
     if (!this.state.topScene) {
-      this.setState({ topScene: getTopScene() });
+      this.setState({ topScene: getTopScene(this.state) });
     }
 
     if (!this._kgInitialized) {
@@ -487,8 +488,28 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   );
 };
 
-function getTopScene() {
-  return new TracesByServiceScene({});
+function getTopScene(state: TraceExplorationState) {
+  const metric = state.initialMetric ?? 'rate';
+  const requestedView = state.initialActionView;
+
+  if (!requestedView) {
+    return new TracesByServiceScene({});
+  }
+
+  const isKnownView = actionViewsDefinitions.some((view) => view.value === requestedView);
+  if (!isKnownView) {
+    return new TracesByServiceScene({});
+  }
+
+  if (state.allowedActionViews?.length && !state.allowedActionViews.includes(requestedView)) {
+    return new TracesByServiceScene({});
+  }
+
+  if (requestedView === 'exceptions' && metric !== 'errors') {
+    return new TracesByServiceScene({});
+  }
+
+  return new TracesByServiceScene({ actionView: requestedView as ActionViewType });
 }
 
 // Embedded-only filters bar: read-only combobox for `initialOrFilters` (OR semantics in queries).
