@@ -282,7 +282,8 @@ export const useServiceName = (model: SceneObject) => {
 const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
   const setReturnToPrevious = useReturnToPrevious();
   const traceExploration = getTraceExplorationScene(model);
-  const { returnToPreviousSource, embeddedMini } = traceExploration.useState();
+  const explorationState = traceExploration.useState();
+  const { returnToPreviousSource, embeddedMini } = explorationState;
   const styles = useStyles2(getStyles, true, embeddedMini);
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
@@ -323,7 +324,9 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
           >
             <Trans i18nKey="trace-exploration.embedded-header.traces-drilldown">Traces Drilldown</Trans>
           </LinkButton>
-          {timeRangeControl && <timeRangeControl.Component model={timeRangeControl} />}
+          {!hasInitialOrFilters(explorationState) && timeRangeControl && (
+            <timeRangeControl.Component model={timeRangeControl} />
+          )}
           {refreshControl && <refreshControl.Component model={refreshControl} />}
         </Stack>
       </Stack>
