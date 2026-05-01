@@ -265,6 +265,8 @@
       "data-source": "Data source",
       "filters": "Filters",
       "need-help": "Need help",
+      "or-filters": "Match any",
+      "or-filters-tooltip": "From the page that embedded this view. These filters use OR (match any one). Use the Filters row below to narrow further; those conditions are combined with AND.",
       "trace-id": "Trace ID",
       "trace-id-placeholder": "Enter an ID and press Enter"
     },
