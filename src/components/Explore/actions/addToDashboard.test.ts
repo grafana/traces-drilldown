@@ -104,7 +104,7 @@ describe('getPanelData', () => {
     expect(getPanelData(vizPanel).panel.description).toBe('Panel help text');
   });
 
-  it('interpolates TraceQL targets, strips fromExploreMetrics, and interpolates datasource uid', () => {
+  it('interpolates TraceQL targets and interpolates datasource uid', () => {
     const vizPanel = baseVizPanel();
     const runner = new SceneQueryRunner({
       datasource: { uid: '${ds}', type: 'tempo' },
@@ -112,7 +112,6 @@ describe('getPanelData', () => {
         {
           refId: 'A',
           query: '{ resource.service.name =~ "$service" }',
-          fromExploreMetrics: true,
         },
       ],
       maxDataPoints: 240,
@@ -131,7 +130,6 @@ describe('getPanelData', () => {
       {
         refId: 'A',
         query: '[interp:{ resource.service.name =~ "$service" }]',
-        fromExploreMetrics: false,
       },
     ]);
     expect(panel.datasource).toEqual({
@@ -145,7 +143,7 @@ describe('getPanelData', () => {
     const vizPanel = baseVizPanel();
     const runner = new SceneQueryRunner({
       datasource: { uid: 'fixed-uid', type: 'tempo' },
-      queries: [{ refId: 'A', query: '', fromExploreMetrics: true }],
+      queries: [{ refId: 'A', query: '' }],
     });
 
     jest.spyOn(sceneGraph, 'getData').mockReturnValue({} as ReturnType<typeof sceneGraph.getData>);

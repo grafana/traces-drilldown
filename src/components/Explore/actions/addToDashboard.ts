@@ -27,7 +27,7 @@ export interface AddToDashboardFormProps {
 
 /** Tempo metrics panels use TraceQL on `query`; interpolate so dashboard panels get resolved filters/vars. */
 function interpolateTraceQueryTarget(vizPanel: VizPanel, target: Record<string, unknown>): Record<string, unknown> {
-  const next: Record<string, unknown> = { ...target, fromExploreMetrics: false };
+  const next: Record<string, unknown> = { ...target };
   if (next.query != null) {
     const q = next.query as string;
     next.query = q ? sceneGraph.interpolate(vizPanel, q) : q;
