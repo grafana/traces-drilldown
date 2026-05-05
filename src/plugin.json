@@ -60,7 +60,8 @@
       "exposedComponents": [
         "grafana-asserts-app/entity-assertions-widget/v1",
         "grafana-adaptivetraces-app/span-latency/v1",
-        "grafana/query-library-context/v1"
+        "grafana/query-library-context/v1",
+        "grafana/add-to-dashboard-form/v1"
       ]
     }
   },

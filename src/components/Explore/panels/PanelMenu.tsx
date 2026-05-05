@@ -7,11 +7,20 @@ import {
   SceneComponentProps,
   sceneGraph,
   SceneObjectState,
+  VizPanel,
 } from '@grafana/scenes';
-import React from 'react';
-import { config } from '@grafana/runtime';
+import { config, usePluginComponent } from '@grafana/runtime';
+import React, { useEffect } from 'react';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
+
+import {
+  ADD_TO_DASHBOARD_COMPONENT_ID,
+  ADD_TO_DASHBOARD_LABEL,
+  EventOpenAddToDashboard,
+  getPanelData,
+  type AddToDashboardFormProps,
+} from '../actions/addToDashboard';
 
 interface PanelMenuState extends SceneObjectState {
   body?: VizPanelMenu;
@@ -19,26 +28,47 @@ interface PanelMenuState extends SceneObjectState {
   labelValue?: string;
 }
 
+function buildPanelMenuItems(model: SceneObject<PanelMenuState>, includeAddToDashboard: boolean): PanelMenuItem[] {
+  const items: PanelMenuItem[] = [
+    {
+      text: t('panel-menu.navigation', 'Navigation'),
+      type: 'group',
+    },
+    {
+      text: t('panel-menu.explore', 'Explore'),
+      iconClassName: 'compass',
+      href: getExploreHref(model),
+      onClick: () => onExploreClick(),
+    },
+  ];
+
+  if (includeAddToDashboard) {
+    items.push({
+      text: ADD_TO_DASHBOARD_LABEL,
+      iconClassName: 'apps',
+      onClick: () => addToDashboardFromPanelMenu(model),
+    });
+  }
+
+  return items;
+}
+
+function addToDashboardFromPanelMenu(model: SceneObject<PanelMenuState>) {
+  const vizPanel = sceneGraph.findObject(model, (o) => o instanceof VizPanel) as VizPanel | undefined;
+  if (!vizPanel) {
+    return;
+  }
+  const panelData = getPanelData(vizPanel);
+  model.publishEvent(new EventOpenAddToDashboard({ panelData }), true);
+}
+
 export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPanelMenu, SceneObject {
   constructor(state: Partial<PanelMenuState>) {
     super(state);
     this.addActivationHandler(() => {
-      const items: PanelMenuItem[] = [
-        {
-          text: t('panel-menu.navigation', 'Navigation'),
-          type: 'group',
-        },
-        {
-          text: t('panel-menu.explore', 'Explore'),
-          iconClassName: 'compass',
-          href: getExploreHref(this),
-          onClick: () => onExploreClick(),
-        },
-      ];
-
       this.setState({
         body: new VizPanelMenu({
-          items,
+          items: buildPanelMenuItems(this, false),
         }),
       });
     });
@@ -58,6 +88,16 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
 
   public static Component = ({ model }: SceneComponentProps<PanelMenu>) => {
     const { body } = model.useState();
+    const { component: addToDashboardForm, isLoading: isLoadingAddToDashboardForm } =
+      usePluginComponent<AddToDashboardFormProps>(ADD_TO_DASHBOARD_COMPONENT_ID);
+
+    useEffect(() => {
+      if (!body) {
+        return;
+      }
+      const includeAdd = !isLoadingAddToDashboardForm && Boolean(addToDashboardForm);
+      model.setItems(buildPanelMenuItems(model, includeAdd));
+    }, [model, body, isLoadingAddToDashboardForm, addToDashboardForm]);
 
     if (body) {
       return <body.Component model={body} />;

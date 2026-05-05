@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React, { useCallback, useEffect } from 'react';
+import React, { createElement, useCallback, useEffect } from 'react';
 
 import { GrafanaTheme2, AdHocVariableFilter } from '@grafana/data';
 import {
@@ -17,8 +17,8 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { config, useReturnToPrevious } from '@grafana/runtime';
-import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
+import { config, usePluginComponent, useReturnToPrevious } from '@grafana/runtime';
+import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton, Input, Modal } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
 
 import {
@@ -58,6 +58,13 @@ import { DataLinksCustomContext } from './DataLinksCustomContext';
 import { TimeSeekerScene } from 'components/Explore/seeker/TimeSeekerScene';
 import { LoadSearchScene } from '../../components/Explore/SavedSearches/LoadSearchScene';
 import { SaveSearchButton } from '../../components/Explore/SavedSearches/SaveSearchButton';
+import {
+  ADD_TO_DASHBOARD_COMPONENT_ID,
+  ADD_TO_DASHBOARD_LABEL,
+  type AddToDashboardFormProps,
+  EventOpenAddToDashboard,
+  type PanelDataRequestPayload,
+} from '../../components/Explore/actions/addToDashboard';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -77,6 +84,9 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   // Plugin configuration
   queryRangeHours?: number;
   loadSearchScene?: LoadSearchScene;
+
+  isAddToDashboardModalOpen: boolean;
+  addToDashboardPanelData?: PanelDataRequestPayload;
 }
 
 const version = process.env.VERSION;
@@ -103,6 +113,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       timeSeekerScene: new TimeSeekerScene({ queryRangeHours }),
       issueDetector: new TraceQLIssueDetector(),
       loadSearchScene: state.loadSearchScene ?? new LoadSearchScene({}),
+      isAddToDashboardModalOpen: false,
       ...state,
     });
 
@@ -131,6 +142,12 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     this._subs.add(
       this.subscribeToEvent(EventTraceOpened, (event) => {
         this.setState({ traceId: event.payload.traceId, spanId: event.payload.spanId });
+      })
+    );
+
+    this._subs.add(
+      this.subscribeToEvent(EventOpenAddToDashboard, (event) => {
+        this.openAddToDashboardModal(event.payload.panelData);
       })
     );
 
@@ -193,6 +210,24 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     this.setState({ traceId: undefined, spanId: undefined });
   }
 
+  public openAddToDashboardModal(panelData: PanelDataRequestPayload) {
+    reportAppInteraction(
+      USER_EVENTS_PAGES.analyse_traces,
+      USER_EVENTS_ACTIONS.analyse_traces.add_to_dashboard_modal_opened
+    );
+    this.setState({
+      isAddToDashboardModalOpen: true,
+      addToDashboardPanelData: panelData,
+    });
+  }
+
+  public closeAddToDashboardModal(): void {
+    this.setState({
+      isAddToDashboardModalOpen: false,
+      addToDashboardPanelData: undefined,
+    });
+  }
+
   static Component = ({ model }: SceneComponentProps<TraceExploration>) => {
     const { body } = model.useState();
     const styles = useStyles2(getStyles);
@@ -204,8 +239,20 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const { controls, topScene, drawerScene, traceId, issueDetector, embedded, $timeRange } =
-      traceExploration.useState();
+    const {
+      controls,
+      topScene,
+      drawerScene,
+      traceId,
+      issueDetector,
+      embedded,
+      $timeRange,
+      isAddToDashboardModalOpen,
+      addToDashboardPanelData,
+    } = traceExploration.useState();
+
+    const { component: AddToDashboardComponent } =
+      usePluginComponent<AddToDashboardFormProps>(ADD_TO_DASHBOARD_COMPONENT_ID);
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
@@ -231,6 +278,20 @@ export class TraceExplorationScene extends SceneObjectBase {
             {drawerScene && <drawerScene.Component model={drawerScene} />}
           </SmartDrawer>
         </DataLinksCustomContext>
+        {isAddToDashboardModalOpen && AddToDashboardComponent && addToDashboardPanelData && (
+          <Modal
+            title={ADD_TO_DASHBOARD_LABEL}
+            isOpen={true}
+            onDismiss={() => traceExploration.closeAddToDashboardModal()}
+          >
+            {createElement(AddToDashboardComponent as React.ComponentType<AddToDashboardFormProps>, {
+              onClose: () => traceExploration.closeAddToDashboardModal(),
+              buildPanel: () => addToDashboardPanelData.panel,
+              timeRange: addToDashboardPanelData.range,
+              options: { useAbsolutePath: true },
+            })}
+          </Modal>
+        )}
       </div>
     );
   };
