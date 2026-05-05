@@ -1,7 +1,48 @@
-import { buildQuery } from './TracesByServiceScene';
+import { SceneFlexItem, SceneFlexLayout } from '@grafana/scenes';
+
+import { TabsBarScene } from './Tabs/TabsBarScene';
+import { buildQuery, getActionViewPrefixLen } from './TracesByServiceScene';
 import { ComparisonSelection } from '../../../utils/shared';
 
 describe('TracesByServiceScene', () => {
+  describe('getActionViewPrefixLen / setActionView slice contract', () => {
+    it('prefix length is 2 when RED row is shown', () => {
+      expect(getActionViewPrefixLen(false)).toBe(2);
+      expect(getActionViewPrefixLen(undefined)).toBe(2);
+    });
+
+    it('prefix length is 1 when RED row is hidden', () => {
+      expect(getActionViewPrefixLen(true)).toBe(1);
+    });
+
+    it('replaces only trailing tab scene: RED visible vs hideRedPanels', () => {
+      const redRow = new SceneFlexLayout({ children: [] });
+      const tabsWrap = new SceneFlexItem({ body: new TabsBarScene({}) });
+      const oldScene = new SceneFlexLayout({ children: [] });
+      const newScene = new SceneFlexLayout({ children: [] });
+
+      const withRed = [redRow, tabsWrap, oldScene];
+      const pFull = getActionViewPrefixLen(false);
+      expect(withRed.length > pFull - 1).toBe(true);
+      expect([...withRed.slice(0, pFull), newScene]).toEqual([redRow, tabsWrap, newScene]);
+
+      const withoutRed = [tabsWrap, oldScene];
+      const pHidden = getActionViewPrefixLen(true);
+      expect(withoutRed.length > pHidden - 1).toBe(true);
+      expect([...withoutRed.slice(0, pHidden), newScene]).toEqual([tabsWrap, newScene]);
+    });
+
+    it('does not swap when fewer children than required for prefix + tab', () => {
+      const onlyTabs = new SceneFlexItem({ body: new TabsBarScene({}) });
+      const pFull = getActionViewPrefixLen(false);
+      expect([onlyTabs].length > pFull - 1).toBe(false);
+
+      const empty: unknown[] = [];
+      const pHidden = getActionViewPrefixLen(true);
+      expect(empty.length > pHidden - 1).toBe(false);
+    });
+  });
+
   describe('buildQuery', () => {
     it('should build basic query with no selection', () => {
       const query = buildQuery('rate', '');

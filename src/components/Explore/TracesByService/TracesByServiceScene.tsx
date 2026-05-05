@@ -249,7 +249,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     const actionViewDef = actionViewsDefinitions.find((v) => v.value === actionView);
     const traceExploration = getTraceExplorationScene(this);
     const metric = traceExploration.getMetricVariable().getValue();
-    const prefixLen = traceExploration.state.hideRedPanels ? 1 : 2;
+    const prefixLen = getActionViewPrefixLen(traceExploration.state.hideRedPanels);
 
     if (body.state.children.length > prefixLen - 1) {
       if (actionViewDef) {
@@ -451,6 +451,11 @@ function timeRangeFromSelection(selection?: ComparisonSelection) {
         },
       })
     : undefined;
+}
+
+/** Body.children indices before the active tab scene: RED row + tabs wrapper, or tabs wrapper only when RED is hidden. */
+export function getActionViewPrefixLen(hideRedPanels?: boolean): number {
+  return hideRedPanels ? 1 : 2;
 }
 
 function buildGraphScene(
