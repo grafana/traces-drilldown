@@ -1,5 +1,5 @@
 import { PanelMenuItem, toURLRange, urlUtil } from '@grafana/data';
-import { config } from '@grafana/runtime';
+import { config, usePluginComponent } from '@grafana/runtime';
 import { t } from '@grafana/i18n';
 import {
   SceneObjectBase,
@@ -10,16 +10,19 @@ import {
   SceneObjectState,
   VizPanel,
 } from '@grafana/scenes';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import type { AlertPanelTarget } from '../actions/createAlert/getPanelDataForAlert';
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
+
+const CREATE_ALERT_FROM_PANEL_PLUGIN_ID = 'grafana/alerting/create-alert-from-panel/v1';
 
 export type PanelMenuCreateAlertHandler = (vizPanel: VizPanel, targets: AlertPanelTarget[]) => void;
 
 interface PanelMenuState extends SceneObjectState {
   body?: VizPanelMenu;
   query?: string;
+  isCreateAlertAvailable?: boolean;
   /** Per-panel TraceQL targets for alerting (breakdown tiles). */
   alertTargets?: AlertPanelTarget[];
   /** Parent breakdown scene handles modal + analytics so menu unmount does not drop the modal. */
@@ -28,40 +31,14 @@ interface PanelMenuState extends SceneObjectState {
 
 export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPanelMenu, SceneObject {
   constructor(state: Partial<PanelMenuState>) {
-    super(state);
+    super({
+      isCreateAlertAvailable: false,
+      ...state,
+    });
     this.addActivationHandler(() => {
-      const items: PanelMenuItem[] = [
-        {
-          text: t('panel-menu.navigation', 'Navigation'),
-          type: 'group',
-        },
-        {
-          text: t('panel-menu.explore', 'Explore'),
-          iconClassName: 'compass',
-          href: getExploreHref(this),
-          onClick: () => onExploreClick(),
-        },
-      ];
-
-      if (this.state.alertTargets?.length && this.state.onBreakdownCreateAlert) {
-        items.push({
-          text: t('panel-menu.create-alert', 'Create alert'),
-          iconClassName: 'bell',
-          onClick: () => {
-            const vizPanel = sceneGraph.findObject(this, (o) => o instanceof VizPanel) as VizPanel | undefined;
-            const targets = this.state.alertTargets;
-            const handler = this.state.onBreakdownCreateAlert;
-            if (!vizPanel || !targets?.length || !handler) {
-              return;
-            }
-            handler(vizPanel, targets);
-          },
-        });
-      }
-
       this.setState({
         body: new VizPanelMenu({
-          items,
+          items: buildPanelMenuItems(this, this.state.isCreateAlertAvailable ?? false),
         }),
       });
     });
@@ -81,6 +58,21 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
 
   public static readonly Component = ({ model }: SceneComponentProps<PanelMenu>) => {
     const { body } = model.useState();
+    const { component: CreateAlertModal } = usePluginComponent(CREATE_ALERT_FROM_PANEL_PLUGIN_ID);
+
+    useEffect(() => {
+      const isCreateAlertAvailable = Boolean(CreateAlertModal);
+      if (model.state.isCreateAlertAvailable === isCreateAlertAvailable) {
+        return;
+      }
+
+      model.setState({
+        isCreateAlertAvailable,
+        body: new VizPanelMenu({
+          items: buildPanelMenuItems(model, isCreateAlertAvailable),
+        }),
+      });
+    }, [CreateAlertModal, model]);
 
     if (!body) {
       return null;
@@ -110,3 +102,36 @@ const getExploreHref = (model: SceneObject<PanelMenuState>) => {
 const onExploreClick = () => {
   reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.open_in_explore_clicked);
 };
+
+function buildPanelMenuItems(model: SceneObject<PanelMenuState>, isCreateAlertAvailable: boolean): PanelMenuItem[] {
+  const items: PanelMenuItem[] = [
+    {
+      text: t('panel-menu.navigation', 'Navigation'),
+      type: 'group',
+    },
+    {
+      text: t('panel-menu.explore', 'Explore'),
+      iconClassName: 'compass',
+      href: getExploreHref(model),
+      onClick: () => onExploreClick(),
+    },
+  ];
+
+  if (isCreateAlertAvailable && model.state.alertTargets?.length && model.state.onBreakdownCreateAlert) {
+    items.push({
+      text: t('panel-menu.create-alert', 'Create alert'),
+      iconClassName: 'bell',
+      onClick: () => {
+        const vizPanel = sceneGraph.findObject(model, (o) => o instanceof VizPanel) as VizPanel | undefined;
+        const targets = model.state.alertTargets;
+        const handler = model.state.onBreakdownCreateAlert;
+        if (!vizPanel || !targets?.length || !handler) {
+          return;
+        }
+        handler(vizPanel, targets);
+      },
+    });
+  }
+
+  return items;
+}
