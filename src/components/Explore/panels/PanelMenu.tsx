@@ -1,3 +1,4 @@
+import { css } from '@emotion/css';
 import { PanelMenuItem, toURLRange, urlUtil } from '@grafana/data';
 import { config, usePluginComponent } from '@grafana/runtime';
 import { t } from '@grafana/i18n';
@@ -11,7 +12,9 @@ import {
   VizPanel,
 } from '@grafana/scenes';
 import React, { useEffect } from 'react';
+import { useStyles2 } from '@grafana/ui';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
+import { useFlagTempoAlerting } from '../../../featureFlags/featureFlags';
 import type { AlertPanelTarget } from '../actions/createAlert/getPanelDataForAlert';
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
 
@@ -59,9 +62,11 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
   public static readonly Component = ({ model }: SceneComponentProps<PanelMenu>) => {
     const { body } = model.useState();
     const { component: CreateAlertModal } = usePluginComponent(CREATE_ALERT_FROM_PANEL_PLUGIN_ID);
+    const isTempoAlertingEnabled = useFlagTempoAlerting();
+    const styles = useStyles2(getStyles);
 
     useEffect(() => {
-      const isCreateAlertAvailable = Boolean(CreateAlertModal);
+      const isCreateAlertAvailable = Boolean(CreateAlertModal) && isTempoAlertingEnabled;
       if (model.state.isCreateAlertAvailable === isCreateAlertAvailable) {
         return;
       }
@@ -72,13 +77,17 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
           items: buildPanelMenuItems(model, isCreateAlertAvailable),
         }),
       });
-    }, [CreateAlertModal, model]);
+    }, [CreateAlertModal, isTempoAlertingEnabled, model]);
 
     if (!body) {
       return null;
     }
 
-    return <body.Component model={body} />;
+    return (
+      <div className={styles.menu}>
+        <body.Component model={body} />
+      </div>
+    );
   };
 }
 
@@ -134,4 +143,15 @@ function buildPanelMenuItems(model: SceneObject<PanelMenuState>, isCreateAlertAv
   }
 
   return items;
+}
+
+function getStyles() {
+  return {
+    menu: css({
+      '& [role="menuitem"]': {
+        justifyContent: 'flex-start',
+        textAlign: 'left',
+      },
+    }),
+  };
 }

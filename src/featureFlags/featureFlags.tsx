@@ -10,6 +10,7 @@ const GRAFANA_OPEN_FEATURE_DOMAIN = 'internal-grafana-core';
  * `OpenFeaturePluginScope` from `./openFeature`.
  */
 const queryLibraryKey = 'queryLibrary' satisfies keyof FeatureToggles;
+const tempoAlertingKey = 'tempoAlerting' as keyof FeatureToggles;
 
 /** `pkg/services/featuremgmt/registry.go` — widen until available in `@grafana/data` types (FeatureToggles). */
 const TRACES_DRILLDOWN_TIME_SEEKER = 'tracesDrilldownTimeSeeker' as const;
@@ -30,4 +31,8 @@ export function useFlagTracesDrilldownTimeSeeker(): boolean {
 
 export function useFlagQueryLibrary(): boolean {
   return useBooleanFlagDetails(queryLibraryKey, false).value;
+}
+
+export function useFlagTempoAlerting(): boolean {
+  return useBooleanFlagDetails(tempoAlertingKey, false).value;
 }
