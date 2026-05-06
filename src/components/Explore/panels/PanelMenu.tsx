@@ -1,4 +1,5 @@
 import { PanelMenuItem, toURLRange, urlUtil } from '@grafana/data';
+import { config } from '@grafana/runtime';
 import { t } from '@grafana/i18n';
 import {
   SceneObjectBase,
@@ -7,16 +8,22 @@ import {
   SceneComponentProps,
   sceneGraph,
   SceneObjectState,
+  VizPanel,
 } from '@grafana/scenes';
 import React from 'react';
-import { config } from '@grafana/runtime';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
+import type { AlertPanelTarget } from '../actions/createAlert/getPanelDataForAlert';
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
+
+export type PanelMenuCreateAlertHandler = (vizPanel: VizPanel, targets: AlertPanelTarget[]) => void;
 
 interface PanelMenuState extends SceneObjectState {
   body?: VizPanelMenu;
   query?: string;
-  labelValue?: string;
+  /** Per-panel TraceQL targets for alerting (breakdown tiles). */
+  alertTargets?: AlertPanelTarget[];
+  /** Parent breakdown scene handles modal + analytics so menu unmount does not drop the modal. */
+  onBreakdownCreateAlert?: PanelMenuCreateAlertHandler;
 }
 
 export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPanelMenu, SceneObject {
@@ -35,6 +42,22 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
           onClick: () => onExploreClick(),
         },
       ];
+
+      if (this.state.alertTargets?.length && this.state.onBreakdownCreateAlert) {
+        items.push({
+          text: t('panel-menu.create-alert', 'Create alert'),
+          iconClassName: 'bell',
+          onClick: () => {
+            const vizPanel = sceneGraph.findObject(this, (o) => o instanceof VizPanel) as VizPanel | undefined;
+            const targets = this.state.alertTargets;
+            const handler = this.state.onBreakdownCreateAlert;
+            if (!vizPanel || !targets?.length || !handler) {
+              return;
+            }
+            handler(vizPanel, targets);
+          },
+        });
+      }
 
       this.setState({
         body: new VizPanelMenu({
@@ -56,14 +79,14 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
     }
   }
 
-  public static Component = ({ model }: SceneComponentProps<PanelMenu>) => {
+  public static readonly Component = ({ model }: SceneComponentProps<PanelMenu>) => {
     const { body } = model.useState();
 
-    if (body) {
-      return <body.Component model={body} />;
+    if (!body) {
+      return null;
     }
 
-    return <></>;
+    return <body.Component model={body} />;
   };
 }
 
