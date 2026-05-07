@@ -1,4 +1,6 @@
-import { generateMetricsQuery, getMetricsTempoQuery } from './generateMetricsQuery';
+import { FieldType, type DataFrame } from '@grafana/data';
+
+import { generateMetricsQuery, generateMetricsQueryForBreakdownTile, getMetricsTempoQuery } from './generateMetricsQuery';
 import { ALL } from '../../../utils/shared';
 
 describe('generateMetricsQuery', () => {
@@ -41,6 +43,50 @@ describe('generateMetricsQuery', () => {
       groupByKey: ALL,
     });
     expect(result).toEqual('{${primarySignal} && ${filters}} | rate() ');
+  });
+
+  it('should omit != nil when appendGroupByNilGuard is false', () => {
+    const result = generateMetricsQuery({
+      metric: 'rate',
+      groupByKey: 'serviceName',
+      extraFilters: 'serviceName="foo"',
+      appendGroupByNilGuard: false,
+    });
+    expect(result).toEqual('{${primarySignal} && ${filters} && serviceName="foo"} | rate() by(serviceName)');
+  });
+});
+
+describe('generateMetricsQueryForBreakdownTile', () => {
+  const frameWithServiceLabel: DataFrame = {
+    name: 'slice',
+    length: 1,
+    fields: [
+      {
+        name: 'Value',
+        type: FieldType.number,
+        values: [1],
+        labels: { 'resource.service.name': 'checkout' },
+        config: {},
+      },
+    ],
+  };
+
+  it('matches aggregate query when group-by is All', () => {
+    expect(generateMetricsQueryForBreakdownTile('rate', ALL, frameWithServiceLabel)).toEqual(
+      generateMetricsQuery({ metric: 'rate' })
+    );
+  });
+
+  it('matches aggregate query when group-by attribute is empty', () => {
+    expect(generateMetricsQueryForBreakdownTile('rate', '', frameWithServiceLabel)).toEqual(
+      generateMetricsQuery({ metric: 'rate' })
+    );
+  });
+
+  it('adds equality filter and by() without redundant != nil when value is pinned', () => {
+    expect(generateMetricsQueryForBreakdownTile('rate', 'resource.service.name', frameWithServiceLabel)).toEqual(
+      '{${primarySignal} && ${filters} && resource.service.name="checkout"} | rate() by(resource.service.name)'
+    );
   });
 });
 
