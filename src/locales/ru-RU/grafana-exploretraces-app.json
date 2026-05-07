@@ -1,0 +1,305 @@
+{
+  "adaptive-traces-scene": {
+    "loading": ""
+  },
+  "add-to-filters-action": {
+    "aria-label": "",
+    "exclude": "",
+    "include": ""
+  },
+  "app": {
+    "page-title": ""
+  },
+  "app-config": {
+    "disable-plugin": "",
+    "enable-plugin": "",
+    "field": {
+      "query-range": "",
+      "query-range-description": ""
+    },
+    "fieldset": {
+      "enable-disable": "",
+      "time-seeker-settings": ""
+    },
+    "plugin-enabled": "",
+    "plugin-not-enabled": "",
+    "save-settings": ""
+  },
+  "attribute-breakdown": {
+    "layout-grid": "",
+    "layout-rows": "",
+    "layout-single": ""
+  },
+  "attribute-panel-rows": {
+    "no-series-data": ""
+  },
+  "attributes-breakdown-scene": {
+    "error-label": "",
+    "rate-label": ""
+  },
+  "attributes-comparison-scene": {
+    "baseline-label": "",
+    "description": "",
+    "hide-baseline-only-label": "",
+    "hide-baseline-only-tooltip": "",
+    "selection-label": ""
+  },
+  "attributes-sidebar": {
+    "add-to-favorites": "",
+    "all-button": "",
+    "clear-search": "",
+    "drop-here": "",
+    "drop-here-below": "",
+    "no-available": "",
+    "no-match": "",
+    "none": "",
+    "remove-from-favorites": "",
+    "scope": {
+      "all": "",
+      "favorites": "",
+      "resource": "",
+      "span": ""
+    },
+    "search-placeholder": "",
+    "selected": "",
+    "selected-count_one": "",
+    "selected-count_few": "",
+    "selected-count_many": "",
+    "selected-count_other": ""
+  },
+  "bookmark-icon": {
+    "bookmark": "",
+    "remove-bookmark": ""
+  },
+  "bookmark-item": {
+    "description": ""
+  },
+  "bookmarks": {
+    "loading": "",
+    "no-bookmarks": "",
+    "or-view-bookmarks": "",
+    "remove-bookmark": ""
+  },
+  "by-frame-repeater": {
+    "no-data-for-search": ""
+  },
+  "duration-comparison-control": {
+    "select-slowest-traces": "",
+    "slowest-traces-selected": ""
+  },
+  "error-state-scene": {
+    "query-error": ""
+  },
+  "exception-accordion": {
+    "error-label": ""
+  },
+  "exception-comparison": {
+    "percent-title": ""
+  },
+  "exceptions-scene": {
+    "description": ""
+  },
+  "exceptions-table": {
+    "exclude": "",
+    "exclude-aria-label": "",
+    "header": {
+      "exception-details": "",
+      "exception-details-tooltip": "",
+      "frequency": "",
+      "frequency-tooltip": "",
+      "occurrences": "",
+      "occurrences-tooltip": ""
+    },
+    "include": "",
+    "include-aria-label": ""
+  },
+  "exemplars": {
+    "view-trace": ""
+  },
+  "exposed-components": {
+    "loading": "",
+    "open-in-traces-drilldown": ""
+  },
+  "grafana-ui": {
+    "drawer": {
+      "close": ""
+    }
+  },
+  "header-scene": {
+    "data-source": "",
+    "filter": "",
+    "lets-start": "",
+    "quick-start": "",
+    "read-documentation": "",
+    "subtitle": "",
+    "title": ""
+  },
+  "highest-difference-panel": {
+    "exclude": "",
+    "include": "",
+    "title": ""
+  },
+  "home": {
+    "data-source-label": "",
+    "errored-services": "",
+    "slow-services": "",
+    "slow-traces": ""
+  },
+  "insights-timeline-widget": {
+    "label": ""
+  },
+  "inspect-attribute-action": {
+    "inspect": ""
+  },
+  "kg-annotation-toggle": {
+    "aria-label": "",
+    "description": "",
+    "label": ""
+  },
+  "layout-switcher": {
+    "view-label": ""
+  },
+  "load-search-modal": {
+    "no-saved-searches": "",
+    "remove-tooltip": "",
+    "select-button": "",
+    "title": ""
+  },
+  "load-search-scene": {
+    "load-saved-query": "",
+    "load-saved-search": "",
+    "no-saved-searches": ""
+  },
+  "open-in-explore-traces-button": {
+    "label": ""
+  },
+  "panel-menu": {
+    "explore": "",
+    "navigation": ""
+  },
+  "percentiles-select": {
+    "default": "",
+    "label": "",
+    "p50": "",
+    "p75": "",
+    "p90": "",
+    "p95": "",
+    "p99": ""
+  },
+  "primary-signal-variable": {
+    "primary-signal": "",
+    "primary-signal-label": ""
+  },
+  "red-panel": {
+    "comparison-selection": ""
+  },
+  "save-search-button": {
+    "save-in-saved-queries": "",
+    "save-search": ""
+  },
+  "save-search-modal": {
+    "cancel": "",
+    "close": "",
+    "existing-search-warning": "",
+    "field": {
+      "description": "",
+      "title": ""
+    },
+    "info-alert": "",
+    "save": "",
+    "success-message": "",
+    "success-title": "",
+    "title": ""
+  },
+  "search": {
+    "placeholder": ""
+  },
+  "smart-drawer": {
+    "back-to-all-traces": ""
+  },
+  "span-list-scene": {
+    "description": "",
+    "open-in-new-tab": ""
+  },
+  "sparkline-cell": {
+    "no-data": "",
+    "not-enough-data": ""
+  },
+  "streaming-indicator": {
+    "tooltip": ""
+  },
+  "structure-scene": {
+    "duration-description": "",
+    "duration-panel-info": "",
+    "errors-description": "",
+    "errors-panel-info": "",
+    "no-data-message": "",
+    "open-trace": "",
+    "rate-description": "",
+    "rate-panel-info": "",
+    "read-more": "",
+    "works-best": ""
+  },
+  "time-seeker-controls": {
+    "focus-selection": "",
+    "large-batch-warning": "",
+    "pan-left": "",
+    "pan-right": "",
+    "set-range": "",
+    "zoom-in": "",
+    "zoom-out": ""
+  },
+  "time-seeker-scene": {
+    "loading": "",
+    "seeker-label": ""
+  },
+  "trace-drawer-scene": {
+    "no-trace-selected": ""
+  },
+  "trace-exploration": {
+    "drawer": {
+      "view-trace": ""
+    },
+    "embedded-header": {
+      "traces-drilldown": ""
+    },
+    "header": {
+      "data-source": "",
+      "filters": "",
+      "need-help": "",
+      "trace-id": "",
+      "trace-id-placeholder": ""
+    },
+    "menu": {
+      "documentation": "",
+      "give-feedback": ""
+    },
+    "variable": {
+      "data-source": "",
+      "duration-percentiles": ""
+    },
+    "version-header": {
+      "last-update": "",
+      "title": ""
+    }
+  },
+  "traceql-issue-detector": {
+    "read-documentation": "",
+    "warning-message": "",
+    "warning-title": ""
+  },
+  "traces-by-service": {
+    "select-metric-type": "",
+    "tooltip": {
+      "duration-description": "",
+      "duration-label": "",
+      "errors-description": "",
+      "errors-label": "",
+      "rate-description": "",
+      "rate-label": "",
+      "read-documentation": "",
+      "subtitle": "",
+      "title": ""
+    }
+  }
+}
