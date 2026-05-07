@@ -131,7 +131,7 @@ function buildPanelMenuItems(model: SceneObject<PanelMenuState>, isCreateAlertAv
       text: t('panel-menu.create-alert', 'Create alert'),
       iconClassName: 'bell',
       onClick: () => {
-        const vizPanel = sceneGraph.findObject(model, (o) => o instanceof VizPanel) as VizPanel | undefined;
+        const vizPanel = sceneGraph.getAncestor(model, VizPanel);
         const targets = model.state.alertTargets;
         const handler = model.state.onBreakdownCreateAlert;
         if (!vizPanel || !targets?.length || !handler) {
