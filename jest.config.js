@@ -24,6 +24,7 @@ module.exports = {
   transformIgnorePatterns: [nodeModulesToTransform(additionalESModules)],
   moduleNameMapper: {
     '\\.(css|scss|sass)$': 'identity-obj-proxy',
+    'react-inlinesvg': '<rootDir>/.config/jest/mocks/react-inlinesvg.tsx',
     '\\.(svg|png|jpg|jpeg|gif)$': '<rootDir>/.config/jest/mocks/fileMock.js', // Mock static file imports
   },
 };
