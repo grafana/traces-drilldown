@@ -17,7 +17,7 @@ services:
       - ../provisioning:/etc/grafana/provisioning
 
   tempo:
-    image: grafana/tempo:latest@sha256:009af35797ad7169d264436e3d06e1173afa6c3848bfd8f09d5e914b310a4819
+    image: grafana/tempo:latest@sha256:a8ed3dfcefeb6198fa4e625dfa021290d570377fc2667e32c92645ab03466468
     command: ["-config.file=/etc/tempo.yaml"]
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
