@@ -30,14 +30,14 @@ export function syncYAxis() {
 }
 
 function maxFiniteInFieldValues(values: ArrayLike<unknown>): number {
-  let m = Number.NEGATIVE_INFINITY;
+  let max = Number.NEGATIVE_INFINITY;
   for (let i = 0; i < values.length; i++) {
-    const v = values[i];
-    if (typeof v === 'number' && Number.isFinite(v)) {
-      m = Math.max(m, v);
+    const value = values[i];
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      min = Math.max(max, value);
     }
   }
-  return m;
+  return max;
 }
 
 function updateTimeseriesAxis(vizPanel: SceneObject, max: number) {
