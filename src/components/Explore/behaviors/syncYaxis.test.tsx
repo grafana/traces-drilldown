@@ -121,4 +121,105 @@ describe('syncYAxis', () => {
     expect(panel.setState).not.toHaveBeenCalled();
     cleanup();
   });
+
+  it('does not update panels when all values are NaN', () => {
+    const panel = makeVizPanel();
+    findAllSpy.mockReturnValue([panel]);
+
+    const root = new RootScene();
+    root.activate();
+    const cleanup = syncYAxis()(root);
+
+    root.publishEvent(
+      new EventTimeseriesDataReceived({
+        series: [timeseriesFrame('A', 'all-nan', [NaN, NaN, NaN])],
+      }),
+      true
+    );
+
+    expect(panel.setState).not.toHaveBeenCalled();
+    cleanup();
+  });
+
+  it('ignores NaN values when computing the max', () => {
+    const panel = makeVizPanel();
+    findAllSpy.mockReturnValue([panel]);
+
+    const root = new RootScene();
+    root.activate();
+    const cleanup = syncYAxis()(root);
+
+    root.publishEvent(
+      new EventTimeseriesDataReceived({
+        series: [timeseriesFrame('A', 'mixed', [NaN, 42, NaN, 10])],
+      }),
+      true
+    );
+
+    expect(panel.setState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fieldConfig: expect.objectContaining({
+          defaults: expect.objectContaining({ max: 42 }),
+        }),
+      })
+    );
+
+    cleanup();
+  });
+
+  it('uses the largest value when all samples are negative', () => {
+    const panel = makeVizPanel();
+    findAllSpy.mockReturnValue([panel]);
+
+    const root = new RootScene();
+    root.activate();
+    const cleanup = syncYAxis()(root);
+
+    root.publishEvent(
+      new EventTimeseriesDataReceived({
+        series: [timeseriesFrame('A', 'negatives', [-10, -5, -20])],
+      }),
+      true
+    );
+
+    expect(panel.setState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fieldConfig: expect.objectContaining({
+          defaults: expect.objectContaining({ max: -5 }),
+        }),
+      })
+    );
+
+    cleanup();
+  });
+
+  it('skips frames with no finite data and uses the max from frames that have data', () => {
+    const panel = makeVizPanel();
+    findAllSpy.mockReturnValue([panel]);
+
+    const root = new RootScene();
+    root.activate();
+    const cleanup = syncYAxis()(root);
+
+    root.publishEvent(
+      new EventTimeseriesDataReceived({
+        series: [
+          timeseriesFrame('A', 'empty', []),
+          timeseriesFrame('A', 'all-nan', [NaN, NaN]),
+          timeseriesFrame('A', 'data', [7, 3]),
+        ],
+      }),
+      true
+    );
+
+    expect(panel.setState).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fieldConfig: expect.objectContaining({
+          defaults: expect.objectContaining({ max: 7 }),
+        }),
+      })
+    );
+
+    cleanup();
+  });
 });

@@ -7,16 +7,18 @@ export function syncYAxis() {
     const eventSub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
       const series = event.payload.series;
 
-      // Start at -Infinity so the first finite sample becomes the running max; if nothing
-      // numeric is found, globalMax stays non-finite and we skip updateTimeseriesAxis below.
-      let globalMax = Number.NEGATIVE_INFINITY;
+      let globalMax: number | null = null;
       series?.forEach((s) => {
+        // Skip field 0 (typically time); only numeric value fields contribute to the Y max.
         s.fields.slice(1).forEach((f) => {
-          globalMax = Math.max(globalMax, maxFiniteInFieldValues(f.values));
+          const fieldMax = maxFiniteInFieldValues(f.values);
+          if (fieldMax !== null) {
+            globalMax = globalMax === null ? fieldMax : Math.max(globalMax, fieldMax);
+          }
         });
       });
 
-      if (!Number.isFinite(globalMax)) {
+      if (globalMax === null) {
         return;
       }
 
@@ -29,12 +31,13 @@ export function syncYAxis() {
   };
 }
 
-function maxFiniteInFieldValues(values: ArrayLike<unknown>): number {
-  let max = Number.NEGATIVE_INFINITY;
-  for (let i = 0; i < values.length; i++) {
+function maxFiniteInFieldValues(values: ArrayLike<unknown>): number | null {
+  let max: number | null = null;
+  const len = values.length;
+  for (let i = 0; i < len; i++) {
     const value = values[i];
     if (typeof value === 'number' && Number.isFinite(value)) {
-      min = Math.max(max, value);
+      max = max === null ? value : Math.max(max, value);
     }
   }
   return max;
