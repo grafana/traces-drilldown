@@ -18,7 +18,7 @@ import {
   SceneVariableSet,
 } from '@grafana/scenes';
 import { config, useReturnToPrevious } from '@grafana/runtime';
-import { Button, Dropdown, Icon, Menu, Stack, Tooltip, useStyles2, LinkButton, Input } from '@grafana/ui';
+import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
 
 import {
@@ -26,7 +26,6 @@ import {
   EventTraceOpened,
   MetricFunction,
   VAR_DATASOURCE,
-  VAR_FILTERS_OR_PREFIX,
   VAR_GROUPBY,
   VAR_LATENCY_PARTIAL_THRESHOLD,
   VAR_LATENCY_THRESHOLD,
@@ -39,7 +38,6 @@ import {
 import {
   getTraceExplorationScene,
   getFiltersVariable,
-  getOrFiltersVariable,
   getPrimarySignalVariable,
   getUrlForExploration,
 } from '../../utils/utils';
@@ -54,11 +52,9 @@ import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Exp
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { actionViewsDefinitions } from 'components/Explore/TracesByService/Tabs/TabsBarScene';
 import { ActionViewType, SharedExplorationState } from 'exposedComponents/types';
-import { renderTraceQLOrFilterPrefix } from 'utils/filters-renderer';
 import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWidget/EntityAssertionsWidget';
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
-import { InitialOrFiltersVariable } from './InitialOrFiltersVariable';
 import { DataLinksCustomContext } from './DataLinksCustomContext';
 import { TimeSeekerScene } from 'components/Explore/seeker/TimeSeekerScene';
 import { LoadSearchScene } from '../../components/Explore/SavedSearches/LoadSearchScene';
@@ -284,7 +280,7 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
   const setReturnToPrevious = useReturnToPrevious();
   const traceExploration = getTraceExplorationScene(model);
   const explorationState = traceExploration.useState();
-  const { returnToPreviousSource, embeddedMini } = explorationState;
+  const { returnToPreviousSource, embeddedMini, hideRedPanels } = explorationState;
   const styles = useStyles2(getStyles, true, embeddedMini);
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
@@ -305,7 +301,6 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
 
   return (
     <div className={styles.headerContainer}>
-      <OrFiltersBar model={model} />
       <Stack gap={1} alignItems={'center'} wrap={'wrap'} justifyContent="space-between">
         <primarySignalVariable.Component model={primarySignalVariable} />
         {filtersVariable && (
@@ -325,10 +320,8 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
           >
             <Trans i18nKey="trace-exploration.embedded-header.traces-drilldown">Traces Drilldown</Trans>
           </LinkButton>
-          {!hasInitialOrFilters(explorationState) && timeRangeControl && (
-            <timeRangeControl.Component model={timeRangeControl} />
-          )}
-          {refreshControl && <refreshControl.Component model={refreshControl} />}
+          {timeRangeControl && !hideRedPanels && <timeRangeControl.Component model={timeRangeControl} />}
+          {refreshControl && !hideRedPanels && <refreshControl.Component model={refreshControl} />}
         </Stack>
       </Stack>
     </div>
@@ -512,48 +505,7 @@ function getTopScene(state: TraceExplorationState) {
   return new TracesByServiceScene({ actionView: requestedView as ActionViewType });
 }
 
-// Embedded-only filters bar: read-only combobox for `initialOrFilters` (OR semantics in queries).
-function OrFiltersBar({ model }: { model: SceneObject }) {
-  const traceExploration = getTraceExplorationScene(model);
-  const { embedded } = traceExploration.useState();
-  const orFiltersVariable = getOrFiltersVariable(traceExploration);
-  const styles = useStyles2(getStyles);
-
-  if (!embedded || !orFiltersVariable) {
-    return null;
-  }
-
-  return (
-    <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
-      <Stack gap={0.5} alignItems={'center'}>
-        <Tooltip
-          content={t(
-            'trace-exploration.header.or-filters-tooltip',
-            'From the page that embedded this view. These filters use OR (match any one). Use the Filters row below to narrow further; those conditions are combined with AND.'
-          )}
-          placement="right"
-        >
-          <Stack gap={0} alignItems={'center'}>
-            <div className={styles.datasourceLabel}>
-              <Trans i18nKey="trace-exploration.header.or-filters">Match any</Trans>
-            </div>
-            <Icon name="info-circle" size="sm" className={styles.orFiltersInfoIcon} />
-          </Stack>
-        </Tooltip>
-      </Stack>
-      <div>
-        <orFiltersVariable.Component model={orFiltersVariable} />
-      </div>
-    </Stack>
-  );
-}
-
-function hasInitialOrFilters(state: TraceExplorationState): boolean {
-  return Boolean(state.initialOrFilters?.some((f) => f.key && f.operator && f.value));
-}
-
 function getVariableSet(state: TraceExplorationState) {
-  const filtersOrPrefixExpr = renderTraceQLOrFilterPrefix(state.initialOrFilters);
   return new SceneVariableSet({
     variables: [
       new DataSourceVariable({
@@ -567,15 +519,6 @@ function getVariableSet(state: TraceExplorationState) {
         name: VAR_PRIMARY_SIGNAL,
         isReadOnly: state.embedded,
       }),
-      new CustomVariable({
-        name: VAR_FILTERS_OR_PREFIX,
-        hide: VariableHide.hideVariable,
-        query: filtersOrPrefixExpr,
-        value: filtersOrPrefixExpr,
-      }),
-      ...(state.embedded && hasInitialOrFilters(state)
-        ? [new InitialOrFiltersVariable(state.initialOrFilters!)]
-        : []),
       new AttributeFiltersVariable({
         initialFilters: state.initialFilters,
       }),
@@ -714,11 +657,6 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean, embeddedMini?: bool
     helpIcon: css({
       label: 'helpIcon',
       marginLeft: theme.spacing(1),
-    }),
-    orFiltersInfoIcon: css({
-      label: 'orFiltersInfoIcon',
-      color: theme.colors.text.secondary,
-      cursor: 'default',
     }),
     filters: css({
       label: 'filters',

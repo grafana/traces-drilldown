@@ -13,7 +13,7 @@ export function escapeTraceQlStringLiteral(value: string): string {
     .replace(/\t/g, '\\t');
 }
 
-// TraceQL combinator between rendered ad-hoc predicates (AND inside `{...}` vs OR group for embedded matchers).
+// TraceQL combinator between rendered ad-hoc predicates (typically `&&` inside `{...}`).
 export type TraceQLAdHocJoin = '&&' | '||';
 
 /**
@@ -30,17 +30,6 @@ export function renderTraceQLAdHocFilters(filters: AdHocVariableFilter[], joinWi
 
 export function renderTraceQLLabelFilters(filters: AdHocVariableFilter[]) {
   return renderTraceQLAdHocFilters(filters, '&&');
-}
-
-/**
- * Renders static OR filters for embedded mode: each filter is combined with `||`, wrapped in parentheses, then ` && `.
- */
-export function renderTraceQLOrFilterPrefix(initialOrFilters?: AdHocVariableFilter[]): string {
-  if (!initialOrFilters?.length) {
-    return '';
-  }
-  const inner = renderTraceQLAdHocFilters(initialOrFilters, '||');
-  return inner === 'true' ? '' : `(${inner}) && `;
 }
 
 function renderFilter(filter: AdHocVariableFilter) {

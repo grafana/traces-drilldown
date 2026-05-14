@@ -40,7 +40,7 @@ describe('buildHistogramQuery', () => {
     expect(query).toEqual({
       filters: [],
       limit: 1000,
-      query: '{${filtersOrPrefix}${primarySignal} && ${filters}} | histogram_over_time(duration) with(sample=true)',
+      query: '{${primarySignal} && ${filters}} | histogram_over_time(duration) with(sample=true)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -55,7 +55,7 @@ describe('getMetricsTempoQuery', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${filtersOrPrefix}${primarySignal} && ${filters} && status=error} | rate() ',
+      query: '{${primarySignal} && ${filters} && status=error} | rate() ',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -68,7 +68,7 @@ describe('getMetricsTempoQuery', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${filtersOrPrefix}${primarySignal} && ${filters} && status=error && service != nil} | rate() by(service)',
+      query: '{${primarySignal} && ${filters} && status=error && service != nil} | rate() by(service)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -81,7 +81,7 @@ describe('getMetricsTempoQuery', () => {
     expect(query).toEqual({
       filters: [],
       limit: 100,
-      query: '{${filtersOrPrefix}${primarySignal} && ${filters} && service != nil} | rate() by(service) with(sample=true)',
+      query: '{${primarySignal} && ${filters} && service != nil} | rate() by(service) with(sample=true)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -95,7 +95,7 @@ describe('getMetricsTempoQuery', () => {
       filters: [],
       limit: 100,
       query:
-        '{${filtersOrPrefix}${primarySignal} && ${filters} && service != nil} | quantile_over_time(duration, ${durationPercentiles:csv}) by(service)',
+        '{${primarySignal} && ${filters} && service != nil} | quantile_over_time(duration, ${durationPercentiles:csv}) by(service)',
       queryType: 'traceql',
       refId: 'A',
       spss: 10,
@@ -111,7 +111,7 @@ describe('buildExceptionsQuery', () => {
     expect(query).toEqual({
       refId: 'A',
       query:
-        '{${filtersOrPrefix}${primarySignal} && ${filters} && status = error} | select(resource.service.name, event.exception.message,event.exception.stacktrace,event.exception.type) with(most_recent=true)',
+        '{${primarySignal} && ${filters} && status = error} | select(resource.service.name, event.exception.message,event.exception.stacktrace,event.exception.type) with(most_recent=true)',
       queryType: 'traceql',
       tableType: 'spans',
       limit: 400,

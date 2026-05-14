@@ -7,13 +7,12 @@ import { css } from '@emotion/css';
 import { SceneObject } from '@grafana/scenes';
 
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
-import { escapeTraceQlStringLiteral, renderTraceQLLabelFilters, renderTraceQLOrFilterPrefix } from 'utils/filters-renderer';
+import { escapeTraceQlStringLiteral, renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import {
   getFiltersVariable,
   getPrimarySignalVariable,
   getSpanListColumnsVariable,
   getTraceByServiceScene,
-  getTraceExplorationScene,
 } from 'utils/utils';
 import { ExceptionRow } from '../ExceptionsTable';
 import { ExceptionComparison } from './ExceptionComparison';
@@ -132,14 +131,13 @@ export const buildExceptionFilterExpr = ({
   exceptionType?: string;
   scene: SceneObject;
 }) => {
-  const orFiltersPrefix = renderTraceQLOrFilterPrefix(getTraceExplorationScene(scene).state.initialOrFilters);
   const primarySignalExpr = (getPrimarySignalVariable(scene).state.value as string) || 'true';
   const filtersExpr = renderTraceQLLabelFilters(getFiltersVariable(scene).state.filters);
 
   const escapedMessage = escapeTraceQlStringLiteral(exceptionMessage);
   const typeFilter = exceptionType && exceptionType !== 'Unknown' ? ` && event.exception.type = "${escapeTraceQlStringLiteral(exceptionType)}"` : '';
 
-  return `{${orFiltersPrefix}${primarySignalExpr} && ${filtersExpr} && status = error && event.exception.message = "${escapedMessage}"${typeFilter}}`;
+  return `{${primarySignalExpr} && ${filtersExpr} && status = error && event.exception.message = "${escapedMessage}"${typeFilter}}`;
 };
 
 const getAccordionStyles = (theme: GrafanaTheme2) => {

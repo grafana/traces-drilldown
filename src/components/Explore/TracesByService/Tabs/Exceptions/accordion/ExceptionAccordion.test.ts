@@ -1,11 +1,8 @@
 import { buildExceptionFilterExpr, getMessageHighlight } from './ExceptionAccordion';
 
-const mockGetTraceExplorationScene = jest.fn().mockReturnValue({ state: {} });
-
 jest.mock('utils/utils', () => ({
   getPrimarySignalVariable: () => ({ state: { value: 'resource.service.name="api"' } }),
   getFiltersVariable: () => ({ state: { filters: [{ key: 'foo', operator: '=', value: 'bar' }] } }),
-  getTraceExplorationScene: (scene: unknown) => mockGetTraceExplorationScene(scene),
 }));
 
 jest.mock('utils/filters-renderer', () => {
@@ -64,24 +61,6 @@ describe('ExceptionAccordion helpers', () => {
       });
 
       expect(expr).not.toContain('event.exception.type');
-    });
-
-    it('prepends initialOrFilters as a parenthesized OR group', () => {
-      mockGetTraceExplorationScene.mockReturnValueOnce({
-        state: {
-          initialOrFilters: [
-            { key: 'resource.service.name', operator: '=', value: 'svc-a' },
-            { key: 'resource.service.name', operator: '=', value: 'svc-b' },
-          ],
-        },
-      });
-
-      const expr = buildExceptionFilterExpr({
-        exceptionMessage: 'bad',
-        scene,
-      });
-
-      expect(expr).toContain('(resource.service.name="svc-a"||resource.service.name="svc-b") && ');
     });
   });
 });

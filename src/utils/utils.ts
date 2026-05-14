@@ -19,7 +19,6 @@ import {
   VAR_DATASOURCE,
   VAR_DATASOURCE_EXPR,
   VAR_FILTERS,
-  VAR_OR_FILTERS,
   VAR_GROUPBY,
   VAR_HOME_FILTER,
   VAR_LATENCY_PARTIAL_THRESHOLD,
@@ -55,13 +54,11 @@ export function getExceptionsScene(model: SceneObject): ExceptionsScene | undefi
 export function newTracesExploration(
   initialDS?: string,
   queryRangeHours?: number,
-  initialFilters?: AdHocVariableFilter[],
-  initialOrFilters?: AdHocVariableFilter[]
+  initialFilters?: AdHocVariableFilter[]
 ): TraceExploration {
   return new TraceExploration({
     initialDS,
     initialFilters: initialFilters ?? [],
-    initialOrFilters,
     $timeRange: new SceneTimeRange({ from: 'now-30m', to: 'now' }),
     queryRangeHours,
   });
@@ -186,15 +183,6 @@ export function getFiltersVariable(scene: SceneObject): AdHocFiltersVariable {
   const variable = sceneGraph.lookupVariable(VAR_FILTERS, scene);
   if (!(variable instanceof AdHocFiltersVariable)) {
     throw new Error('Filters variable not found');
-  }
-  return variable;
-}
-
-/** Present only when exploration was constructed with valid `initialOrFilters`. */
-export function getOrFiltersVariable(scene: SceneObject): AdHocFiltersVariable | undefined {
-  const variable = sceneGraph.lookupVariable(VAR_OR_FILTERS, scene);
-  if (!(variable instanceof AdHocFiltersVariable)) {
-    return undefined;
   }
   return variable;
 }
