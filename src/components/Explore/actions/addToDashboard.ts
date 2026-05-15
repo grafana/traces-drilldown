@@ -9,7 +9,6 @@ import {
 import { getDataSource, getDatasourceVariable, getTraceExplorationScene } from 'utils/utils';
 
 export const ADD_TO_DASHBOARD_COMPONENT_ID = 'grafana/add-to-dashboard-form/v1';
-export const ADD_TO_DASHBOARD_LABEL = 'Add to dashboard';
 
 export interface PanelDataRequestPayload {
   panel: Panel;

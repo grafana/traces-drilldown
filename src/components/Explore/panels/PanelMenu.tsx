@@ -18,11 +18,7 @@ import { useFlagTempoAlerting } from '../../../featureFlags/featureFlags';
 import type { AlertPanelTarget } from '../actions/createAlert/getPanelDataForAlert';
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
 
-import {
-  ADD_TO_DASHBOARD_LABEL,
-  EventOpenAddToDashboard,
-  getPanelData,
-} from '../actions/addToDashboard';
+import { EventOpenAddToDashboard, getPanelData } from '../actions/addToDashboard';
 
 const CREATE_ALERT_FROM_PANEL_PLUGIN_ID = 'grafana/alerting/create-alert-from-panel/v1';
 
@@ -143,7 +139,7 @@ function buildPanelMenuItems(
       onClick: () => onExploreClick(),
     },
     {
-      text: ADD_TO_DASHBOARD_LABEL,
+      text: t('panel-menu.add-to-dashboard', 'Add to dashboard'),
       iconClassName: 'apps',
       onClick: () => addToDashboardFromPanelMenu(model),
     },

@@ -4,7 +4,6 @@ import pluginJson from '../../../plugin.json';
 import { getDataSource, getDatasourceVariable, getTraceExplorationScene } from 'utils/utils';
 import {
   ADD_TO_DASHBOARD_COMPONENT_ID,
-  ADD_TO_DASHBOARD_LABEL,
   EventOpenAddToDashboard,
   getPanelData,
   type PanelDataRequestPayload,
@@ -23,10 +22,6 @@ describe('addToDashboard constants', () => {
 
   it('exposes the add-to-dashboard extension component id', () => {
     expect(ADD_TO_DASHBOARD_COMPONENT_ID).toBe('grafana/add-to-dashboard-form/v1');
-  });
-
-  it('exposes a stable menu label', () => {
-    expect(ADD_TO_DASHBOARD_LABEL).toBe('Add to dashboard');
   });
 });
 

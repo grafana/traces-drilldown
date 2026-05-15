@@ -172,6 +172,7 @@
     "label": "Open in Traces Drilldown"
   },
   "panel-menu": {
+    "add-to-dashboard": "Add to dashboard",
     "create-alert": "Create alert",
     "explore": "Explore",
     "navigation": "Navigation"

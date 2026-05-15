@@ -1,11 +1,11 @@
 import React, { createElement } from 'react';
 
+import { t } from '@grafana/i18n';
 import { usePluginComponent } from '@grafana/runtime';
 import { Modal } from '@grafana/ui';
 
 import {
   ADD_TO_DASHBOARD_COMPONENT_ID,
-  ADD_TO_DASHBOARD_LABEL,
   type AddToDashboardFormProps,
   type PanelDataRequestPayload,
 } from '../addToDashboard';
@@ -25,7 +25,7 @@ export function AddToDashboardModal({ panelData, onClose }: AddToDashboardModalP
   }
 
   return (
-    <Modal title={ADD_TO_DASHBOARD_LABEL} isOpen onDismiss={onClose}>
+    <Modal title={t('panel-menu.add-to-dashboard', 'Add to dashboard')} isOpen onDismiss={onClose}>
       {createElement(AddToDashboardComponent as React.ComponentType<AddToDashboardFormProps>, {
         onClose,
         buildPanel: () => panelData.panel,
