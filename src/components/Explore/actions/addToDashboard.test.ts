@@ -1,5 +1,6 @@
 import { sceneGraph, SceneQueryRunner, type VizPanel } from '@grafana/scenes';
 
+import pluginJson from '../../../plugin.json';
 import { getDataSource, getTraceExplorationScene } from 'utils/utils';
 import {
   ADD_TO_DASHBOARD_COMPONENT_ID,
@@ -15,6 +16,10 @@ jest.mock('utils/utils', () => ({
 }));
 
 describe('addToDashboard constants', () => {
+  it('declares the add-to-dashboard exposed component in plugin.json dependencies', () => {
+    expect(pluginJson.dependencies?.extensions?.exposedComponents).toContain(ADD_TO_DASHBOARD_COMPONENT_ID);
+  });
+
   it('exposes the add-to-dashboard extension component id', () => {
     expect(ADD_TO_DASHBOARD_COMPONENT_ID).toBe('grafana/add-to-dashboard-form/v1');
   });

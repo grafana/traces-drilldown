@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import React, { createElement, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { GrafanaTheme2, AdHocVariableFilter } from '@grafana/data';
 import {
@@ -17,8 +17,8 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { config, usePluginComponent, useReturnToPrevious } from '@grafana/runtime';
-import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton, Input, Modal } from '@grafana/ui';
+import { config, useReturnToPrevious } from '@grafana/runtime';
+import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
 
 import {
@@ -59,13 +59,8 @@ import { DataLinksCustomContext } from './DataLinksCustomContext';
 import { TimeSeekerScene } from 'components/Explore/seeker/TimeSeekerScene';
 import { LoadSearchScene } from '../../components/Explore/SavedSearches/LoadSearchScene';
 import { SaveSearchButton } from '../../components/Explore/SavedSearches/SaveSearchButton';
-import {
-  ADD_TO_DASHBOARD_COMPONENT_ID,
-  ADD_TO_DASHBOARD_LABEL,
-  type AddToDashboardFormProps,
-  EventOpenAddToDashboard,
-  type PanelDataRequestPayload,
-} from '../../components/Explore/actions/addToDashboard';
+import { AddToDashboardModal } from '../../components/Explore/actions/addToDashboard/AddToDashboardModal';
+import { EventOpenAddToDashboard, type PanelDataRequestPayload } from '../../components/Explore/actions/addToDashboard';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -264,8 +259,6 @@ export class TraceExplorationScene extends SceneObjectBase {
       addToDashboardPanelData,
     } = traceExploration.useState();
 
-    const { component: AddToDashboardComponent } =
-      usePluginComponent<AddToDashboardFormProps>(ADD_TO_DASHBOARD_COMPONENT_ID);
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
@@ -291,19 +284,11 @@ export class TraceExplorationScene extends SceneObjectBase {
             {drawerScene && <drawerScene.Component model={drawerScene} />}
           </SmartDrawer>
         </DataLinksCustomContext>
-        {isAddToDashboardModalOpen && AddToDashboardComponent && addToDashboardPanelData && (
-          <Modal
-            title={ADD_TO_DASHBOARD_LABEL}
-            isOpen={true}
-            onDismiss={() => traceExploration.closeAddToDashboardModal()}
-          >
-            {createElement(AddToDashboardComponent as React.ComponentType<AddToDashboardFormProps>, {
-              onClose: () => traceExploration.closeAddToDashboardModal(),
-              buildPanel: () => addToDashboardPanelData.panel,
-              timeRange: addToDashboardPanelData.range,
-              options: { useAbsolutePath: true },
-            })}
-          </Modal>
+        {isAddToDashboardModalOpen && addToDashboardPanelData && (
+          <AddToDashboardModal
+            panelData={addToDashboardPanelData}
+            onClose={() => traceExploration.closeAddToDashboardModal()}
+          />
         )}
       </div>
     );
