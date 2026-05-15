@@ -144,15 +144,15 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     const traceExploration = getTraceExplorationScene(this);
     const metric = traceExploration.getMetricVariable().getValue();
     const actionViewDef = actionViewsDefinitions.find((v) => v.value === this.state.actionView);
-    const embedded = traceExploration.state.embedded;
     const embeddedMini = traceExploration.state.embeddedMini;
+    const hideRedPanels = traceExploration.state.hideRedPanels;
 
     this.setState({
       body: buildGraphScene(
         metric as MetricFunction,
         actionViewDef ? [actionViewDef?.getScene(metric as MetricFunction)] : undefined,
-        embedded,
-        embeddedMini
+        embeddedMini,
+        hideRedPanels
       ),
     });
 
@@ -249,8 +249,9 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     const actionViewDef = actionViewsDefinitions.find((v) => v.value === actionView);
     const traceExploration = getTraceExplorationScene(this);
     const metric = traceExploration.getMetricVariable().getValue();
+    const prefixLen = getActionViewPrefixLen(traceExploration.state.hideRedPanels);
 
-    if (body.state.children.length > 1) {
+    if (body.state.children.length > prefixLen - 1) {
       if (actionViewDef) {
         let scene: SceneObject;
         if (actionView === 'exceptions' && this.state.exceptionsScene) {
@@ -263,7 +264,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
         }
         
         body.setState({
-          children: [...body.state.children.slice(0, 2), scene],
+          children: [...body.state.children.slice(0, prefixLen), scene],
         });
         reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.action_view_changed, {
           oldAction: this.state.actionView,
@@ -293,16 +294,21 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   static Component = ({ model }: SceneComponentProps<TracesByServiceScene>) => {
     const { body } = model.useState();
     const styles = useStyles2(getStyles);
+    const traceExploration = getTraceExplorationScene(model);
+    const { hideRedPanels } = traceExploration.useState();
 
     return (
       <>
-        <div className={styles.title}>
-          <Tooltip content={<MetricTypeTooltip />} placement={'right-start'} interactive>
-            <span className={styles.hand}>
-              <Trans i18nKey="traces-by-service.select-metric-type">Select metric type</Trans> <Icon name={'info-circle'} />
-            </span>
-          </Tooltip>
-        </div>
+        {!hideRedPanels && (
+          <div className={styles.title}>
+            <Tooltip content={<MetricTypeTooltip />} placement={'right-start'} interactive>
+              <span className={styles.hand}>
+                <Trans i18nKey="traces-by-service.select-metric-type">Select metric type</Trans>{' '}
+                <Icon name={'info-circle'} />
+              </span>
+            </Tooltip>
+          </div>
+        )}
         <body.Component model={body} />
       </>
     );
@@ -447,55 +453,69 @@ function timeRangeFromSelection(selection?: ComparisonSelection) {
     : undefined;
 }
 
-function buildGraphScene(metric: MetricFunction, children?: SceneObject[], embedded?: boolean, embeddedMini?: boolean) {
-  const secondaryPanel =
-    metric === 'rate'
-      ? new MiniREDPanel({ embeddedMini, metric: 'errors' })
-      : new MiniREDPanel({ embeddedMini, metric: 'rate' });
+/** Body.children indices before the active tab scene: RED row + tabs wrapper, or tabs wrapper only when RED is hidden. */
+export function getActionViewPrefixLen(hideRedPanels?: boolean): number {
+  return hideRedPanels ? 1 : 2;
+}
 
-  const tertiaryPanel =
-    metric === 'duration'
-      ? new MiniREDPanel({ embeddedMini, metric: 'errors' })
-      : new MiniREDPanel({ embeddedMini, metric: 'duration' });
+function buildGraphScene(
+  metric: MetricFunction,
+  children?: SceneObject[],
+  embeddedMini?: boolean,
+  hideRedPanels?: boolean
+) {
+  const sceneChildren: SceneObject[] = [];
 
-  // All three panels are stacked vertically (one per row)
-  // Layout direction adjusts based on screen size
-  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 700;
-  
-  const sceneChildren: SceneObject[] = [
-    new SceneFlexLayout({
-      direction: !embeddedMini ? 'row' : isSmallScreen ? 'row' : 'column',
-      ySizing: 'content',
-      children: [
-        new SceneFlexItem({
-          minHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
-          maxHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
-          width: embeddedMini ? undefined : '60%',
-          body: new REDPanel({ embeddedMini }),
-        }),
-        new SceneFlexLayout({
-          direction: 'column',
-          minHeight: MAIN_PANEL_HEIGHT,
-          maxHeight: MAIN_PANEL_HEIGHT,
-          children: [
-            new SceneFlexItem({
-              minHeight: MINI_PANEL_HEIGHT,
-              maxHeight: MINI_PANEL_HEIGHT,
-              height: MINI_PANEL_HEIGHT,
-              body: secondaryPanel,
-            }),
-            new SceneFlexItem({
-              minHeight: MINI_PANEL_HEIGHT,
-              maxHeight: MINI_PANEL_HEIGHT,
-              height: MINI_PANEL_HEIGHT,
-              ySizing: 'fill',
-              body: tertiaryPanel,
-            }),
-          ],
-        }),
-      ],
-    })
-  ];
+  if (!hideRedPanels) {
+    const secondaryPanel =
+      metric === 'rate'
+        ? new MiniREDPanel({ embeddedMini, metric: 'errors' })
+        : new MiniREDPanel({ embeddedMini, metric: 'rate' });
+
+    const tertiaryPanel =
+      metric === 'duration'
+        ? new MiniREDPanel({ embeddedMini, metric: 'errors' })
+        : new MiniREDPanel({ embeddedMini, metric: 'duration' });
+
+    // All three panels are stacked vertically (one per row)
+    // Layout direction adjusts based on screen size
+    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 700;
+
+    sceneChildren.push(
+      new SceneFlexLayout({
+        direction: !embeddedMini ? 'row' : isSmallScreen ? 'row' : 'column',
+        ySizing: 'content',
+        children: [
+          new SceneFlexItem({
+            minHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
+            maxHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
+            width: embeddedMini ? undefined : '60%',
+            body: new REDPanel({ embeddedMini }),
+          }),
+          new SceneFlexLayout({
+            direction: 'column',
+            minHeight: MAIN_PANEL_HEIGHT,
+            maxHeight: MAIN_PANEL_HEIGHT,
+            children: [
+              new SceneFlexItem({
+                minHeight: MINI_PANEL_HEIGHT,
+                maxHeight: MINI_PANEL_HEIGHT,
+                height: MINI_PANEL_HEIGHT,
+                body: secondaryPanel,
+              }),
+              new SceneFlexItem({
+                minHeight: MINI_PANEL_HEIGHT,
+                maxHeight: MINI_PANEL_HEIGHT,
+                height: MINI_PANEL_HEIGHT,
+                ySizing: 'fill',
+                body: tertiaryPanel,
+              }),
+            ],
+          }),
+        ],
+      })
+    );
+  }
 
   if (!embeddedMini) {
     sceneChildren.push(
