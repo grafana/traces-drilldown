@@ -1,20 +1,34 @@
 import { css } from '@emotion/css';
+import { DataFrame, GrafanaTheme2, type TimeRange } from '@grafana/data';
+import { usePluginComponent } from '@grafana/runtime';
+import type { Panel } from '@grafana/schema';
 import React, { useEffect } from 'react';
-
-import { DataFrame, GrafanaTheme2 } from '@grafana/data';
-import { CustomVariable, SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import {
+  CustomVariable,
+  SceneComponentProps,
+  SceneObject,
+  SceneObjectBase,
+  SceneObjectState,
+  VizPanel,
+} from '@grafana/scenes';
 import { t } from '@grafana/i18n';
 import { Stack, useStyles2 } from '@grafana/ui';
 
 import { MetricFunction, MIN_PANEL_HEIGHT } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
+import {
+  getPanelDataForAlert,
+  type AlertPanelTarget,
+  type PanelDataRequestPayload,
+} from '../../../actions/createAlert/getPanelDataForAlert';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
 import { buildNormalLayout } from '../../../layouts/attributeBreakdown';
 import {
   getAttributesAsOptions,
   getGroupByVariable,
   getPercentilesVariable,
+  getPrimarySignalVariable,
   getTraceByServiceScene,
   getTraceExplorationScene,
 } from 'utils/utils';
@@ -24,8 +38,12 @@ import { PercentilesSelect } from './PercentilesSelect';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 import { useFavoriteAttributes } from 'hooks/useFavoriteAttributes';
 
+const CREATE_ALERT_FROM_PANEL_PLUGIN_ID = 'grafana/alerting/create-alert-from-panel/v1';
+
 interface AttributesBreakdownSceneState extends SceneObjectState {
   body?: SceneObject;
+  /** Grafana alerting modal payload — owned here so panel menu unmount never drops it. */
+  createAlertPayload?: PanelDataRequestPayload;
 }
 
 export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdownSceneState> {
@@ -39,12 +57,25 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
   private _onActivate() {
     const variable = getGroupByVariable(this);
+    const traceExploration = getTraceExplorationScene(this);
 
     variable.subscribeToState(() => {
       this.setBody(variable);
     });
 
     getTraceByServiceScene(this).subscribeToState(() => {
+      this.setBody(variable);
+    });
+
+    getPrimarySignalVariable(this).subscribeToState(() => {
+      this.setBody(variable);
+    });
+
+    traceExploration.getMetricVariable().subscribeToState(() => {
+      this.setBody(variable);
+    });
+
+    getPercentilesVariable(this).subscribeToState(() => {
       this.setBody(variable);
     });
 
@@ -59,11 +90,31 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
     );
   }
 
+  public openBreakdownCreateAlert(vizPanel: VizPanel, targets: AlertPanelTarget[]) {
+    const data = getPanelDataForAlert(vizPanel, targets);
+    if (!data) {
+      return;
+    }
+    reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.create_alert_clicked, {
+      title: data.panel.title,
+    });
+    this.setState({ createAlertPayload: data });
+  }
+
+  public clearBreakdownCreateAlert() {
+    this.setState({ createAlertPayload: undefined });
+  }
+
   private setBody = (variable: CustomVariable) => {
     this.setState({
-      body: buildNormalLayout(this, variable, (frame: DataFrame) => [
-        new AddToFiltersAction({ frame, labelKey: variable.getValueText(), onClick: this.onAddToFiltersClick }),
-      ]),
+      body: buildNormalLayout(
+        this,
+        variable,
+        (frame: DataFrame) => [
+          new AddToFiltersAction({ frame, labelKey: variable.getValueText(), onClick: this.onAddToFiltersClick }),
+        ],
+        (vizPanel, targets) => this.openBreakdownCreateAlert(vizPanel, targets)
+      ),
     });
   };
 
@@ -87,7 +138,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
     const { value: groupByValue } = getGroupByVariable(model).useState();
     const groupBy = groupByValue as string;
-    const { body } = model.useState();
+    const { body, createAlertPayload } = model.useState();
     const styles = useStyles2(getStyles);
 
     const { attributes } = getTraceByServiceScene(model).useState();
@@ -118,6 +169,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
     return (
       <div className={styles.container}>
+        <BreakdownCreateAlertModalBridge payload={createAlertPayload} scene={model} />
         <div className={styles.controls}>
           <AttributesDescription
             description={description}
@@ -156,6 +208,40 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
       </div>
     );
   };
+}
+
+// Renders the create-alert plugin modal from scene state, not from the panel menu subtree.
+// This avoids a lost modal when the menu popover closes/unmounts right after clicking "Create alert".
+function BreakdownCreateAlertModalBridge({
+  payload,
+  scene,
+}: {
+  payload: PanelDataRequestPayload | undefined;
+  scene: AttributesBreakdownScene;
+}) {
+  const { component: ModalComponent, isLoading } = usePluginComponent<{
+    panel: Panel;
+    range: TimeRange;
+    onDismiss: () => void;
+  }>(CREATE_ALERT_FROM_PANEL_PLUGIN_ID);
+
+  useEffect(() => {
+    if (payload && !isLoading && !ModalComponent) {
+      scene.clearBreakdownCreateAlert();
+    }
+  }, [ModalComponent, isLoading, payload, scene]);
+
+  if (!payload || !ModalComponent || isLoading) {
+    return null;
+  }
+
+  return (
+    <ModalComponent
+      panel={payload.panel}
+      range={payload.range}
+      onDismiss={() => scene.clearBreakdownCreateAlert()}
+    />
+  );
 }
 
 function getStyles(theme: GrafanaTheme2) {

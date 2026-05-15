@@ -2,6 +2,12 @@ import { BusEventWithPayload, type TimeRange } from '@grafana/data';
 import { sceneGraph, SceneQueryRunner, type VizPanel } from '@grafana/scenes';
 import { type Panel } from '@grafana/schema';
 
+import {
+  getPanelDataForAlert,
+  type AlertPanelTarget,
+} from './createAlert/getPanelDataForAlert';
+import { getDataSource, getTraceExplorationScene } from 'utils/utils';
+
 export const ADD_TO_DASHBOARD_COMPONENT_ID = 'grafana/add-to-dashboard-form/v1';
 export const ADD_TO_DASHBOARD_LABEL = 'Add to dashboard';
 
@@ -35,7 +41,33 @@ function interpolateTraceQueryTarget(vizPanel: VizPanel, target: Record<string, 
   return next;
 }
 
-export function getPanelData(vizPanel: VizPanel): PanelDataRequestPayload {
+/** Resolved Tempo UID for dashboard panels (not the `${ds}` scene variable). */
+function resolveDashboardDatasource(vizPanel: VizPanel): NonNullable<Panel['datasource']> {
+  const exploration = getTraceExplorationScene(vizPanel);
+  return {
+    uid: getDataSource(exploration),
+    type: 'tempo',
+  };
+}
+
+export function getPanelData(
+  vizPanel: VizPanel,
+  /** Per-tile TraceQL targets (e.g. breakdown with attribute=value). Same as create alert. */
+  alertTargets?: AlertPanelTarget[]
+): PanelDataRequestPayload {
+  if (alertTargets?.length) {
+    const fromTargets = getPanelDataForAlert(vizPanel, alertTargets);
+    if (fromTargets) {
+      return {
+        ...fromTargets,
+        panel: {
+          ...fromTargets.panel,
+          datasource: resolveDashboardDatasource(vizPanel),
+        },
+      };
+    }
+  }
+
   const range = sceneGraph.getTimeRange(vizPanel).state.value;
   const data = sceneGraph.getData(vizPanel);
   const found = sceneGraph.findObject(data, (o) => o instanceof SceneQueryRunner);

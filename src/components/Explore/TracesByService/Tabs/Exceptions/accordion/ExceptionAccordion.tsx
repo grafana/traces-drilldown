@@ -8,7 +8,12 @@ import { SceneObject } from '@grafana/scenes';
 
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 import { escapeTraceQlStringLiteral, renderTraceQLLabelFilters } from 'utils/filters-renderer';
-import { getFiltersVariable, getPrimarySignalVariable, getSpanListColumnsVariable, getTraceByServiceScene } from 'utils/utils';
+import {
+  getFiltersVariable,
+  getPrimarySignalVariable,
+  getSpanListColumnsVariable,
+  getTraceByServiceScene,
+} from 'utils/utils';
 import { ExceptionRow } from '../ExceptionsTable';
 import { ExceptionComparison } from './ExceptionComparison';
 import { ExceptionTraceResults } from './ExceptionTraceResults';

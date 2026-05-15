@@ -36,4 +36,7 @@ export interface SharedExplorationState {
   initialActionView?: ActionViewType;
   allowedActionViews?: ActionViewType[];
   initialMetric?: string;
+
+  // When true, the RED metrics row (main + mini panels) is omitted
+  hideRedPanels?: boolean;
 }

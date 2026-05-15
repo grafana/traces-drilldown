@@ -1,5 +1,6 @@
 import { sceneGraph, SceneQueryRunner, type VizPanel } from '@grafana/scenes';
 
+import { getDataSource, getTraceExplorationScene } from 'utils/utils';
 import {
   ADD_TO_DASHBOARD_COMPONENT_ID,
   ADD_TO_DASHBOARD_LABEL,
@@ -7,6 +8,11 @@ import {
   getPanelData,
   type PanelDataRequestPayload,
 } from './addToDashboard';
+
+jest.mock('utils/utils', () => ({
+  getTraceExplorationScene: jest.fn(),
+  getDataSource: jest.fn(),
+}));
 
 describe('addToDashboard constants', () => {
   it('exposes the add-to-dashboard extension component id', () => {
@@ -153,6 +159,35 @@ describe('getPanelData', () => {
 
     expect(panel.targets?.[0]?.query).toBe('');
     expect(sceneGraph.interpolate).not.toHaveBeenCalledWith(vizPanel, '');
+  });
+
+  it('prefers explicit alertTargets over layout query runner (breakdown tile scope)', () => {
+    const vizPanel = baseVizPanel();
+    const exploration = {};
+    const runner = new SceneQueryRunner({
+      datasource: { uid: 'tempo-runner', type: 'tempo' },
+      queries: [{ refId: 'A', query: '{ aggregate }' }],
+      maxDataPoints: 64,
+    });
+
+    jest.mocked(getTraceExplorationScene).mockReturnValue(exploration as ReturnType<typeof getTraceExplorationScene>);
+    jest.mocked(getDataSource).mockReturnValue('resolved-tempo-uid');
+    jest.spyOn(sceneGraph, 'getData').mockReturnValue({} as ReturnType<typeof sceneGraph.getData>);
+    jest.spyOn(sceneGraph, 'findObject').mockReturnValue(runner);
+    jest.spyOn(sceneGraph, 'interpolate').mockImplementation((_scene, value) => {
+      if (typeof value === 'string') {
+        return value.replace('${service}', 'checkout');
+      }
+      return String(value ?? '');
+    });
+
+    const { panel } = getPanelData(vizPanel, [{ refId: 'A', query: '{ resource.service.name="${service}" }' }]);
+
+    expect(getTraceExplorationScene).toHaveBeenCalledWith(vizPanel);
+    expect(getDataSource).toHaveBeenCalledWith(exploration);
+    expect(panel.targets).toEqual([{ refId: 'A', query: '{ resource.service.name="checkout" }' }]);
+    expect(panel.datasource).toEqual({ uid: 'resolved-tempo-uid', type: 'tempo' });
+    expect(panel.maxDataPoints).toBe(64);
   });
 
   it('does not pass datasource through interpolate when uid is missing', () => {
