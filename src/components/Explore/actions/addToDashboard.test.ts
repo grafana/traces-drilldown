@@ -1,7 +1,7 @@
 import { sceneGraph, SceneQueryRunner, type VizPanel } from '@grafana/scenes';
 
 import pluginJson from '../../../plugin.json';
-import { getDataSource, getTraceExplorationScene } from 'utils/utils';
+import { getDataSource, getDatasourceVariable, getTraceExplorationScene } from 'utils/utils';
 import {
   ADD_TO_DASHBOARD_COMPONENT_ID,
   ADD_TO_DASHBOARD_LABEL,
@@ -13,6 +13,7 @@ import {
 jest.mock('utils/utils', () => ({
   getTraceExplorationScene: jest.fn(),
   getDataSource: jest.fn(),
+  getDatasourceVariable: jest.fn(),
 }));
 
 describe('addToDashboard constants', () => {
@@ -67,6 +68,8 @@ describe('getPanelData', () => {
     jest.spyOn(sceneGraph, 'interpolate').mockImplementation((_scene, value) =>
       typeof value === 'string' ? `[interp:${value}]` : String(value ?? '')
     );
+
+    jest.spyOn(sceneGraph, 'findDescendents').mockReturnValue([]);
   });
 
   afterEach(() => {
@@ -115,18 +118,25 @@ describe('getPanelData', () => {
     expect(getPanelData(vizPanel).panel.description).toBe('Panel help text');
   });
 
-  it('interpolates TraceQL targets and interpolates datasource uid', () => {
+  it('interpolates TraceQL targets and resolves datasource from exploration variable', () => {
     const vizPanel = baseVizPanel();
+    const exploration = {};
     const runner = new SceneQueryRunner({
       datasource: { uid: '${ds}', type: 'tempo' },
       queries: [
         {
           refId: 'A',
           query: '{ resource.service.name =~ "$service" }',
+          datasource: { uid: '${ds}', type: 'tempo' },
         },
       ],
       maxDataPoints: 240,
     });
+
+    jest.mocked(getTraceExplorationScene).mockReturnValue(exploration as ReturnType<typeof getTraceExplorationScene>);
+    jest.mocked(getDatasourceVariable).mockReturnValue({
+      getValue: () => 'tempo-uid-from-var',
+    } as ReturnType<typeof getDatasourceVariable>);
 
     const dataRef = {};
     jest.spyOn(sceneGraph, 'getData').mockReturnValue(dataRef as ReturnType<typeof sceneGraph.getData>);
@@ -134,6 +144,7 @@ describe('getPanelData', () => {
       expect(predicate(runner)).toBe(true);
       return runner;
     });
+    jest.spyOn(sceneGraph, 'findDescendents').mockReturnValue([]);
 
     const { panel } = getPanelData(vizPanel);
 
@@ -144,7 +155,7 @@ describe('getPanelData', () => {
       },
     ]);
     expect(panel.datasource).toEqual({
-      uid: '[interp:${ds}]',
+      uid: 'tempo-uid-from-var',
       type: 'tempo',
     });
     expect(panel.maxDataPoints).toBe(240);
@@ -176,6 +187,9 @@ describe('getPanelData', () => {
     });
 
     jest.mocked(getTraceExplorationScene).mockReturnValue(exploration as ReturnType<typeof getTraceExplorationScene>);
+    jest.mocked(getDatasourceVariable).mockReturnValue({
+      getValue: () => 'resolved-tempo-uid',
+    } as ReturnType<typeof getDatasourceVariable>);
     jest.mocked(getDataSource).mockReturnValue('resolved-tempo-uid');
     jest.spyOn(sceneGraph, 'getData').mockReturnValue({} as ReturnType<typeof sceneGraph.getData>);
     jest.spyOn(sceneGraph, 'findObject').mockReturnValue(runner);
@@ -189,24 +203,21 @@ describe('getPanelData', () => {
     const { panel } = getPanelData(vizPanel, [{ refId: 'A', query: '{ resource.service.name="${service}" }' }]);
 
     expect(getTraceExplorationScene).toHaveBeenCalledWith(vizPanel);
-    expect(getDataSource).toHaveBeenCalledWith(exploration);
+    expect(getDatasourceVariable).toHaveBeenCalledWith(exploration);
     expect(panel.targets).toEqual([{ refId: 'A', query: '{ resource.service.name="checkout" }' }]);
     expect(panel.datasource).toEqual({ uid: 'resolved-tempo-uid', type: 'tempo' });
     expect(panel.maxDataPoints).toBe(64);
   });
 
-  it('does not pass datasource through interpolate when uid is missing', () => {
+  it('omits panel datasource when there are no query targets', () => {
     const vizPanel = baseVizPanel();
-    const runner = new SceneQueryRunner({
-      datasource: { type: 'tempo' },
-      queries: [{ refId: 'A', query: 'count()' }],
-    });
 
     jest.spyOn(sceneGraph, 'getData').mockReturnValue({} as ReturnType<typeof sceneGraph.getData>);
-    jest.spyOn(sceneGraph, 'findObject').mockReturnValue(runner);
+    jest.spyOn(sceneGraph, 'findObject').mockReturnValue(null);
+    jest.spyOn(sceneGraph, 'findDescendents').mockReturnValue([]);
 
     const { panel } = getPanelData(vizPanel);
 
-    expect(panel.datasource).toEqual({ type: 'tempo' });
+    expect(panel.datasource).toBeUndefined();
   });
 });

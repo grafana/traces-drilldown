@@ -1,12 +1,12 @@
 import { BusEventWithPayload, type TimeRange } from '@grafana/data';
-import { sceneGraph, SceneQueryRunner, type VizPanel } from '@grafana/scenes';
+import { sceneGraph, SceneQueryRunner, type SceneObject, type VizPanel } from '@grafana/scenes';
 import { type Panel } from '@grafana/schema';
 
 import {
   getPanelDataForAlert,
   type AlertPanelTarget,
 } from './createAlert/getPanelDataForAlert';
-import { getDataSource, getTraceExplorationScene } from 'utils/utils';
+import { getDataSource, getDatasourceVariable, getTraceExplorationScene } from 'utils/utils';
 
 export const ADD_TO_DASHBOARD_COMPONENT_ID = 'grafana/add-to-dashboard-form/v1';
 export const ADD_TO_DASHBOARD_LABEL = 'Add to dashboard';
@@ -38,16 +38,30 @@ function interpolateTraceQueryTarget(vizPanel: VizPanel, target: Record<string, 
     const q = next.query as string;
     next.query = q ? sceneGraph.interpolate(vizPanel, q) : q;
   }
+  // Dashboard panels use panel-level datasource; scene `${ds}` on targets breaks new dashboards.
+  delete next.datasource;
   return next;
 }
 
 /** Resolved Tempo UID for dashboard panels (not the `${ds}` scene variable). */
 function resolveDashboardDatasource(vizPanel: VizPanel): NonNullable<Panel['datasource']> {
   const exploration = getTraceExplorationScene(vizPanel);
+  const uid = getDatasourceVariable(exploration).getValue()?.toString() || getDataSource(exploration);
   return {
-    uid: getDataSource(exploration),
+    uid,
     type: 'tempo',
   };
+}
+
+function findQueryRunner(data: SceneObject | undefined): SceneQueryRunner | undefined {
+  if (!data) {
+    return undefined;
+  }
+  const direct = sceneGraph.findObject(data, (o) => o instanceof SceneQueryRunner);
+  if (direct instanceof SceneQueryRunner) {
+    return direct;
+  }
+  return sceneGraph.findDescendents(data, SceneQueryRunner)[0];
 }
 
 export function getPanelData(
@@ -70,23 +84,15 @@ export function getPanelData(
 
   const range = sceneGraph.getTimeRange(vizPanel).state.value;
   const data = sceneGraph.getData(vizPanel);
-  const found = sceneGraph.findObject(data, (o) => o instanceof SceneQueryRunner);
+  const found = findQueryRunner(data);
 
   let targets: Panel['targets'] = [];
-  let datasource: Panel['datasource'];
   let maxDataPoints: number | undefined;
 
-  if (found instanceof SceneQueryRunner) {
+  if (found) {
     targets = (found.state.queries ?? []).map((q: Record<string, unknown>) =>
       interpolateTraceQueryTarget(vizPanel, q)
     );
-    const ds = found.state.datasource;
-    datasource = ds
-      ? {
-          ...ds,
-          uid: ds.uid ? sceneGraph.interpolate(vizPanel, ds.uid) : ds.uid,
-        }
-      : ds;
     maxDataPoints = found.state.maxDataPoints;
   }
 
@@ -95,7 +101,7 @@ export function getPanelData(
     type: vs.pluginId,
     title: vs.title ? sceneGraph.interpolate(vizPanel, vs.title) : vs.title,
     targets,
-    datasource,
+    ...(targets.length > 0 && { datasource: resolveDashboardDatasource(vizPanel) }),
     options: vs.options,
     fieldConfig: vs.fieldConfig as Panel['fieldConfig'],
     ...(vs.description && { description: vs.description }),
