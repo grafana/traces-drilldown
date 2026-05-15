@@ -1,5 +1,14 @@
 import { Field, FieldType } from '@grafana/data';
-import { aggregateExceptions, createTimeSeries, normalizeExceptionMessage } from './ExceptionUtils';
+import {
+  aggregateExceptions,
+  createTimeSeries,
+  getExceptionGroupingKey,
+  formatExceptionMessageTraceQLFilter,
+  getExceptionMessageFilter,
+  normalizeExceptionMessage,
+  normalizedExceptionMessageNeedsRegexMatch,
+  normalizedExceptionMessageToTraceQLRegexPattern,
+} from './ExceptionUtils';
 
 describe('ExceptionUtils', () => {
   describe('normalizeExceptionMessage', () => {
@@ -13,6 +22,119 @@ describe('ExceptionUtils', () => {
 
     it('should handle newlines and tabs', () => {
       expect(normalizeExceptionMessage('Error\nwith\tnewlines')).toBe('Error with newlines');
+    });
+
+    it('should normalize volatile identifiers in exception messages', () => {
+      expect(
+        normalizeExceptionMessage('Request 123 failed for 4f4e6f95-4a67-4fce-90b0-51e8b8fb4d4a from 10.0.0.1 at 2026-01-20T12:34:56Z')
+      ).toBe('Request <num> failed for <uuid> from <ip> at <timestamp>');
+    });
+
+    it('should collapse http(s) URLs to group messages that differ only by path', () => {
+      const a =
+        'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-1.grafana.net/oncall/api/internal/v1/user';
+      const b =
+        'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-2.grafana.net/oncall/mobile_app/v1/gateway/incident/api/OrgService.GetOrg';
+      const expected =
+        'Error: HttpException: Connection closed before full header was received, uri = <url>';
+      expect(normalizeExceptionMessage(a)).toBe(expected);
+      expect(normalizeExceptionMessage(b)).toBe(expected);
+    });
+  });
+
+  describe('normalizedExceptionMessageToTraceQLRegexPattern', () => {
+    it('matches raw URLs against grouped messages with <url>', () => {
+      const normalized =
+        'Error: HttpException: Connection closed before full header was received, uri = <url>';
+      const pattern = normalizedExceptionMessageToTraceQLRegexPattern(normalized);
+      expect(normalizedExceptionMessageNeedsRegexMatch(normalized)).toBe(true);
+      const re = new RegExp(pattern);
+      expect(
+        re.test(
+          'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-1.grafana.net/oncall/api/internal/v1/user'
+        )
+      ).toBe(true);
+      expect(
+        re.test(
+          'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-2.grafana.net/oncall/mobile_app/v1/gateway/incident/api/OrgService.GetOrg'
+        )
+      ).toBe(true);
+    });
+
+    it('matches numeric placeholders', () => {
+      const normalized = 'HTTP <num> for path item-<num>';
+      const re = new RegExp(normalizedExceptionMessageToTraceQLRegexPattern(normalized));
+      expect(re.test('HTTP 500 for path item-42')).toBe(true);
+    });
+
+    it('matches HttpException content-length messages with numeric placeholders', () => {
+      const normalized =
+        'Error: HttpException: Content size below specified contentLength. <num> bytes written but expected <num>., uri = <url>';
+      const pattern = normalizedExceptionMessageToTraceQLRegexPattern(normalized);
+      const re = new RegExp(pattern);
+
+      expect(
+        re.test(
+          'Error: HttpException: Content size below specified contentLength. 35113 bytes written but expected 5242880., uri = https://oncall-prod-us-central-1.grafana.net/oncall/api/internal/v1/user'
+        )
+      ).toBe(true);
+      expect(pattern).toContain('[0-9]+');
+      expect(pattern).not.toContain('\\d+');
+    });
+
+    it('allows flexible whitespace between literal segments', () => {
+      const normalized = 'Error happened at <timestamp>';
+      const re = new RegExp(normalizedExceptionMessageToTraceQLRegexPattern(normalized));
+      expect(re.test('Error   happened\tat 2026-05-07T09:14:00Z')).toBe(true);
+    });
+  });
+
+  describe('getExceptionGroupingKey', () => {
+    it('should include exception type, first chars, last chars, and length', () => {
+      const normalized = 'Timeout while processing event payload from gateway';
+      expect(getExceptionGroupingKey(normalized, 'TimeoutException')).toBe(
+        'TimeoutException|Timeout while proces|payload from gateway|51'
+      );
+    });
+  });
+
+  describe('getExceptionMessageFilter', () => {
+    it('uses exact match for literal messages', () => {
+      expect(getExceptionMessageFilter('Database connection failed', 'include')).toEqual({
+        value: 'Database connection failed',
+        operator: '=',
+      });
+      expect(getExceptionMessageFilter('Database connection failed', 'exclude')).toEqual({
+        value: 'Database connection failed',
+        operator: '!=',
+      });
+    });
+
+    it('uses regex match for normalized placeholder messages', () => {
+      const message = 'Error: HttpException: Connection closed before full header was received, uri = <url>';
+      const include = getExceptionMessageFilter(message, 'include');
+      expect(include.operator).toBe('=~');
+      expect(include.value).toContain('https?://');
+
+      const exclude = getExceptionMessageFilter(message, 'exclude');
+      expect(exclude.operator).toBe('!~');
+      expect(exclude.value).toBe(include.value);
+    });
+  });
+
+  describe('formatExceptionMessageTraceQLFilter', () => {
+    it('formats literal messages with exact match', () => {
+      expect(formatExceptionMessageTraceQLFilter('Database connection failed')).toBe(
+        'event.exception.message = "Database connection failed"'
+      );
+    });
+
+    it('formats placeholder messages with regex match', () => {
+      const clause = formatExceptionMessageTraceQLFilter(
+        'Error: HttpException: Connection closed before full header was received, uri = <url>'
+      );
+      expect(clause).toContain('event.exception.message =~ "');
+      expect(clause).toContain('https?://');
     });
   });
 
@@ -130,12 +252,12 @@ describe('ExceptionUtils', () => {
 
       const result = aggregateExceptions(messageField);
 
-      expect(result.messages).toEqual(['Error 1', 'Error 2']);
-      expect(result.types).toEqual(['', '']);
-      expect(result.services).toEqual(['', '']);
-      expect(result.occurrences).toEqual([1, 1]);
-      expect(result.lastSeenTimes).toEqual(['', '']);
-      expect(result.timeSeries).toEqual([[], []]);
+      expect(result.messages).toEqual(['Error <num>']);
+      expect(result.types).toEqual(['']);
+      expect(result.services).toEqual(['']);
+      expect(result.occurrences).toEqual([2]);
+      expect(result.lastSeenTimes).toEqual(['']);
+      expect(result.timeSeries).toEqual([[]]);
     });
 
     it('should normalize duplicate messages', () => {
@@ -152,6 +274,47 @@ describe('ExceptionUtils', () => {
       expect(result.occurrences[0]).toBe(2);
       expect(result.messages[1]).toBe('Different error');
       expect(result.occurrences[1]).toBe(1);
+    });
+
+    it('should group HttpException messages that differ only by request URI', () => {
+      const messageField = createMockField('exception.message', [
+        'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-1.grafana.net/oncall/api/internal/v1/user',
+        'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-2.grafana.net/oncall/mobile_app/v1/gateway/incident/api/OrgService.GetOrg',
+      ]);
+      const typeField = createMockField('exception.type', ['HttpException', 'HttpException']);
+
+      const result = aggregateExceptions(messageField, typeField);
+
+      expect(result.messages).toHaveLength(1);
+      expect(result.occurrences[0]).toBe(2);
+      expect(result.messages[0]).toContain('<url>');
+      expect(result.types[0]).toBe('HttpException');
+      expect(result.groupedMessages[0]).toEqual([
+        'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-1.grafana.net/oncall/api/internal/v1/user',
+        'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-2.grafana.net/oncall/mobile_app/v1/gateway/incident/api/OrgService.GetOrg',
+      ]);
+    });
+
+    it('should group long similar messages by first and last 20 chars', () => {
+      const messageField = createMockField('exception.message', [
+        'Payment failed while processing customer alpha request due to timeout in upstream dependency',
+        'Payment failed while processing customer bravo request due to timeout in upstream dependency',
+        'Completely different problem in another subsystem',
+      ]);
+      const typeField = createMockField('exception.type', [
+        'TimeoutException',
+        'TimeoutException',
+        'OtherException',
+      ]);
+
+      const result = aggregateExceptions(messageField, typeField);
+
+      expect(result.messages).toHaveLength(2);
+      expect(result.messages[0]).toBe(
+        'Payment failed while processing customer alpha request due to timeout in upstream dependency'
+      );
+      expect(result.occurrences[0]).toBe(2);
+      expect(result.types[0]).toBe('TimeoutException');
     });
 
     it('should sort by occurrence count descending', () => {
@@ -189,7 +352,7 @@ describe('ExceptionUtils', () => {
     });
 
     it('should handle hours and days for older timestamps', () => {
-      const messageField = createMockField('exception.message', ['Error 1', 'Error 2']);
+      const messageField = createMockField('exception.message', ['Error one', 'Error two']);
       const timeField = createTimeField([
         1699996400000, // 1 hour ago
         1699913600000, // 1 day ago
@@ -203,9 +366,9 @@ describe('ExceptionUtils', () => {
 
     it('should create time series for each exception', () => {
       const messageField = createMockField('exception.message', [
-        'Error 1',
-        'Error 1',
-        'Error 2',
+        'Error alpha',
+        'Error alpha',
+        'Error beta',
       ]);
       const timeField = createTimeField([1000, 2000, 3000]);
 
