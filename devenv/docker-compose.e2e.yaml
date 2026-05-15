@@ -15,6 +15,12 @@ services:
     volumes:
       - ../dist:/var/lib/grafana/plugins/grafana-explore-traces-e2e
       - ../provisioning:/etc/grafana/provisioning
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
 
   tempo:
     image: grafana/tempo:latest@sha256:009af35797ad7169d264436e3d06e1173afa6c3848bfd8f09d5e914b310a4819
@@ -102,5 +108,6 @@ services:
       BASE_URL: http://grafana:3000
       CI: "true"
     depends_on:
-      - grafana
-    command: sh -c "corepack enable && pnpm install --frozen-lockfile && sleep 30 && pnpm e2e:fast"
+      grafana:
+        condition: service_healthy
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm e2e:fast"
