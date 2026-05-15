@@ -1,13 +1,27 @@
+import type { DataFrame } from '@grafana/data';
+
 import { ALL, MetricFunction, VAR_FILTERS_EXPR, VAR_DURATION_PERCENTILES_EXPR } from '../../../utils/shared';
+import { formatLabelValue, getLabelValue } from '../../../utils/utils';
 
 interface QueryOptions {
   metric: MetricFunction;
   extraFilters?: string;
   groupByKey?: string;
   sample?: boolean;
+  /**
+   * When grouping without pinning a value, TraceQL needs `key != nil` so spans missing that attribute are excluded.
+   * When extraFilters already fixes the attribute (e.g. `key=value`), that predicate is redundant — set to false.
+   */
+  appendGroupByNilGuard?: boolean;
 }
 
-export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample = false }: QueryOptions) {
+export function generateMetricsQuery({
+  metric,
+  groupByKey,
+  extraFilters,
+  sample = false,
+  appendGroupByNilGuard = true,
+}: QueryOptions) {
   // Generate span set filters
   let filters = `${VAR_FILTERS_EXPR}`;
 
@@ -19,7 +33,7 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample 
     filters += ` && ${extraFilters}`;
   }
 
-  if (groupByKey && groupByKey !== ALL) {
+  if (groupByKey && groupByKey !== ALL && appendGroupByNilGuard) {
     filters += ` && ${groupByKey} != nil`;
   }
 
@@ -45,6 +59,23 @@ export function generateMetricsQuery({ metric, groupByKey, extraFilters, sample 
   const sampleStr = sample ? ' with(sample=true)' : '';
 
   return `{${filters}} | ${metricFn} ${groupBy}${sampleStr}`;
+}
+
+/** TraceQL metrics query for one breakdown tile (group-by attribute + series value), or aggregate when group-by is unset / All. */
+export function generateMetricsQueryForBreakdownTile(
+  metric: MetricFunction,
+  groupByAttribute: string,
+  frame: DataFrame
+): string {
+  if (groupByAttribute && groupByAttribute !== ALL) {
+    return generateMetricsQuery({
+      metric,
+      groupByKey: groupByAttribute,
+      extraFilters: `${groupByAttribute}=${formatLabelValue(getLabelValue(frame, groupByAttribute))}`,
+      appendGroupByNilGuard: false,
+    });
+  }
+  return generateMetricsQuery({ metric });
 }
 
 export function getMetricsTempoQuery(options: QueryOptions) {

@@ -88,7 +88,9 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
 
     return (
       <div className={styles.container}>
-        {<panel.Component model={panel} />}
+        <div className={styles.panelWrap}>
+          <panel.Component model={panel} />
+        </div>
         <div className={styles.differenceContainer}>
           {maxDifference !== undefined && maxDifferenceIndex !== undefined && (
             <>
@@ -126,21 +128,31 @@ function getStyles(theme: GrafanaTheme2) {
       flexDirection: 'column',
       flexGrow: 1,
       height: '100%',
+      minHeight: 0,
+    }),
+    panelWrap: css({
+      flex: '1 1 0',
+      minHeight: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
     }),
     differenceContainer: css({
       display: 'flex',
       flexDirection: 'column',
-      flexGrow: 1,
+      flexGrow: 0,
+      flexShrink: 0,
       border: `1px solid ${theme.colors.secondary.border}`,
       background: theme.colors.background.primary,
-      padding: '8px',
+      padding: theme.spacing(2),
       marginBottom: theme.spacing(2),
-      fontSize: '12px',
-      height: '116px',
+      fontSize: theme.typography.bodySmall.fontSize,
+      gap: theme.spacing(0.5),
     }),
     differenceValue: css({
-      fontSize: '36px',
-      fontWeight: 'bold',
+      fontSize: theme.typography.h2.fontSize,
+      fontWeight: theme.typography.fontWeightBold,
+      lineHeight: theme.typography.h2.lineHeight,
       textAlign: 'center',
     }),
     value: css({
@@ -150,6 +162,8 @@ function getStyles(theme: GrafanaTheme2) {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
+      lineHeight: theme.typography.body.lineHeight,
+      minHeight: theme.spacing(3),
     }),
     title: css({
       fontWeight: 500,

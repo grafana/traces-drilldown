@@ -13,14 +13,23 @@ export function escapeTraceQlStringLiteral(value: string): string {
     .replace(/\t/g, '\\t');
 }
 
-export function renderTraceQLLabelFilters(filters: AdHocVariableFilter[]) {
+// TraceQL combinator between rendered ad-hoc predicates (typically `&&` inside `{...}`).
+export type TraceQLAdHocJoin = '&&' | '||';
+
+/**
+ * Renders complete ad-hoc filters as TraceQL predicates joined with `joinWith`.
+ * Returns `'true'` when there are no usable filters (avoids invalid fragments like `{ && ... }`).
+ */
+export function renderTraceQLAdHocFilters(filters: AdHocVariableFilter[], joinWith: TraceQLAdHocJoin): string {
   const expr = filters
     .filter((f) => f.key && f.operator && f.value)
     .map((filter) => renderFilter(filter))
-    .join('&&');
-  // Return 'true' if there are no filters to help with cases where we want to concatenate additional filters in the expression
-  // and avoid invalid queries like '{ && key=value }'
+    .join(joinWith);
   return expr.length ? expr : 'true';
+}
+
+export function renderTraceQLLabelFilters(filters: AdHocVariableFilter[]) {
+  return renderTraceQLAdHocFilters(filters, '&&');
 }
 
 function renderFilter(filter: AdHocVariableFilter) {

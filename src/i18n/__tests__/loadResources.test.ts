@@ -25,7 +25,7 @@ describe('loadResources', () => {
 
   describe('fallback behavior', () => {
     it('should fallback to en-US when requested language is not found', async () => {
-      const result = await loadResources('fr-FR');
+      const result = await loadResources('xx-XX');
 
       expect(result).toMatchObject({
         app: {
