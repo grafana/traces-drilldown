@@ -204,6 +204,21 @@ describe('getPanelData', () => {
     expect(panel.maxDataPoints).toBe(64);
   });
 
+  it('does not add uid when query runner datasource omits it', () => {
+    const vizPanel = baseVizPanel();
+    const runner = new SceneQueryRunner({
+      datasource: { type: 'tempo' },
+      queries: [{ refId: 'A', query: 'count()' }],
+    });
+
+    jest.spyOn(sceneGraph, 'getData').mockReturnValue({} as ReturnType<typeof sceneGraph.getData>);
+    jest.spyOn(sceneGraph, 'findObject').mockReturnValue(runner);
+
+    const { panel } = getPanelData(vizPanel);
+
+    expect(panel.datasource).toEqual({ type: 'tempo' });
+  });
+
   it('omits panel datasource when there are no query targets', () => {
     const vizPanel = baseVizPanel();
 

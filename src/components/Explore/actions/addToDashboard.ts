@@ -52,6 +52,17 @@ function resolveDashboardDatasource(vizPanel: VizPanel): NonNullable<Panel['data
   };
 }
 
+/** Preserve runner datasource shape when uid is absent; resolve scene `${ds}` when uid is set. */
+function mapPanelDatasource(vizPanel: VizPanel, ds?: Panel['datasource']): Panel['datasource'] {
+  if (!ds || typeof ds !== 'object') {
+    return resolveDashboardDatasource(vizPanel);
+  }
+  if (Object.prototype.hasOwnProperty.call(ds, 'uid') && ds.uid) {
+    return { ...ds, ...resolveDashboardDatasource(vizPanel) };
+  }
+  return { ...ds };
+}
+
 function findQueryRunner(data: SceneObject | undefined): SceneQueryRunner | undefined {
   if (!data) {
     return undefined;
@@ -100,11 +111,13 @@ export function getPanelData(
     type: vs.pluginId,
     title: vs.title ? sceneGraph.interpolate(vizPanel, vs.title) : vs.title,
     targets,
-    ...(targets.length > 0 && { datasource: resolveDashboardDatasource(vizPanel) }),
+    ...(targets.length > 0 && {
+      datasource: mapPanelDatasource(vizPanel, found?.state.datasource as Panel['datasource']),
+    }),
     options: vs.options,
     fieldConfig: vs.fieldConfig as Panel['fieldConfig'],
     ...(vs.description && { description: vs.description }),
-    ...(maxDataPoints && { maxDataPoints }),
+    ...(maxDataPoints !== undefined && { maxDataPoints }),
   };
 
   return { panel, range };
