@@ -17,8 +17,8 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { config, useReturnToPrevious } from '@grafana/runtime';
-import { Button, Dropdown, Icon, Menu, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
+import { useReturnToPrevious } from '@grafana/runtime';
+import { Icon, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
 
 import {
@@ -59,6 +59,7 @@ import { DataLinksCustomContext } from './DataLinksCustomContext';
 import { TimeSeekerScene } from 'components/Explore/seeker/TimeSeekerScene';
 import { LoadSearchScene } from '../../components/Explore/SavedSearches/LoadSearchScene';
 import { SaveSearchButton } from '../../components/Explore/SavedSearches/SaveSearchButton';
+import { PluginInfo } from '../../components/App/header/PluginInfo';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -79,11 +80,6 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   queryRangeHours?: number;
   loadSearchScene?: LoadSearchScene;
 }
-
-const version = process.env.VERSION;
-const buildTime = process.env.BUILD_TIME;
-const commitSha = process.env.COMMIT_SHA;
-const compositeVersion = `${buildTime?.split('T')[0]} (${commitSha})`;
 
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
@@ -335,7 +331,6 @@ interface TraceExplorationHeaderProps {
 
 const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps) => {
   const styles = useStyles2(getStyles);
-  const [menuVisible, setMenuVisible] = React.useState(false);
   const serviceName = useServiceName(model);
   const traceExploration = getTraceExplorationScene(model);
 
@@ -350,50 +345,6 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   useEffect(() => {
     setLocalTraceId(traceId ?? '');
   }, [traceId]);
-
-  function VersionHeader() {
-    const styles = useStyles2(getStyles);
-
-    return (
-      <div className={styles.menuHeader}>
-        <h5>
-          <Trans i18nKey="trace-exploration.version-header.title">Grafana Traces Drilldown v{{ version }}</Trans>
-        </h5>
-        <div className={styles.menuHeaderSubtitle}>
-          <Trans i18nKey="trace-exploration.version-header.last-update">Last update: {{ compositeVersion }}</Trans>
-        </div>
-      </div>
-    );
-  }
-
-  const menu = (
-    <Menu header={<VersionHeader />}>
-      <div className={styles.menu}>
-        {config.feedbackLinksEnabled && (
-          <Menu.Item
-            label={t('trace-exploration.menu.give-feedback', 'Give feedback')}
-            ariaLabel={t('trace-exploration.menu.give-feedback', 'Give feedback')}
-            icon={'comment-alt-message'}
-            url="https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS"
-            target="_blank"
-            onClick={() =>
-              reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.global_docs_link_clicked)
-            }
-          />
-        )}
-        <Menu.Item
-          label={t('trace-exploration.menu.documentation', 'Documentation')}
-          ariaLabel={t('trace-exploration.menu.documentation', 'Documentation')}
-          icon={'external-link-alt'}
-          url="https://grafana.com/docs/grafana/next/explore/simplified-exploration/traces/"
-          target="_blank"
-          onClick={() =>
-            reportAppInteraction(USER_EVENTS_PAGES.common, USER_EVENTS_ACTIONS.common.feedback_link_clicked)
-          }
-        />
-      </div>
-    </Menu>
-  );
 
   const onTraceIdSubmit = () => {
     if (localTraceId !== traceId) {
@@ -420,15 +371,10 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
           {traceExploration.state.loadSearchScene && (
             <traceExploration.state.loadSearchScene.Component model={traceExploration.state.loadSearchScene} />
           )}
-          <Dropdown overlay={menu} onVisibleChange={() => setMenuVisible(!menuVisible)}>
-            <Button variant="secondary" icon="info-circle">
-              <Trans i18nKey="trace-exploration.header.need-help">Need help</Trans>
-              <Icon className={styles.helpIcon} name={menuVisible ? 'angle-up' : 'angle-down'} size="lg" />
-            </Button>
-          </Dropdown>
           {controls.map((control) => (
             <control.Component key={control.state.key} model={control} />
           ))}
+          <PluginInfo />
         </div>
       </Stack>
       <Stack gap={1} alignItems={'flex-start'} justifyContent={'space-between'}>
@@ -633,30 +579,12 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean, embeddedMini?: bool
       zIndex: 3,
       flexWrap: 'wrap',
     }),
-    menu: css({
-      label: 'menu',
-      'svg, span': {
-        color: theme.colors.text.link,
-      },
-    }),
-    menuHeader: css`
-      padding: ${theme.spacing(0.5, 1)};
-      white-space: nowrap;
-    `,
-    menuHeaderSubtitle: css`
-      color: ${theme.colors.text.secondary};
-      font-size: ${theme.typography.bodySmall.fontSize};
-    `,
     tooltip: css({
       label: 'tooltip',
       fontSize: '14px',
       lineHeight: '22px',
       width: '180px',
       textAlign: 'center',
-    }),
-    helpIcon: css({
-      label: 'helpIcon',
-      marginLeft: theme.spacing(1),
     }),
     filters: css({
       label: 'filters',

@@ -185,6 +185,25 @@
     "p95": "p95",
     "p99": "p99"
   },
+  "plugin-info": {
+    "button": {
+      "title": "Plugin info",
+      "tooltip": "Plugin info"
+    },
+    "header": {
+      "last-update": "Last update: {{updated}}",
+      "title": "Grafana Traces Drilldown v{{version}}"
+    },
+    "menu": {
+      "changelog": "Changelog",
+      "commit-sha": "Commit SHA: {{sha}}",
+      "contribute": "Contribute",
+      "documentation": "Documentation",
+      "give-feedback": "Give feedback",
+      "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+      "report-issue": "Report an issue"
+    }
+  },
   "primary-signal-variable": {
     "primary-signal": "Primary signal",
     "primary-signal-label": "Primary signal"
@@ -265,21 +284,12 @@
     "header": {
       "data-source": "Data source",
       "filters": "Filters",
-      "need-help": "Need help",
       "trace-id": "Trace ID",
       "trace-id-placeholder": "Enter an ID and press Enter"
-    },
-    "menu": {
-      "documentation": "Documentation",
-      "give-feedback": "Give feedback"
     },
     "variable": {
       "data-source": "Data source",
       "duration-percentiles": "Duration Percentiles"
-    },
-    "version-header": {
-      "last-update": "Last update: {{compositeVersion}}",
-      "title": "Grafana Traces Drilldown v{{version}}"
     }
   },
   "traceql-issue-detector": {
