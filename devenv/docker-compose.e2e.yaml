@@ -110,4 +110,4 @@ services:
     depends_on:
       grafana:
         condition: service_healthy
-    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm e2e:fast"
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile --ignore-scripts && pnpm e2e:fast"

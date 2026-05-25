@@ -21,7 +21,7 @@
     "server:ci": "docker compose -f ./devenv/docker-compose.e2e.yaml up --build -d",
     "server:ci:down": "docker compose -f ./devenv/docker-compose.e2e.yaml down",
     "server:react19": "GRAFANA_VERSION=dev-preview-react19 GRAFANA_IMAGE=grafana-enterprise GF_FEATURE_TOGGLES_ENABLE=react19 docker compose -f ./devenv/docker-compose.yaml up --build",
-    "start": "pnpm install && pnpm dev",
+    "start": "pnpm install --ignore-scripts && pnpm dev",
     "sign": "pnpm dlx @grafana/sign-plugin@latest"
   },
   "author": "Grafana",
@@ -72,6 +72,7 @@
     "style-loader": "4.0.0",
     "swc-loader": "0.2.7",
     "terser-webpack-plugin": "5.4.0",
+    "ts-node": "10.9.2",
     "typescript": "5.8.3",
     "webpack": "5.104.1",
     "webpack-cli": "5.1.4",
