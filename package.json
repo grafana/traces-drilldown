@@ -76,6 +76,7 @@
     "typescript": "5.8.3",
     "webpack": "5.104.1",
     "webpack-cli": "5.1.4",
+    "webpack-merge": "5.10.0",
     "webpack-livereload-plugin": "3.0.2",
     "webpack-subresource-integrity": "5.1.0",
     "webpack-virtual-modules": "0.6.2"
@@ -93,7 +94,6 @@
     "@grafana/schema": "^12.1.0",
     "@grafana/ui": "12.3.0",
     "@lezer/common": "^1.2.3",
-    "@lezer/lr": "^1.4.2",
     "@openfeature/core": "^1.9.2",
     "@openfeature/ofrep-web-provider": "^0.3.5",
     "@openfeature/react-sdk": "^1.2.0",
