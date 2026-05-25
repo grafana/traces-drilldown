@@ -76,8 +76,8 @@
     "typescript": "5.8.3",
     "webpack": "5.104.1",
     "webpack-cli": "5.1.4",
-    "webpack-merge": "5.10.0",
     "webpack-livereload-plugin": "3.0.2",
+    "webpack-merge": "5.10.0",
     "webpack-subresource-integrity": "5.1.0",
     "webpack-virtual-modules": "0.6.2"
   },
