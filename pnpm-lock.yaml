@@ -5,24 +5,15 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@remix-run/router': ^1.23.2
   lodash: ^4.18.0
   react-router: ^6.30.2
   serialize-javascript: ^7.0.5
-  flatted: ^3.4.0
   immutable: ^5.1.5
   dompurify: ^3.4.0
-  picomatch@^2: ~2.3.2
-  picomatch@^4: ^4.0.4
   yaml: ^2.8.3
   minimatch@^3: ~3.1.4
   minimatch@^9: ~10.2.0
   minimatch@^10: ^10.2.3
-  undici: ^7.24.0
-  brace-expansion@^1: ^1.1.13
-  brace-expansion@^5: ^5.0.5
-  '@types/react': ^18.3.28
-  '@types/react-dom': ^18.3.7
   uuid: ^14.0.0
   '@tootallnate/once': '>=3.0.1'
 
@@ -161,10 +152,10 @@ importers:
         specifier: 22.19.15
         version: 22.19.15
       '@types/react':
-        specifier: ^18.3.28
+        specifier: 18.3.28
         version: 18.3.28
       '@types/react-dom':
-        specifier: ^18.3.7
+        specifier: 18.3.7
         version: 18.3.7(@types/react@18.3.28)
       '@types/semver':
         specifier: 7.7.1
@@ -1907,8 +1898,8 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       '@testing-library/dom': ^10.0.0
-      '@types/react': ^18.3.28
-      '@types/react-dom': ^18.3.7
+      '@types/react': ^18.0.0 || ^19.0.0
+      '@types/react-dom': ^18.0.0 || ^19.0.0
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
@@ -2023,7 +2014,7 @@ packages:
   '@types/react-dom@18.3.7':
     resolution: {integrity: sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==}
     peerDependencies:
-      '@types/react': ^18.3.28
+      '@types/react': ^18.0.0
 
   '@types/react-table@7.7.20':
     resolution: {integrity: sha512-ahMp4pmjVlnExxNwxyaDrFgmKxSbPwU23sGQw2gJK4EhCvnvmib2s/O/+y1dfV57dXOwpr2plfyBol+vEHbi2w==}
@@ -2031,7 +2022,7 @@ packages:
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
     peerDependencies:
-      '@types/react': ^18.3.28
+      '@types/react': '*'
 
   '@types/react@18.3.28':
     resolution: {integrity: sha512-z9VXpC7MWrhfWipitjNdgCauoMLRdIILQsAEV+ZesIzBq/oUlxk0m3ApZuMFCXdnS4U7KrI+l3WRUEGQ8K1QKw==}
@@ -3040,8 +3031,8 @@ packages:
     resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
 
-  dompurify@3.4.2:
-    resolution: {integrity: sha512-lHeS9SA/IKeIFFyYciHBr2n0v1VMPlSj843HdLOwjb2OxNwdq9Xykxqhk+FE42MzAdHvInbAolSE4mhahPpjXA==}
+  dompurify@3.4.5:
+    resolution: {integrity: sha512-OrwIBKsdNSVEeubdJ1HBv/wNENRM9ytAVCv7YXt//A3vPdVMNuACRqK9mXCGCBW2ln7BT/A4X0jXHo2Gu89miA==}
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
@@ -3352,7 +3343,7 @@ packages:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
-      picomatch: ^4.0.4
+      picomatch: ^3 || ^4
     peerDependenciesMeta:
       picomatch:
         optional: true
@@ -4914,7 +4905,7 @@ packages:
   react-calendar@6.0.1:
     resolution: {integrity: sha512-b8E61W7qk/He9XEbtbQBjnALPuGmxeglsotgZyAShqN1vHMzXWjl4g7WI5tRF93RE4Wbo0c0BKN3vTQhrBojpg==}
     peerDependencies:
-      '@types/react': ^18.3.28
+      '@types/react': ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
@@ -5043,7 +5034,7 @@ packages:
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
     peerDependencies:
-      '@types/react': ^18.3.28
+      '@types/react': ^18.2.25 || ^19
       react: ^18.0 || ^19
       redux: ^5.0.0
     peerDependenciesMeta:
@@ -6730,7 +6721,7 @@ snapshots:
       '@types/systemjs': 6.15.3
       d3-interpolate: 3.0.1
       date-fns: 4.1.0
-      dompurify: 3.4.2
+      dompurify: 3.4.5
       eventemitter3: 5.0.1
       fast_array_intersect: 1.1.0
       history: 4.10.1
@@ -9279,7 +9270,7 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@3.4.2:
+  dompurify@3.4.5:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
