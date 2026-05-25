@@ -42,7 +42,7 @@
     "@testing-library/user-event": "14.6.1",
     "@types/jest": "29.5.14",
     "@types/lodash": "4.17.24",
-    "@types/node": "22.19.15",
+    "@types/node": "24.10.1",
     "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
     "@types/semver": "7.7.1",
@@ -66,7 +66,7 @@
     "knip": "5.88.1",
     "prettier": "3.6.2",
     "replace-in-file-webpack-plugin": "1.0.6",
-    "sass": "1.89.2",
+    "sass": "1.100.0",
     "sass-loader": "16.0.7",
     "semver": "7.7.4",
     "style-loader": "4.0.0",
@@ -111,24 +111,5 @@
     "rxjs": "7.8.2",
     "uplot": "^1.6.32"
   },
-  "pnpm": {
-    "overrides": {
-      "lodash": "^4.18.0",
-      "react-router": "^6.30.2",
-      "serialize-javascript": "^7.0.5",
-      "immutable": "^5.1.5",
-      "dompurify": "^3.4.0",
-      "yaml": "^2.8.3",
-      "minimatch@^3": "~3.1.4",
-      "minimatch@^9": "~10.2.0",
-      "minimatch@^10": "^10.2.3",
-      "uuid": "^14.0.0",
-      "@tootallnate/once": ">=3.0.1",
-      "js-cookie": "^3.0.7",
-      "protobufjs": "^7.5.8",
-      "ws": "^8.20.1",
-      "qs": "^6.15.2"
-    }
-  },
-  "packageManager": "pnpm@10.33.1+sha512.05ba3c1d5d1c18f68df06470d74055e62d41fc110a0c660db1b2dfb2785327f04cf0f68345d4609bc52089e7fa0343c31593b2f9594e2c5d5da426230acc9820"
+  "packageManager": "pnpm@11.2.2+sha512.36e6621fad506178936455e70247b8808ef4ec25797a9f437a93281a020484e2607f6a469a22e982987c3dbb8866e3071514ab10a4a1749e06edcd1ec118436f"
 }
