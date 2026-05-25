@@ -1,7 +1,7 @@
 packages:
   - '.'
 
-# Supply-chain hardening (see AGENTS.md). pnpm 11 reads project settings here, not .npmrc / package.json#pnpm.
+frozenLockfile: true
 ignoreScripts: true
 minimumReleaseAge: 1440
 trustPolicy: no-downgrade

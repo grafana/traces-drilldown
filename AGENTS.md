@@ -58,7 +58,7 @@
 - **Edits** — Large replacements (many lines) are fewer tool calls when they succeed but often fail on whitespace/formatting. Smaller, incremental steps match more reliably. Prefer smaller steps for big or multi-part changes; one large replace is fine when the snippet is short and you have the exact content from the file.
 - **Avoid** — Reading whole large files for a small change (see Code anchors; grep first). One giant multi-file replace without verifying exact content.
 - **Frontend security** — Follow workspace rules: HTML sanitization (DOMPurify), safe URL APIs / `textUtil.sanitizeUrl` and whatever else you think is necessary.
-- **Dependency installs** — `pnpm-workspace.yaml` sets `ignoreScripts: true` (pnpm applies it on every `pnpm install`). Prefer `pnpm install --ignore-scripts` in scripts and CI too. Do not run installs without this unless a package truly needs a lifecycle script (rebuild manually). Review `pnpm-workspace.yaml` `overrides` when security advisories affect transitive deps.
+- **Dependency installs** — `pnpm-workspace.yaml` sets `frozenLockfile: true` and `ignoreScripts: true` (applied on every `pnpm install`). In scripts and CI use `pnpm install --frozen-lockfile --ignore-scripts`. To refresh the lockfile after dependency changes, use `pnpm install --no-frozen-lockfile --ignore-scripts`. Do not run installs without `--ignore-scripts` unless a package truly needs a lifecycle script (rebuild manually). Review `pnpm-workspace.yaml` `overrides` when security advisories affect transitive deps.
 
 ### Scenes in Traces Drilldown
 

@@ -21,7 +21,7 @@
     "server:ci": "docker compose -f ./devenv/docker-compose.e2e.yaml up --build -d",
     "server:ci:down": "docker compose -f ./devenv/docker-compose.e2e.yaml down",
     "server:react19": "GRAFANA_VERSION=dev-preview-react19 GRAFANA_IMAGE=grafana-enterprise GF_FEATURE_TOGGLES_ENABLE=react19 docker compose -f ./devenv/docker-compose.yaml up --build",
-    "start": "pnpm install --ignore-scripts && pnpm dev",
+    "start": "pnpm install --frozen-lockfile --ignore-scripts && pnpm dev",
     "sign": "pnpm dlx @grafana/sign-plugin@latest"
   },
   "author": "Grafana",
