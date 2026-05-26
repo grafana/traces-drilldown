@@ -1,9 +1,11 @@
 packages:
   - '.'
 
+# https://pnpm.io/supply-chain-security
 frozenLockfile: true
 ignoreScripts: true
-minimumReleaseAge: 1440
+# One week in minutes (7 × 24 × 60).
+minimumReleaseAge: 10080
 trustPolicy: no-downgrade
 strictDepBuilds: true
 blockExoticSubdeps: true
