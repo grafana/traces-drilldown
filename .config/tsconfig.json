@@ -22,5 +22,5 @@
     "transpileOnly": true
   },
   "include": ["../src", "./types"],
-  "extends": "@grafana/tsconfig"
+  "extends": "@grafana/tsconfig/tsconfig.json"
 }
