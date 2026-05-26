@@ -3,12 +3,16 @@ packages:
 
 # https://pnpm.io/supply-chain-security
 frozenLockfile: true
+# Disable lifecycle scripts like husky git hooks such as postinstall.
 ignoreScripts: true
 # One week in minutes (7 × 24 × 60).
 minimumReleaseAge: 10080
+# Fail install if a package's trust evidence is weaker than an earlier release (e.g. lost trusted publisher).
 trustPolicy: no-downgrade
-strictDepBuilds: true
+# Transitive deps must come from the registry/workspace; block git/tarball URLs except on direct deps.
 blockExoticSubdeps: true
+# Requires every dependency with a lifecycle script to be listed in allowBuilds
+strictDepBuilds: true
 
 allowBuilds:
   esbuild: true
