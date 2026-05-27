@@ -7,7 +7,7 @@
     "github>grafana/grafana-renovate-config//presets/docker"
   ],
   "extends": ["config:best-practices"],
-  "minimumReleaseAge": "30 days",
+  "minimumReleaseAge": "14 days",
   "prConcurrentLimit": 5,
   "schedule": ["on the first day of the month"],
   "rebaseWhen": "behind-base-branch",
