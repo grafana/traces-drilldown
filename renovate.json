@@ -15,7 +15,94 @@
     {
       "description": "Group all Grafana packages together",
       "groupName": "Grafana packages",
-      "matchPackageNames": ["/^@grafana//"]
+      "matchPackageNames": ["/^@grafana\\//"]
+    },
+    {
+      "description": "Group React and matching type packages",
+      "groupName": "React",
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"]
+    },
+    {
+      "description": "Group TypeScript ESLint packages",
+      "groupName": "typescript-eslint",
+      "matchPackageNames": ["/^@typescript-eslint//"]
+    },
+    {
+      "description": "Group Testing Library and Jest packages",
+      "groupName": "Testing Library",
+      "matchPackageNames": [
+        "@testing-library/dom",
+        "@testing-library/jest-dom",
+        "@testing-library/react",
+        "@testing-library/user-event",
+        "jest",
+        "jest-environment-jsdom",
+        "@types/jest"
+      ]
+    },
+    {
+      "description": "Group Prettier",
+      "groupName": "Prettier",
+      "matchPackageNames": ["prettier"]
+    },
+    {
+      "description": "Group ESLint core and plugins (not eslint-webpack-plugin; see Webpack group)",
+      "groupName": "ESLint",
+      "matchPackageNames": [
+        "eslint",
+        "eslint-config-prettier",
+        "eslint-plugin-jsdoc",
+        "eslint-plugin-react",
+        "eslint-plugin-react-hooks",
+        "@stylistic/eslint-plugin-ts"
+      ]
+    },
+    {
+      "description": "Group webpack, CLI, loaders, and webpack plugins",
+      "groupName": "Webpack",
+      "matchPackageNames": [
+        "webpack",
+        "webpack-cli",
+        "webpack-merge",
+        "copy-webpack-plugin",
+        "css-loader",
+        "style-loader",
+        "sass",
+        "sass-loader",
+        "imports-loader",
+        "terser-webpack-plugin",
+        "eslint-webpack-plugin",
+        "fork-ts-checker-webpack-plugin",
+        "replace-in-file-webpack-plugin",
+        "webpack-livereload-plugin",
+        "webpack-subresource-integrity",
+        "webpack-virtual-modules"
+      ]
+    },
+    {
+      "description": "Group SWC toolchain",
+      "groupName": "SWC",
+      "matchPackageNames": ["@swc/core", "@swc/jest", "swc-loader"]
+    },
+    {
+      "description": "Group OpenFeature packages",
+      "groupName": "OpenFeature",
+      "matchPackageNames": ["/^@openfeature//"]
+    },
+    {
+      "description": "Group React Aria packages",
+      "groupName": "React Aria",
+      "matchPackageNames": ["/^@react-aria//"]
+    },
+    {
+      "description": "Group TypeScript compiler and Node tooling",
+      "groupName": "TypeScript",
+      "matchPackageNames": ["typescript", "ts-node", "@types/node"]
+    },
+    {
+      "description": "Group Lezer parser packages",
+      "groupName": "Lezer",
+      "matchPackageNames": ["/^@lezer//"]
     }
   ]
 }
