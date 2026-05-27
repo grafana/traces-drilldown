@@ -119,29 +119,5 @@
     "uplot": "^1.6.32",
     "uuid": "^14.0.0"
   },
-  "pnpm": {
-    "overrides": {
-      "@remix-run/router": "^1.23.2",
-      "lodash": "^4.18.0",
-      "react-router": "^6.30.2",
-      "serialize-javascript": "^7.0.5",
-      "flatted": "^3.4.0",
-      "immutable": "^5.1.5",
-      "dompurify": "^3.4.0",
-      "picomatch@^2": "~2.3.2",
-      "picomatch@^4": "^4.0.4",
-      "yaml": "^2.8.3",
-      "minimatch@^3": "~3.1.4",
-      "minimatch@^9": "~10.2.0",
-      "minimatch@^10": "^10.2.3",
-      "undici": "^7.24.0",
-      "brace-expansion@^1": "^1.1.13",
-      "brace-expansion@^5": "^5.0.5",
-      "@types/react": "^18.3.28",
-      "@types/react-dom": "^18.3.7",
-      "uuid": "^14.0.0",
-      "@tootallnate/once": ">=3.0.1"
-    }
-  },
-  "packageManager": "pnpm@10.33.1+sha512.05ba3c1d5d1c18f68df06470d74055e62d41fc110a0c660db1b2dfb2785327f04cf0f68345d4609bc52089e7fa0343c31593b2f9594e2c5d5da426230acc9820"
+  "packageManager": "pnpm@11.4.0+sha512.f0febc7e37552ab485494a914241b338e0b3580b93d54ce31f00933015880863129038a1b4ae4e414a0ee63ac35bf21197e990172c4a68256450b5636310968f"
 }
