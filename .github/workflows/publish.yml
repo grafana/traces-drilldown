@@ -22,18 +22,19 @@ jobs:
     # Don't run on forks
     if: github.repository == 'grafana/traces-drilldown'
     permissions:
+      contents: read
       id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Version bump
-        uses: grafana/plugin-ci-workflows/actions/plugins/version-bump-changelog@main # zizmor: ignore[unpinned-uses]
+        uses: grafana/plugin-ci-workflows/actions/plugins/version-bump-changelog@plugins-version-bump-changelog/v2.0.0
         with:
           generate-changelog: ${{ inputs.generate-changelog }}
           version: ${{ inputs.version }}
   CD:
     name: Deploy plugin
     needs: bump-version
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v7.0.0
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v8.0.1
     permissions:
       contents: write
       id-token: write
