@@ -33,7 +33,7 @@ jobs:
   CD:
     name: Deploy plugin
     needs: bump-version
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@2b6533cf7a036b781cd1e4817823743b1fdad089 # ci-cd-workflows/v8.0.1 (2026-05-22)
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@33cae1f950c4f76df8827a183bda17c6f8a51e45 # ci-cd-workflows/v9.0.0 (2026-05-28)
     permissions:
       contents: write
       id-token: write
