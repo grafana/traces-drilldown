@@ -26,14 +26,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Version bump
-        uses: grafana/plugin-ci-workflows/actions/plugins/version-bump-changelog@main # zizmor: ignore[unpinned-uses]
+        uses: grafana/plugin-ci-workflows/actions/plugins/version-bump-changelog@30442d8ce84a62cdf704c81c2adf8289778c0121 # plugins-version-bump-changelog/v2.0.0 (2026-05-20)
         with:
           generate-changelog: ${{ inputs.generate-changelog }}
           version: ${{ inputs.version }}
   CD:
     name: Deploy plugin
     needs: bump-version
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v7.0.0
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@2b6533cf7a036b781cd1e4817823743b1fdad089 # ci-cd-workflows/v8.0.1 (2026-05-22)
     permissions:
       contents: write
       id-token: write
