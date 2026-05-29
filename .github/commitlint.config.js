@@ -19,7 +19,7 @@ module.exports = {
         'I18n',
       ],
     ],
-    // Preserve legacy `I18n` type (not lowercase).
     'type-case': [0],
+    'subject-case': [0],
   },
 };
