@@ -164,7 +164,7 @@
     "title": "Load a previously saved search"
   },
   "load-search-scene": {
-    "load-saved-query": "Load saved query",
+    "load-saved-query": "Load Saved query",
     "load-saved-search": "Load saved search",
     "no-saved-searches": "No saved searches to load"
   },
@@ -193,7 +193,7 @@
     "comparison-selection": "Comparison selection"
   },
   "save-search-button": {
-    "save-in-saved-queries": "Save in Saved Queries",
+    "save-in-saved-queries": "Save in Saved queries Queries",
     "save-search": "Save search"
   },
   "save-search-modal": {

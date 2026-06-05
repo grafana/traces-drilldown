@@ -82,7 +82,7 @@ export function SaveSearchButton({ sceneRef }: Props) {
     <OpenQueryLibraryComponent
       datasourceFilters={[dsName]}
       query={query}
-      tooltip={t('save-search-button.save-in-saved-queries', 'Save in Saved Queries')}
+      tooltip={t('save-search-button.save-in-saved-queries', 'Save in Saved queries Queries')}
     />
   );
 }
