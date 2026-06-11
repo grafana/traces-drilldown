@@ -1,7 +1,5 @@
 import { css } from '@emotion/css';
 import React from 'react';
-// eslint-disable-next-line no-restricted-imports
-import { duration } from 'moment';
 
 import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
 import {
@@ -34,6 +32,7 @@ import { AttributePanel } from 'components/Home/AttributePanel';
 import { HeaderScene } from 'components/Home/HeaderScene';
 import { getDatasourceVariable, getHomeFilterVariable } from 'utils/utils';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
+import { formatUnixRangeDurationSeconds } from '../../utils/dates';
 import { getTagKeysProvider, renderTraceQLLabelFilters } from './utils';
 
 export interface HomeState extends SceneObjectState {
@@ -95,8 +94,7 @@ export class Home extends SceneObjectBase<HomeState> {
   buildPanels(sceneTimeRange: SceneTimeRangeLike, filters: AdHocVariableFilter[]) {
     const from = sceneTimeRange.state.value.from.unix();
     const to = sceneTimeRange.state.value.to.unix();
-    const dur = duration(to - from, 's');
-    const durString = `${dur.asSeconds()}s`;
+    const durString = formatUnixRangeDurationSeconds(from, to);
     const renderedFilters = renderTraceQLLabelFilters(filters);
 
     this.setState({

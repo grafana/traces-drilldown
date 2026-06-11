@@ -1,12 +1,43 @@
 packages:
   - '.'
 
-ignoredBuiltDependencies:
-  - core-js
+# https://pnpm.io/supply-chain-security
+# Same as passing --frozen-lockfile on every pnpm install (CI uses this via plugin-ci-workflows too).
+frozenLockfile: true
+# Disable lifecycle scripts like husky git hooks such as postinstall.
+ignoreScripts: true
+# Five days in minutes (5 × 24 × 60).
+minimumReleaseAge: 7200
+# Fail install if a package's trust evidence is weaker than an earlier release (e.g. lost trusted publisher).
+trustPolicy: no-downgrade
+# Transitive deps must come from the registry/workspace; block git/tarball URLs except on direct deps.
+blockExoticSubdeps: true
+# Requires every dependency with a lifecycle script to be listed in allowBuilds
+strictDepBuilds: true
 
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - '@swc/core'
-  - esbuild
-  - protobufjs
-  - unrs-resolver
+allowBuilds:
+  esbuild: true
+  rolldown: true
+  unrs-resolver: true
+
+overrides:
+  '@types/node': 24.10.1
+  chokidar: ^5.0.0
+  react-redux: ^9.3.0
+  semver: ^7.7.4
+  ua-parser-js: 2.0.9
+  lodash: ^4.18.0
+  react-router: ^6.30.2
+  serialize-javascript: ^7.0.5
+  immutable: ^5.1.5
+  dompurify: ^3.4.0
+  yaml: ^2.8.3
+  minimatch@^3: ~3.1.4
+  minimatch@^9: ~10.2.0
+  minimatch@^10: ^10.2.3
+  uuid: ^14.0.0
+  '@tootallnate/once': '>=3.0.1'
+  js-cookie: ^3.0.7
+  protobufjs: 7.5.8
+  ws: 8.20.1
+  qs: ^6.15.2

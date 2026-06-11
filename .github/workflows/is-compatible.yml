@@ -19,7 +19,7 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Build plugin
         run: pnpm run build
       - name: Find module.ts or module.tsx
