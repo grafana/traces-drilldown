@@ -201,7 +201,7 @@
       "contribute": "Contribute",
       "documentation": "Documentation",
       "give-feedback": "Give feedback",
-      "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
       "report-issue": "Report an issue"
     }
   },
