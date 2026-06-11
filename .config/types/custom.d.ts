@@ -1,3 +1,5 @@
+/// <reference types="@testing-library/jest-dom" />
+
 // Image declarations
 declare module '*.gif' {
   const src: string;

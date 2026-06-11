@@ -24,7 +24,6 @@ import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
 import { map, Observable } from 'rxjs';
 import { BaselineColor, buildAllComparisonLayout, SelectionColor } from '../../../layouts/allComparison';
 // eslint-disable-next-line no-restricted-imports
-import { duration } from 'moment';
 import { comparisonQuery } from '../../../queries/comparisonQuery';
 import { buildAttributeComparison } from '../../../layouts/attributeComparison';
 import {
@@ -37,6 +36,7 @@ import {
 import { InspectAttributeAction } from 'components/Explore/actions/InspectAttributeAction';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../../../utils/analytics';
 import { computeHighestDifference } from '../../../../../utils/comparison';
+import { formatUnixRangeDurationSeconds } from '../../../../../utils/dates';
 import { AttributesDescription } from '../Breakdown/AttributesDescription';
 import { isEqual } from 'lodash';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
@@ -280,8 +280,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
 }
 
 export function buildQuery(from: number, to: number, compareQuery: string) {
-  const dur = duration(to - from, 's');
-  const durString = `${dur.asSeconds()}s`;
+  const durString = formatUnixRangeDurationSeconds(from, to);
   return {
     refId: 'A',
     query: `{${VAR_FILTERS_EXPR}} | compare(${compareQuery})`,
