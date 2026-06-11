@@ -32,7 +32,7 @@ services:
 
   # A RabbitMQ queue used to send message between the requester and the server microservices.
   mythical-queue:
-    image: rabbitmq:management@sha256:23fe4f224d3d4d4e3c3904e82fb8a47824f0ee03412c33b7b21e6bf00b9852fa
+    image: rabbitmq:management@sha256:f2aa0097c68a777ff0aaf5235862963be3204cb21926e503b7743d5951082947
     restart: always
     ports:
       - "5672:5672"
@@ -110,4 +110,4 @@ services:
     depends_on:
       grafana:
         condition: service_healthy
-    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm e2e:fast"
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile --ignore-scripts && pnpm e2e:fast"

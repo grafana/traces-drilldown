@@ -1,6 +1,5 @@
 import { dropWhile as _dropWhile, round as _round } from 'lodash';
 import { sceneGraph, SceneObject } from '@grafana/scenes';
-import { duration } from 'moment/moment';
 
 export const ONE_MILLISECOND = 1000;
 export const ONE_SECOND = 1000 * ONE_MILLISECOND;
@@ -8,6 +7,11 @@ export const ONE_MINUTE = 60 * ONE_SECOND;
 export const ONE_HOUR = 60 * ONE_MINUTE;
 export const ONE_DAY = 24 * ONE_HOUR;
 export const DEFAULT_MS_PRECISION = Math.log10(ONE_MILLISECOND);
+
+/** TraceQL-style step/range string from two Unix timestamps in seconds. */
+export function formatUnixRangeDurationSeconds(fromUnix: number, toUnix: number): string {
+  return `${toUnix - fromUnix}s`;
+}
 
 const UNIT_STEPS: Array<{ unit: string; microseconds: number; ofPrevious: number }> = [
   { unit: 'd', microseconds: ONE_DAY, ofPrevious: 24 },
@@ -78,7 +82,7 @@ export const getStepForTimeRange = (scene: SceneObject, dataPoints?: number) => 
   const from = sceneTimeRange.state.value.from.unix();
   const to = sceneTimeRange.state.value.to.unix();
 
-  const dur = duration(to - from, 's');
-  const bucketSizeSeconds = calculateBucketSize(dur.asSeconds(), dataPoints);
+  const rangeSeconds = to - from;
+  const bucketSizeSeconds = calculateBucketSize(rangeSeconds, dataPoints);
   return `${bucketSizeSeconds}s`;
 }
