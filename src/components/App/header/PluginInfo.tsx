@@ -7,6 +7,8 @@ import React from 'react';
 
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 
+import { TempoLogo } from './TempoLogo';
+
 const PLUGIN_REPO = 'https://github.com/grafana/traces-drilldown';
 const DOCUMENTATION_URL = 'https://grafana.com/docs/grafana/next/explore/simplified-exploration/traces/';
 const FEEDBACK_FORM_URL = 'https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS';
@@ -25,7 +27,10 @@ function InfoMenuHeader() {
 
   return (
     <div className={styles.menuHeader}>
-      <h5>{t('plugin-info.header.title', 'Grafana Traces Drilldown v{{version}}', { version })}</h5>
+      <h5>
+        <TempoLogo />
+        {t('plugin-info.header.title', 'Grafana Traces Drilldown v{{version}}', { version })}
+      </h5>
       <div className={styles.subTitle}>
         {t('plugin-info.header.last-update', 'Last update: {{updated}}', { updated })}
       </div>
