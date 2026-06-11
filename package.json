@@ -95,7 +95,7 @@
     "@grafana/ui": "12.3.0",
     "@lezer/common": "^1.2.3",
     "@openfeature/core": "^1.9.2",
-    "@openfeature/ofrep-web-provider": "^0.3.5",
+    "@openfeature/ofrep-web-provider": "^0.4.1",
     "@openfeature/react-sdk": "^1.2.0",
     "@openfeature/web-sdk": "^1.7.2",
     "@react-aria/dialog": "^3.6.0",

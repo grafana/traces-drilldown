@@ -82,7 +82,8 @@ export function ensureOpenFeaturePluginInitialized(): Promise<void> {
         PLUGIN_OPEN_FEATURE_DOMAIN,
         new OFREPWebProvider({
           baseUrl,
-          pollInterval: -1,
+          disableVisibilityRefresh: true, // Do not refresh
+          cacheMode: 'disabled', // Do not write to localStorage
           timeoutMs: 10_000,
         }),
         evaluationContext
