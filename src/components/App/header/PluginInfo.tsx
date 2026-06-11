@@ -84,9 +84,8 @@ function InfoMenu() {
       />
       <Menu.Divider />
       <Menu.Item
-        label={t('plugin-info.menu.grafana-version', 'Grafana {{edition}} v{{version}} ({{env}})', {
+        label={t('plugin-info.menu.grafana-version', 'Grafana {{edition}} ({{env}})', {
           edition: grafanaBuildInfo.edition,
-          version: grafanaBuildInfo.version,
           env: grafanaBuildInfo.env,
         })}
         icon="grafana"
@@ -104,8 +103,9 @@ function InfoMenu() {
 
 export function PluginInfo() {
   return (
-    <Dropdown overlay={() => <InfoMenu />} placement="bottom-end">
+    <Dropdown overlay={<InfoMenu />} placement="bottom-end">
       <Button
+        aria-label={t('plugin-info.button.title', 'Plugin info')}
         icon="info-circle"
         variant="secondary"
         tooltip={t('plugin-info.button.tooltip', 'Plugin info')}
