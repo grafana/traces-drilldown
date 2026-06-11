@@ -1,22 +1,24 @@
 services:
   grafana:
     container_name: "grafana-explore-traces-e2e"
+    image: grafana/${GRAFANA_IMAGE:-grafana-enterprise}:${GRAFANA_VERSION:-12.3.0@sha256:96a793a92c9a77cf543d6e5c55100cd296ed9e22487dc3d069331364c456247b}
+    restart: unless-stopped
     environment:
       - GF_PLUGINS_PREINSTALL_DISABLED=true
       # Time seeker (grafana/grafana#121650). Requires Grafana 13+ where the toggle is registered.
       - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker,localizationForPlugins
-    build:
-      context: ../.config
-      args:
-        grafana_image: ${GRAFANA_IMAGE:-grafana}
-        grafana_version: ${GRAFANA_VERSION:-12.3.0}
+      # Match the dev Dockerfile defaults so unsigned plugins load in CI without a custom image build.
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_DEFAULT_APP_MODE=development
     ports:
       - 3030:3000/tcp
     volumes:
       - ../dist:/var/lib/grafana/plugins/grafana-explore-traces-e2e
       - ../provisioning:/etc/grafana/provisioning
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:3000/api/health || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 30
