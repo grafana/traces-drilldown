@@ -7,9 +7,12 @@ import { SparklineCell } from './SparklineCell';
 import { ExceptionAccordionContent } from './accordion/ExceptionAccordion';
 import { SceneObject } from '@grafana/scenes';
 
+import { ExceptionMessageFilterOperator, getExceptionMessageFilter } from './ExceptionUtils';
+
 export interface ExceptionRow {
   type: string;
   message: string;
+  groupedMessages: string[];
   service: string;
   lastSeen: string;
   occurrences: number;
@@ -20,7 +23,12 @@ interface ExceptionsTableProps {
   rows: ExceptionRow[];
   theme: GrafanaTheme2;
   scene: SceneObject;
-  onFilterClick?: (key: string, value: string, operator?: '=' | '!=', append?: boolean) => void;
+  onFilterClick?: (
+    key: string,
+    value: string,
+    operator?: ExceptionMessageFilterOperator,
+    append?: boolean
+  ) => void;
 }
 
 // Component to conditionally show tooltip only when text is truncated
@@ -75,18 +83,58 @@ const TruncatedMessage = ({ message, onClick, className }: { message: string; on
   return content;
 };
 
+const getSharedPrefixAndMessageRemainders = (messages: string[]) => {
+  if (messages.length < 2) {
+    return { sharedPrefix: '', remainders: messages };
+  }
+
+  const [first, ...rest] = messages;
+  let sharedPrefix = first;
+
+  for (const message of rest) {
+    let i = 0;
+    const max = Math.min(sharedPrefix.length, message.length);
+    while (i < max && sharedPrefix[i] === message[i]) {
+      i++;
+    }
+    sharedPrefix = sharedPrefix.slice(0, i);
+    if (!sharedPrefix) {
+      break;
+    }
+  }
+
+  const lastBoundary = Math.max(
+    sharedPrefix.lastIndexOf(' '),
+    sharedPrefix.lastIndexOf(','),
+    sharedPrefix.lastIndexOf(':'),
+    sharedPrefix.lastIndexOf('/')
+  );
+  if (lastBoundary > 0) {
+    sharedPrefix = sharedPrefix.slice(0, lastBoundary + 1);
+  }
+
+  sharedPrefix = sharedPrefix.trimEnd();
+
+  if (!sharedPrefix) {
+    return { sharedPrefix: '', remainders: messages };
+  }
+
+  const remainders = messages.map((message) => {
+    const remainder = message.startsWith(sharedPrefix) ? message.slice(sharedPrefix.length).trimStart() : message;
+    return remainder || message;
+  });
+
+  return { sharedPrefix, remainders };
+};
+
 export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: ExceptionsTableProps) => {
   const styles = useStyles2(getStyles);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-  const handleIncludeClick = (message: string, e: React.MouseEvent) => {
+  const handleMessageFilterClick = (message: string, mode: 'include' | 'exclude', e: React.MouseEvent) => {
     e.stopPropagation();
-    onFilterClick?.('event.exception.message', message, '=', true);
-  };
-
-  const handleExcludeClick = (message: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    onFilterClick?.('event.exception.message', message, '!=', true);
+    const { value, operator } = getExceptionMessageFilter(message, mode);
+    onFilterClick?.('event.exception.message', value, operator, true);
   };
 
   const handleRowClick = (index: number) => {
@@ -121,6 +169,10 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
         <tbody>
           {rows.map((row, index) => {
             const isExpanded = expandedRow === index;
+            const hasGroupedMessages = row.groupedMessages.length > 1;
+            const { sharedPrefix, remainders } = hasGroupedMessages
+              ? getSharedPrefixAndMessageRemainders(row.groupedMessages)
+              : { sharedPrefix: '', remainders: [] as string[] };
             return (
               <React.Fragment key={index}>
                 <tr 
@@ -150,14 +202,53 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                           >
                             {row.type}
                           </div>
-                          <TruncatedMessage
-                            message={row.message}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRowClick(index);
-                            }}
-                            className={styles.exceptionMessage}
-                          />
+                          <div className={styles.exceptionMessageRow}>
+                            <TruncatedMessage
+                              message={row.message}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRowClick(index);
+                              }}
+                              className={styles.exceptionMessage}
+                            />
+                            {hasGroupedMessages && (
+                              <Tooltip
+                                placement="top"
+                                content={
+                                  <div className={styles.groupedMessagesTooltip}>
+                                    <div className={styles.groupedMessagesTooltipTitle}>
+                                      <Trans i18nKey="exceptions-table.grouped-messages-title">Grouped messages</Trans>
+                                    </div>
+                                      {sharedPrefix && (
+                                        <div className={styles.groupedMessagesSharedPrefix}>
+                                          <span className={styles.groupedMessagesLabel}>
+                                            <Trans i18nKey="exceptions-table.grouped-messages-common-prefix">Common</Trans>:
+                                          </span>{' '}
+                                          {sharedPrefix}
+                                        </div>
+                                      )}
+                                    <ul className={styles.groupedMessagesList}>
+                                      {remainders.map((groupedMessage, groupedMessageIndex) => (
+                                        <li key={`${groupedMessage}-${groupedMessageIndex}`}>{groupedMessage}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                }
+                              >
+                                <button
+                                  type="button"
+                                  className={styles.groupedMessagesButton}
+                                  onClick={(e) => e.stopPropagation()}
+                                  aria-label={t(
+                                    'exceptions-table.grouped-messages-aria-label',
+                                    'Show grouped exception messages'
+                                  )}
+                                >
+                                  <Icon name="info-circle" size="sm" />
+                                </button>
+                              </Tooltip>
+                            )}
+                          </div>
                           <div className={styles.exceptionMeta}>
                             {row.service && (
                               <span className={styles.metaItem}>
@@ -176,14 +267,14 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                         <div className={styles.filterButtonsContainer}>
                           <button
                             className={styles.filterButton}
-                            onClick={(e) => handleIncludeClick(row.message, e)}
+                            onClick={(e) => handleMessageFilterClick(row.message, 'include', e)}
                             aria-label={t('exceptions-table.include-aria-label', 'Include exception message')}
                           >
                             <Trans i18nKey="exceptions-table.include">Include</Trans>
                           </button>
                           <button
                             className={styles.filterButton}
-                            onClick={(e) => handleExcludeClick(row.message, e)}
+                            onClick={(e) => handleMessageFilterClick(row.message, 'exclude', e)}
                             aria-label={t('exceptions-table.exclude-aria-label', 'Exclude exception message')}
                           >
                             <Trans i18nKey="exceptions-table.exclude">Exclude</Trans>
@@ -365,12 +456,52 @@ const getStyles = (theme: GrafanaTheme2) => {
         color: theme.colors.text.link,
       },
     }),
+    exceptionMessageRow: css({
+      display: 'flex',
+      alignItems: 'center',
+      gap: theme.spacing(0.5),
+      minWidth: 0,
+    }),
     exceptionMeta: css({
       display: 'flex',
       alignItems: 'center',
       gap: theme.spacing(1),
       color: theme.colors.text.secondary,
       marginTop: theme.spacing(0.25),
+    }),
+    groupedMessagesButton: css({
+      display: 'inline-flex',
+      flexShrink: 0,
+      padding: 0,
+      border: 'none',
+      background: 'transparent',
+      color: theme.colors.text.secondary,
+      cursor: 'pointer',
+      '&:hover': {
+        color: theme.colors.text.primary,
+      },
+    }),
+    groupedMessagesTooltip: css({
+      maxWidth: '860px',
+    }),
+    groupedMessagesTooltipTitle: css({
+      fontWeight: theme.typography.fontWeightMedium,
+      marginBottom: theme.spacing(0.5),
+    }),
+    groupedMessagesSharedPrefix: css({
+      marginBottom: theme.spacing(0.5),
+      color: theme.colors.text.secondary,
+    }),
+    groupedMessagesLabel: css({
+      fontWeight: theme.typography.fontWeightMedium,
+      color: theme.colors.text.primary,
+    }),
+    groupedMessagesList: css({
+      margin: 0,
+      paddingLeft: theme.spacing(2),
+      '> li': {
+        marginBottom: theme.spacing(0.25),
+      },
     }),
     metaItem: css({
       display: 'flex',

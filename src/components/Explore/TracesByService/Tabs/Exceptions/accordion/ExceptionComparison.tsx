@@ -44,7 +44,8 @@ class ExceptionDistributionPanel extends SceneObjectBase<ExceptionDistributionPa
             queryType: 'traceql',
             tableType: 'spans',
             query: state.query,
-            limit: 200,
+            limit: 400,
+            spss: 10,
             filters: [],
           },
         ],
@@ -78,7 +79,7 @@ class ExceptionDistributionPanel extends SceneObjectBase<ExceptionDistributionPa
           }
 
           const series = panelData.series ?? [];
-          const items = buildDistribution(series, this.state.attributeKey);
+          const items = buildDistribution(series, this.state.attributeKey, MAX_ROWS);
           this.setState({ loadingState: state, items, error: undefined });
         })
       );
@@ -129,14 +130,7 @@ class ExceptionDistributionPanel extends SceneObjectBase<ExceptionDistributionPa
 }
 
 export function buildDistribution(series: DataFrame[], attributeKey: string, maxRows = MAX_ROWS): DistributionItem[] {
-  const rawItems = series
-    .map((df) => {
-      const value = getSeriesValue(df, attributeKey) ?? 'Unknown';
-      const count = getSeriesCount(df);
-      return { value, count };
-    })
-    .filter((i) => i.count > 0)
-    .sort((a, b) => b.count - a.count);
+  const rawItems = getRowCounts(series, attributeKey).sort((a, b) => b.count - a.count);
 
   const total = rawItems.reduce((acc, i) => acc + i.count, 0);
   const max = rawItems[0]?.count ?? 0;
@@ -159,27 +153,55 @@ export function buildDistribution(series: DataFrame[], attributeKey: string, max
   }));
 }
 
-export function getSeriesValue(df: DataFrame, attributeKey: string) {
-  const valueField = df.fields.find((f) => f.name !== 'time');
-  const raw = valueField?.labels?.[attributeKey];
-  return raw ? raw.replace(/"/g, '') : undefined;
-}
+function getRowCounts(series: DataFrame[], attributeKey: string): Array<{ value: string; count: number }> {
+  const counts = new Map<string, number>();
 
-function getSeriesCount(df: DataFrame) {
-  const valueField = df.fields.find((f) => f.name !== 'time' && f.type === 'number');
-  const vals = valueField?.values;
-  if (!vals) {
-    return 0;
-  }
+  for (const df of series) {
+    const attributeField = getAttributeField(df, attributeKey);
+    if (!attributeField?.values) {
+      if (df.length > 0) {
+        counts.set('Unknown', (counts.get('Unknown') ?? 0) + df.length);
+      }
+      continue;
+    }
 
-  // Query results can be a single-point series or a vector of points; summing handles both shapes consistently.
-  let sum = 0;
-  for (const v of vals) {
-    if (typeof v === 'number' && !isNaN(v)) {
-      sum += v;
+    for (const raw of attributeField.values) {
+      const value = normalizeSeriesValue(raw) ?? 'Unknown';
+      counts.set(value, (counts.get(value) ?? 0) + 1);
     }
   }
-  return sum;
+
+  return Array.from(counts.entries()).map(([value, count]) => ({ value, count }));
+}
+
+function normalizeSeriesValue(value: unknown): string | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+
+  const normalized = String(value).replace(/"/g, '').trim();
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+function getAttributeKeyCandidates(attributeKey: string) {
+  const candidates = [attributeKey];
+  if (attributeKey.startsWith('resource.')) {
+    candidates.push(attributeKey.slice('resource.'.length));
+  }
+  if (attributeKey.startsWith('span.')) {
+    candidates.push(attributeKey.slice('span.'.length));
+  }
+  return candidates;
+}
+
+function getAttributeField(df: DataFrame, attributeKey: string) {
+  for (const key of getAttributeKeyCandidates(attributeKey)) {
+    const field = df.fields.find((f) => f.name === key);
+    if (field) {
+      return field;
+    }
+  }
+  return undefined;
 }
 
 function getStyles(theme: GrafanaTheme2) {
@@ -288,7 +310,7 @@ export const ExceptionComparison = ({
     }
 
     return attributeKeys.map((attributeKey) => {
-      const query = `${baseFilter} | count_over_time() by (${attributeKey})`;
+      const query = `${baseFilter} | select(${attributeKey})`;
       return new ExceptionDistributionPanel({
         title: attributeKey,
         attributeKey,

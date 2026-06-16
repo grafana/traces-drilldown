@@ -8,6 +8,7 @@ import { SceneObject } from '@grafana/scenes';
 
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 import { escapeTraceQlStringLiteral, renderTraceQLLabelFilters } from 'utils/filters-renderer';
+import { formatExceptionMessageTraceQLFilter } from '../ExceptionUtils';
 import {
   getFiltersVariable,
   getPrimarySignalVariable,
@@ -134,10 +135,9 @@ export const buildExceptionFilterExpr = ({
   const primarySignalExpr = (getPrimarySignalVariable(scene).state.value as string) || 'true';
   const filtersExpr = renderTraceQLLabelFilters(getFiltersVariable(scene).state.filters);
 
-  const escapedMessage = escapeTraceQlStringLiteral(exceptionMessage);
   const typeFilter = exceptionType && exceptionType !== 'Unknown' ? ` && event.exception.type = "${escapeTraceQlStringLiteral(exceptionType)}"` : '';
 
-  return `{${primarySignalExpr} && ${filtersExpr} && status = error && event.exception.message = "${escapedMessage}"${typeFilter}}`;
+  return `{${primarySignalExpr} && ${filtersExpr} && status = error && ${formatExceptionMessageTraceQLFilter(exceptionMessage)}${typeFilter}}`;
 };
 
 const getAccordionStyles = (theme: GrafanaTheme2) => {
