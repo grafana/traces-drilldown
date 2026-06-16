@@ -8,13 +8,21 @@ import { LoadSearchModal } from './LoadSearchModal';
 import { SavedSearch, useSavedSearches } from './saveSearch';
 import { getDatasourceVariable, getFiltersVariable, getTraceExplorationScene } from '../../../utils/utils';
 
-jest.mock('react-inlinesvg', () => ({
-  __esModule: true,
-  default: ({ src, innerRef, ...props }: { src?: string; innerRef?: React.Ref<HTMLSpanElement>; [key: string]: unknown }) =>
-    React.createElement('span', { 'data-testid': 'mocked-svg', ...props }),
-}));
 jest.mock('./saveSearch');
 jest.mock('../../../utils/utils');
+jest.mock('@grafana/ui', () => {
+  const actual = jest.requireActual('@grafana/ui');
+  return {
+    ...actual,
+    Modal: ({ title, isOpen, children }: { title: React.ReactNode; isOpen?: boolean; children: React.ReactNode }) =>
+      isOpen ? (
+        <div role="dialog" aria-label={typeof title === 'string' ? title : 'modal'}>
+          {title}
+          {children}
+        </div>
+      ) : null,
+  };
+});
 
 const mockUseSavedSearches = useSavedSearches as jest.MockedFunction<typeof useSavedSearches>;
 const mockGetDatasourceVariable = getDatasourceVariable as jest.MockedFunction<typeof getDatasourceVariable>;

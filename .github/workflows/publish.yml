@@ -22,6 +22,7 @@ jobs:
     # Don't run on forks
     if: github.repository == 'grafana/traces-drilldown'
     permissions:
+      contents: read
       id-token: write
     runs-on: ubuntu-latest
     steps:

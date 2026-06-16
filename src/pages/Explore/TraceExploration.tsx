@@ -59,6 +59,8 @@ import { DataLinksCustomContext } from './DataLinksCustomContext';
 import { TimeSeekerScene } from 'components/Explore/seeker/TimeSeekerScene';
 import { LoadSearchScene } from '../../components/Explore/SavedSearches/LoadSearchScene';
 import { SaveSearchButton } from '../../components/Explore/SavedSearches/SaveSearchButton';
+import { AddToDashboardModal } from '../../components/Explore/actions/addToDashboard/AddToDashboardModal';
+import { EventOpenAddToDashboard, type PanelDataRequestPayload } from '../../components/Explore/actions/addToDashboard';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -78,6 +80,9 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   // Plugin configuration
   queryRangeHours?: number;
   loadSearchScene?: LoadSearchScene;
+
+  isAddToDashboardModalOpen: boolean;
+  addToDashboardPanelData?: PanelDataRequestPayload;
 }
 
 const version = process.env.VERSION;
@@ -104,6 +109,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       timeSeekerScene: new TimeSeekerScene({ queryRangeHours }),
       issueDetector: new TraceQLIssueDetector(),
       loadSearchScene: state.loadSearchScene ?? new LoadSearchScene({}),
+      isAddToDashboardModalOpen: false,
       ...state,
     });
 
@@ -132,6 +138,12 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     this._subs.add(
       this.subscribeToEvent(EventTraceOpened, (event) => {
         this.setState({ traceId: event.payload.traceId, spanId: event.payload.spanId });
+      })
+    );
+
+    this._subs.add(
+      this.subscribeToEvent(EventOpenAddToDashboard, (event) => {
+        this.openAddToDashboardModal(event.payload.panelData);
       })
     );
 
@@ -206,6 +218,24 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     this.setState({ traceId: undefined, spanId: undefined });
   }
 
+  public openAddToDashboardModal(panelData: PanelDataRequestPayload) {
+    reportAppInteraction(
+      USER_EVENTS_PAGES.analyse_traces,
+      USER_EVENTS_ACTIONS.analyse_traces.add_to_dashboard_modal_opened
+    );
+    this.setState({
+      isAddToDashboardModalOpen: true,
+      addToDashboardPanelData: panelData,
+    });
+  }
+
+  public closeAddToDashboardModal(): void {
+    this.setState({
+      isAddToDashboardModalOpen: false,
+      addToDashboardPanelData: undefined,
+    });
+  }
+
   static Component = ({ model }: SceneComponentProps<TraceExploration>) => {
     const { body } = model.useState();
     const styles = useStyles2(getStyles);
@@ -217,8 +247,18 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const { controls, topScene, drawerScene, traceId, issueDetector, embedded, $timeRange } =
-      traceExploration.useState();
+    const {
+      controls,
+      topScene,
+      drawerScene,
+      traceId,
+      issueDetector,
+      embedded,
+      $timeRange,
+      isAddToDashboardModalOpen,
+      addToDashboardPanelData,
+    } = traceExploration.useState();
+
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
@@ -244,6 +284,12 @@ export class TraceExplorationScene extends SceneObjectBase {
             {drawerScene && <drawerScene.Component model={drawerScene} />}
           </SmartDrawer>
         </DataLinksCustomContext>
+        {isAddToDashboardModalOpen && addToDashboardPanelData && (
+          <AddToDashboardModal
+            panelData={addToDashboardPanelData}
+            onClose={() => traceExploration.closeAddToDashboardModal()}
+          />
+        )}
       </div>
     );
   };

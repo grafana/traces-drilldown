@@ -24,7 +24,7 @@ import {
   filterStreamingProgressTransformations,
 } from '../../../../../utils/shared';
 import { buildExceptionsQuery } from 'components/Explore/queries/exceptions';
-import { aggregateExceptions } from './ExceptionUtils';
+import { aggregateExceptions, ExceptionMessageFilterOperator } from './ExceptionUtils';
 import { ExceptionsTable, ExceptionRow } from './ExceptionsTable';
 import { getFiltersVariable, getTraceByServiceScene } from 'utils/utils';
 import { addToFilters } from 'components/Explore/actions/AddToFiltersAction';
@@ -110,6 +110,15 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
       data.series.length > 0
     ) {
       const exceptionRows = this.extractExceptionRows(data);
+      if (exceptionRows.length === 0) {
+        this.setState({
+          dataState: 'empty',
+          exceptionsCount: 0,
+          exceptionRows: [],
+        });
+        return;
+      }
+
       const exceptionsCount = exceptionRows.reduce((total, row) => total + row.occurrences, 0);
 
       this.setState({
@@ -126,10 +135,11 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
       return [];
     }
 
-    const messageField = df.fields.find((f) => f.name === 'exception.message');
-    const typeField = df.fields.find((f) => f.name === 'exception.type');
-    const serviceField = df.fields.find((f) => f.name === 'service.name');
-    const timeField = df.fields.find((f) => f.name === 'time');
+    const findField = (names: string[]) => df.fields.find((field) => names.includes(field.name));
+    const messageField = findField(['exception.message', 'event.exception.message']);
+    const typeField = findField(['exception.type', 'event.exception.type']);
+    const serviceField = findField(['service.name', 'resource.service.name']);
+    const timeField = findField(['time']);
 
     if (!messageField || !messageField.values.length) {
       return [];
@@ -140,6 +150,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
     return aggregated.messages.map((message, index) => ({
       type: aggregated.types[index] || 'Unknown',
       message,
+      groupedMessages: aggregated.groupedMessages[index] || [],
       service: aggregated.services[index] || '',
       lastSeen: aggregated.lastSeenTimes[index] || '',
       occurrences: aggregated.occurrences[index] || 0,
@@ -156,7 +167,12 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
     const theme = useTheme2();
     const { dataState, exceptionRows } = model.useState();
 
-    const handleFilterClick = (key: string, value: string, operator: '=' | '!=' = '=', append = false) => {
+    const handleFilterClick = (
+      key: string,
+      value: string,
+      operator: ExceptionMessageFilterOperator = '=',
+      append = false
+    ) => {
       const filtersVariable = getFiltersVariable(model);
       addToFilters(filtersVariable, key, value, operator, append);
       

@@ -190,4 +190,15 @@ describe('addToFilters', () => {
       ],
     });
   });
+
+  it('should add regex include filter with =~ operator', () => {
+    addToFilters(variable, 'event.exception.message', '^https?://\\\\S+$', '=~');
+
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [
+        { key: 'otherKey', operator: '=', value: 'value2' },
+        { key: 'event.exception.message', operator: '=~', value: '^https?://\\\\S+$' },
+      ],
+    });
+  });
 });
