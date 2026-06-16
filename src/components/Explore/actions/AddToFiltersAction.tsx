@@ -96,7 +96,13 @@ function getStyles(theme: GrafanaTheme2) {
   };
 }
 
-export const addToFilters = (variable: AdHocFiltersVariable, label: string, value: string, operator: '=' | '!=' = '=', append = false) => {
+export const addToFilters = (
+  variable: AdHocFiltersVariable,
+  label: string,
+  value: string,
+  operator: '=' | '!=' | '=~' | '!~' = '=',
+  append = false
+) => {
   // TODO: Replace it with new API introduced in https://github.com/grafana/scenes/issues/1103
   // At the moment AdHocFiltersVariable doesn't support pushing new history entry on change
   history.pushState(null, '');

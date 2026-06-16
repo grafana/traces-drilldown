@@ -35,6 +35,7 @@ describe('ExceptionsTable', () => {
     {
       type: 'SQLException',
       message: 'Database connection failed',
+      groupedMessages: ['Database connection failed'],
       service: 'user-service',
       lastSeen: '5m ago',
       occurrences: 42,
@@ -46,6 +47,7 @@ describe('ExceptionsTable', () => {
     {
       type: 'NullPointerException',
       message: 'Object reference not set to an instance of an object',
+      groupedMessages: ['Object reference not set to an instance of an object'],
       service: 'payment-service',
       lastSeen: '1h ago',
       occurrences: 15,
@@ -160,6 +162,7 @@ describe('ExceptionsTable', () => {
       {
         type: 'Error',
         message: 'Test error',
+        groupedMessages: ['Test error'],
         service: '',
         lastSeen: '1m ago',
         occurrences: 1,
@@ -178,6 +181,7 @@ describe('ExceptionsTable', () => {
       {
         type: 'Error',
         message: 'Test error',
+        groupedMessages: ['Test error'],
         service: 'test-service',
         lastSeen: '',
         occurrences: 1,
@@ -196,6 +200,7 @@ describe('ExceptionsTable', () => {
       {
         type: 'Error',
         message: 'This is a very long exception message that should be truncated in the UI but still fully accessible via tooltip when the user hovers over it',
+        groupedMessages: ['This is a very long exception message that should be truncated in the UI but still fully accessible via tooltip when the user hovers over it'],
         service: 'test-service',
         lastSeen: '1m ago',
         occurrences: 1,
@@ -212,6 +217,7 @@ describe('ExceptionsTable', () => {
     const manyRows: ExceptionRow[] = Array.from({ length: 10 }, (_, i) => ({
       type: `Error${i}`,
       message: `Message ${i}`,
+      groupedMessages: [`Message ${i}`],
       service: `service-${i}`,
       lastSeen: `${i}m ago`,
       occurrences: i + 1,
@@ -224,6 +230,65 @@ describe('ExceptionsTable', () => {
     expect(screen.getByText('Error9')).toBeInTheDocument();
     expect(screen.getByText('Message 0')).toBeInTheDocument();
     expect(screen.getByText('Message 9')).toBeInTheDocument();
+  });
+
+  it('should render grouped message tooltip trigger and content for grouped rows', () => {
+    const groupedRows: ExceptionRow[] = [
+      {
+        type: 'HttpException',
+        message: 'Error: HttpException: Connection closed before full header was received, uri = <url>',
+        groupedMessages: [
+          'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-1.grafana.net/oncall/api/internal/v1/user',
+          'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-2.grafana.net/oncall/mobile_app/v1/gateway/incident/api/OrgService.GetOrg',
+        ],
+        service: 'oncall',
+        lastSeen: '1m ago',
+        occurrences: 2,
+        timeSeries: [],
+      },
+    ];
+
+    render(<ExceptionsTable rows={groupedRows} theme={mockTheme} scene={mockScene} />);
+
+    expect(screen.getByRole('button', { name: 'Show grouped exception messages' })).toBeInTheDocument();
+    expect(screen.getByText('Grouped messages')).toBeInTheDocument();
+    expect(screen.getByText(/oncall-prod-us-central-1/)).toBeInTheDocument();
+    expect(screen.getByText(/oncall-prod-us-central-2/)).toBeInTheDocument();
+  });
+
+  it('should use regex operators for include/exclude on normalized grouped messages', () => {
+    const groupedRows: ExceptionRow[] = [
+      {
+        type: 'HttpException',
+        message: 'Error: HttpException: Connection closed before full header was received, uri = <url>',
+        groupedMessages: [
+          'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-1.grafana.net/oncall/api/internal/v1/user',
+          'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-2.grafana.net/oncall/mobile_app/v1/gateway/incident/api/OrgService.GetOrg',
+        ],
+        service: 'oncall',
+        lastSeen: '1m ago',
+        occurrences: 2,
+        timeSeries: [],
+      },
+    ];
+
+    render(<ExceptionsTable rows={groupedRows} theme={mockTheme} scene={mockScene} onFilterClick={mockOnFilterClick} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Include exception message' }));
+    expect(mockOnFilterClick).toHaveBeenCalledWith(
+      'event.exception.message',
+      expect.stringContaining('https?://'),
+      '=~',
+      true
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Exclude exception message' }));
+    expect(mockOnFilterClick).toHaveBeenCalledWith(
+      'event.exception.message',
+      expect.stringContaining('https?://'),
+      '!~',
+      true
+    );
   });
 });
 
