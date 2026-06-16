@@ -7,19 +7,11 @@ services:
       - GF_PLUGINS_PREINSTALL_DISABLED=true
       # Time seeker (grafana/grafana#121650). Requires Grafana 13+ where the toggle is registered.
       - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker,localizationForPlugins
-<<<<<<< HEAD
-    build:
-      context: ../.config
-      args:
-        grafana_image: ${GRAFANA_IMAGE:-grafana}
-        grafana_version: ${GRAFANA_VERSION:-12.3.0@sha256:70d9599b186ce287be0d2c5ba9a78acb2e86c1a68c9c41449454d0fc3eeb84e8}
-=======
       # Match the dev Dockerfile defaults so unsigned plugins load in CI without a custom image build.
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_BASIC_ENABLED=false
       - GF_DEFAULT_APP_MODE=development
->>>>>>> main
     ports:
       - 3030:3000/tcp
     volumes:
