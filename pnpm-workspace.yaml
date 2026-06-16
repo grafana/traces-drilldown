@@ -45,6 +45,3 @@ overrides:
   # the equivalent npm-published package to satisfy blockExoticSubdeps (pnpm v11
   # default). Remove once we upgrade to @grafana/ui>=13.1.0 which ships the npm dep.
   react-data-grid: 'npm:@grafana/react-data-grid@7.0.0-beta.57'
-minimumReleaseAgeExclude:
-  # Renovate security update: protobufjs@7.6.3
-  - protobufjs@7.6.3
