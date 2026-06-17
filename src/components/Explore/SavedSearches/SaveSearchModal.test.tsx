@@ -9,11 +9,6 @@ import { useCheckForExistingSearch, useSavedSearches } from './saveSearch';
 import { renderTraceQLLabelFilters } from '../../../utils/filters-renderer';
 import { getFiltersVariable, getTraceExplorationScene } from '../../../utils/utils';
 
-jest.mock('react-inlinesvg', () => ({
-  __esModule: true,
-  default: ({ src, innerRef, ...props }: { src?: string; innerRef?: React.Ref<HTMLSpanElement>; [key: string]: unknown }) =>
-    React.createElement('span', { 'data-testid': 'mocked-svg', ...props }),
-}));
 jest.mock('./saveSearch');
 jest.mock('../../../utils/utils');
 jest.mock('../../../utils/filters-renderer');

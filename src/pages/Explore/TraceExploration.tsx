@@ -50,7 +50,8 @@ import { PrimarySignalVariable } from './PrimarySignalVariable';
 import { primarySignalOptions } from './primary-signals';
 import { TraceQLIssueDetector, TraceQLConfigWarning } from '../../components/Explore/TraceQLIssueDetector';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
-import { SharedExplorationState } from 'exposedComponents/types';
+import { actionViewsDefinitions } from 'components/Explore/TracesByService/Tabs/TabsBarScene';
+import { ActionViewType, SharedExplorationState } from 'exposedComponents/types';
 import { EntityAssertionsWidget } from '../../addedComponents/EntityAssertionsWidget/EntityAssertionsWidget';
 import { SmartDrawer } from './SmartDrawer';
 import { AttributeFiltersVariable } from './AttributeFiltersVariable';
@@ -58,6 +59,8 @@ import { DataLinksCustomContext } from './DataLinksCustomContext';
 import { TimeSeekerScene } from 'components/Explore/seeker/TimeSeekerScene';
 import { LoadSearchScene } from '../../components/Explore/SavedSearches/LoadSearchScene';
 import { SaveSearchButton } from '../../components/Explore/SavedSearches/SaveSearchButton';
+import { AddToDashboardModal } from '../../components/Explore/actions/addToDashboard/AddToDashboardModal';
+import { EventOpenAddToDashboard, type PanelDataRequestPayload } from '../../components/Explore/actions/addToDashboard';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -77,6 +80,9 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   // Plugin configuration
   queryRangeHours?: number;
   loadSearchScene?: LoadSearchScene;
+
+  isAddToDashboardModalOpen: boolean;
+  addToDashboardPanelData?: PanelDataRequestPayload;
 }
 
 const version = process.env.VERSION;
@@ -103,6 +109,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       timeSeekerScene: new TimeSeekerScene({ queryRangeHours }),
       issueDetector: new TraceQLIssueDetector(),
       loadSearchScene: state.loadSearchScene ?? new LoadSearchScene({}),
+      isAddToDashboardModalOpen: false,
       ...state,
     });
 
@@ -111,7 +118,7 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
   public _onActivate() {
     if (!this.state.topScene) {
-      this.setState({ topScene: getTopScene() });
+      this.setState({ topScene: getTopScene(this.state) });
     }
 
     if (!this._kgInitialized) {
@@ -134,6 +141,12 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       })
     );
 
+    this._subs.add(
+      this.subscribeToEvent(EventOpenAddToDashboard, (event) => {
+        this.openAddToDashboardModal(event.payload.panelData);
+      })
+    );
+
     const datasourceVar = sceneGraph.lookupVariable(VAR_DATASOURCE, this) as DataSourceVariable;
     datasourceVar.subscribeToState((newState) => {
       if (newState.value) {
@@ -146,6 +159,18 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
         this.state.issueDetector.activate();
       }
     }
+
+    this._subs.add(
+      this.subscribeToState((newState, prevState) => {
+        if (newState.hideRedPanels === prevState.hideRedPanels) {
+          return;
+        }
+        const top = newState.topScene;
+        if (top instanceof TracesByServiceScene) {
+          top.updateBody();
+        }
+      })
+    );
   }
 
   getUrlState() {
@@ -193,6 +218,24 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     this.setState({ traceId: undefined, spanId: undefined });
   }
 
+  public openAddToDashboardModal(panelData: PanelDataRequestPayload) {
+    reportAppInteraction(
+      USER_EVENTS_PAGES.analyse_traces,
+      USER_EVENTS_ACTIONS.analyse_traces.add_to_dashboard_modal_opened
+    );
+    this.setState({
+      isAddToDashboardModalOpen: true,
+      addToDashboardPanelData: panelData,
+    });
+  }
+
+  public closeAddToDashboardModal(): void {
+    this.setState({
+      isAddToDashboardModalOpen: false,
+      addToDashboardPanelData: undefined,
+    });
+  }
+
   static Component = ({ model }: SceneComponentProps<TraceExploration>) => {
     const { body } = model.useState();
     const styles = useStyles2(getStyles);
@@ -204,8 +247,18 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 export class TraceExplorationScene extends SceneObjectBase {
   static Component = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
     const traceExploration = getTraceExplorationScene(model);
-    const { controls, topScene, drawerScene, traceId, issueDetector, embedded, $timeRange } =
-      traceExploration.useState();
+    const {
+      controls,
+      topScene,
+      drawerScene,
+      traceId,
+      issueDetector,
+      embedded,
+      $timeRange,
+      isAddToDashboardModalOpen,
+      addToDashboardPanelData,
+    } = traceExploration.useState();
+
     const { hasIssue } = issueDetector?.useState() || {
       hasIssue: false,
     };
@@ -231,6 +284,12 @@ export class TraceExplorationScene extends SceneObjectBase {
             {drawerScene && <drawerScene.Component model={drawerScene} />}
           </SmartDrawer>
         </DataLinksCustomContext>
+        {isAddToDashboardModalOpen && addToDashboardPanelData && (
+          <AddToDashboardModal
+            panelData={addToDashboardPanelData}
+            onClose={() => traceExploration.closeAddToDashboardModal()}
+          />
+        )}
       </div>
     );
   };
@@ -266,7 +325,8 @@ export const useServiceName = (model: SceneObject) => {
 const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) => {
   const setReturnToPrevious = useReturnToPrevious();
   const traceExploration = getTraceExplorationScene(model);
-  const { returnToPreviousSource, embeddedMini } = traceExploration.useState();
+  const explorationState = traceExploration.useState();
+  const { returnToPreviousSource, embeddedMini, hideRedPanels } = explorationState;
   const styles = useStyles2(getStyles, true, embeddedMini);
   const filtersVariable = getFiltersVariable(traceExploration);
   const primarySignalVariable = getPrimarySignalVariable(traceExploration);
@@ -306,8 +366,8 @@ const EmbeddedHeader = ({ model }: SceneComponentProps<TraceExplorationScene>) =
           >
             <Trans i18nKey="trace-exploration.embedded-header.traces-drilldown">Traces Drilldown</Trans>
           </LinkButton>
-          {timeRangeControl && <timeRangeControl.Component model={timeRangeControl} />}
-          {refreshControl && <refreshControl.Component model={refreshControl} />}
+          {timeRangeControl && !hideRedPanels && <timeRangeControl.Component model={timeRangeControl} />}
+          {refreshControl && !hideRedPanels && <refreshControl.Component model={refreshControl} />}
         </Stack>
       </Stack>
     </div>
@@ -467,8 +527,28 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
   );
 };
 
-function getTopScene() {
-  return new TracesByServiceScene({});
+function getTopScene(state: TraceExplorationState) {
+  const metric = state.initialMetric ?? 'rate';
+  const requestedView = state.initialActionView;
+
+  if (!requestedView) {
+    return new TracesByServiceScene({});
+  }
+
+  const isKnownView = actionViewsDefinitions.some((view) => view.value === requestedView);
+  if (!isKnownView) {
+    return new TracesByServiceScene({});
+  }
+
+  if (state.allowedActionViews?.length && !state.allowedActionViews.includes(requestedView)) {
+    return new TracesByServiceScene({});
+  }
+
+  if (requestedView === 'exceptions' && metric !== 'errors') {
+    return new TracesByServiceScene({});
+  }
+
+  return new TracesByServiceScene({ actionView: requestedView as ActionViewType });
 }
 
 function getVariableSet(state: TraceExplorationState) {

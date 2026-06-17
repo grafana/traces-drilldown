@@ -1,6 +1,11 @@
 import { DataFrame, FieldType } from '@grafana/data';
 
-import { AttributesComparisonScene, hasSelectionValues } from './AttributesComparisonScene';
+import {
+  AttributesComparisonScene,
+  hasSelectionValues,
+  normalizeTraceQlLabelString,
+  sumNumberFieldValues,
+} from './AttributesComparisonScene';
 
 describe('hasSelectionValues', () => {
   it('returns true when Selection field has at least one value > 0', () => {
@@ -84,6 +89,35 @@ describe('hasSelectionValues', () => {
       ],
     };
     expect(hasSelectionValues(df)).toBe(true);
+  });
+});
+
+describe('normalizeTraceQlLabelString', () => {
+  it('strips one pair of surrounding double quotes', () => {
+    expect(normalizeTraceQlLabelString('"baseline"')).toBe('baseline');
+    expect(normalizeTraceQlLabelString('"selection_total"')).toBe('selection_total');
+  });
+
+  it('returns plain strings unchanged', () => {
+    expect(normalizeTraceQlLabelString('baseline')).toBe('baseline');
+    expect(normalizeTraceQlLabelString('HTTP GET')).toBe('HTTP GET');
+  });
+});
+
+describe('sumNumberFieldValues', () => {
+  it('sums finite numbers across stepped time series', () => {
+    expect(
+      sumNumberFieldValues({
+        name: 'Value',
+        type: FieldType.number,
+        values: [0, 86, 0],
+        config: {},
+      })
+    ).toBe(86);
+  });
+
+  it('returns 0 for undefined', () => {
+    expect(sumNumberFieldValues(undefined)).toBe(0);
   });
 });
 

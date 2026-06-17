@@ -100,6 +100,9 @@
   "exceptions-table": {
     "exclude": "Exclude",
     "exclude-aria-label": "Exclude exception message",
+    "grouped-messages-aria-label": "Show grouped exception messages",
+    "grouped-messages-common-prefix": "Common",
+    "grouped-messages-title": "Grouped messages",
     "header": {
       "exception-details": "Exception Details",
       "exception-details-tooltip": "Exception type, message, service, and last seen timestamp. Use the include/exclude buttons to include or exclude exception messages, or click on type or message to filter.",
@@ -164,7 +167,7 @@
     "title": "Load a previously saved search"
   },
   "load-search-scene": {
-    "load-saved-query": "Load saved query",
+    "load-saved-query": "Load Saved query",
     "load-saved-search": "Load saved search",
     "no-saved-searches": "No saved searches to load"
   },
@@ -172,6 +175,7 @@
     "label": "Open in Traces Drilldown"
   },
   "panel-menu": {
+    "add-to-dashboard": "Add to dashboard",
     "create-alert": "Create alert",
     "explore": "Explore",
     "navigation": "Navigation"
@@ -193,7 +197,7 @@
     "comparison-selection": "Comparison selection"
   },
   "save-search-button": {
-    "save-in-saved-queries": "Save in Saved Queries",
+    "save-in-saved-queries": "Save in Saved queries Queries",
     "save-search": "Save search"
   },
   "save-search-modal": {

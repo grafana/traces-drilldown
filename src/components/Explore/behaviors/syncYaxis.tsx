@@ -4,24 +4,43 @@ import { EventTimeseriesDataReceived } from '../../../utils/shared';
 
 export function syncYAxis() {
   return (vizPanel: SceneObject<SceneObjectState>) => {
-    const maxima = new Map<string, number>();
-
     const eventSub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
       const series = event.payload.series;
 
+      let globalMax: number | null = null;
       series?.forEach((s) => {
+        // Skip field 0 (typically time); only numeric value fields contribute to the Y max.
         s.fields.slice(1).forEach((f) => {
-          maxima.set(s.refId as string, Math.max(...f.values.filter((v) => v)));
-        })
+          const fieldMax = maxFiniteInFieldValues(f.values);
+          if (fieldMax !== null) {
+            globalMax = globalMax === null ? fieldMax : Math.max(globalMax, fieldMax);
+          }
+        });
       });
 
-      updateTimeseriesAxis(vizPanel, Math.max(...maxima.values()));
+      if (globalMax === null) {
+        return;
+      }
+
+      updateTimeseriesAxis(vizPanel, globalMax);
     });
 
     return () => {
       eventSub.unsubscribe();
     };
   };
+}
+
+function maxFiniteInFieldValues(values: ArrayLike<unknown>): number | null {
+  let max: number | null = null;
+  const len = values.length;
+  for (let i = 0; i < len; i++) {
+    const value = values[i];
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      max = max === null ? value : Math.max(max, value);
+    }
+  }
+  return max;
 }
 
 function updateTimeseriesAxis(vizPanel: SceneObject, max: number) {

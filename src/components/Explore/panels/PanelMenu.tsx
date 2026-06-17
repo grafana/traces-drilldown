@@ -18,6 +18,8 @@ import { useFlagTempoAlerting } from '../../../featureFlags/featureFlags';
 import type { AlertPanelTarget } from '../actions/createAlert/getPanelDataForAlert';
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
 
+import { EventOpenAddToDashboard, getPanelData } from '../actions/addToDashboard';
+
 const CREATE_ALERT_FROM_PANEL_PLUGIN_ID = 'grafana/alerting/create-alert-from-panel/v1';
 
 export type PanelMenuCreateAlertHandler = (vizPanel: VizPanel, targets: AlertPanelTarget[]) => void;
@@ -30,6 +32,15 @@ interface PanelMenuState extends SceneObjectState {
   alertTargets?: AlertPanelTarget[];
   /** Parent breakdown scene handles modal + analytics so menu unmount does not drop the modal. */
   onBreakdownCreateAlert?: PanelMenuCreateAlertHandler;
+}
+
+function addToDashboardFromPanelMenu(model: SceneObject<PanelMenuState>) {
+  const vizPanel = sceneGraph.findObject(model, (o) => o instanceof VizPanel) as VizPanel | undefined;
+  if (!vizPanel) {
+    return;
+  }
+  const panelData = getPanelData(vizPanel, model.state.alertTargets);
+  model.publishEvent(new EventOpenAddToDashboard({ panelData }), true);
 }
 
 export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPanelMenu, SceneObject {
@@ -66,18 +77,18 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
     const styles = useStyles2(getStyles);
 
     useEffect(() => {
-      const isCreateAlertAvailable = Boolean(CreateAlertModal) && isTempoAlertingEnabled;
-      if (model.state.isCreateAlertAvailable === isCreateAlertAvailable) {
+      if (!body) {
         return;
       }
 
-      model.setState({
-        isCreateAlertAvailable,
-        body: new VizPanelMenu({
-          items: buildPanelMenuItems(model, isCreateAlertAvailable),
-        }),
-      });
-    }, [CreateAlertModal, isTempoAlertingEnabled, model]);
+      const isCreateAlertAvailable = Boolean(CreateAlertModal) && isTempoAlertingEnabled;
+
+      if (model.state.isCreateAlertAvailable !== isCreateAlertAvailable) {
+        model.setState({ isCreateAlertAvailable });
+      }
+
+      model.setItems(buildPanelMenuItems(model, isCreateAlertAvailable));
+    }, [model, body, CreateAlertModal, isTempoAlertingEnabled]);
 
     if (!body) {
       return null;
@@ -112,7 +123,10 @@ const onExploreClick = () => {
   reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.open_in_explore_clicked);
 };
 
-function buildPanelMenuItems(model: SceneObject<PanelMenuState>, isCreateAlertAvailable: boolean): PanelMenuItem[] {
+function buildPanelMenuItems(
+  model: SceneObject<PanelMenuState>,
+  isCreateAlertAvailable: boolean
+): PanelMenuItem[] {
   const items: PanelMenuItem[] = [
     {
       text: t('panel-menu.navigation', 'Navigation'),
@@ -123,6 +137,11 @@ function buildPanelMenuItems(model: SceneObject<PanelMenuState>, isCreateAlertAv
       iconClassName: 'compass',
       href: getExploreHref(model),
       onClick: () => onExploreClick(),
+    },
+    {
+      text: t('panel-menu.add-to-dashboard', 'Add to dashboard'),
+      iconClassName: 'apps',
+      onClick: () => addToDashboardFromPanelMenu(model),
     },
   ];
 

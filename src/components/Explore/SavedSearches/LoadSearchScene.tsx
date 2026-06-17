@@ -126,7 +126,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
         datasourceFilters={[dsName]}
         icon="folder-open"
         onSelectQuery={onSelectQuery}
-        tooltip={t('load-search-scene.load-saved-query', 'Load saved query')}
+        tooltip={t('load-search-scene.load-saved-query', 'Load Saved query')}
       />
     );
   };

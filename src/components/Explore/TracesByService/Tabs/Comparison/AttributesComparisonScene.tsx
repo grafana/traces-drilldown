@@ -24,7 +24,6 @@ import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
 import { map, Observable } from 'rxjs';
 import { BaselineColor, buildAllComparisonLayout, SelectionColor } from '../../../layouts/allComparison';
 // eslint-disable-next-line no-restricted-imports
-import { duration } from 'moment';
 import { comparisonQuery } from '../../../queries/comparisonQuery';
 import { buildAttributeComparison } from '../../../layouts/attributeComparison';
 import {
@@ -37,6 +36,7 @@ import {
 import { InspectAttributeAction } from 'components/Explore/actions/InspectAttributeAction';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../../../utils/analytics';
 import { computeHighestDifference } from '../../../../../utils/comparison';
+import { formatUnixRangeDurationSeconds } from '../../../../../utils/dates';
 import { AttributesDescription } from '../Breakdown/AttributesDescription';
 import { isEqual } from 'lodash';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
@@ -280,8 +280,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
 }
 
 export function buildQuery(from: number, to: number, compareQuery: string) {
-  const dur = duration(to - from, 's');
-  const durString = `${dur.asSeconds()}s`;
+  const durString = formatUnixRangeDurationSeconds(from, to);
   return {
     refId: 'A',
     query: `{${VAR_FILTERS_EXPR}} | compare(${compareQuery})`,
@@ -340,7 +339,10 @@ const frameGroupToDataframe = (attribute: string, frames: DataFrame[]): DataFram
 
   const values = frames.reduce((acc: Record<string, Field[]>, frame) => {
     const numberField = frame.fields.find((field) => field.type === 'number');
-    const val = numberField?.labels?.[attribute];
+    if (!numberField) {
+      return acc;
+    }
+    const val = normalizeTraceQlLabelString(numberField.labels?.[attribute]);
     if (val) {
       acc[val] = [...(acc[val] || []), numberField];
     }
@@ -354,28 +356,56 @@ const frameGroupToDataframe = (attribute: string, frames: DataFrame[]): DataFram
 
   Object.entries(values).forEach(([value, fields]) => {
     valueNameField.values.push(value);
-    baselineField.values.push(
-      fields.find((field) => field.labels?.['__meta_type'] === '"baseline"')?.values[0] / baselineTotal
-    );
-    selectionField.values.push(
-      fields.find((field) => field.labels?.['__meta_type'] === '"selection"')?.values[0] / selectionTotal
-    );
+    const baselineFieldMatch = fields.find((field) => fieldMetaTypeEquals(field.labels, 'baseline'));
+    const selectionFieldMatch = fields.find((field) => fieldMetaTypeEquals(field.labels, 'selection'));
+    baselineField.values.push(sumNumberFieldValues(baselineFieldMatch) / baselineTotal);
+    selectionField.values.push(sumNumberFieldValues(selectionFieldMatch) / selectionTotal);
   });
   newFrame.fields = [valueNameField, baselineField, selectionField];
   return newFrame;
 };
 
+/** Tempo TraceQL compare labels sometimes include literal quote wrappers (`"baseline"`) vs plain (`baseline`). */
+export function normalizeTraceQlLabelString(raw: unknown): string {
+  if (raw === undefined || raw === null) {
+    return '';
+  }
+  let s = String(raw);
+  if (s.length >= 2 && s.startsWith('"') && s.endsWith('"')) {
+    s = s.slice(1, -1);
+  }
+  return s;
+}
+
+function fieldMetaTypeEquals(labels: Field['labels'], expected: string): boolean {
+  return normalizeTraceQlLabelString(labels?.['__meta_type']) === expected;
+}
+
+export function sumNumberFieldValues(field: Field | undefined): number {
+  if (!field?.values?.length) {
+    return 0;
+  }
+  let sum = 0;
+  for (let i = 0; i < field.values.length; i++) {
+    const v = field.values[i];
+    if (typeof v === 'number' && Number.isFinite(v)) {
+      sum += v;
+    }
+  }
+  return sum;
+}
+
 function getTotalForMetaType(frames: DataFrame[], metaType: string, values: Record<string, Field[]>) {
   // calculate total from values so that we are properly normalizing the field values when dividing by the total
   const calculatedTotal = Object.values(values).reduce((total, fields) => {
-    const field = fields.find((field) => field.labels?.['__meta_type'] === `"${metaType}"`);
-    return total + (field?.values[0] || 0);
+    const field = fields.find((f) => fieldMetaTypeEquals(f.labels, metaType));
+    return total + sumNumberFieldValues(field);
   }, 0);
 
   let total = frames.reduce((currentValue, frame) => {
     const field = frame.fields.find((f) => f.type === 'number');
-    if (field?.labels?.['__meta_type'] === `"${metaType}_total"`) {
-      return field.values[0];
+    if (fieldMetaTypeEquals(field?.labels, `${metaType}_total`)) {
+      return sumNumberFieldValues(field);
     }
     return currentValue;
   }, 1);

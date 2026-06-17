@@ -1,5 +1,36 @@
 # Changelog
 
+## 2.0.4
+
+##### Chores
+
+*  Update ci-cd-workflows (#762) (d5f4fdcd)
+*  update Saved queries texts (#773) (cef85d98)
+*  Harden package use and workspace environment (#761) (bb50beee)
+*  Improve e2e testing (#755) (8426e7a8)
+* **deps:**
+  *  update dependency @playwright/test to v1.59.1 (#704) (6c6357d8)
+  *  lock file maintenance (#711) (e18c0a12)
+  *  bump fast-uri from 3.1.0 to 3.1.2 (#751) (1794aa09)
+  *  pin dependencies (#741) (a000d785)
+  *  update grafana/plugin-actions digest to 016148f (#742) (04322201)
+
+##### New Features
+
+*  Support add to dashboard (#746) (640fc4b2)
+*  Enhance Embedded Traces Drilldown (#744) (6cf5e6d0)
+*  Support create alert (#747) (cf4d73a6)
+
+##### Bug Fixes
+
+*  update Crowdin workflows to use fromJSON secrets output (#775) (e2170753)
+*  syncing of y axis (#754) (2c6a21a9)
+
+##### Other Changes
+
+*  Download translations from Crowdin (#732) (d46cc150)
+
+
 ## 2.0.3
 
 ##### Build System / Dependencies

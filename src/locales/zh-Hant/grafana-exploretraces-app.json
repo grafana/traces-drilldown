@@ -108,7 +108,10 @@
       "occurrences-tooltip": ""
     },
     "include": "",
-    "include-aria-label": ""
+    "include-aria-label": "",
+    "grouped-messages-aria-label": "",
+    "grouped-messages-common-prefix": "",
+    "grouped-messages-title": ""
   },
   "exemplars": {
     "view-trace": ""
@@ -171,6 +174,7 @@
     "label": ""
   },
   "panel-menu": {
+    "create-alert": "",
     "explore": "",
     "navigation": ""
   },
