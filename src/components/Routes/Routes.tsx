@@ -8,7 +8,6 @@ export const AppRoutes = () => {
   return (
     <Routes>
       <Route path={ROUTES.Explore} element={<TraceExplorationPage />} />
-      {/* <Route path={ROUTES.Home} element={<HomePage />} /> */}
       <Route path={'/'} element={<Navigate replace to={ROUTES.Explore} />} />
     </Routes>
   );
