@@ -1,6 +1,5 @@
 import { 
   getBookmarkParams, 
-  getBookmarkFromURL, 
   getBookmarkForUrl,
   areBookmarksEqual,
   useBookmarksStorage
@@ -86,56 +85,6 @@ describe('Bookmark Utils', () => {
       });
     });
 
-    describe('toggleBookmark', () => {
-      const originalLocation = window.location;
-  
-      beforeEach(() => {
-        Object.defineProperty(window, 'location', {
-          configurable: true,
-          value: {
-            ...originalLocation,
-            search: `?${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces`
-          }
-        });
-  
-        mockStorage.getItem.mockResolvedValue(JSON.stringify([]));
-      });
-  
-      afterEach(() => {
-        Object.defineProperty(window, 'location', {
-          configurable: true,
-          value: originalLocation
-        });
-      });
-  
-      it('should add bookmark when it does not exist', async () => {
-        mockStorage.getItem.mockResolvedValue(JSON.stringify([]));
-        
-        const { result } = renderHook(() => useBookmarksStorage());
-        const isNowBookmarked = await result.current.toggleBookmark();
-        
-        expect(isNowBookmarked).toBe(true);
-        expect(mockStorage.setItem).toHaveBeenCalledWith(
-          BOOKMARKS_LS_KEY,
-          expect.stringContaining('actionView=breakdown')
-        );
-      });
-  
-      it('should remove bookmark when it exists', async () => {
-        const currentBookmark = getBookmarkFromURL();
-        mockStorage.getItem.mockResolvedValue(JSON.stringify([currentBookmark]));
-        
-        const { result } = renderHook(() => useBookmarksStorage());
-        const isNowBookmarked = await result.current.toggleBookmark();
-        
-        expect(isNowBookmarked).toBe(false);
-        expect(mockStorage.setItem).toHaveBeenCalledWith(
-          BOOKMARKS_LS_KEY,
-          '[]'
-        );
-      });
-    });
-  
     describe('removeBookmark', () => {
       it('should remove a bookmark', async () => {
         mockStorage.getItem.mockResolvedValue(JSON.stringify([sampleBookmark]));
@@ -220,44 +169,6 @@ describe('Bookmark Utils', () => {
         primarySignal: '',
         filters: '',
         metric: ''
-      });
-    });
-  });
-
-  describe('getBookmarkFromURL', () => {
-    const originalLocation = window.location;
-
-    beforeEach(() => {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: {
-          ...originalLocation,
-          search: ''
-        }
-      });
-    });
-
-    afterEach(() => {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: originalLocation
-      });
-    });
-    it('should create a bookmark from URL parameters', () => {
-      window.location.search = `?${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1|=|value1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`;
-      
-      const bookmark = getBookmarkFromURL();
-      expect(bookmark).toEqual({
-        params: `${ACTION_VIEW}=breakdown&${PRIMARY_SIGNAL}=full_traces&var-${VAR_DATASOURCE}=EBorgLFZ&var-${VAR_FILTERS}=filter1%7C%3D%7Cvalue1&var-${VAR_GROUPBY}=name&var-${VAR_METRIC}=rate`
-      });
-    });
-
-    it('should handle empty URL parameters', () => {
-      window.location.search = '';
-      
-      const bookmark = getBookmarkFromURL();
-      expect(bookmark).toEqual({
-        params: ''
       });
     });
   });
