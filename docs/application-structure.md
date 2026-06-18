@@ -35,7 +35,7 @@ The root experience is a **scene-based** tree (`TraceExploration` → body → `
 
 - **Data source**: Tempo data source selector.
 - **Controls**: Time picker and refresh (standard scene controls).
-- **Need help**: Documentation and feedback links.
+- **Plugin info** (info icon): Version, changelog, contribute, documentation, give feedback (when enabled in Grafana), report an issue, and Grafana build.
 - **Entity/assertions** (when applicable): Contextual widgets tied to the current service scope.
 
 ### Filters row

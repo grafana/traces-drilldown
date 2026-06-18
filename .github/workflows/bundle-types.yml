@@ -16,12 +16,13 @@ permissions:
 jobs:
   bundle-types:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2 (2026-01-09)
         with:
           persist-credentials: false
 
-      - uses: grafana/plugin-actions/bundle-types@main # zizmor: ignore[unpinned-uses]
+      - uses: grafana/plugin-actions/bundle-types@ad81bca30a8f98102741e1e6b0b6898a265ad691 # bundle-types/v1.0.3 (2026-02-24)
         with:
           entry-point: ./src/exposedComponents/types.ts
           ts-config: ./tsconfig-for-bundle-types.json
