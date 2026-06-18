@@ -1,0 +1,41 @@
+# Opens (or updates) a release PR with the next version bump and CHANGELOG entries
+# based on conventional commits since the last tag.
+#
+# Release flow in this repo:
+#   1. Pushes to main with unreleased conventional commits open or update a
+#      draft release PR with the proposed version and CHANGELOG entries.
+#   2. Merge that release PR when ready. The next push to main creates the
+#      `v<version>` git tag and a draft GitHub Release with release notes.
+#   3. Publish the plugin by manually running the
+#      `Version Bump & Release` workflow (.github/workflows/publish.yml)
+#      against `main` or the release tag when ready for catalog publish.
+#
+# Required repo files:
+#   .release-please-manifest.json  — e.g. { ".": "1.0.0" }
+#   release-please-config.json     — see release-please-config.json in this repo
+#
+# Note: release-please does not build plugin zips. GitHub Releases are created
+# as drafts (`draft` + `force-tag-creation` in release-please-config.json).
+#
+# For more information, see
+# https://github.com/grafana/plugin-ci-workflows/tree/main/actions/plugins/release-please
+
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run release-please
+        uses: grafana/plugin-ci-workflows/actions/plugins/release-please@plugins-release-please/v2.0.1
