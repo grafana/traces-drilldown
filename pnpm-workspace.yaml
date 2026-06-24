@@ -30,7 +30,7 @@ overrides:
   react-router: ^6.30.2
   serialize-javascript: ^7.0.5
   immutable: ^5.1.5
-  dompurify: ^3.4.9
+  dompurify: ^3.4.11
   yaml: ^2.8.3
   minimatch@^3: ~3.1.4
   minimatch@^9: ~10.2.0
