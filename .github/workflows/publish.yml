@@ -34,7 +34,7 @@ jobs:
   CD:
     name: Deploy plugin
     needs: bump-version
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v9.0.0
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v10.1.0
     permissions:
       contents: write
       id-token: write
@@ -42,14 +42,16 @@ jobs:
       pull-requests: read
     with:
       environment: prod
-      attestation: true
       grafana-cloud-deployment-type: provisioned
       auto-merge-environments: dev,ops
 
       argo-workflow-slack-channel: '#proj-tracesdrilldown-cd'
 
-      # Playwright
       run-playwright: false
+      # Publish the github release automatically, turn draft off
+      github-draft-release: false
+
+      # Playwright
       run-playwright-docker: true
       upload-playwright-artifacts: true # IMPORTANT: we must ensure there are no unmasked secrets in the E2E tests
       run-playwright-with-skip-grafana-dev-image: true
