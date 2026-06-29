@@ -477,25 +477,25 @@ function buildGraphScene(
         ? new MiniREDPanel({ embeddedMini, metric: 'errors' })
         : new MiniREDPanel({ embeddedMini, metric: 'duration' });
 
-    // All three panels are stacked vertically (one per row)
-    // Layout direction adjusts based on screen size
-    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 700;
-
     sceneChildren.push(
       new SceneFlexLayout({
-        direction: !embeddedMini ? 'row' : isSmallScreen ? 'row' : 'column',
+        direction: embeddedMini ? 'column' : 'row',
+        minHeight: embeddedMini ? undefined : MAIN_PANEL_HEIGHT,
+        ...(embeddedMini ? { md: { direction: 'row' } } : {}),
         ySizing: 'content',
         children: [
           new SceneFlexItem({
             minHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
             maxHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
             width: embeddedMini ? undefined : '60%',
+            ...(embeddedMini ? {} : { md: { width: '100%' } }),
             body: new REDPanel({ embeddedMini }),
           }),
           new SceneFlexLayout({
             direction: 'column',
             minHeight: MAIN_PANEL_HEIGHT,
             maxHeight: MAIN_PANEL_HEIGHT,
+            ...(embeddedMini ? {} : { width: '40%', md: { width: '100%' } }),
             children: [
               new SceneFlexItem({
                 minHeight: MINI_PANEL_HEIGHT,
