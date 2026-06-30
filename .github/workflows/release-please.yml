@@ -7,7 +7,7 @@
 #   2. Merge that release PR when ready. The next push to main creates the
 #      `v<version>` git tag and a draft GitHub Release with release notes.
 #   3. Publish the plugin by manually running the
-#      `Version Bump & Release` workflow (.github/workflows/publish.yml)
+#      `Plugins Platform Publish - CD` workflow (.github/workflows/cd.yml)
 #      against `main` or the release tag when ready for catalog publish.
 #
 # Required repo files:
