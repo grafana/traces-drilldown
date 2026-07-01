@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2 (2026-01-09)
         with:
           persist-credentials: false
-      - uses: grafana/shared-workflows/actions/lint-pr-title@0239db2665246f3b078d8d9166e4d8f09c071cae # lint-pr-title/v1.2.2 (2026-05-04)
+      - uses: grafana/shared-workflows/actions/lint-pr-title@823ed150196915a86971ab4beb899b0c80d835fe # lint-pr-title/v1.2.3 (2026-05-04)
         with:
           config-path: ${{ github.workspace }}/.github/commitlint.config.js
         env:
