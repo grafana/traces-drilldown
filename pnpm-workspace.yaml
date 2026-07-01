@@ -38,7 +38,7 @@ overrides:
   uuid: ^14.0.0
   '@tootallnate/once': '>=3.0.1'
   js-cookie: ^3.0.7
-  protobufjs: 7.6.3
+  protobufjs: 7.6.4
   ws: 8.21.0
   esbuild: 0.28.1
   js-yaml: 4.2.0
