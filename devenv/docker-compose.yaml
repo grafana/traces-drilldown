@@ -44,7 +44,7 @@ services:
 
   # A RabbitMQ queue used to send message between the requester and the server microservices.
   mythical-queue:
-    image: rabbitmq:management@sha256:f2aa0097c68a777ff0aaf5235862963be3204cb21926e503b7743d5951082947
+    image: rabbitmq:management@sha256:76412b1ed2865b88ed01b4a504f72e888842f2089a7527743d325ce7c9d3a43b
     restart: always
     ports:
       - '5672:5672'
