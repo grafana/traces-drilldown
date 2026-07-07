@@ -44,6 +44,3 @@ overrides:
   js-yaml: 4.2.0
   '@opentelemetry/core': 2.8.0
   qs: ^6.15.2
-minimumReleaseAgeExclude:
-  # Renovate security update: pnpm@11.8.0
-  - pnpm@11.8.0
