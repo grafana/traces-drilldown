@@ -29,7 +29,7 @@ services:
 
   # generates uninteresting traces, but is useful for testing
   k6-tracing:
-    image: ghcr.io/grafana/xk6-client-tracing:latest@sha256:c176112df6a6aac970d54b0b2e2db950642378496c6967adc8a401179819fab0
+    image: ghcr.io/grafana/xk6-client-tracing:latest@sha256:94c45fda864d2b8c05a477f66b1105cba6ae372dd0a8760d446d978c5eb1708f
     environment:
       - ENDPOINT=tempo:4317
     restart: always
@@ -44,7 +44,7 @@ services:
 
   # A RabbitMQ queue used to send message between the requester and the server microservices.
   mythical-queue:
-    image: rabbitmq:management@sha256:f2aa0097c68a777ff0aaf5235862963be3204cb21926e503b7743d5951082947
+    image: rabbitmq:management@sha256:76412b1ed2865b88ed01b4a504f72e888842f2089a7527743d325ce7c9d3a43b
     restart: always
     ports:
       - '5672:5672'

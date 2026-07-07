@@ -34,12 +34,12 @@
     "updated": "%TODAY%",
     "links": [
       {
-        "name": "Github",
-        "url": "https://github.com/grafana/explore-traces"
+        "name": "GitHub",
+        "url": "https://github.com/grafana/traces-drilldown"
       },
       {
         "name": "Report bug",
-        "url": "https://github.com/grafana/explore-traces/issues/new"
+        "url": "https://github.com/grafana/traces-drilldown/issues/new?template=bug_report.md"
       }
     ]
   },

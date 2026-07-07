@@ -7,6 +7,8 @@
 | File | What it's for |
 |------|----------------|
 | **`AGENTS.md`** (this file) | **Entry point.** Tempo & TraceQL workflow, expected vs bug, Scenes patterns, security. Points to every other doc below. |
+| **`CONTRIBUTING.md`** | **Human contributors.** Dev setup, issues vs PRs, i18n, PR checklist, link to GenAI policy. |
+| **`docs/genai.md`** | **AI-assisted contributions.** Disclosure, acceptable use, Traces Drilldown-specific pitfalls. |
 | **`.config/AGENTS/instructions.md`** | **Plugin tooling only** — webpack, `plugin.json`, E2E, rules about `.config`. |
 | **`docs/project-intent.md`** | **Why** we built the app — philosophy, principles. Use when reasoning about tradeoffs or scope. |
 | **`docs/application-structure.md`** | **How the product is organized** — user journeys, screens, tabs, trace view, links in/out. Use when changing UI or URL behavior. |
@@ -26,6 +28,7 @@
 | **Build / plugin** — plugin.json, webpack, .config, E2E | `.config/AGENTS/instructions.md` | project-intent, application-structure |
 | **Shipped user docs** — get-started, concepts, structure | Relevant file in `docs/sources/` + `docs/README.md` | Others unless aligning to UI |
 | **Bug in traces / TraceQL / RED / data** | This file (Tempo links) + code | application-structure only if UI or URL involved |
+| **AI-assisted contribution** — drafting or reviewing with GenAI | `docs/genai.md` | AGENTS.md, CONTRIBUTING.md unless filing a PR |
 
 **Default:** Stay shallow; open another doc only when the task clearly fits. For renames, lint, or single-file UI tweaks, skip application-structure and other deep docs.
 
@@ -54,7 +57,7 @@
 
 **Plugin (build, .config, E2E):** See **`.config/AGENTS/instructions.md`** — do not modify `.config`.
 
-- **Commands** — After code changes: `yarn lint`, `yarn typecheck`.
+- **Commands** — After code changes: `pnpm lint`, `pnpm typecheck`.
 - **Edits** — Large replacements (many lines) are fewer tool calls when they succeed but often fail on whitespace/formatting. Smaller, incremental steps match more reliably. Prefer smaller steps for big or multi-part changes; one large replace is fine when the snippet is short and you have the exact content from the file.
 - **Avoid** — Reading whole large files for a small change (see Code anchors; grep first). One giant multi-file replace without verifying exact content.
 - **Frontend security** — Follow workspace rules: HTML sanitization (DOMPurify), safe URL APIs / `textUtil.sanitizeUrl` and whatever else you think is necessary.
@@ -72,3 +75,5 @@ Traces Drilldown uses [@grafana/scenes](https://grafana.com/developers/scenes/) 
 ## Usage
 
 Start with the **How these files fit together** table above, then open the doc that matches your task.
+
+**Human contributors:** follow [CONTRIBUTING.md](CONTRIBUTING.md) for how to file issues, open pull requests, run local checks, and use AI tools responsibly. The full GenAI policy is in [docs/genai.md](docs/genai.md).
