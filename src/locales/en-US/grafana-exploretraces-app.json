@@ -30,9 +30,6 @@
     "layout-rows": "Rows",
     "layout-single": "Single"
   },
-  "attribute-panel-rows": {
-    "no-series-data": "No series data"
-  },
   "attributes-breakdown-scene": {
     "error-label": "Error",
     "rate-label": "Rate"
@@ -64,19 +61,6 @@
     "selected": "Selected:",
     "selected-count_one": "Selected ({{count}}):",
     "selected-count_other": "Selected ({{count}}):"
-  },
-  "bookmark-icon": {
-    "bookmark": "Bookmark",
-    "remove-bookmark": "Remove bookmark"
-  },
-  "bookmark-item": {
-    "description": "<0>{{metric}}</0> of <2>{{signal}}</2> ({{actionView}})"
-  },
-  "bookmarks": {
-    "loading": "Loading bookmarks...",
-    "no-bookmarks": "Bookmark your favorite queries to view them here.",
-    "or-view-bookmarks": "Or view bookmarks",
-    "remove-bookmark": "Remove bookmark"
   },
   "by-frame-repeater": {
     "no-data-for-search": "No data for search term"
@@ -126,25 +110,10 @@
       "close": "Close"
     }
   },
-  "header-scene": {
-    "data-source": "Data source",
-    "filter": "Filter",
-    "lets-start": "Let's start",
-    "quick-start": "Or quick-start into your tracing data",
-    "read-documentation": "Read documentation",
-    "subtitle": "Drilldown and visualize your trace data without writing a query.",
-    "title": "Start your traces exploration!"
-  },
   "highest-difference-panel": {
     "exclude": "Exclude",
     "include": "Include",
     "title": "Highest difference"
-  },
-  "home": {
-    "data-source-label": "Data source",
-    "errored-services": "Errored services",
-    "slow-services": "Slow services",
-    "slow-traces": "Slow traces"
   },
   "insights-timeline-widget": {
     "label": "Insights"
