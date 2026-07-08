@@ -411,6 +411,7 @@ function getStyles(theme: GrafanaTheme2) {
       width: '100%',
       display: 'flex',
       flexDirection: 'row',
+      flexWrap: 'wrap',
       padding: '8px 8px 0 8px',
       gap: '8px',
       justifyContent: 'space-between',
