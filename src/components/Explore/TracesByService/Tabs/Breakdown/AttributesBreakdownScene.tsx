@@ -177,7 +177,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
               metric === 'duration'
                 ? []
                 : [
-                    { label: t('attributes-breakdown-scene.rate-label', 'Rate'), color: 'green' },
+                    { label: t('attributes-breakdown-scene.rate-label', 'Rate'), color: 'blue' },
                     { label: t('attributes-breakdown-scene.error-label', 'Error'), color: 'red' },
                   ]
             }
