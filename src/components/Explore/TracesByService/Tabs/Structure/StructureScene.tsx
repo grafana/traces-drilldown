@@ -70,8 +70,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         if (state.data?.state === LoadingState.Done && state.data?.series.length) {
           const frame = state.data?.series[0].fields[0].values[0];
           if (frame) {
-            const parsed = JSON.parse(frame) as SearchResponse | TraceSearchMetadata[];
-            const traces = Array.isArray(parsed) ? parsed : (parsed.traces ?? []);
+            const traces = parseTraces(frame);
             const tree = mergeTraces(traces);
             tree.children.sort((a, b) => countSpans(b) - countSpans(a));
 
@@ -344,6 +343,14 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       </Stack>
     );
   };
+}
+
+// The query result frame can be either a raw array of traces (TraceSearchMetadata[])
+// or a full SearchResponse object with a `traces` field, depending on the Tempo API
+// endpoint that served it. Normalise both shapes to a plain array of traces.
+export function parseTraces(frame: string): TraceSearchMetadata[] {
+  const parsed = JSON.parse(frame) as SearchResponse | TraceSearchMetadata[];
+  return Array.isArray(parsed) ? parsed : (parsed.traces ?? []);
 }
 
 function buildQuery(metric: MetricFunction) {
