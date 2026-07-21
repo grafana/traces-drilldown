@@ -41,6 +41,9 @@ overrides:
   protobufjs: 7.6.3
   ws: 8.21.0
   esbuild: 0.28.1
-  js-yaml: 4.2.0
+  js-yaml: 4.3.0
   '@opentelemetry/core': 2.8.0
   qs: ^6.15.2
+minimumReleaseAgeExclude:
+  # Renovate security update: js-yaml@4.3.0
+  - js-yaml@4.3.0
