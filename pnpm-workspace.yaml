@@ -6,8 +6,8 @@ packages:
 frozenLockfile: true
 # Disable lifecycle scripts like husky git hooks such as postinstall.
 ignoreScripts: true
-# Five days in minutes (5 × 24 × 60).
-minimumReleaseAge: 7200
+# 24 hours in minutes (24 × 60).
+minimumReleaseAge: 1440
 # Fail install if a package's trust evidence is weaker than an earlier release (e.g. lost trusted publisher).
 trustPolicy: no-downgrade
 # Transitive deps must come from the registry/workspace; block git/tarball URLs except on direct deps.
