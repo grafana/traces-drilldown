@@ -112,8 +112,8 @@ describe('TimeSeekerContext', () => {
       },
     } as any;
 
-    it('returns blue for duration metric', () => {
-      expect(getMetricColor(mockTheme, 'duration')).toBe('color-blue');
+    it('returns semi-dark-blue for duration metric', () => {
+      expect(getMetricColor(mockTheme, 'duration')).toBe('color-semi-dark-blue');
     });
 
     it('returns semi-dark-red for errors metric', () => {

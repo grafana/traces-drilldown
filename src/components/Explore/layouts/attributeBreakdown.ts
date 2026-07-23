@@ -145,7 +145,9 @@ export function getLayoutChild(
       },
     ];
 
-    const panel = (metric === 'duration' ? linesPanelConfig().setUnit('s') : barsPanelConfig(metric))
+    // Duration uses semi-dark-blue to stay in the neutral (non-status) family while
+    // remaining distinguishable from the rate panels (blue).
+    const panel = (metric === 'duration' ? linesPanelConfig('semi-dark-blue').setUnit('s') : barsPanelConfig(metric))
       .setTitle(getTitle(frame, variable.getValueText()))
       .setMenu(
         new PanelMenu({

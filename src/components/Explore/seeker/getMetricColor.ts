@@ -3,7 +3,8 @@ import { MetricFunction } from 'utils/shared';
 
 export function getMetricColor(theme: GrafanaTheme2, metric?: MetricFunction): string {
   if (metric === 'duration') {
-    return theme.visualization.getColorByName('blue');
+    // Semi-dark-blue keeps duration in the neutral family but visually distinct from rate (blue).
+    return theme.visualization.getColorByName('semi-dark-blue');
   } else if (metric === 'errors') {
     return theme.visualization.getColorByName('semi-dark-red');
   }
