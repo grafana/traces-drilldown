@@ -102,6 +102,9 @@
   "exceptions-table": {
     "exclude": "",
     "exclude-aria-label": "",
+    "grouped-messages-aria-label": "",
+    "grouped-messages-common-prefix": "",
+    "grouped-messages-title": "",
     "header": {
       "exception-details": "",
       "exception-details-tooltip": "",
@@ -111,10 +114,7 @@
       "occurrences-tooltip": ""
     },
     "include": "",
-    "include-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": ""
+    "include-aria-label": ""
   },
   "exemplars": {
     "view-trace": ""
@@ -177,6 +177,7 @@
     "label": ""
   },
   "panel-menu": {
+    "add-to-dashboard": "",
     "create-alert": "",
     "explore": "",
     "navigation": ""
@@ -189,6 +190,25 @@
     "p90": "",
     "p95": "",
     "p99": ""
+  },
+  "plugin-info": {
+    "button": {
+      "title": "",
+      "tooltip": ""
+    },
+    "header": {
+      "last-update": "",
+      "title": ""
+    },
+    "menu": {
+      "changelog": "",
+      "commit-sha": "",
+      "contribute": "",
+      "documentation": "",
+      "give-feedback": "",
+      "grafana-version": "",
+      "report-issue": ""
+    }
   },
   "primary-signal-variable": {
     "primary-signal": "",
@@ -270,21 +290,12 @@
     "header": {
       "data-source": "",
       "filters": "",
-      "need-help": "",
       "trace-id": "",
       "trace-id-placeholder": ""
-    },
-    "menu": {
-      "documentation": "",
-      "give-feedback": ""
     },
     "variable": {
       "data-source": "",
       "duration-percentiles": ""
-    },
-    "version-header": {
-      "last-update": "",
-      "title": ""
     }
   },
   "traceql-issue-detector": {
