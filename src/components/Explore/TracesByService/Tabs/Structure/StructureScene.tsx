@@ -21,7 +21,7 @@ import {
   VAR_LATENCY_PARTIAL_THRESHOLD_EXPR,
   VAR_LATENCY_THRESHOLD_EXPR,
 } from '../../../../../utils/shared';
-import { TraceSearchMetadata } from '../../../../../types';
+import { SearchResponse, TraceSearchMetadata } from '../../../../../types';
 import { mergeTraces } from '../../../../../utils/trace-merge/merge';
 import { createDataFrame, Field, FieldType, GrafanaTheme2, LinkModel, LoadingState } from '@grafana/data';
 import { TreeNode } from '../../../../../utils/trace-merge/tree-node';
@@ -70,8 +70,8 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         if (state.data?.state === LoadingState.Done && state.data?.series.length) {
           const frame = state.data?.series[0].fields[0].values[0];
           if (frame) {
-            const response = JSON.parse(frame) as TraceSearchMetadata[];
-            const tree = mergeTraces(response);
+            const traces = parseTraces(frame);
+            const tree = mergeTraces(traces);
             tree.children.sort((a, b) => countSpans(b) - countSpans(a));
 
             this.setState({
@@ -343,6 +343,14 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       </Stack>
     );
   };
+}
+
+// The query result frame can be either a raw array of traces (TraceSearchMetadata[])
+// or a full SearchResponse object with a `traces` field, depending on the Tempo API
+// endpoint that served it. Normalise both shapes to a plain array of traces.
+export function parseTraces(frame: string): TraceSearchMetadata[] {
+  const parsed = JSON.parse(frame) as SearchResponse | TraceSearchMetadata[];
+  return Array.isArray(parsed) ? parsed : (parsed.traces ?? []);
 }
 
 function buildQuery(metric: MetricFunction) {
