@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.1.1](https://github.com/grafana/traces-drilldown/compare/v2.1.0...v2.1.1) (2026-07-24)
+
+
+### 🐛 Bug Fixes
+
+* **deps:** resolve pnpm audit vulnerabilities ([#819](https://github.com/grafana/traces-drilldown/issues/819)) ([5b51dab](https://github.com/grafana/traces-drilldown/commit/5b51dab256e755a4cac29f727b27960b2ba0588b))
+* **security/high/:** update pnpm to v11.8.0 [security] ([#804](https://github.com/grafana/traces-drilldown/issues/804)) ([31dd2a8](https://github.com/grafana/traces-drilldown/commit/31dd2a83881a286fbe1da194adad1a3f11e41f36))
+
+
+### 📝 Documentation
+
+* Add GenAI policy, contributor guide updates and issue templates ([#811](https://github.com/grafana/traces-drilldown/issues/811)) ([89a2a90](https://github.com/grafana/traces-drilldown/commit/89a2a90d8f5b7e9736104cf66711b22be3ccd4de))
+
+
+### 🧹 Chore
+
+* add warnOnConflicts to i18next config ([#803](https://github.com/grafana/traces-drilldown/issues/803)) ([2788a81](https://github.com/grafana/traces-drilldown/commit/2788a81003374dc5bfd6387338e8f6a0bbe42210))
+* **deps:** pin dependencies ([#808](https://github.com/grafana/traces-drilldown/issues/808)) ([e7866f8](https://github.com/grafana/traces-drilldown/commit/e7866f8e397470235f63eef39a4806e778294410))
+* **deps:** update ghcr.io/grafana/xk6-client-tracing:latest docker digest to 94c45fd ([#809](https://github.com/grafana/traces-drilldown/issues/809)) ([a069efa](https://github.com/grafana/traces-drilldown/commit/a069efa3f40e79314a28b7dfab295eea6a1a228e))
+* **deps:** update rabbitmq:management docker digest to 76412b1 ([#810](https://github.com/grafana/traces-drilldown/issues/810)) ([755e1eb](https://github.com/grafana/traces-drilldown/commit/755e1eb0dca8c22b3a926154ed1d5acd90b91e19))
+* Remove homepage ([#789](https://github.com/grafana/traces-drilldown/issues/789)) ([f27321f](https://github.com/grafana/traces-drilldown/commit/f27321f79835cd632aaf853df9c47d300a70089c))
+* Wrap RED toggles in small screen ([#805](https://github.com/grafana/traces-drilldown/issues/805)) ([a2a3226](https://github.com/grafana/traces-drilldown/commit/a2a32269218574f4b3ec647493da54eb7cf786ca))
+
 ## [2.1.0](https://github.com/grafana/traces-drilldown/compare/v2.0.4...v2.1.0) (2026-06-30)
 
 
