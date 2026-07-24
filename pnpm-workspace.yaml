@@ -38,7 +38,7 @@ overrides:
   uuid: ^14.0.0
   '@tootallnate/once': '>=3.0.1'
   js-cookie: ^3.0.7
-  protobufjs: 7.6.3
+  protobufjs: 7.6.5
   ws: 8.21.0
   esbuild: 0.28.1
   js-yaml: 4.3.0
@@ -46,3 +46,6 @@ overrides:
   qs: ^6.15.2
   brace-expansion@^5: '>=5.0.7'
   fast-uri: '>=3.1.4'
+minimumReleaseAgeExclude:
+  # Renovate security update: protobufjs@7.6.5
+  - protobufjs@7.6.5
