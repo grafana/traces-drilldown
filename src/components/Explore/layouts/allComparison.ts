@@ -85,7 +85,9 @@ export function getPanelConfig(metric: MetricFunction) {
         .matchFieldsWithName('Baseline')
         .overrideColor({
           mode: 'fixed',
-          fixedColor: metric === 'duration' ? BaselineColor : 'semi-dark-green',
+          // Baseline is a reference population, not a health signal; use the neutral
+          // baseline blue for every metric and reserve green for success.
+          fixedColor: BaselineColor,
         })
         .overrideUnit('percentunit');
       overrides

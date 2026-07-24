@@ -228,10 +228,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
             tags={[
               {
                 label: t('attributes-comparison-scene.baseline-label', 'Baseline'),
-                color:
-                  traceExploration.getMetricFunction() === 'duration'
-                    ? BaselineColor
-                    : getTheme().visualization.getColorByName('semi-dark-green'),
+                color: BaselineColor,
               },
               {
                 label: t('attributes-comparison-scene.selection-label', 'Selection'),
