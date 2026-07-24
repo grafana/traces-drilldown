@@ -5,7 +5,7 @@ import {
   TimeRange,
   useDataLinksContext,
 } from '@grafana/data';
-import { getDataSourceSrv, usePluginFunctions } from '@grafana/runtime';
+import { config, getDataSourceSrv, usePluginFunctions } from '@grafana/runtime';
 import { DataQuery } from '@grafana/schema';
 import React, { useCallback, useMemo, useRef } from 'react';
 
@@ -81,7 +81,8 @@ export function DataLinksCustomContext(props: Props) {
       });
 
       if (extensionLink?.path) {
-        linkModel.href = extensionLink.path;
+        const subUrl = config.appSubUrl ?? '';
+        linkModel.href = `${subUrl}${extensionLink.path}`;
       }
     }
 
