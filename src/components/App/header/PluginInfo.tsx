@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import { usePluginContext, GrafanaTheme2 } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { config } from '@grafana/runtime';
-import { Button, Dropdown, Menu, useStyles2 } from '@grafana/ui';
+import { Dropdown, Menu, ToolbarButton, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
@@ -14,8 +14,7 @@ const DOCUMENTATION_URL = 'https://grafana.com/docs/grafana/next/explore/simplif
 const FEEDBACK_FORM_URL = 'https://grafana.qualtrics.com/jfe/form/SV_9LUZ21zl3x4vUcS';
 
 const commitSha = process.env.COMMIT_SHA;
-const pluginCommitUrl =
-  commitSha && commitSha !== 'local' ? `${PLUGIN_REPO}/commit/${commitSha}` : undefined;
+const pluginCommitUrl = commitSha && commitSha !== 'local' ? `${PLUGIN_REPO}/commit/${commitSha}` : undefined;
 
 const { buildInfo: grafanaBuildInfo } = config;
 
@@ -109,12 +108,11 @@ function InfoMenu() {
 export function PluginInfo() {
   return (
     <Dropdown overlay={<InfoMenu />} placement="bottom-end">
-      <Button
+      <ToolbarButton
         aria-label={t('plugin-info.button.title', 'Plugin info')}
         icon="info-circle"
-        variant="secondary"
+        variant="canvas"
         tooltip={t('plugin-info.button.tooltip', 'Plugin info')}
-        tooltipPlacement="top"
         title={t('plugin-info.button.title', 'Plugin info')}
         data-testid="plugin-info-button"
       />
