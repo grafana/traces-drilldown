@@ -21,7 +21,7 @@ Each tab provides a brief explanation about the information provided.
 
 The **Breakdown** tab splits the selected metric by the values of a chosen resource or span attribute.
 When you're using **Duration** metrics, **Breakdown** shows the 90th percentile duration for every value of the selected attribute and orders values by average duration.
-When you select **Rate**, **Breakdown** orders the sequence of attributes by their rate of requests per second, with errors colored red.
+When you select **Rate**, **Breakdown** orders the sequence of attributes by their rate of requests per second.
 
 You can change the **Scope** to show **Resource** or **Span**.
 
