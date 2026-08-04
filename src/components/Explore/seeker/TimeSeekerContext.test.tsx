@@ -1,11 +1,6 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { TimeSeekerProvider, useTimeSeeker } from './TimeSeekerContext';
-import {
-  applyMetricSeriesColorOverrides,
-  getMetricColor,
-  getMetricColorName,
-} from './getMetricColor';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
 const createMockData = () => ({
@@ -106,71 +101,6 @@ describe('TimeSeekerContext', () => {
       expect(() => render(<TestConsumer />)).toThrow('useTimeSeeker must be used within a TimeSeekerProvider');
 
       consoleError.mockRestore();
-    });
-  });
-
-  describe('getMetricColor', () => {
-    const mockTheme = {
-      visualization: {
-        getColorByName: (name: string) => `color-${name}`,
-      },
-    } as any;
-
-    it('returns semi-dark-blue for duration metric', () => {
-      expect(getMetricColor(mockTheme, 'duration')).toBe('color-semi-dark-blue');
-    });
-
-    it('returns semi-dark-red for errors metric', () => {
-      expect(getMetricColor(mockTheme, 'errors')).toBe('color-semi-dark-red');
-    });
-
-    it('returns blue for rate metric', () => {
-      expect(getMetricColor(mockTheme, 'rate')).toBe('color-blue');
-    });
-
-    it('returns blue for undefined metric', () => {
-      expect(getMetricColor(mockTheme, undefined)).toBe('color-blue');
-    });
-  });
-
-  describe('getMetricColorName', () => {
-    it('returns palette names for each metric', () => {
-      expect(getMetricColorName('duration')).toBe('semi-dark-blue');
-      expect(getMetricColorName('errors')).toBe('semi-dark-red');
-      expect(getMetricColorName('rate')).toBe('blue');
-      expect(getMetricColorName(undefined)).toBe('blue');
-    });
-  });
-
-  describe('applyMetricSeriesColorOverrides', () => {
-    it('applies the metric color for rate', () => {
-      const calls: Array<{ regex: string; color: string }> = [];
-      const overrides = {
-        matchFieldsWithNameByRegex: (regex: string) => ({
-          overrideColor: ({ fixedColor }: { fixedColor: string }) => {
-            calls.push({ regex, color: fixedColor });
-          },
-        }),
-      };
-
-      applyMetricSeriesColorOverrides(overrides, 'rate');
-
-      expect(calls).toEqual([{ regex: '.*', color: 'blue' }]);
-    });
-
-    it('applies the metric color for errors', () => {
-      const calls: Array<{ regex: string; color: string }> = [];
-      const overrides = {
-        matchFieldsWithNameByRegex: (regex: string) => ({
-          overrideColor: ({ fixedColor }: { fixedColor: string }) => {
-            calls.push({ regex, color: fixedColor });
-          },
-        }),
-      };
-
-      applyMetricSeriesColorOverrides(overrides, 'errors');
-
-      expect(calls).toEqual([{ regex: '.*', color: 'semi-dark-red' }]);
     });
   });
 
