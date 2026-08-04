@@ -1,7 +1,11 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { TimeSeekerProvider, useTimeSeeker } from './TimeSeekerContext';
-import { getMetricColor, getMetricColorName } from './getMetricColor';
+import {
+  applyMetricSeriesColorOverrides,
+  getMetricColor,
+  getMetricColorName,
+} from './getMetricColor';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
 const createMockData = () => ({
@@ -135,6 +139,38 @@ describe('TimeSeekerContext', () => {
       expect(getMetricColorName('errors')).toBe('semi-dark-red');
       expect(getMetricColorName('rate')).toBe('blue');
       expect(getMetricColorName(undefined)).toBe('blue');
+    });
+  });
+
+  describe('applyMetricSeriesColorOverrides', () => {
+    it('applies the metric color for rate', () => {
+      const calls: Array<{ regex: string; color: string }> = [];
+      const overrides = {
+        matchFieldsWithNameByRegex: (regex: string) => ({
+          overrideColor: ({ fixedColor }: { fixedColor: string }) => {
+            calls.push({ regex, color: fixedColor });
+          },
+        }),
+      };
+
+      applyMetricSeriesColorOverrides(overrides, 'rate');
+
+      expect(calls).toEqual([{ regex: '.*', color: 'blue' }]);
+    });
+
+    it('applies the metric color for errors', () => {
+      const calls: Array<{ regex: string; color: string }> = [];
+      const overrides = {
+        matchFieldsWithNameByRegex: (regex: string) => ({
+          overrideColor: ({ fixedColor }: { fixedColor: string }) => {
+            calls.push({ regex, color: fixedColor });
+          },
+        }),
+      };
+
+      applyMetricSeriesColorOverrides(overrides, 'errors');
+
+      expect(calls).toEqual([{ regex: '.*', color: 'semi-dark-red' }]);
     });
   });
 

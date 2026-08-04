@@ -178,13 +178,19 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
             tags={
               metric === 'duration'
                 ? []
-                : [
-                    { label: t('attributes-breakdown-scene.rate-label', 'Rate'), color: getMetricColor(theme, 'rate') },
-                    {
-                      label: t('attributes-breakdown-scene.error-label', 'Error'),
-                      color: getMetricColor(theme, 'errors'),
-                    },
-                  ]
+                : metric === 'errors'
+                  ? [
+                      {
+                        label: t('attributes-breakdown-scene.error-label', 'Error'),
+                        color: getMetricColor(theme, 'errors'),
+                      },
+                    ]
+                  : [
+                      {
+                        label: t('attributes-breakdown-scene.rate-label', 'Rate'),
+                        color: getMetricColor(theme, 'rate'),
+                      },
+                    ]
             }
           />
           {body instanceof LayoutSwitcher && (

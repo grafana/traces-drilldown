@@ -25,7 +25,6 @@ import { syncYAxis } from '../behaviors/syncYaxis';
 import { exemplarsTransformations } from '../../../utils/exemplars';
 import type { AlertPanelTarget } from '../actions/createAlert/getPanelDataForAlert';
 import { PanelMenu, type PanelMenuCreateAlertHandler } from '../panels/PanelMenu';
-import { getMetricColorName } from '../seeker/getMetricColor';
 
 export function buildNormalLayout(
   scene: SceneObject,
@@ -73,8 +72,9 @@ export function buildNormalLayout(
           new SceneFlexItem({
             minHeight: 300,
             body: (() => {
-              const color = getMetricColorName(metric);
-              return (metric === 'duration' ? linesPanelConfig(color).setUnit('s') : linesPanelConfig(color)).build();
+              const panel =
+                metric === 'duration' ? linesPanelConfig(metric).setUnit('s') : linesPanelConfig(metric);
+              return panel.build();
             })(),
           }),
         ],
@@ -149,9 +149,7 @@ export function getLayoutChild(
       },
     ];
 
-    const panel = (metric === 'duration'
-      ? linesPanelConfig(getMetricColorName(metric)).setUnit('s')
-      : barsPanelConfig(metric))
+    const panel = (metric === 'duration' ? linesPanelConfig(metric).setUnit('s') : barsPanelConfig(metric))
       .setTitle(getTitle(frame, variable.getValueText()))
       .setMenu(
         new PanelMenu({

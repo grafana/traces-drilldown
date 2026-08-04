@@ -3,9 +3,9 @@ import { MetricFunction } from 'utils/shared';
 
 /**
  * Grafana visualization palette name for a metric series.
- * Rate is neutral throughput (all spans), so use blue — green is reserved for an
- * explicit success signal. Duration stays in the neutral family as semi-dark-blue
- * so it remains distinguishable from rate.
+ * Rate is neutral throughput (all statuses) → blue. Duration → semi-dark-blue.
+ * Errors → semi-dark-red. Green is reserved for an explicit success signal — do not
+ * use it for rate/throughput.
  */
 export function getMetricColorName(metric?: MetricFunction): string {
   if (metric === 'duration') {
@@ -19,4 +19,18 @@ export function getMetricColorName(metric?: MetricFunction): string {
 
 export function getMetricColor(theme: GrafanaTheme2, metric?: MetricFunction): string {
   return theme.visualization.getColorByName(getMetricColorName(metric));
+}
+
+type ColorOverrides = {
+  matchFieldsWithNameByRegex: (regex: string) => {
+    overrideColor: (color: { mode: 'fixed'; fixedColor: string }) => unknown;
+  };
+};
+
+/** Fixed color for the selected metric. */
+export function applyMetricSeriesColorOverrides(overrides: ColorOverrides, metric: MetricFunction) {
+  overrides.matchFieldsWithNameByRegex('.*').overrideColor({
+    mode: 'fixed',
+    fixedColor: getMetricColorName(metric),
+  });
 }

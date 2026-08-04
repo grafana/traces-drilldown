@@ -1,7 +1,7 @@
 import { PanelBuilders } from '@grafana/scenes';
 import { DrawStyle, StackingMode, TooltipDisplayMode } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
-import { getMetricColorName } from '../seeker/getMetricColor';
+import { applyMetricSeriesColorOverrides } from '../seeker/getMetricColor';
 
 export const barsPanelConfig = (metric: MetricFunction, axisWidth?: number) => {
   const builder = PanelBuilders.timeseries()
@@ -14,10 +14,7 @@ export const barsPanelConfig = (metric: MetricFunction, axisWidth?: number) => {
     .setCustomFieldConfig('pointSize', 0)
     .setCustomFieldConfig('axisLabel', 'Rate')
     .setOverrides((overrides) => {
-      overrides.matchFieldsWithNameByRegex('.*').overrideColor({
-        mode: 'fixed',
-        fixedColor: getMetricColorName(metric),
-      });
+      applyMetricSeriesColorOverrides(overrides, metric);
     })
     .setOption('tooltip', { mode: TooltipDisplayMode.Multi });
 
