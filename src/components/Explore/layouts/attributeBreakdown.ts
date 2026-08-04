@@ -71,7 +71,10 @@ export function buildNormalLayout(
         children: [
           new SceneFlexItem({
             minHeight: 300,
-            body: (metric === 'duration' ? linesPanelConfig().setUnit('s') : linesPanelConfig()).build(),
+            body: (metric === 'duration'
+              ? linesPanelConfig('semi-dark-blue').setUnit('s')
+              : linesPanelConfig(metric === 'errors' ? 'semi-dark-red' : 'blue')
+            ).build(),
           }),
         ],
       }),
