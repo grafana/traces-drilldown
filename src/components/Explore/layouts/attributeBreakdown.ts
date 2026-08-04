@@ -71,11 +71,8 @@ export function buildNormalLayout(
         children: [
           new SceneFlexItem({
             minHeight: 300,
-            body: (() => {
-              const panel =
-                metric === 'duration' ? linesPanelConfig(metric).setUnit('s') : linesPanelConfig(metric);
-              return panel.build();
-            })(),
+            // No fixed metric color — default palette keeps multi-series distinguishable.
+            body: (metric === 'duration' ? linesPanelConfig().setUnit('s') : linesPanelConfig()).build(),
           }),
         ],
       }),
