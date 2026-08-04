@@ -17,7 +17,9 @@ export const barsPanelConfig = (metric: MetricFunction, axisWidth?: number) => {
     .setOverrides((overrides) => {
       overrides.matchFieldsWithNameByRegex('.*').overrideColor({
         mode: 'fixed',
-        fixedColor: isErrorsMetric ? 'semi-dark-red' : 'green',
+        // Rate is neutral throughput (all spans); use a neutral blue and reserve
+        // green for an explicit success signal.
+        fixedColor: isErrorsMetric ? 'semi-dark-red' : 'blue',
       });
     })
     .setOption('tooltip', { mode: TooltipDisplayMode.Multi });
