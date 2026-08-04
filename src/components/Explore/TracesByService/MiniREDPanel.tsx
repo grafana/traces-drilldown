@@ -16,7 +16,6 @@ import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';
 import { barsPanelConfig } from '../panels/barsPanel';
-import { getMetricColorName } from '../seeker/getMetricColor';
 import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { RadioButtonList, useStyles2 } from '@grafana/ui';
@@ -122,10 +121,7 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
     if (metric === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (metric === 'errors') {
-      panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'error/s').setColor({
-        fixedColor: getMetricColorName('errors'),
-        mode: 'fixed',
-      });
+      panel.setTitle('Errors rate').setCustomFieldConfig('axisLabel', 'error/s');
     }
 
     return panel.build();
