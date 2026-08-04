@@ -17,6 +17,7 @@ import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { SkeletonComponent } from '../ByFrameRepeater';
 import { barsPanelConfig } from '../panels/barsPanel';
+import { getMetricColorName } from '../seeker/getMetricColor';
 import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { css } from '@emotion/css';
@@ -221,7 +222,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
       panel.setCustomFieldConfig('axisLabel', 'error/s').setColor({
-        fixedColor: 'semi-dark-red',
+        fixedColor: getMetricColorName('errors'),
         mode: 'fixed',
       });
     }

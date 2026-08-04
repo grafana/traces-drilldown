@@ -1,14 +1,22 @@
 import { GrafanaTheme2 } from '@grafana/data';
 import { MetricFunction } from 'utils/shared';
 
-export function getMetricColor(theme: GrafanaTheme2, metric?: MetricFunction): string {
+/**
+ * Grafana visualization palette name for a metric series.
+ * Rate is neutral throughput (all spans), so use blue — green is reserved for an
+ * explicit success signal. Duration stays in the neutral family as semi-dark-blue
+ * so it remains distinguishable from rate.
+ */
+export function getMetricColorName(metric?: MetricFunction): string {
   if (metric === 'duration') {
-    // Semi-dark-blue keeps duration in the neutral family but visually distinct from rate (blue).
-    return theme.visualization.getColorByName('semi-dark-blue');
-  } else if (metric === 'errors') {
-    return theme.visualization.getColorByName('semi-dark-red');
+    return 'semi-dark-blue';
   }
-  // Rate is neutral throughput (all spans, regardless of status), so use a neutral
-  // color. Green is reserved for an explicit success signal.
-  return theme.visualization.getColorByName('blue');
+  if (metric === 'errors') {
+    return 'semi-dark-red';
+  }
+  return 'blue';
+}
+
+export function getMetricColor(theme: GrafanaTheme2, metric?: MetricFunction): string {
+  return theme.visualization.getColorByName(getMetricColorName(metric));
 }

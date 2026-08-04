@@ -25,6 +25,7 @@ import { syncYAxis } from '../behaviors/syncYaxis';
 import { exemplarsTransformations } from '../../../utils/exemplars';
 import type { AlertPanelTarget } from '../actions/createAlert/getPanelDataForAlert';
 import { PanelMenu, type PanelMenuCreateAlertHandler } from '../panels/PanelMenu';
+import { getMetricColorName } from '../seeker/getMetricColor';
 
 export function buildNormalLayout(
   scene: SceneObject,
@@ -71,10 +72,10 @@ export function buildNormalLayout(
         children: [
           new SceneFlexItem({
             minHeight: 300,
-            body: (metric === 'duration'
-              ? linesPanelConfig('semi-dark-blue').setUnit('s')
-              : linesPanelConfig(metric === 'errors' ? 'semi-dark-red' : 'blue')
-            ).build(),
+            body: (() => {
+              const color = getMetricColorName(metric);
+              return (metric === 'duration' ? linesPanelConfig(color).setUnit('s') : linesPanelConfig(color)).build();
+            })(),
           }),
         ],
       }),
@@ -148,9 +149,9 @@ export function getLayoutChild(
       },
     ];
 
-    // Duration uses semi-dark-blue to stay in the neutral (non-status) family while
-    // remaining distinguishable from the rate panels (blue).
-    const panel = (metric === 'duration' ? linesPanelConfig('semi-dark-blue').setUnit('s') : barsPanelConfig(metric))
+    const panel = (metric === 'duration'
+      ? linesPanelConfig(getMetricColorName(metric)).setUnit('s')
+      : barsPanelConfig(metric))
       .setTitle(getTitle(frame, variable.getValueText()))
       .setMenu(
         new PanelMenu({
