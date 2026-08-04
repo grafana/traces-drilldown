@@ -71,7 +71,10 @@ export function buildNormalLayout(
         children: [
           new SceneFlexItem({
             minHeight: 300,
-            body: (metric === 'duration' ? linesPanelConfig().setUnit('s') : linesPanelConfig()).build(),
+            body: (metric === 'duration'
+              ? linesPanelConfig('semi-dark-blue').setUnit('s')
+              : linesPanelConfig(metric === 'errors' ? 'semi-dark-red' : 'blue')
+            ).build(),
           }),
         ],
       }),
@@ -145,7 +148,9 @@ export function getLayoutChild(
       },
     ];
 
-    const panel = (metric === 'duration' ? linesPanelConfig().setUnit('s') : barsPanelConfig(metric))
+    // Duration uses semi-dark-blue to stay in the neutral (non-status) family while
+    // remaining distinguishable from the rate panels (blue).
+    const panel = (metric === 'duration' ? linesPanelConfig('semi-dark-blue').setUnit('s') : barsPanelConfig(metric))
       .setTitle(getTitle(frame, variable.getValueText()))
       .setMenu(
         new PanelMenu({

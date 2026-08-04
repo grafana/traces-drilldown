@@ -112,20 +112,20 @@ describe('TimeSeekerContext', () => {
       },
     } as any;
 
-    it('returns blue for duration metric', () => {
-      expect(getMetricColor(mockTheme, 'duration')).toBe('color-blue');
+    it('returns semi-dark-blue for duration metric', () => {
+      expect(getMetricColor(mockTheme, 'duration')).toBe('color-semi-dark-blue');
     });
 
     it('returns semi-dark-red for errors metric', () => {
       expect(getMetricColor(mockTheme, 'errors')).toBe('color-semi-dark-red');
     });
 
-    it('returns green for rate metric', () => {
-      expect(getMetricColor(mockTheme, 'rate')).toBe('color-green');
+    it('returns blue for rate metric', () => {
+      expect(getMetricColor(mockTheme, 'rate')).toBe('color-blue');
     });
 
-    it('returns green for undefined metric', () => {
-      expect(getMetricColor(mockTheme, undefined)).toBe('color-green');
+    it('returns blue for undefined metric', () => {
+      expect(getMetricColor(mockTheme, undefined)).toBe('color-blue');
     });
   });
 
