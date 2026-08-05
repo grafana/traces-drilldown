@@ -84,7 +84,8 @@ export function Drawer({
       open={true}
       onClose={onClose}
       placement="right"
-      getContainer={'#trace-exploration'}
+      // Portal to body with position:fixed so scroll inside #trace-exploration cannot hide the drawer.
+      getContainer={() => document.body}
       className={styles.drawerContent}
       rootClassName={styles.drawer}
       classNames={{
@@ -210,10 +211,9 @@ function useResizebleDrawer(): [
 function getCustomDrawerWidth(clientX: number) {
   const traceExploration = document.getElementById('trace-exploration');
   if (traceExploration) {
-    const traceExplorationWidth = traceExploration.offsetWidth;
-    const offsetLeft = traceExploration.offsetLeft;
-    const offsetRight = traceExplorationWidth - (clientX - offsetLeft);
-    const widthPercent = Math.min((offsetRight / traceExplorationWidth) * 100, 98).toFixed(2);
+    const rect = traceExploration.getBoundingClientRect();
+    const offsetRight = rect.right - clientX;
+    const widthPercent = Math.min((offsetRight / rect.width) * 100, 98).toFixed(2);
     return `${widthPercent}%`;
   }
   return '50%';
@@ -244,8 +244,9 @@ const getStyles = (theme: GrafanaTheme2) => {
       position: 'relative',
     }),
     drawer: css({
-      top: 0,
-      position: 'absolute !important' as 'absolute',
+      position: 'fixed !important' as 'fixed',
+      inset: 0,
+      zIndex: theme.zIndex.modal,
 
       '.rc-drawer-content-wrapper': {
         boxShadow: theme.shadows.z3,
