@@ -20,10 +20,8 @@ overrides:
   minimatch@^9: ~10.2.0
   minimatch@^10: ^10.2.3
   uuid: ^14.0.0
-  '@tootallnate/once': '>=3.0.1'
   js-cookie: ^3.0.7
   ws: 8.21.0
-  esbuild: 0.28.1
   js-yaml: 4.3.0
   '@opentelemetry/core': 2.8.0
   qs: ^6.15.2
