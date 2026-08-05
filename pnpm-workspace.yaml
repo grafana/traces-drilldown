@@ -8,6 +8,9 @@ frozenLockfile: true
 ignoreScripts: true
 # Five days in minutes (5 × 24 × 60).
 minimumReleaseAge: 7200
+# Temporary: fast-uri@4.1.2 is ~2h under the age gate; remove after it matures.
+minimumReleaseAgeExclude:
+  - fast-uri@4.1.2
 # Fail install if a package's trust evidence is weaker than an earlier release (e.g. lost trusted publisher).
 trustPolicy: no-downgrade
 # Transitive deps must come from the registry/workspace; block git/tarball URLs except on direct deps.
@@ -44,5 +47,5 @@ overrides:
   '@opentelemetry/core': 2.8.0
   qs: ^6.15.2
   brace-expansion@^5: '>=5.0.8'
-  fast-uri: '>=4.1.1'
-  postcss: ^8.5.18
+  fast-uri: '>=4.1.2'
+  postcss: ^8.5.23

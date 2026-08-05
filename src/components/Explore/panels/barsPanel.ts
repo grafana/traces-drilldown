@@ -1,10 +1,9 @@
 import { PanelBuilders } from '@grafana/scenes';
 import { DrawStyle, StackingMode, TooltipDisplayMode } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
+import { applyMetricSeriesColorOverrides } from '../seeker/getMetricColor';
 
 export const barsPanelConfig = (metric: MetricFunction, axisWidth?: number) => {
-  const isErrorsMetric = metric === 'errors' || false;
-  
   const builder = PanelBuilders.timeseries()
     .setOption('annotations', { multiLane: true })
     .setOption('legend', { showLegend: false })
@@ -15,12 +14,7 @@ export const barsPanelConfig = (metric: MetricFunction, axisWidth?: number) => {
     .setCustomFieldConfig('pointSize', 0)
     .setCustomFieldConfig('axisLabel', 'Rate')
     .setOverrides((overrides) => {
-      overrides.matchFieldsWithNameByRegex('.*').overrideColor({
-        mode: 'fixed',
-        // Rate is neutral throughput (all spans); use a neutral blue and reserve
-        // green for an explicit success signal.
-        fixedColor: isErrorsMetric ? 'semi-dark-red' : 'blue',
-      });
+      applyMetricSeriesColorOverrides(overrides, metric);
     })
     .setOption('tooltip', { mode: TooltipDisplayMode.Multi });
 
