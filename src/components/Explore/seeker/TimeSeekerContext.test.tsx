@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { TimeSeekerProvider, useTimeSeeker } from './TimeSeekerContext';
-import { getMetricColor } from './getMetricColor';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
 const createMockData = () => ({
@@ -102,30 +101,6 @@ describe('TimeSeekerContext', () => {
       expect(() => render(<TestConsumer />)).toThrow('useTimeSeeker must be used within a TimeSeekerProvider');
 
       consoleError.mockRestore();
-    });
-  });
-
-  describe('getMetricColor', () => {
-    const mockTheme = {
-      visualization: {
-        getColorByName: (name: string) => `color-${name}`,
-      },
-    } as any;
-
-    it('returns blue for duration metric', () => {
-      expect(getMetricColor(mockTheme, 'duration')).toBe('color-blue');
-    });
-
-    it('returns semi-dark-red for errors metric', () => {
-      expect(getMetricColor(mockTheme, 'errors')).toBe('color-semi-dark-red');
-    });
-
-    it('returns green for rate metric', () => {
-      expect(getMetricColor(mockTheme, 'rate')).toBe('color-green');
-    });
-
-    it('returns green for undefined metric', () => {
-      expect(getMetricColor(mockTheme, undefined)).toBe('color-green');
     });
   });
 

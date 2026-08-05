@@ -12,7 +12,8 @@ import {
   VizPanel,
 } from '@grafana/scenes';
 import { t } from '@grafana/i18n';
-import { Stack, useStyles2 } from '@grafana/ui';
+import { Stack, useStyles2, useTheme2 } from '@grafana/ui';
+import { getMetricColor } from '../../../seeker/getMetricColor';
 
 import { MetricFunction, MIN_PANEL_HEIGHT } from '../../../../../utils/shared';
 
@@ -140,6 +141,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
     const groupBy = groupByValue as string;
     const { body, createAlertPayload } = model.useState();
     const styles = useStyles2(getStyles);
+    const theme = useTheme2();
 
     const { attributes } = getTraceByServiceScene(model).useState();
     const { favoriteAttributes } = useFavoriteAttributes({ scene: model });
@@ -176,10 +178,19 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
             tags={
               metric === 'duration'
                 ? []
-                : [
-                    { label: t('attributes-breakdown-scene.rate-label', 'Rate'), color: 'green' },
-                    { label: t('attributes-breakdown-scene.error-label', 'Error'), color: 'red' },
-                  ]
+                : metric === 'errors'
+                  ? [
+                      {
+                        label: t('attributes-breakdown-scene.error-label', 'Error'),
+                        color: getMetricColor(theme, 'errors'),
+                      },
+                    ]
+                  : [
+                      {
+                        label: t('attributes-breakdown-scene.rate-label', 'Rate'),
+                        color: getMetricColor(theme, 'rate'),
+                      },
+                    ]
             }
           />
           {body instanceof LayoutSwitcher && (

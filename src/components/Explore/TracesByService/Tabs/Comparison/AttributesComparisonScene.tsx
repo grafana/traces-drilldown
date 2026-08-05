@@ -23,6 +23,7 @@ import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
 import { map, Observable } from 'rxjs';
 import { BaselineColor, buildAllComparisonLayout, SelectionColor } from '../../../layouts/allComparison';
+import { getMetricColorName } from '../../../seeker/getMetricColor';
 // eslint-disable-next-line no-restricted-imports
 import { comparisonQuery } from '../../../queries/comparisonQuery';
 import { buildAttributeComparison } from '../../../layouts/attributeComparison';
@@ -228,17 +229,14 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
             tags={[
               {
                 label: t('attributes-comparison-scene.baseline-label', 'Baseline'),
-                color:
-                  traceExploration.getMetricFunction() === 'duration'
-                    ? BaselineColor
-                    : getTheme().visualization.getColorByName('semi-dark-green'),
+                color: BaselineColor,
               },
               {
                 label: t('attributes-comparison-scene.selection-label', 'Selection'),
                 color:
                   traceExploration.getMetricFunction() === 'duration'
                     ? SelectionColor
-                    : getTheme().visualization.getColorByName('semi-dark-red'),
+                    : getTheme().visualization.getColorByName(getMetricColorName('errors')),
               },
             ]}
           />
