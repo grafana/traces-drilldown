@@ -4,6 +4,7 @@ import { AxisPlacement, DrawStyle, UPlotConfigBuilder } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 import { getMetricColor } from './getMetricColor';
 import type uPlot from 'uplot';
+import { isUserSelection } from 'utils/utils';
 
 type InteractionMode = 'idle' | 'dragging' | 'panning' | 'programmatic';
 
@@ -12,7 +13,7 @@ type UPlotWithCleanupHandlers = uPlot & {
   _cleanupBottomAxisPan?: () => void;
 };
 
-interface UseTimeSeekerChartConfigParams {
+export interface UseTimeSeekerChartConfigParams {
   theme: GrafanaTheme2;
   metric?: MetricFunction;
   visibleRange: AbsoluteTimeRange;
@@ -99,19 +100,20 @@ export function useTimeSeekerChartConfig({
         return;
       }
 
-      const xDrag = Boolean(u.cursor?.drag?.x);
-      if (xDrag && u.select.left != null && u.select.width != null) {
-        const from = u.posToVal(u.select.left, 'x');
-        const to = u.posToVal(u.select.left + u.select.width, 'x');
-        const newRange: AbsoluteTimeRange = { from, to };
-        setTimelineRange(newRange);
-
-        if (!suppressNextTimeRangeUpdate.current) {
-          onChangeTimeRange(newRange);
-        }
-
-        suppressNextTimeRangeUpdate.current = false;
+      if (!isUserSelection(u)) {
+        return;
       }
+
+      const from = u.posToVal(u.select.left, 'x');
+      const to = u.posToVal(u.select.left + u.select.width, 'x');
+      const newRange: AbsoluteTimeRange = { from, to };
+      setTimelineRange(newRange);
+
+      if (!suppressNextTimeRangeUpdate.current) {
+        onChangeTimeRange(newRange);
+      }
+
+      suppressNextTimeRangeUpdate.current = false;
     });
 
     b.addHook('ready', (u: uPlot) => {
