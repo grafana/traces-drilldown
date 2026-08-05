@@ -250,7 +250,7 @@ export function isUserSelection(u: uPlot): boolean {
     return false;
   }
 
-  if (!isDefined(u.select.width)) {
+  if (!u.select.width) {
     return false;
   }
 

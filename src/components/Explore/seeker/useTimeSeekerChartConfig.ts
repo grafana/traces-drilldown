@@ -100,18 +100,20 @@ export function useTimeSeekerChartConfig({
         return;
       }
 
-      if (isUserSelection(u)) {
-        const from = u.posToVal(u.select.left, 'x');
-        const to = u.posToVal(u.select.left + u.select.width, 'x');
-        const newRange: AbsoluteTimeRange = { from, to };
-        setTimelineRange(newRange);
-
-        if (!suppressNextTimeRangeUpdate.current) {
-          onChangeTimeRange(newRange);
-        }
-
-        suppressNextTimeRangeUpdate.current = false;
+      if (!isUserSelection(u)) {
+        return;
       }
+
+      const from = u.posToVal(u.select.left, 'x');
+      const to = u.posToVal(u.select.left + u.select.width, 'x');
+      const newRange: AbsoluteTimeRange = { from, to };
+      setTimelineRange(newRange);
+
+      if (!suppressNextTimeRangeUpdate.current) {
+        onChangeTimeRange(newRange);
+      }
+
+      suppressNextTimeRangeUpdate.current = false;
     });
 
     b.addHook('ready', (u: uPlot) => {

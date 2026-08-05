@@ -20,9 +20,14 @@ describe('isUserSelection', () => {
     expect(isUserSelection(u)).toBe(true);
   });
 
-  it('should return true even when the selection is anchored at 0 (not null)', () => {
-    const u = stubUplot({ event: new MouseEvent('mousedown'), dragX: true, left: 0, width: 0 });
+  it('should return true even when the selection is anchored at 0 (not null) and has a width', () => {
+    const u = stubUplot({ event: new MouseEvent('mousedown'), dragX: true, left: 0, width: 1 });
     expect(isUserSelection(u)).toBe(true);
+  });
+
+  it('should return false when the selection has no width', () => {
+    const u = stubUplot({ event: new MouseEvent('mousedown'), dragX: true, left: 0, width: 0 });
+    expect(isUserSelection(u)).toBe(false);
   });
 
   it('should return false for a programmatic event', () => {
