@@ -220,10 +220,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
-      panel.setCustomFieldConfig('axisLabel', 'error/s').setColor({
-        fixedColor: 'semi-dark-red',
-        mode: 'fixed',
-      });
+      panel.setCustomFieldConfig('axisLabel', 'error/s');
     }
     return new SceneFlexLayout({
       direction: 'row',
