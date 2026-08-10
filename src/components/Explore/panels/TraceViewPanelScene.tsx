@@ -38,6 +38,7 @@ interface TracePanelState extends SceneObjectState {
   logsBounds?: TimeBoundsMs;
   logsServiceNames?: string[];
   logsTempoDatasourceUid?: string;
+  logsResolution?: 'resolving' | 'done';
 }
 
 export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
@@ -174,7 +175,7 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
       toMs: timeRange.to.valueOf(),
     });
 
-    this.setState({ logsServiceNames: serviceNames, logsBounds: bounds });
+    this.setState({ logsServiceNames: serviceNames, logsBounds: bounds, logsResolution: 'resolving' });
 
     resolveTraceLogsTarget({
       tempoDatasourceUid,
@@ -183,11 +184,11 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
       bounds,
     })
       .then((logsTarget) => {
+        this.setState({ logsTarget, logsResolution: 'done' });
+
         if (!logsTarget) {
           return;
         }
-
-        this.setState({ logsTarget });
 
         // Only re-run the transformations when we are the ones adding span links. When the Tempo
         // data source is configured, core already renders them and there is nothing to inject.
@@ -205,9 +206,7 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
   }
 
   private getVizPanel() {
-    const panel = PanelBuilders.traces()
-      .setHoverHeader(true)
-      .setHeaderActions(<TraceLogsActions model={this} />);
+    const panel = PanelBuilders.traces().setHoverHeader(true);
     if (this.state.spanId) {
       panel.setOption('focusedSpanId' as any, this.state.spanId as any);
     }
@@ -223,8 +222,15 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
     }
 
     return (
-      <div className={styles.panelContainer}>
-        <panel.Component model={panel} />
+      <div className={styles.traceView}>
+        {/* Deliberately not a panel header action: the traces panel uses a hover header, which
+            would hide the action, including its disabled state, until the user hovers. */}
+        <div className={styles.actions}>
+          <TraceLogsActions model={model} />
+        </div>
+        <div className={styles.panelContainer}>
+          <panel.Component model={panel} />
+        </div>
       </div>
     );
   };
@@ -299,9 +305,21 @@ const SkeletonComponent = () => {
 
 function getStyles(theme: GrafanaTheme2) {
   return {
+    traceView: css({
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      minHeight: 0,
+    }),
+    actions: css({
+      display: 'flex',
+      justifyContent: 'flex-end',
+      paddingBottom: theme.spacing(1),
+    }),
     panelContainer: css({
       display: 'flex',
-      height: '100%',
+      flex: 1,
+      minHeight: 0,
 
       '& [data-testid="data-testid panel content"] > div': {
         overflow: 'auto',

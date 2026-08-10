@@ -98,7 +98,7 @@ Once the trace has loaded, the app works out where its logs live and, if it find
 2. **Correlation** — a Grafana Correlation from the Tempo data source to a Loki data source, used to pick the target. Correlations are also rendered as span links, which Explore does for free but a plugin scene has to ask for.
 3. **Detected** — nothing is configured, so candidate Loki data sources (max 5) are probed with a series of known query shapes, and the first that returns log lines for the trace wins.
 
-Links only appear when a probe actually returned rows, so a dead link is never shown. The action's tooltip states which layer produced it. When the shape was detected and the user may write data sources, a **“Save to data source”** action persists it to `tracesToLogsV2`, promoting the guess into the deterministic org-wide path.
+The action is always on screen, in one of three states: a spinner while probing, a live link once a target is found, and a greyed out button with a tooltip explaining why when nothing matched. Span links only appear when a probe actually returned rows, so a dead link is never shown. The action's tooltip states which layer produced it. When the shape was detected and the user may write data sources, a **“Save to data source”** action persists it to `tracesToLogsV2`, promoting the guess into the deterministic org-wide path.
 
 ### Closing and context
 

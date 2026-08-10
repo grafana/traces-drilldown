@@ -6,7 +6,7 @@ import { t } from '@grafana/i18n';
 import { config, usePluginFunctions } from '@grafana/runtime';
 import { DataQuery } from '@grafana/schema';
 import { SceneObject, SceneObjectState } from '@grafana/scenes';
-import { Button, LinkButton, Tooltip, useStyles2 } from '@grafana/ui';
+import { Button, LinkButton, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
 
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../utils/analytics';
 import { canWriteDatasources, isDatasourceEditable, saveTraceToLogsConfig } from './saveTraceToLogsConfig';
@@ -23,6 +23,8 @@ export interface TraceLogsActionsState extends SceneObjectState {
   logsBounds?: TimeBoundsMs;
   logsServiceNames?: string[];
   logsTempoDatasourceUid?: string;
+  /** Distinguishes "still probing" from "probed and found nothing". */
+  logsResolution?: 'resolving' | 'done';
 }
 
 /** Ref id of the Loki query behind the "Logs for this trace" action. */
@@ -71,8 +73,29 @@ function getProvenanceLabel(target: TraceLogsTarget): string {
   }
 }
 
+/** Why the action is greyed out, so the empty case is explained rather than silent. */
+function getUnavailableLabel(isResolving: boolean, target: TraceLogsTarget | undefined): string {
+  if (isResolving) {
+    return t('traces-to-logs.state-resolving', 'Looking for logs that match this trace');
+  }
+
+  if (target?.provenance === LogsLinkProvenance.Configured) {
+    return t(
+      'traces-to-logs.state-configured-unusable',
+      'The Tempo data source sends trace to logs to {{name}}, which this app cannot query directly. Use the links on each span.',
+      { name: target.datasourceName }
+    );
+  }
+
+  return t(
+    'traces-to-logs.state-no-logs',
+    'No logs matching this trace id were found in the available Loki data sources.'
+  );
+}
+
 export function TraceLogsActions({ model }: { model: SceneObject<TraceLogsActionsState> }) {
-  const { traceId, logsTarget, logsBounds, logsServiceNames, logsTempoDatasourceUid } = model.useState();
+  const { traceId, logsTarget, logsBounds, logsServiceNames, logsTempoDatasourceUid, logsResolution } =
+    model.useState();
   const styles = useStyles2(getStyles);
   const [canSave, setCanSave] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -130,8 +153,28 @@ export function TraceLogsActions({ model }: { model: SceneObject<TraceLogsAction
     }
   }, [logsTempoDatasourceUid, logsTarget, strategy]);
 
-  if (!logsTarget || !strategy || !logsBounds || !logsServiceNames?.length) {
+  // Nothing to say until the trace itself has loaded.
+  if (!logsBounds || !logsServiceNames?.length) {
     return null;
+  }
+
+  // The action stays on screen in every state. A greyed out button with a reason is more useful
+  // than an empty space, which reads as a missing feature rather than as "there are no logs".
+  if (!logsTarget || !strategy) {
+    const isResolving = logsResolution !== 'done';
+
+    return (
+      <div className={styles.container}>
+        <Tooltip content={getUnavailableLabel(isResolving, logsTarget)} placement="bottom">
+          <span>
+            <Button size="sm" variant="secondary" icon={isResolving ? undefined : 'gf-logs'} disabled>
+              {isResolving && <Spinner inline size="sm" className={styles.spinner} />}
+              {t('traces-to-logs.trace-link-title', 'Logs for this trace')}
+            </Button>
+          </span>
+        </Tooltip>
+      </div>
+    );
   }
 
   const expr = strategy.buildTraceExpr({ traceId, serviceNames: logsServiceNames });
@@ -192,5 +235,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: 'flex',
     alignItems: 'center',
     gap: theme.spacing(1),
+  }),
+  spinner: css({
+    marginRight: theme.spacing(0.5),
   }),
 });

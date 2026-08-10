@@ -291,6 +291,9 @@
     "save-action": "Save to data source",
     "save-tooltip": "Save this as the trace to logs configuration on the Tempo data source, so everyone in the org gets it without detection. You can refine it in the data source settings afterwards.",
     "span-link-title": "Logs for this span",
+    "state-configured-unusable": "The Tempo data source sends trace to logs to {{name}}, which this app cannot query directly. Use the links on each span.",
+    "state-no-logs": "No logs matching this trace id were found in the available Loki data sources.",
+    "state-resolving": "Looking for logs that match this trace",
     "trace-link-title": "Logs for this trace"
   }
 }
