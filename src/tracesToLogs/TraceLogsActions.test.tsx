@@ -7,10 +7,8 @@ import { getUnavailableLabel, TraceLogsActions, TraceLogsActionsState } from './
 import { LogsLinkProvenance, TraceLogsTarget } from './types';
 
 jest.mock('@grafana/runtime', () => ({
-  config: { appSubUrl: '', bootData: { user: { orgRole: 'Viewer' } } },
+  config: { appSubUrl: '' },
   usePluginFunctions: () => ({ functions: [] }),
-  getDataSourceSrv: () => ({ getInstanceSettings: () => ({ readOnly: true }) }),
-  getBackendSrv: () => ({ get: jest.fn(), put: jest.fn() }),
 }));
 
 jest.mock('../utils/analytics', () => ({
@@ -32,7 +30,6 @@ const detectedTarget: TraceLogsTarget = {
   provenance: LogsLinkProvenance.Detected,
   strategyId: 'otel-structured-metadata',
   ownsSpanLinks: true,
-  probed: true,
 };
 
 function renderActions(state: Partial<TraceLogsActionsState>) {
@@ -90,16 +87,13 @@ describe('getUnavailableLabel', () => {
   it('warns that the data source span links are unfiltered when nothing matched', () => {
     // Those links are rendered whether or not logs exist, so a bare "nothing found" would
     // contradict links that look like they work.
-    const label = getUnavailableLabel(false, { ...configured, probed: true, configMissingTraceFilter: true });
+    const label = getUnavailableLabel(false, { ...configured, configMissingTraceFilter: true });
 
     expect(label).toMatch(/No logs matching this trace id/);
     expect(label).toMatch(/does not filter by trace id/);
   });
 
-  it('distinguishes a backend it could not query from one it queried in vain', () => {
-    expect(getUnavailableLabel(false, { ...configured, datasourceName: 'Splunk', probed: false })).toMatch(
-      /cannot query directly/
-    );
-    expect(getUnavailableLabel(false, { ...configured, probed: true })).toMatch(/No logs matching this trace id/);
+  it('reports nothing found once probing is done', () => {
+    expect(getUnavailableLabel(false, configured)).toMatch(/No logs matching this trace id/);
   });
 });

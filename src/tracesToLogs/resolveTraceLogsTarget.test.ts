@@ -3,12 +3,14 @@ import { clearTraceLogsTargetCache, resolveTraceLogsTarget } from './resolveTrac
 import { LogsLinkProvenance } from './types';
 
 jest.mock('./probe');
+jest.mock('./rememberedTarget');
 jest.mock('@grafana/runtime', () => ({
   getDataSourceSrv: jest.fn(),
   getCorrelationsService: jest.fn(),
 }));
 
 const { getDataSourceSrv, getCorrelationsService } = jest.requireMock('@grafana/runtime');
+const { getRememberedTarget, rememberTarget } = jest.requireMock('./rememberedTarget');
 const mockCountLogLines = countLogLines as jest.MockedFunction<typeof countLogLines>;
 
 const TEMPO_UID = 'tempo-uid';
@@ -65,6 +67,7 @@ describe('resolveTraceLogsTarget', () => {
     clearTraceLogsTargetCache();
     jest.clearAllMocks();
     mockCountLogLines.mockResolvedValue(0);
+    getRememberedTarget.mockReturnValue(undefined);
   });
 
   it('returns nothing when the trace has no services to scope a query with', async () => {
@@ -131,16 +134,13 @@ describe('resolveTraceLogsTarget', () => {
       await expect(resolve()).resolves.toMatchObject({ ownsSpanLinks: false, configMissingTraceFilter: false });
     });
 
-    it('offers no query of its own when configured against a non Loki backend', async () => {
+    it('stays out of it entirely when configured against a non Loki backend', async () => {
       setup({
         tempoJsonData: { tracesToLogsV2: { datasourceUid: 'splunk-uid' } },
         lokiDatasources: [{ ...lokiA, uid: 'splunk-uid', name: 'Splunk', type: 'grafana-splunk-datasource' }],
       });
 
-      const target = await resolve();
-
-      expect(target).toMatchObject({ provenance: LogsLinkProvenance.Configured, ownsSpanLinks: false });
-      expect(target?.strategyId).toBeUndefined();
+      await expect(resolve()).resolves.toBeUndefined();
       expect(mockCountLogLines).not.toHaveBeenCalled();
     });
 
@@ -197,5 +197,28 @@ describe('resolveTraceLogsTarget', () => {
 
     expect(first).toBe(second);
     expect(mockCountLogLines).toHaveBeenCalledTimes(1);
+  });
+
+  describe('remembering what worked', () => {
+    it('tries the remembered pair first, so the steady state is one query', async () => {
+      setup();
+      getRememberedTarget.mockReturnValue({ datasourceUid: lokiB.uid, strategyId: 'line-contains' });
+      mockCountLogLines.mockResolvedValue(1);
+
+      await expect(resolve()).resolves.toMatchObject({ datasourceUid: lokiB.uid, strategyId: 'line-contains' });
+      expect(mockCountLogLines).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back to full probing when the remembered pair no longer matches', async () => {
+      setup({ lokiDatasources: [lokiA] });
+      getRememberedTarget.mockReturnValue({ datasourceUid: lokiA.uid, strategyId: 'line-contains' });
+      mockCountLogLines.mockImplementation(async (_uid, expr) => (expr.includes('| trace_id=') ? 1 : 0));
+
+      await expect(resolve()).resolves.toMatchObject({ strategyId: 'otel-structured-metadata' });
+      expect(rememberTarget).toHaveBeenCalledWith(TEMPO_UID, {
+        datasourceUid: lokiA.uid,
+        strategyId: 'otel-structured-metadata',
+      });
+    });
   });
 });

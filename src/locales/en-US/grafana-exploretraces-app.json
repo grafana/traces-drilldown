@@ -285,16 +285,12 @@
     }
   },
   "traces-to-logs": {
+    "configure-link": "Data source settings",
     "provenance-configured": "Configured on the Tempo data source: {{name}}",
     "provenance-configured-unfiltered": "The Tempo data source points at {{name}} but does not filter by trace id, so its own span links open the whole service. This link is filtered to this trace.",
     "provenance-correlation": "From a correlation to {{name}}",
     "provenance-detected": "Auto-detected in {{name}}. Trace to logs is not configured on the Tempo data source.",
-    "repair-action": "Fix data source filter",
-    "repair-tooltip": "Turn on trace id filtering on the Tempo data source, so its own span links stop opening the whole service. Your data source and tag mapping are left as they are.",
-    "save-action": "Save to data source",
-    "save-tooltip": "Save this as the trace to logs configuration on the Tempo data source, so everyone in the org gets it without detection. You can refine it in the data source settings afterwards.",
     "span-link-title": "Logs for this span",
-    "state-configured-unusable": "The Tempo data source sends trace to logs to {{name}}, which this app cannot query directly. Use the links on each span.",
     "state-no-logs": "No logs matching this trace id were found in the available Loki data sources.",
     "state-no-logs-unfiltered-config": "No logs matching this trace id were found in {{name}}. The span links come from the Tempo data source, which does not filter by trace id, so they show every log line for the service.",
     "state-resolving": "Looking for logs that match this trace",

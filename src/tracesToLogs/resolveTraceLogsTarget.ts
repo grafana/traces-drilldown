@@ -2,7 +2,8 @@ import { getCorrelationsService, getDataSourceSrv } from '@grafana/runtime';
 
 import { getCandidateLokiDatasources } from './datasources';
 import { countLogLines } from './probe';
-import { LOGS_STRATEGIES } from './strategies';
+import { getRememberedTarget, rememberTarget } from './rememberedTarget';
+import { getStrategy, LOGS_STRATEGIES } from './strategies';
 import { LogsLinkProvenance, LogsStrategyId, TimeBoundsMs, TraceLogsContext, TraceLogsTarget } from './types';
 
 interface TraceToLogsOptions {
@@ -116,8 +117,12 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
     const configured = getDataSourceSrv().getInstanceSettings(configuredUid);
 
     if (configured) {
-      const canProbe = configured.type === 'loki';
-      const strategyId = canProbe ? await probeDatasource(configured.uid, context, bounds) : undefined;
+      // Loki only. Anything else is core's business and we stay out of it entirely.
+      if (configured.type !== 'loki') {
+        return undefined;
+      }
+
+      const strategyId = await probeDatasource(configured.uid, context, bounds);
       const configMissingTraceFilter = !configFiltersByTraceId(configuredOptions);
 
       return {
@@ -127,7 +132,6 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
         strategyId,
         ownsSpanLinks: configMissingTraceFilter && strategyId !== undefined,
         configMissingTraceFilter,
-        probed: canProbe,
       };
     }
     // Configured against a data source that no longer exists: fall through to discovery.
@@ -141,6 +145,26 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
     return undefined;
   }
 
+  const toTarget = (candidate: { uid: string; name: string }, strategyId: LogsStrategyId): TraceLogsTarget => ({
+    datasourceUid: candidate.uid,
+    datasourceName: candidate.name,
+    provenance: correlatedUids.includes(candidate.uid) ? LogsLinkProvenance.Correlation : LogsLinkProvenance.Detected,
+    strategyId,
+    ownsSpanLinks: true,
+  });
+
+  // What worked last time, if it still works. Falls through to full probing when it does not.
+  const remembered = getRememberedTarget(tempoDatasourceUid);
+  const rememberedCandidate = remembered && candidates.find((c) => c.uid === remembered.datasourceUid);
+
+  if (remembered && rememberedCandidate && getStrategy(remembered.strategyId)) {
+    const expr = getStrategy(remembered.strategyId)!.buildTraceExpr(context);
+
+    if ((await countLogLines(rememberedCandidate.uid, expr, bounds)) > 0) {
+      return toTarget(rememberedCandidate, remembered.strategyId);
+    }
+  }
+
   const probed = await Promise.all(
     candidates.map(async (candidate) => ({
       candidate,
@@ -150,20 +174,13 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
 
   const winner = probed.find((result) => result.strategyId !== undefined);
 
-  if (!winner) {
+  if (!winner?.strategyId) {
     return undefined;
   }
 
-  return {
-    datasourceUid: winner.candidate.uid,
-    datasourceName: winner.candidate.name,
-    provenance: correlatedUids.includes(winner.candidate.uid)
-      ? LogsLinkProvenance.Correlation
-      : LogsLinkProvenance.Detected,
-    strategyId: winner.strategyId,
-    ownsSpanLinks: true,
-    probed: true,
-  };
+  rememberTarget(tempoDatasourceUid, { datasourceUid: winner.candidate.uid, strategyId: winner.strategyId });
+
+  return toTarget(winner.candidate, winner.strategyId);
 }
 
 export function resolveTraceLogsTarget(params: ResolveTraceLogsTargetParams): Promise<TraceLogsTarget | undefined> {

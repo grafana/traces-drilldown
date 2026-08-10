@@ -21,8 +21,6 @@ export interface TraceLogsTarget {
   strategyId?: LogsStrategyId;
   /** False when `tracesToLogsV2` already produces span links, so we never add a competing one. */
   ownsSpanLinks: boolean;
-  /** False only for a configured non-Loki backend: distinguishes "found nothing" from "could not look". */
-  probed: boolean;
   /** Configured, but never filters by trace id, so core's link opens the whole service (#779). */
   configMissingTraceFilter?: boolean;
 }
