@@ -5,10 +5,38 @@ import { countLogLines } from './probe';
 import { LOGS_STRATEGIES } from './strategies';
 import { LogsLinkProvenance, LogsStrategyId, TimeBoundsMs, TraceLogsContext, TraceLogsTarget } from './types';
 
+interface TraceToLogsOptions {
+  datasourceUid?: string;
+  filterByTraceID?: boolean;
+  filterBySpanID?: boolean;
+  customQuery?: boolean;
+  query?: string;
+}
+
 interface TraceToLogsJsonData {
-  tracesToLogsV2?: { datasourceUid?: string };
+  tracesToLogsV2?: TraceToLogsOptions;
   /** Pre v2 shape, still honoured by core through `getTraceToLogsOptions`. */
-  tracesToLogs?: { datasourceUid?: string };
+  tracesToLogs?: TraceToLogsOptions;
+}
+
+/**
+ * Whether the configuration actually narrows the logs to the trace.
+ *
+ * Without this, core builds a query from the tag mapping alone, e.g.
+ * `{cluster="...", service_name="...", service_namespace="..."}`, which opens every log line the
+ * service ever wrote. That is the complaint in grafana/traces-drilldown#779 and it is easy to miss,
+ * because the link looks like it works.
+ */
+export function configFiltersByTraceId(options: TraceToLogsOptions | undefined): boolean {
+  if (!options) {
+    return false;
+  }
+
+  if (options.filterByTraceID || options.filterBySpanID) {
+    return true;
+  }
+
+  return Boolean(options.customQuery && /\$\{?__span\.(traceId|spanId)/.test(options.query ?? ''));
 }
 
 export interface ResolveTraceLogsTargetParams {
@@ -32,12 +60,13 @@ export function clearTraceLogsTargetCache() {
 /**
  * The Loki (or other) data source an admin has already pointed the Tempo data source at.
  */
-export function getConfiguredLogsDatasourceUid(tempoDatasourceUid: string): string | undefined {
+export function getConfiguredTraceToLogs(tempoDatasourceUid: string): TraceToLogsOptions | undefined {
   const jsonData = getDataSourceSrv().getInstanceSettings(tempoDatasourceUid)?.jsonData as
     | TraceToLogsJsonData
     | undefined;
+  const options = jsonData?.tracesToLogsV2 ?? jsonData?.tracesToLogs;
 
-  return jsonData?.tracesToLogsV2?.datasourceUid ?? jsonData?.tracesToLogs?.datasourceUid;
+  return options?.datasourceUid ? options : undefined;
 }
 
 /** Loki data sources a Correlation from this Tempo data source already points at. */
@@ -89,23 +118,28 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
   }
 
   const context: TraceLogsContext = { traceId, serviceNames };
-  const configuredUid = getConfiguredLogsDatasourceUid(tempoDatasourceUid);
+  const configuredOptions = getConfiguredTraceToLogs(tempoDatasourceUid);
+  const configuredUid = configuredOptions?.datasourceUid;
 
-  // Layer 1. An explicit configuration always wins and is never second guessed. Core renders the
-  // span links for it, so we only work out whether we can also offer the trace wide action.
+  // Layer 1. An explicit configuration decides *where* the logs are, and is never second guessed.
+  // Core renders the span links for it, so normally we only work out whether we can also offer the
+  // trace wide action. The exception is a configuration that never filters by trace id, which
+  // silently opens the whole service's logs; there we add a trace-filtered link of our own.
   if (configuredUid) {
     const configured = getDataSourceSrv().getInstanceSettings(configuredUid);
 
     if (configured) {
       const strategyId =
         configured.type === 'loki' ? await probeDatasource(configured.uid, context, bounds) : undefined;
+      const configMissingTraceFilter = !configFiltersByTraceId(configuredOptions);
 
       return {
         datasourceUid: configured.uid,
         datasourceName: configured.name,
         provenance: LogsLinkProvenance.Configured,
         strategyId,
-        ownsSpanLinks: false,
+        ownsSpanLinks: configMissingTraceFilter && strategyId !== undefined,
+        configMissingTraceFilter,
       };
     }
     // Configured against a data source that no longer exists. Fall through to discovery rather

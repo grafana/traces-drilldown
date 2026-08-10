@@ -59,3 +59,25 @@ export async function saveTraceToLogsConfig(
     },
   });
 }
+
+/**
+ * Turns on trace id filtering for an existing configuration, leaving the admin's data source and
+ * tag mapping exactly as they are.
+ *
+ * This is the narrowest possible repair for the common misconfiguration where the link opens every
+ * log line the service ever wrote instead of the ones belonging to the trace.
+ */
+export async function enableTraceIdFilter(tempoDatasourceUid: string): Promise<void> {
+  const backend = getBackendSrv();
+  const datasource = await backend.get<DatasourcePayload>(`/api/datasources/uid/${tempoDatasourceUid}`);
+  const jsonData = datasource.jsonData ?? {};
+  const existing = (jsonData.tracesToLogsV2 ?? jsonData.tracesToLogs ?? {}) as Record<string, unknown>;
+
+  await backend.put(`/api/datasources/uid/${tempoDatasourceUid}`, {
+    ...datasource,
+    jsonData: {
+      ...jsonData,
+      tracesToLogsV2: { ...existing, filterByTraceID: true },
+    },
+  });
+}

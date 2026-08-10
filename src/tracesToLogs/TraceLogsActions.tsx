@@ -9,7 +9,12 @@ import { SceneObject, SceneObjectState } from '@grafana/scenes';
 import { Button, LinkButton, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
 
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../utils/analytics';
-import { canWriteDatasources, isDatasourceEditable, saveTraceToLogsConfig } from './saveTraceToLogsConfig';
+import {
+  canWriteDatasources,
+  enableTraceIdFilter,
+  isDatasourceEditable,
+  saveTraceToLogsConfig,
+} from './saveTraceToLogsConfig';
 import { getStrategy } from './strategies';
 import { LogsLinkProvenance, TimeBoundsMs, TraceLogsTarget } from './types';
 
@@ -55,6 +60,14 @@ function buildExploreUrl(datasourceUid: string, expr: string, bounds: TimeBounds
 }
 
 function getProvenanceLabel(target: TraceLogsTarget): string {
+  if (target.configMissingTraceFilter) {
+    return t(
+      'traces-to-logs.provenance-configured-unfiltered',
+      'The Tempo data source points at {{name}} but does not filter by trace id, so its own span links open the whole service. This link is filtered to this trace.',
+      { name: target.datasourceName }
+    );
+  }
+
   switch (target.provenance) {
     case LogsLinkProvenance.Configured:
       return t('traces-to-logs.provenance-configured', 'Configured on the Tempo data source: {{name}}', {
@@ -102,12 +115,13 @@ export function TraceLogsActions({ model }: { model: SceneObject<TraceLogsAction
   const [isSaved, setIsSaved] = useState(false);
 
   const isDetected = logsTarget?.provenance === LogsLinkProvenance.Detected;
+  const needsTraceFilterRepair = Boolean(logsTarget?.configMissingTraceFilter);
   const isTempoEditable = logsTempoDatasourceUid ? isDatasourceEditable(logsTempoDatasourceUid) : false;
 
   useEffect(() => {
     let active = true;
 
-    if (isDetected && isTempoEditable) {
+    if ((isDetected || needsTraceFilterRepair) && isTempoEditable) {
       canWriteDatasources().then((allowed) => {
         if (active) {
           setCanSave(allowed);
@@ -118,7 +132,7 @@ export function TraceLogsActions({ model }: { model: SceneObject<TraceLogsAction
     return () => {
       active = false;
     };
-  }, [isDetected, isTempoEditable]);
+  }, [isDetected, needsTraceFilterRepair, isTempoEditable]);
 
   // usePluginFunctions landed in Grafana 11.6.0 and this app supports 11.5.0, hence the optional call.
   const extensions = usePluginFunctions<ContextForLinksFn>?.({
@@ -137,7 +151,12 @@ export function TraceLogsActions({ model }: { model: SceneObject<TraceLogsAction
     setIsSaving(true);
 
     try {
-      await saveTraceToLogsConfig(logsTempoDatasourceUid, strategy.toTraceToLogsConfig(logsTarget.datasourceUid));
+      if (needsTraceFilterRepair) {
+        // Keep the admin's data source and tag mapping, only add the missing trace id filter.
+        await enableTraceIdFilter(logsTempoDatasourceUid);
+      } else {
+        await saveTraceToLogsConfig(logsTempoDatasourceUid, strategy.toTraceToLogsConfig(logsTarget.datasourceUid));
+      }
       setIsSaved(true);
       reportAppInteraction(
         USER_EVENTS_PAGES.analyse_traces,
@@ -151,7 +170,7 @@ export function TraceLogsActions({ model }: { model: SceneObject<TraceLogsAction
     } finally {
       setIsSaving(false);
     }
-  }, [logsTempoDatasourceUid, logsTarget, strategy]);
+  }, [logsTempoDatasourceUid, logsTarget, strategy, needsTraceFilterRepair]);
 
   // Nothing to say until the trace itself has loaded.
   if (!logsBounds || !logsServiceNames?.length) {
@@ -215,14 +234,23 @@ export function TraceLogsActions({ model }: { model: SceneObject<TraceLogsAction
 
       {canSave && !isSaved && (
         <Tooltip
-          content={t(
-            'traces-to-logs.save-tooltip',
-            'Save this as the trace to logs configuration on the Tempo data source, so everyone in the org gets it without detection. You can refine it in the data source settings afterwards.'
-          )}
+          content={
+            needsTraceFilterRepair
+              ? t(
+                  'traces-to-logs.repair-tooltip',
+                  'Turn on trace id filtering on the Tempo data source, so its own span links stop opening the whole service. Your data source and tag mapping are left as they are.'
+                )
+              : t(
+                  'traces-to-logs.save-tooltip',
+                  'Save this as the trace to logs configuration on the Tempo data source, so everyone in the org gets it without detection. You can refine it in the data source settings afterwards.'
+                )
+          }
           placement="bottom"
         >
           <Button size="sm" variant="secondary" fill="text" disabled={isSaving} onClick={onSave}>
-            {t('traces-to-logs.save-action', 'Save to data source')}
+            {needsTraceFilterRepair
+              ? t('traces-to-logs.repair-action', 'Fix data source filter')
+              : t('traces-to-logs.save-action', 'Save to data source')}
           </Button>
         </Tooltip>
       )}

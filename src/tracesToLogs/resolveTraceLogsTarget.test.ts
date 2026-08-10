@@ -78,7 +78,7 @@ describe('resolveTraceLogsTarget', () => {
 
   describe('layer 1, an explicit tracesToLogsV2 configuration', () => {
     it('wins over discovery and never has links added on top of core', async () => {
-      setup({ tempoJsonData: { tracesToLogsV2: { datasourceUid: lokiB.uid } } });
+      setup({ tempoJsonData: { tracesToLogsV2: { datasourceUid: lokiB.uid, filterByTraceID: true } } });
       mockCountLogLines.mockResolvedValue(1);
 
       const target = await resolve();
@@ -90,6 +90,45 @@ describe('resolveTraceLogsTarget', () => {
       });
       expect(mockCountLogLines).toHaveBeenCalledTimes(1);
       expect(mockCountLogLines).toHaveBeenCalledWith(lokiB.uid, expect.any(String), bounds);
+    });
+
+    it('adds a trace-filtered link of its own when the configuration never filters by trace id', async () => {
+      // Reproduces the real world case behind #779: the config points at Loki with only a tag
+      // mapping, so core's link opens every log line the service ever wrote.
+      setup({ tempoJsonData: { tracesToLogsV2: { datasourceUid: lokiB.uid, customQuery: false } } });
+      mockCountLogLines.mockResolvedValue(1);
+
+      await expect(resolve()).resolves.toMatchObject({
+        datasourceUid: lokiB.uid,
+        provenance: LogsLinkProvenance.Configured,
+        configMissingTraceFilter: true,
+        ownsSpanLinks: true,
+      });
+    });
+
+    it('stays out of the way when the configuration does filter by trace id', async () => {
+      setup({ tempoJsonData: { tracesToLogsV2: { datasourceUid: lokiB.uid, filterByTraceID: true } } });
+      mockCountLogLines.mockResolvedValue(1);
+
+      await expect(resolve()).resolves.toMatchObject({
+        ownsSpanLinks: false,
+        configMissingTraceFilter: false,
+      });
+    });
+
+    it('treats a custom query that references the span trace id as filtered', async () => {
+      setup({
+        tempoJsonData: {
+          tracesToLogsV2: {
+            datasourceUid: lokiB.uid,
+            customQuery: true,
+            query: '{service_name="x"} | trace_id="${__span.traceId}"',
+          },
+        },
+      });
+      mockCountLogLines.mockResolvedValue(1);
+
+      await expect(resolve()).resolves.toMatchObject({ ownsSpanLinks: false, configMissingTraceFilter: false });
     });
 
     it('honours the pre v2 configuration shape', async () => {

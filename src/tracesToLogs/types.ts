@@ -37,6 +37,13 @@ export interface TraceLogsTarget {
    * to the same span in that case.
    */
   ownsSpanLinks: boolean;
+  /**
+   * True when the Tempo data source has a trace to logs configuration that never filters by trace
+   * id, so core's link opens every log line for the service instead of the ones belonging to this
+   * trace. Deferring to the configuration would just reproduce the original bug, so we add a
+   * trace-filtered link of our own and offer to repair the configuration.
+   */
+  configMissingTraceFilter?: boolean;
 }
 
 /** Everything a strategy needs to build a concrete (non-templated) query for a whole trace. */

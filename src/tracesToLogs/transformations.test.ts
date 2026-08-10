@@ -42,7 +42,7 @@ describe('addTraceLogsLinksTransformation', () => {
     const frames = await run(detectedTarget);
     const [link] = linksOf(frames);
 
-    expect(link.title).toBe('Logs for this span');
+    expect(link.title).toBe('Trace-filtered logs');
     expect(link.internal?.datasourceUid).toBe('loki-a');
     expect((link.internal?.query as { expr: string }).expr).toBe(
       '{service_name="${__data.fields.serviceName}"} | trace_id="trace-1"'
@@ -73,12 +73,32 @@ describe('addTraceLogsLinksTransformation', () => {
     expect(linksOf(await run(detectedTarget, [frame]))).toHaveLength(0);
   });
 
+  it('keeps the frame identity so open span details are not closed', async () => {
+    // Grafana's trace view clears every open span detail when the frame identity changes
+    // (useDetailState). Resolution finishes after the trace has rendered, so returning a new frame
+    // object here would collapse whatever the user had open.
+    const frame = traceFrame();
+    const result = await run(detectedTarget, [frame]);
+
+    expect(result[0]).toBe(frame);
+    expect(linksOf(result)).toHaveLength(1);
+  });
+
+  it('does not add the link twice when the transformation runs again', async () => {
+    const frame = traceFrame();
+
+    await run(detectedTarget, [frame]);
+    await run(detectedTarget, [frame]);
+
+    expect(linksOf([frame])).toHaveLength(1);
+  });
+
   it('preserves links the data source or a correlation already put on the field', async () => {
     const frame = traceFrame();
     frame.fields[0].config.links = [{ title: 'Existing', url: '/somewhere' }];
 
     const links = linksOf(await run(detectedTarget, [frame]));
 
-    expect(links.map((link) => link.title)).toEqual(['Existing', 'Logs for this span']);
+    expect(links.map((link) => link.title)).toEqual(['Existing', 'Trace-filtered logs']);
   });
 });
