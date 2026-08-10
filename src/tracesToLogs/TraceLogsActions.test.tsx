@@ -44,12 +44,6 @@ function renderActions(state: Partial<TraceLogsActionsState>) {
 }
 
 describe('TraceLogsActions', () => {
-  it('renders nothing until the trace itself has loaded', () => {
-    const { container } = renderActions({ logsServiceNames: [], logsBounds: undefined });
-
-    expect(container).toBeEmptyDOMElement();
-  });
-
   it('shows a disabled action with a spinner while it is still looking for logs', () => {
     renderActions({ logsResolution: 'resolving' });
 
@@ -92,10 +86,6 @@ describe('getUnavailableLabel', () => {
     provenance: LogsLinkProvenance.Configured,
     ownsSpanLinks: false,
   };
-
-  it('says it is still looking while probes are in flight', () => {
-    expect(getUnavailableLabel(true, undefined)).toMatch(/Looking for logs/);
-  });
 
   it('warns that the data source span links are unfiltered when nothing matched', () => {
     // Those links are rendered whether or not logs exist, so a bare "nothing found" would

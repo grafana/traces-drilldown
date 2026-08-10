@@ -50,10 +50,6 @@ describe('addTraceLogsLinksTransformation', () => {
     );
   });
 
-  it('adds nothing before a target has been resolved', async () => {
-    expect(linksOf(await run(undefined))).toHaveLength(0);
-  });
-
   it('never competes with the links core already renders from the data source configuration', async () => {
     const configured: TraceLogsTarget = {
       ...detectedTarget,

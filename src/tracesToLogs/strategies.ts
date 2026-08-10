@@ -1,28 +1,20 @@
 import { LogsStrategyId, TraceLogsContext } from './types';
 
-/**
- * Escape a value so it is safe inside a LogQL double quoted label matcher.
- */
+/** Escape a value for a LogQL double quoted label matcher. */
 export function escapeLabelValue(value: string): string {
   return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
-/**
- * Escape a value so it is matched literally inside a LogQL regex matcher.
- */
+/** Escape a value so it is matched literally inside a LogQL regex matcher. */
 export function escapeRegexValue(value: string): string {
   return value.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
 }
 
-/** Build a `a|b|c` alternation of literal service names. */
 function serviceAlternation(serviceNames: string[]): string {
   return serviceNames.map(escapeRegexValue).join('|');
 }
 
-/**
- * Subset of the Tempo data source `tracesToLogsV2` json data that we know how to write.
- * Mirrors `TraceToLogsOptionsV2` in `@grafana/o11y-ds-frontend`, which plugins cannot import.
- */
+/** Subset of `TraceToLogsOptionsV2`, which lives in a package plugins cannot import. */
 export interface TraceToLogsConfig {
   datasourceUid?: string;
   tags?: Array<{ key: string; value?: string }>;
@@ -34,31 +26,18 @@ export interface TraceToLogsConfig {
 
 export interface LogsStrategy {
   id: LogsStrategyId;
-  /**
-   * Concrete, fully interpolated query for the whole trace. Used both to probe whether this shape
-   * returns anything and as the query behind the "Logs for this trace" action.
-   */
+  /** Concrete query for the whole trace: used to probe, and behind the trace-wide action. */
   buildTraceExpr(ctx: TraceLogsContext): string;
   /**
-   * Query for a single span row. Scoped to the span's service and filtered to the trace, which is
-   * what https://github.com/grafana/traces-drilldown/issues/779 asks for.
-   *
-   * `${__data.fields.serviceName}` is interpolated per row by Grafana. Like core's trace-to-logs
-   * custom queries, the interpolated value is not escaped, so a service name containing a quote
-   * produces a broken query. Service names with quotes are not something we have seen in practice.
+   * Per span row, scoped to that span's service. `${__data.fields.serviceName}` is interpolated by
+   * Grafana and, as with core's custom queries, not escaped.
    */
   buildSpanExpr(traceId: string): string;
-  /**
-   * Equivalent configuration to persist on the Tempo data source, so an admin can promote a
-   * detected shape into the authoritative, org wide one.
-   */
+  /** Equivalent config to persist on the Tempo data source, so the guess becomes authoritative. */
   toTraceToLogsConfig(datasourceUid: string): TraceToLogsConfig;
 }
 
-/**
- * Loki data source label that carries the OTel service name. `service.name` is `job` in Mimir and
- * `service_name` in Loki, the same discrepancy metrics-drilldown maps in its logs connector.
- */
+/** `service.name` is `job` in Mimir and `service_name` in Loki. */
 const SERVICE_NAME_LABEL = 'service_name';
 
 const otelStructuredMetadata: LogsStrategy = {
@@ -76,14 +55,9 @@ const otelStructuredMetadata: LogsStrategy = {
 };
 
 /**
- * Structured logs keyed by `service_name`, with the trace id inside the line rather than promoted
- * to structured metadata. Common wherever an application writes json or logfmt itself and the
- * collector only attaches resource labels, for example:
- *
- *   {"message":"order placed","span_id":"a9ba...","trace_id":"5cfd..."}
- *
- * Both parsers are applied because the encoding varies by service; whichever one fails sets
- * `__error__`, which is dropped before the filter so the other parser's fields still apply.
+ * Trace id inside the line rather than in structured metadata, e.g.
+ * `{"message":"order placed","trace_id":"5cfd..."}`. Both parsers run because the encoding varies
+ * by service; the one that fails sets `__error__`, dropped before the filter.
  */
 const serviceParsed: LogsStrategy = {
   id: 'service-parsed',
@@ -95,8 +69,7 @@ const serviceParsed: LogsStrategy = {
     `{${SERVICE_NAME_LABEL}="\${__data.fields.serviceName}"} | logfmt | json | drop __error__, __error_details__ | trace_id="${escapeLabelValue(
       traceId
     )}"`,
-  // Core's `filterByTraceID` matches the trace id anywhere in the line as well as on a parsed
-  // label, so it covers this shape without needing a custom query.
+  // Core's `filterByTraceID` also matches the id anywhere in the line, so it covers this shape.
   toTraceToLogsConfig: (datasourceUid) => ({
     datasourceUid,
     customQuery: false,
@@ -105,11 +78,7 @@ const serviceParsed: LogsStrategy = {
   }),
 };
 
-/**
- * Logs shipped through the Grafana Cloud OTLP gateway in the legacy JSON format, where the trace id
- * lands in a `traceid` json field and the stream is keyed by `exporter` and `job`. `job` is
- * `namespace/name` when the service declares a namespace, hence the optional prefix.
- */
+/** Legacy Grafana Cloud OTLP gateway: `traceid` json field, `job` is `namespace/name`. */
 const otlpGatewayJson: LogsStrategy = {
   id: 'otlp-gateway-json',
   buildTraceExpr: ({ traceId, serviceNames }) =>
@@ -127,9 +96,7 @@ const otlpGatewayJson: LogsStrategy = {
   }),
 };
 
-/**
- * Logs keyed by a `job` label with the trace id inside the line, either logfmt or json encoded.
- */
+/** `job` label, trace id inside the line, logfmt or json. */
 const jobParsed: LogsStrategy = {
   id: 'job-parsed',
   buildTraceExpr: ({ traceId, serviceNames }) =>
@@ -149,10 +116,7 @@ const jobParsed: LogsStrategy = {
   }),
 };
 
-/**
- * Last resort: the trace id appears somewhere in the log line but is neither structured metadata
- * nor a parseable field. Core's `filterByTraceID` does the same thing via `label_format contains`.
- */
+/** Last resort: the id is in the line but not parseable out of it. */
 const lineContains: LogsStrategy = {
   id: 'line-contains',
   buildTraceExpr: ({ traceId, serviceNames }) =>
@@ -167,10 +131,7 @@ const lineContains: LogsStrategy = {
   }),
 };
 
-/**
- * Probed in order. The first shape that returns log lines wins, so cheaper and more specific
- * shapes come first and the broad line scan comes last.
- */
+/** Probed in order: cheapest and most specific first, broad line scan last. */
 export const LOGS_STRATEGIES: LogsStrategy[] = [
   otelStructuredMetadata,
   serviceParsed,

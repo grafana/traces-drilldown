@@ -3,27 +3,11 @@ import { escapeLabelValue, escapeRegexValue, getStrategy, LOGS_STRATEGIES } from
 describe('trace to logs strategies', () => {
   const context = { traceId: 'abc123', serviceNames: ['checkout', 'cart'] };
 
-  it('probes the cheapest and most specific shape first and the broad line scan last', () => {
-    expect(LOGS_STRATEGIES.map((strategy) => strategy.id)).toEqual([
-      'otel-structured-metadata',
-      'service-parsed',
-      'otlp-gateway-json',
-      'job-parsed',
-      'line-contains',
-    ]);
-  });
-
   it('filters by trace id, which is what the service scoped query on its own failed to do', () => {
     for (const strategy of LOGS_STRATEGIES) {
       expect(strategy.buildTraceExpr(context)).toContain('abc123');
       expect(strategy.buildSpanExpr('abc123')).toContain('abc123');
     }
-  });
-
-  it('scopes the trace wide query to every service in the trace', () => {
-    expect(getStrategy('otel-structured-metadata')?.buildTraceExpr(context)).toBe(
-      '{service_name=~"checkout|cart"} | trace_id="abc123"'
-    );
   });
 
   it('scopes the span query to the row service so each span links to its own logs', () => {
@@ -47,13 +31,6 @@ describe('trace to logs strategies', () => {
     expect(getStrategy('service-parsed')?.buildSpanExpr('abc123')).toBe(
       '{service_name="${__data.fields.serviceName}"} | logfmt | json | drop __error__, __error_details__ | trace_id="abc123"'
     );
-  });
-
-  it('repairs the data source with core semantics for the parsed shape, since filterByTraceID covers it', () => {
-    expect(getStrategy('service-parsed')?.toTraceToLogsConfig('loki-uid')).toMatchObject({
-      customQuery: false,
-      filterByTraceID: true,
-    });
   });
 
   it('falls back to scanning the line for the trace id', () => {

@@ -18,10 +18,7 @@ import {
 import { getStrategy } from './strategies';
 import { LogsLinkProvenance, TimeBoundsMs, TraceLogsTarget } from './types';
 
-/**
- * Structural type of the owning scene, kept narrow so this component does not have to import
- * `TraceViewPanelScene` and create a cycle.
- */
+/** Kept narrow so this does not import `TraceViewPanelScene` and create a cycle. */
 export interface TraceLogsActionsState extends SceneObjectState {
   traceId: string;
   logsTarget?: TraceLogsTarget;
@@ -101,8 +98,7 @@ export function getUnavailableLabel(isResolving: boolean, target: TraceLogsTarge
     );
   }
 
-  // We did look. Saying so matters here, because the data source's own span links are rendered
-  // whether or not any logs exist, so the user is looking at links that appear to work.
+  // Worth saying, because the config's own span links render whether or not logs exist.
   if (target?.configMissingTraceFilter) {
     return t(
       'traces-to-logs.state-no-logs-unfiltered-config',
@@ -188,8 +184,7 @@ export function TraceLogsActions({ model }: { model: SceneObject<TraceLogsAction
     return null;
   }
 
-  // The action stays on screen in every state. A greyed out button with a reason is more useful
-  // than an empty space, which reads as a missing feature rather than as "there are no logs".
+  // A greyed out button with a reason beats empty space, which reads as a missing feature.
   if (!logsTarget || !strategy) {
     const isResolving = logsResolution !== 'done';
 

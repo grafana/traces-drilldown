@@ -14,14 +14,7 @@ interface DsQueryResponse {
 
 const PROBE_REF_ID = 'tracesToLogsProbe';
 
-/**
- * Ask a Loki data source whether a query returns anything at all, cheaply.
- *
- * This is the query-and-count gate: a link is only worth showing if the target actually has
- * matching data. metrics-drilldown pairs a `getTagKeys`/`getTagValues` existence check with a row
- * count; for a trace id filtered query the count on its own is both cheaper and strictly more
- * accurate, so we only do the count.
- */
+/** The query-and-count gate: a link is only worth showing if the target actually has rows. */
 export async function countLogLines(datasourceUid: string, expr: string, bounds: TimeBoundsMs): Promise<number> {
   try {
     const response = await getBackendSrv().post<DsQueryResponse>(
@@ -51,8 +44,7 @@ export async function countLogLines(datasourceUid: string, expr: string, bounds:
 
     return (result.frames ?? []).reduce((count, frame) => count + (frame.data?.values?.[0]?.length ?? 0), 0);
   } catch (error) {
-    // A data source that is misconfigured, unreachable or rejects the query simply does not qualify.
-    // Probing must never surface an error to the user.
+    // A data source that rejects the query simply does not qualify; never surface this.
     console.warn('Trace to logs probe failed', { datasourceUid, error });
     return 0;
   }

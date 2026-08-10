@@ -153,12 +153,8 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
   }
 
   /**
-   * Creates the traces panel, at most once per trace.
-   *
-   * Held back until the logs target has resolved (or the wait has gone on too long) so that the
-   * span links are already on the frames the first time the trace view renders. Emitting new data
-   * afterwards is not an option: Grafana's trace view clears every open span detail whenever the
-   * data changes, so late links would collapse whatever the user had open.
+   * Held back until resolution settles so the span links are on the frames for the first render.
+   * Emitting data afterwards would close every open span detail (useDetailState.ts).
    */
   private buildPanelOnce() {
     if (this.state.panel instanceof VizPanel || !this.logsResolutionSettled) {
@@ -168,11 +164,7 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
     this.setState({ panel: this.getVizPanel().build() });
   }
 
-  /**
-   * Works out where the logs for this trace live, once we know which services it touches.
-   *
-   * Runs once per trace, and the result is cached.
-   */
+  /** Runs once per trace; the result is cached. */
   private resolveLogsTarget(frames: DataFrame[]) {
     const tempoDatasourceUid = this.state.logsTempoDatasourceUid;
 
@@ -221,9 +213,8 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
         clearTimeout(cap);
         this.setState({ logsTarget, logsResolution: 'done' });
 
-        // Decorate the frames we already hold rather than re-running the pipeline, which would
-        // replace the frame objects and close any open span detail. Safe while the panel does not
-        // exist yet; once it does, the links have to wait for the next query.
+        // Decorate the frames we hold rather than re-running the pipeline, which would replace
+        // the frame objects. Only safe while the panel does not exist yet.
         if (logsTarget?.ownsSpanLinks && !(this.state.panel instanceof VizPanel)) {
           attachSpanLogsLinks(frames, logsTarget, this.state.traceId);
         }
@@ -256,8 +247,7 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
 
     return (
       <div className={styles.traceView}>
-        {/* Deliberately not a panel header action: the traces panel uses a hover header, which
-            would hide the action, including its disabled state, until the user hovers. */}
+        {/* Not a panel header action: the hover header would hide it, disabled state included. */}
         <div className={styles.actions}>
           <TraceLogsActions model={model} />
         </div>

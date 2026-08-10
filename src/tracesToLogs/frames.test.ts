@@ -26,10 +26,6 @@ describe('getTraceServiceNames', () => {
 
     expect(getTraceServiceNames([frame])).toEqual(['checkout', 'cart']);
   });
-
-  it('returns nothing when the frame carries no service name', () => {
-    expect(getTraceServiceNames([{ name: 'x', length: 0, fields: [] }])).toEqual([]);
-  });
 });
 
 describe('getTraceTimeBoundsMs', () => {

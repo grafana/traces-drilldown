@@ -9,12 +9,7 @@ interface DatasourcePayload {
 
 let permissionCheck: Promise<boolean> | undefined;
 
-/**
- * Whether the current user may persist the detected configuration onto the Tempo data source.
- *
- * Uses the fine grained permission rather than the org role, so an Editor who has been granted
- * `datasources:write` through RBAC still gets the action.
- */
+/** Fine grained permission, so an Editor granted `datasources:write` through RBAC still qualifies. */
 export function canWriteDatasources(): Promise<boolean> {
   if (!permissionCheck) {
     permissionCheck = getBackendSrv()
@@ -32,18 +27,12 @@ export function canWriteDatasources(): Promise<boolean> {
   return permissionCheck;
 }
 
-/**
- * Provisioned data sources, which is how Grafana Cloud manages the stack's own Tempo instance in
- * many setups, reject writes. There is no point offering the action for them.
- */
+/** Provisioned data sources reject writes, so there is no point offering the action. */
 export function isDatasourceEditable(datasourceUid: string): boolean {
   return !getDataSourceSrv().getInstanceSettings(datasourceUid)?.readOnly;
 }
 
-/**
- * Promote a detected shape into `tracesToLogsV2` on the Tempo data source, so that every user in
- * the org gets the deterministic, config driven path instead of per view detection.
- */
+/** Promote a detected shape into `tracesToLogsV2`, so the whole org gets it without detection. */
 export async function saveTraceToLogsConfig(
   tempoDatasourceUid: string,
   traceToLogsConfig: TraceToLogsConfig
@@ -60,13 +49,7 @@ export async function saveTraceToLogsConfig(
   });
 }
 
-/**
- * Turns on trace id filtering for an existing configuration, leaving the admin's data source and
- * tag mapping exactly as they are.
- *
- * This is the narrowest possible repair for the common misconfiguration where the link opens every
- * log line the service ever wrote instead of the ones belonging to the trace.
- */
+/** Narrowest repair for a config that opens the whole service: leaves data source and tags alone. */
 export async function enableTraceIdFilter(tempoDatasourceUid: string): Promise<void> {
   const backend = getBackendSrv();
   const datasource = await backend.get<DatasourcePayload>(`/api/datasources/uid/${tempoDatasourceUid}`);

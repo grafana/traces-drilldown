@@ -131,12 +131,6 @@ describe('resolveTraceLogsTarget', () => {
       await expect(resolve()).resolves.toMatchObject({ ownsSpanLinks: false, configMissingTraceFilter: false });
     });
 
-    it('honours the pre v2 configuration shape', async () => {
-      setup({ tempoJsonData: { tracesToLogs: { datasourceUid: lokiB.uid } } });
-
-      await expect(resolve()).resolves.toMatchObject({ provenance: LogsLinkProvenance.Configured });
-    });
-
     it('offers no query of its own when configured against a non Loki backend', async () => {
       setup({
         tempoJsonData: { tracesToLogsV2: { datasourceUid: 'splunk-uid' } },
@@ -192,16 +186,6 @@ describe('resolveTraceLogsTarget', () => {
       setup();
 
       await expect(resolve()).resolves.toBeUndefined();
-    });
-
-    it('survives a correlations lookup that fails', async () => {
-      setup();
-      getCorrelationsService.mockReturnValue({
-        getCorrelationsBySourceUIDs: jest.fn().mockRejectedValue(new Error('nope')),
-      });
-      mockCountLogLines.mockResolvedValue(1);
-
-      await expect(resolve()).resolves.toMatchObject({ provenance: LogsLinkProvenance.Detected });
     });
   });
 

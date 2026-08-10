@@ -20,12 +20,8 @@ interface TraceToLogsJsonData {
 }
 
 /**
- * Whether the configuration actually narrows the logs to the trace.
- *
  * Without this, core builds a query from the tag mapping alone, e.g.
- * `{cluster="...", service_name="...", service_namespace="..."}`, which opens every log line the
- * service ever wrote. That is the complaint in grafana/traces-drilldown#779 and it is easy to miss,
- * because the link looks like it works.
+ * `{cluster="...", service_name="..."}`, which opens every log line the service ever wrote (#779).
  */
 export function configFiltersByTraceId(options: TraceToLogsOptions | undefined): boolean {
   if (!options) {
@@ -46,10 +42,7 @@ export interface ResolveTraceLogsTargetParams {
   bounds: TimeBoundsMs;
 }
 
-/**
- * Resolution is per trace and does not change while the drawer is open, so the promise is cached
- * and concurrent callers share one round of probes.
- */
+/** Cached per trace so concurrent callers share one round of probes. */
 const cache = new Map<string, Promise<TraceLogsTarget | undefined>>();
 const MAX_CACHE_ENTRIES = 50;
 
@@ -57,9 +50,7 @@ export function clearTraceLogsTargetCache() {
   cache.clear();
 }
 
-/**
- * The Loki (or other) data source an admin has already pointed the Tempo data source at.
- */
+/** The data source an admin has already pointed the Tempo data source at. */
 export function getConfiguredTraceToLogs(tempoDatasourceUid: string): TraceToLogsOptions | undefined {
   const jsonData = getDataSourceSrv().getInstanceSettings(tempoDatasourceUid)?.jsonData as
     | TraceToLogsJsonData
@@ -90,10 +81,7 @@ async function getCorrelatedLokiUids(tempoDatasourceUid: string): Promise<string
   }
 }
 
-/**
- * Try each known query shape against one data source, cheapest first, and stop at the first that
- * returns log lines.
- */
+/** Cheapest shape first, stop at the first that returns log lines. */
 async function probeDatasource(
   datasourceUid: string,
   context: TraceLogsContext,
@@ -121,10 +109,9 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
   const configuredOptions = getConfiguredTraceToLogs(tempoDatasourceUid);
   const configuredUid = configuredOptions?.datasourceUid;
 
-  // Layer 1. An explicit configuration decides *where* the logs are, and is never second guessed.
-  // Core renders the span links for it, so normally we only work out whether we can also offer the
-  // trace wide action. The exception is a configuration that never filters by trace id, which
-  // silently opens the whole service's logs; there we add a trace-filtered link of our own.
+  // Layer 1. The configuration decides where the logs are and is never second guessed. Core
+  // renders its span links, so we normally only add the trace wide action. The exception is a
+  // config that never filters by trace id: there we add a trace-filtered link of our own.
   if (configuredUid) {
     const configured = getDataSourceSrv().getInstanceSettings(configuredUid);
 
@@ -143,8 +130,7 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
         probed: canProbe,
       };
     }
-    // Configured against a data source that no longer exists. Fall through to discovery rather
-    // than leaving the user with nothing.
+    // Configured against a data source that no longer exists: fall through to discovery.
   }
 
   // Layers 2 and 3. Correlated data sources are probed first, then everything else.

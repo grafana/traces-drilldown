@@ -46,10 +46,7 @@ export function getTraceServiceNames(frames: DataFrame[]): string[] {
   return Array.from(names).slice(0, MAX_SERVICE_NAMES);
 }
 
-/**
- * Time window covering the trace itself, padded. Preferred over the time picker because the picker
- * can be far wider than the trace, which makes probes slow and noisy.
- */
+/** Padded window around the trace itself; the time picker can be far wider, which is slow. */
 export function getTraceTimeBoundsMs(frames: DataFrame[], fallback: TimeBoundsMs): TimeBoundsMs {
   const startTime = getField(frames, 'startTime');
   const duration = getField(frames, 'duration');
