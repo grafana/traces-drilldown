@@ -1,7 +1,6 @@
 /** Where the logs target came from. Surfaced to the user so support can reason about it. */
 export enum LogsLinkProvenance {
   Configured = 'configured',
-  Correlation = 'correlation',
   Detected = 'detected',
 }
 

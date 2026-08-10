@@ -64,10 +64,6 @@ function getProvenanceLabel(target: TraceLogsTarget): string {
       return t('traces-to-logs.provenance-configured', 'Configured on the Tempo data source: {{name}}', {
         name: target.datasourceName,
       });
-    case LogsLinkProvenance.Correlation:
-      return t('traces-to-logs.provenance-correlation', 'From a correlation to {{name}}', {
-        name: target.datasourceName,
-      });
     default:
       return t(
         'traces-to-logs.provenance-detected',

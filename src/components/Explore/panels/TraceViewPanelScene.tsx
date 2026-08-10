@@ -24,11 +24,7 @@ import { TempoDatasource } from 'types';
 import { TraceLogsActions } from 'tracesToLogs/TraceLogsActions';
 import { getTraceServiceNames, getTraceTimeBoundsMs } from 'tracesToLogs/frames';
 import { resolveTraceLogsTarget } from 'tracesToLogs/resolveTraceLogsTarget';
-import {
-  addCorrelationLinksTransformation,
-  addTraceLogsLinksTransformation,
-  attachSpanLogsLinks,
-} from 'tracesToLogs/transformations';
+import { addTraceLogsLinksTransformation, attachSpanLogsLinks } from 'tracesToLogs/transformations';
 import { TimeBoundsMs, TraceLogsTarget } from 'tracesToLogs/types';
 
 const TRACE_BY_ID_QUERY_REF_ID = 'traceById';
@@ -103,10 +99,7 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
           datasource: explorationDS,
           queries: [{ refId: TRACE_BY_ID_QUERY_REF_ID, query: state.traceId, queryType: 'traceql' }],
         }),
-        transformations: [
-          addCorrelationLinksTransformation(() => this.state.logsTempoDatasourceUid, TRACE_BY_ID_QUERY_REF_ID),
-          addTraceLogsLinksTransformation(() => this.state.logsTarget, state.traceId),
-        ],
+        transformations: [addTraceLogsLinksTransformation(() => this.state.logsTarget, state.traceId)],
       }),
       ...state,
     });

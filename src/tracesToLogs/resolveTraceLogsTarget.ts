@@ -1,4 +1,4 @@
-import { getCorrelationsService, getDataSourceSrv } from '@grafana/runtime';
+import { getDataSourceSrv } from '@grafana/runtime';
 
 import { getCandidateLokiDatasources } from './datasources';
 import { countLogLines } from './probe';
@@ -61,27 +61,6 @@ export function getConfiguredTraceToLogs(tempoDatasourceUid: string): TraceToLog
   return options?.datasourceUid ? options : undefined;
 }
 
-/** Loki data sources a Correlation from this Tempo data source already points at. */
-async function getCorrelatedLokiUids(tempoDatasourceUid: string): Promise<string[]> {
-  try {
-    const service = getCorrelationsService?.();
-
-    if (!service) {
-      return [];
-    }
-
-    const { correlations } = await service.getCorrelationsBySourceUIDs([tempoDatasourceUid]);
-
-    return correlations
-      .filter((correlation) => 'target' in correlation && correlation.target?.type === 'loki')
-      .map((correlation) => ('target' in correlation ? correlation.target.uid : ''))
-      .filter(Boolean);
-  } catch (error) {
-    console.warn('Failed to load correlations for trace to logs', error);
-    return [];
-  }
-}
-
 /** Cheapest shape first, stop at the first that returns log lines. */
 async function probeDatasource(
   datasourceUid: string,
@@ -137,9 +116,7 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
     // Configured against a data source that no longer exists: fall through to discovery.
   }
 
-  // Layers 2 and 3. Correlated data sources are probed first, then everything else.
-  const correlatedUids = await getCorrelatedLokiUids(tempoDatasourceUid);
-  const candidates = getCandidateLokiDatasources(correlatedUids);
+  const candidates = getCandidateLokiDatasources();
 
   if (!candidates.length) {
     return undefined;
@@ -148,7 +125,7 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
   const toTarget = (candidate: { uid: string; name: string }, strategyId: LogsStrategyId): TraceLogsTarget => ({
     datasourceUid: candidate.uid,
     datasourceName: candidate.name,
-    provenance: correlatedUids.includes(candidate.uid) ? LogsLinkProvenance.Correlation : LogsLinkProvenance.Detected,
+    provenance: LogsLinkProvenance.Detected,
     strategyId,
     ownsSpanLinks: true,
   });

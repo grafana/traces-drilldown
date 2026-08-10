@@ -288,7 +288,6 @@
     "configure-link": "Data source settings",
     "provenance-configured": "Configured on the Tempo data source: {{name}}",
     "provenance-configured-unfiltered": "The Tempo data source points at {{name}} but does not filter by trace id, so its own span links open the whole service. This link is filtered to this trace.",
-    "provenance-correlation": "From a correlation to {{name}}",
     "provenance-detected": "Auto-detected in {{name}}. Trace to logs is not configured on the Tempo data source.",
     "span-link-title": "Logs for this span",
     "state-no-logs": "No logs matching this trace id were found in the available Loki data sources.",

@@ -4,12 +4,9 @@ import { LogsLinkProvenance } from './types';
 
 jest.mock('./probe');
 jest.mock('./rememberedTarget');
-jest.mock('@grafana/runtime', () => ({
-  getDataSourceSrv: jest.fn(),
-  getCorrelationsService: jest.fn(),
-}));
+jest.mock('@grafana/runtime', () => ({ getDataSourceSrv: jest.fn() }));
 
-const { getDataSourceSrv, getCorrelationsService } = jest.requireMock('@grafana/runtime');
+const { getDataSourceSrv } = jest.requireMock('@grafana/runtime');
 const { getRememberedTarget, rememberTarget } = jest.requireMock('./rememberedTarget');
 const mockCountLogLines = countLogLines as jest.MockedFunction<typeof countLogLines>;
 
@@ -22,14 +19,12 @@ const lokiB = { uid: 'loki-b', name: 'Loki B', type: 'loki', isDefault: false };
 interface SetupOptions {
   tempoJsonData?: Record<string, unknown>;
   lokiDatasources?: Array<typeof lokiA>;
-  correlationTargets?: Array<{ uid: string; type: string }>;
   missingDatasourceUids?: string[];
 }
 
 function setup({
   tempoJsonData = {},
   lokiDatasources = [lokiA, lokiB],
-  correlationTargets = [],
   missingDatasourceUids = [],
 }: SetupOptions = {}) {
   const byUid = new Map<string, unknown>([
@@ -40,16 +35,6 @@ function setup({
   getDataSourceSrv.mockReturnValue({
     getInstanceSettings: (uid: string) => (missingDatasourceUids.includes(uid) ? undefined : byUid.get(uid)),
     getList: () => lokiDatasources,
-  });
-
-  getCorrelationsService.mockReturnValue({
-    getCorrelationsBySourceUIDs: jest.fn().mockResolvedValue({
-      correlations: correlationTargets.map((target, index) => ({
-        uid: `correlation-${index}`,
-        type: 'query',
-        target,
-      })),
-    }),
   });
 }
 
@@ -159,18 +144,7 @@ describe('resolveTraceLogsTarget', () => {
     });
   });
 
-  describe('layers 2 and 3, correlations then discovery', () => {
-    it('prefers a correlated data source over the default one', async () => {
-      setup({ correlationTargets: [{ uid: lokiB.uid, type: 'loki' }] });
-      mockCountLogLines.mockImplementation(async (uid) => (uid === lokiB.uid ? 1 : 0));
-
-      await expect(resolve()).resolves.toMatchObject({
-        datasourceUid: lokiB.uid,
-        provenance: LogsLinkProvenance.Correlation,
-        ownsSpanLinks: true,
-      });
-    });
-
+  describe('discovery', () => {
     it('keeps the first query shape that actually returns log lines', async () => {
       setup({ lokiDatasources: [lokiA] });
       mockCountLogLines.mockImplementation(async (_uid, expr) => (expr.includes('| json | traceid=') ? 1 : 0));

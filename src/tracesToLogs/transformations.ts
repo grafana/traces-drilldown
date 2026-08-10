@@ -1,7 +1,6 @@
 import { CustomTransformOperator, DataFrame, DataLink } from '@grafana/data';
 import { t } from '@grafana/i18n';
-import { getCorrelationsService } from '@grafana/runtime';
-import { concatMap, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { getStrategy } from './strategies';
 import { TraceLogsTarget } from './types';
@@ -92,32 +91,3 @@ export const addTraceLogsLinksTransformation =
   () =>
   (source: Observable<DataFrame[]>) =>
     source.pipe(map((frames) => attachSpanLogsLinks(frames, getTarget(), traceId)));
-
-/** Explore renders correlations for free; a plugin scene has to ask. Otherwise they are invisible. */
-export const addCorrelationLinksTransformation =
-  (getTempoDatasourceUid: () => string | undefined, refId: string): CustomTransformOperator =>
-  () =>
-  (source: Observable<DataFrame[]>) =>
-    source.pipe(
-      concatMap(async (frames) => {
-        try {
-          const service = getCorrelationsService?.();
-          const tempoDatasourceUid = getTempoDatasourceUid();
-
-          if (!service || !tempoDatasourceUid) {
-            return frames;
-          }
-
-          const { correlations } = await service.getCorrelationsBySourceUIDs([tempoDatasourceUid]);
-
-          if (!correlations.length) {
-            return frames;
-          }
-
-          return service.attachCorrelationsToDataFrames(frames, correlations, { [refId]: tempoDatasourceUid });
-        } catch (error) {
-          console.warn('Failed to attach correlations to the trace', error);
-          return frames;
-        }
-      })
-    );

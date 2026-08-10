@@ -4,10 +4,6 @@ import { lastValueFrom, of } from 'rxjs';
 import { addTraceLogsLinksTransformation } from './transformations';
 import { LogsLinkProvenance, TraceLogsTarget } from './types';
 
-jest.mock('@grafana/runtime', () => ({
-  getCorrelationsService: jest.fn(),
-}));
-
 const detectedTarget: TraceLogsTarget = {
   datasourceUid: 'loki-a',
   datasourceName: 'Loki A',
