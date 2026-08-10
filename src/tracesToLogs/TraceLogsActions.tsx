@@ -87,15 +87,26 @@ function getProvenanceLabel(target: TraceLogsTarget): string {
 }
 
 /** Why the action is greyed out, so the empty case is explained rather than silent. */
-function getUnavailableLabel(isResolving: boolean, target: TraceLogsTarget | undefined): string {
+export function getUnavailableLabel(isResolving: boolean, target: TraceLogsTarget | undefined): string {
   if (isResolving) {
     return t('traces-to-logs.state-resolving', 'Looking for logs that match this trace');
   }
 
-  if (target?.provenance === LogsLinkProvenance.Configured) {
+  // Only true for a backend we cannot build LogQL for, such as Splunk or Elasticsearch.
+  if (target && !target.probed) {
     return t(
       'traces-to-logs.state-configured-unusable',
       'The Tempo data source sends trace to logs to {{name}}, which this app cannot query directly. Use the links on each span.',
+      { name: target.datasourceName }
+    );
+  }
+
+  // We did look. Saying so matters here, because the data source's own span links are rendered
+  // whether or not any logs exist, so the user is looking at links that appear to work.
+  if (target?.configMissingTraceFilter) {
+    return t(
+      'traces-to-logs.state-no-logs-unfiltered-config',
+      'No logs matching this trace id were found in {{name}}. The span links come from the Tempo data source, which does not filter by trace id, so they show every log line for the service.',
       { name: target.datasourceName }
     );
   }

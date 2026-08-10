@@ -3,7 +3,7 @@ import React from 'react';
 
 import { SceneObject } from '@grafana/scenes';
 
-import { TraceLogsActions, TraceLogsActionsState } from './TraceLogsActions';
+import { getUnavailableLabel, TraceLogsActions, TraceLogsActionsState } from './TraceLogsActions';
 import { LogsLinkProvenance, TraceLogsTarget } from './types';
 
 jest.mock('@grafana/runtime', () => ({
@@ -32,6 +32,7 @@ const detectedTarget: TraceLogsTarget = {
   provenance: LogsLinkProvenance.Detected,
   strategyId: 'otel-structured-metadata',
   ownsSpanLinks: true,
+  probed: true,
 };
 
 function renderActions(state: Partial<TraceLogsActionsState>) {
@@ -81,5 +82,34 @@ describe('TraceLogsActions', () => {
     renderActions({ logsResolution: 'done', logsTarget: detectedTarget });
 
     expect(screen.queryByRole('button', { name: /Save to data source/ })).not.toBeInTheDocument();
+  });
+});
+
+describe('getUnavailableLabel', () => {
+  const configured = {
+    datasourceUid: 'loki',
+    datasourceName: 'Loki',
+    provenance: LogsLinkProvenance.Configured,
+    ownsSpanLinks: false,
+  };
+
+  it('says it is still looking while probes are in flight', () => {
+    expect(getUnavailableLabel(true, undefined)).toMatch(/Looking for logs/);
+  });
+
+  it('warns that the data source span links are unfiltered when nothing matched', () => {
+    // Those links are rendered whether or not logs exist, so a bare "nothing found" would
+    // contradict links that look like they work.
+    const label = getUnavailableLabel(false, { ...configured, probed: true, configMissingTraceFilter: true });
+
+    expect(label).toMatch(/No logs matching this trace id/);
+    expect(label).toMatch(/does not filter by trace id/);
+  });
+
+  it('distinguishes a backend it could not query from one it queried in vain', () => {
+    expect(getUnavailableLabel(false, { ...configured, datasourceName: 'Splunk', probed: false })).toMatch(
+      /cannot query directly/
+    );
+    expect(getUnavailableLabel(false, { ...configured, probed: true })).toMatch(/No logs matching this trace id/);
   });
 });

@@ -14,6 +14,7 @@ const detectedTarget: TraceLogsTarget = {
   provenance: LogsLinkProvenance.Detected,
   strategyId: 'otel-structured-metadata',
   ownsSpanLinks: true,
+  probed: true,
 };
 
 function traceFrame(): DataFrame {

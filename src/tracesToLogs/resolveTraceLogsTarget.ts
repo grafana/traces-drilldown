@@ -129,8 +129,8 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
     const configured = getDataSourceSrv().getInstanceSettings(configuredUid);
 
     if (configured) {
-      const strategyId =
-        configured.type === 'loki' ? await probeDatasource(configured.uid, context, bounds) : undefined;
+      const canProbe = configured.type === 'loki';
+      const strategyId = canProbe ? await probeDatasource(configured.uid, context, bounds) : undefined;
       const configMissingTraceFilter = !configFiltersByTraceId(configuredOptions);
 
       return {
@@ -140,6 +140,7 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
         strategyId,
         ownsSpanLinks: configMissingTraceFilter && strategyId !== undefined,
         configMissingTraceFilter,
+        probed: canProbe,
       };
     }
     // Configured against a data source that no longer exists. Fall through to discovery rather
@@ -175,6 +176,7 @@ async function resolve(params: ResolveTraceLogsTargetParams): Promise<TraceLogsT
       : LogsLinkProvenance.Detected,
     strategyId: winner.strategyId,
     ownsSpanLinks: true,
+    probed: true,
   };
 }
 

@@ -296,6 +296,7 @@
     "span-link-title": "Logs for this span",
     "state-configured-unusable": "The Tempo data source sends trace to logs to {{name}}, which this app cannot query directly. Use the links on each span.",
     "state-no-logs": "No logs matching this trace id were found in the available Loki data sources.",
+    "state-no-logs-unfiltered-config": "No logs matching this trace id were found in {{name}}. The span links come from the Tempo data source, which does not filter by trace id, so they show every log line for the service.",
     "state-resolving": "Looking for logs that match this trace",
     "trace-link-title": "Logs for this trace"
   }
