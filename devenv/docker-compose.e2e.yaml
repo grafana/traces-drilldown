@@ -1,6 +1,6 @@
 services:
   grafana:
-    container_name: "grafana-explore-traces-e2e"
+    container_name: 'grafana-explore-traces-e2e'
     image: grafana/${GRAFANA_IMAGE:-grafana-enterprise}:${GRAFANA_VERSION:-12.3.0@sha256:96a793a92c9a77cf543d6e5c55100cd296ed9e22487dc3d069331364c456247b}
     restart: unless-stopped
     environment:
@@ -18,7 +18,7 @@ services:
       - ../dist:/var/lib/grafana/plugins/grafana-explore-traces-e2e
       - ../provisioning:/etc/grafana/provisioning
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://127.0.0.1:3000/api/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -f http://127.0.0.1:3000/api/health || exit 1']
       interval: 5s
       timeout: 5s
       retries: 30
@@ -26,19 +26,50 @@ services:
 
   tempo:
     image: grafana/tempo:2.10.4@sha256:a6616c9d224770c883a67b50e4941e99c5df81b076ef05f516bb7cce5a96cec0
-    command: ["-config.file=/etc/tempo.yaml"]
+    command: ['-config.file=/etc/tempo.yaml']
     volumes:
       - ./tempo.yaml:/etc/tempo.yaml
     ports:
-      - "3200:3200" # tempo
+      - '3200:3200' # tempo
+
+  loki:
+    image: grafana/loki:3.5.9
+    command: ['-config.file=/etc/loki.yaml']
+    volumes:
+      - ./loki.yaml:/etc/loki.yaml
+    ports:
+      - '3100:3100' # loki
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O- http://127.0.0.1:3100/ready || exit 1']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # Emits traces and matching logs, correlated by trace id, so the trace to logs E2E has
+  # deterministic data. See devenv/trace-log-generator/generate.py.
+  trace-log-generator:
+    image: python:3.13-alpine
+    command: ['python', '/app/generate.py']
+    restart: always
+    volumes:
+      - ./trace-log-generator:/app:ro
+    environment:
+      - TEMPO_OTLP_HTTP=http://tempo:4318
+      - LOKI_URL=http://loki:3100
+      - INTERVAL_SECONDS=2
+    depends_on:
+      loki:
+        condition: service_healthy
+      tempo:
+        condition: service_started
 
   # A RabbitMQ queue used to send message between the requester and the server microservices.
   mythical-queue:
     image: rabbitmq:management@sha256:4e628d3cbc61ef45c5918e19bb9844874410d96d4ced897ced7d072d63ad555c
     restart: always
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - '5672:5672'
+      - '15672:15672'
     healthcheck:
       test: rabbitmq-diagnostics check_running
       interval: 5s
@@ -50,9 +81,9 @@ services:
     image: postgres:14.5@sha256:135c62a8134dcef829a1e4f5568bfae44bcfa2c75659ff948f43c71964366aa4
     restart: always
     environment:
-      POSTGRES_PASSWORD: "mythical"
+      POSTGRES_PASSWORD: 'mythical'
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   # A microservice that makes requests to the API server microservice. Requests are also pushed onto the mythical-queue.
   mythical-requester-A:
@@ -108,8 +139,13 @@ services:
       - ..:/app
     environment:
       BASE_URL: http://grafana:3000
-      CI: "true"
+      # Reachable service names rather than localhost, which inside this container is itself.
+      LOKI_URL: http://loki:3100
+      TEMPO_URL: http://tempo:3200
+      CI: 'true'
     depends_on:
       grafana:
+        condition: service_healthy
+      loki:
         condition: service_healthy
     command: sh -c "corepack enable && pnpm install --frozen-lockfile --ignore-scripts && pnpm e2e:fast"
