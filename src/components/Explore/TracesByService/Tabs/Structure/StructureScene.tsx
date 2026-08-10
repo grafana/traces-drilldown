@@ -349,8 +349,8 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
 // or a full SearchResponse object with a `traces` field, depending on the Tempo API
 // endpoint that served it. Normalise both shapes to a plain array of traces.
 export function parseTraces(frame: string): TraceSearchMetadata[] {
-  const parsed = JSON.parse(frame) as SearchResponse | TraceSearchMetadata[];
-  return Array.isArray(parsed) ? parsed : (parsed.traces ?? []);
+  const parsed = JSON.parse(frame) as SearchResponse | TraceSearchMetadata[] | null;
+  return Array.isArray(parsed) ? parsed : (parsed?.traces ?? []);
 }
 
 function buildQuery(metric: MetricFunction) {
