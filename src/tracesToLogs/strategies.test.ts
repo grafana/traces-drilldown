@@ -6,6 +6,7 @@ describe('trace to logs strategies', () => {
   it('probes the cheapest and most specific shape first and the broad line scan last', () => {
     expect(LOGS_STRATEGIES.map((strategy) => strategy.id)).toEqual([
       'otel-structured-metadata',
+      'service-parsed',
       'otlp-gateway-json',
       'job-parsed',
       'line-contains',
@@ -35,6 +36,24 @@ describe('trace to logs strategies', () => {
     expect(getStrategy('otlp-gateway-json')?.buildTraceExpr(context)).toBe(
       '{exporter="OTLP", job=~"(.*/)?(checkout|cart)"} | json | traceid="abc123"'
     );
+  });
+
+  it('parses the line when the trace id is inside a json or logfmt payload', () => {
+    // Real world shape: {"message":"...","trace_id":"..."} under a service_name label, with the
+    // trace id never promoted to structured metadata, so an unparsed filter finds nothing.
+    expect(getStrategy('service-parsed')?.buildTraceExpr(context)).toBe(
+      '{service_name=~"checkout|cart"} | logfmt | json | drop __error__, __error_details__ | trace_id="abc123"'
+    );
+    expect(getStrategy('service-parsed')?.buildSpanExpr('abc123')).toBe(
+      '{service_name="${__data.fields.serviceName}"} | logfmt | json | drop __error__, __error_details__ | trace_id="abc123"'
+    );
+  });
+
+  it('repairs the data source with core semantics for the parsed shape, since filterByTraceID covers it', () => {
+    expect(getStrategy('service-parsed')?.toTraceToLogsConfig('loki-uid')).toMatchObject({
+      customQuery: false,
+      filterByTraceID: true,
+    });
   });
 
   it('falls back to scanning the line for the trace id', () => {

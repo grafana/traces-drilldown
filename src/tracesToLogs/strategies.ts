@@ -76,6 +76,36 @@ const otelStructuredMetadata: LogsStrategy = {
 };
 
 /**
+ * Structured logs keyed by `service_name`, with the trace id inside the line rather than promoted
+ * to structured metadata. Common wherever an application writes json or logfmt itself and the
+ * collector only attaches resource labels, for example:
+ *
+ *   {"message":"order placed","span_id":"a9ba...","trace_id":"5cfd..."}
+ *
+ * Both parsers are applied because the encoding varies by service; whichever one fails sets
+ * `__error__`, which is dropped before the filter so the other parser's fields still apply.
+ */
+const serviceParsed: LogsStrategy = {
+  id: 'service-parsed',
+  buildTraceExpr: ({ traceId, serviceNames }) =>
+    `{${SERVICE_NAME_LABEL}=~"${serviceAlternation(
+      serviceNames
+    )}"} | logfmt | json | drop __error__, __error_details__ | trace_id="${escapeLabelValue(traceId)}"`,
+  buildSpanExpr: (traceId) =>
+    `{${SERVICE_NAME_LABEL}="\${__data.fields.serviceName}"} | logfmt | json | drop __error__, __error_details__ | trace_id="${escapeLabelValue(
+      traceId
+    )}"`,
+  // Core's `filterByTraceID` matches the trace id anywhere in the line as well as on a parsed
+  // label, so it covers this shape without needing a custom query.
+  toTraceToLogsConfig: (datasourceUid) => ({
+    datasourceUid,
+    customQuery: false,
+    filterByTraceID: true,
+    tags: [{ key: 'service.name', value: SERVICE_NAME_LABEL }],
+  }),
+};
+
+/**
  * Logs shipped through the Grafana Cloud OTLP gateway in the legacy JSON format, where the trace id
  * lands in a `traceid` json field and the stream is keyed by `exporter` and `job`. `job` is
  * `namespace/name` when the service declares a namespace, hence the optional prefix.
@@ -141,7 +171,13 @@ const lineContains: LogsStrategy = {
  * Probed in order. The first shape that returns log lines wins, so cheaper and more specific
  * shapes come first and the broad line scan comes last.
  */
-export const LOGS_STRATEGIES: LogsStrategy[] = [otelStructuredMetadata, otlpGatewayJson, jobParsed, lineContains];
+export const LOGS_STRATEGIES: LogsStrategy[] = [
+  otelStructuredMetadata,
+  serviceParsed,
+  otlpGatewayJson,
+  jobParsed,
+  lineContains,
+];
 
 export function getStrategy(id: LogsStrategyId): LogsStrategy | undefined {
   return LOGS_STRATEGIES.find((strategy) => strategy.id === id);

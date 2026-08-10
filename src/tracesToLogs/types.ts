@@ -20,7 +20,12 @@ export enum LogsLinkProvenance {
 }
 
 /** Identifier of a query shape we know how to build and probe. */
-export type LogsStrategyId = 'otel-structured-metadata' | 'otlp-gateway-json' | 'job-parsed' | 'line-contains';
+export type LogsStrategyId =
+  | 'otel-structured-metadata'
+  | 'service-parsed'
+  | 'otlp-gateway-json'
+  | 'job-parsed'
+  | 'line-contains';
 
 export interface TraceLogsTarget {
   datasourceUid: string;
