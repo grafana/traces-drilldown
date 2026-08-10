@@ -6,10 +6,12 @@ import {
   SceneComponentProps,
   PanelBuilders,
   SceneQueryRunner,
+  SceneDataTransformer,
   sceneGraph,
   SceneObject,
+  VizPanel,
 } from '@grafana/scenes';
-import { LoadingState, GrafanaTheme2, dateTimeFormat, DataQueryError } from '@grafana/data';
+import { DataFrame, LoadingState, GrafanaTheme2, dateTimeFormat, DataQueryError } from '@grafana/data';
 import { getDataSourceSrv } from '@grafana/runtime';
 import { explorationDS } from 'utils/shared';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
@@ -19,11 +21,23 @@ import Skeleton from 'react-loading-skeleton';
 import { useStyles2 } from '@grafana/ui';
 import { getDataSource, getTraceExplorationScene } from 'utils/utils';
 import { TempoDatasource } from 'types';
+import { TraceLogsActions } from 'tracesToLogs/TraceLogsActions';
+import { getTraceServiceNames, getTraceTimeBoundsMs } from 'tracesToLogs/frames';
+import { resolveTraceLogsTarget } from 'tracesToLogs/resolveTraceLogsTarget';
+import { addCorrelationLinksTransformation, addTraceLogsLinksTransformation } from 'tracesToLogs/transformations';
+import { TimeBoundsMs, TraceLogsTarget } from 'tracesToLogs/types';
+
+const TRACE_BY_ID_QUERY_REF_ID = 'traceById';
 
 interface TracePanelState extends SceneObjectState {
   panel?: SceneObject;
   traceId: string;
   spanId?: string;
+  /** Resolved by the layered trace to logs lookup once trace data has arrived. */
+  logsTarget?: TraceLogsTarget;
+  logsBounds?: TimeBoundsMs;
+  logsServiceNames?: string[];
+  logsTempoDatasourceUid?: string;
 }
 
 export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
@@ -68,24 +82,42 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
 
     return errorMessage || 'An error occurred while loading the trace.';
   }
+  /** Guards against re-resolving on every data emission, including our own reprocess. */
+  private logsResolutionStarted = false;
+
   constructor(state: TracePanelState) {
     super({
-      $data: new SceneQueryRunner({
-        datasource: explorationDS,
-        queries: [{ refId: 'A', query: state.traceId, queryType: 'traceql' }],
+      $data: new SceneDataTransformer({
+        $data: new SceneQueryRunner({
+          datasource: explorationDS,
+          queries: [{ refId: TRACE_BY_ID_QUERY_REF_ID, query: state.traceId, queryType: 'traceql' }],
+        }),
+        transformations: [
+          addCorrelationLinksTransformation(() => this.state.logsTempoDatasourceUid, TRACE_BY_ID_QUERY_REF_ID),
+          addTraceLogsLinksTransformation(() => this.state.logsTarget, state.traceId),
+        ],
       }),
       ...state,
     });
 
     this.addActivationHandler(() => {
+      // Needed by both transformations and by the write back action, and only resolvable once the
+      // object is part of the scene tree.
+      this.setState({ logsTempoDatasourceUid: getDataSource(getTraceExplorationScene(this)) });
+
       const data = sceneGraph.getData(this);
 
       this._subs.add(
         data.subscribeToState((data) => {
           if (data.data?.state === LoadingState.Done) {
-            this.setState({
-              panel: this.getVizPanel().build(),
-            });
+            // Rebuilding the panel resets trace view interaction state, so only build it once.
+            if (!(this.state.panel instanceof VizPanel)) {
+              this.setState({
+                panel: this.getVizPanel().build(),
+              });
+            }
+
+            this.resolveLogsTarget(data.data.series ?? []);
           } else if (data.data?.state === LoadingState.Loading) {
             this.setState({
               panel: new LoadingStateScene({
@@ -115,8 +147,67 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
     });
   }
 
+  /**
+   * Works out where the logs for this trace live, once we know which services it touches.
+   *
+   * Runs once per trace: the result is cached and reprocessing the transformations emits another
+   * `Done` state, which would otherwise re-enter here.
+   */
+  private resolveLogsTarget(frames: DataFrame[]) {
+    const tempoDatasourceUid = this.state.logsTempoDatasourceUid;
+
+    if (this.logsResolutionStarted || !tempoDatasourceUid || !frames.length) {
+      return;
+    }
+
+    const serviceNames = getTraceServiceNames(frames);
+
+    if (!serviceNames.length) {
+      return;
+    }
+
+    this.logsResolutionStarted = true;
+
+    const timeRange = sceneGraph.getTimeRange(this).state.value;
+    const bounds = getTraceTimeBoundsMs(frames, {
+      fromMs: timeRange.from.valueOf(),
+      toMs: timeRange.to.valueOf(),
+    });
+
+    this.setState({ logsServiceNames: serviceNames, logsBounds: bounds });
+
+    resolveTraceLogsTarget({
+      tempoDatasourceUid,
+      traceId: this.state.traceId,
+      serviceNames,
+      bounds,
+    })
+      .then((logsTarget) => {
+        if (!logsTarget) {
+          return;
+        }
+
+        this.setState({ logsTarget });
+
+        // Only re-run the transformations when we are the ones adding span links. When the Tempo
+        // data source is configured, core already renders them and there is nothing to inject.
+        if (logsTarget.ownsSpanLinks) {
+          const data = sceneGraph.getData(this);
+
+          if (data instanceof SceneDataTransformer) {
+            data.reprocessTransformations();
+          }
+        }
+      })
+      .catch((error) => {
+        console.warn('Failed to resolve a logs target for the trace', error);
+      });
+  }
+
   private getVizPanel() {
-    const panel = PanelBuilders.traces().setHoverHeader(true);
+    const panel = PanelBuilders.traces()
+      .setHoverHeader(true)
+      .setHeaderActions(<TraceLogsActions model={this} />);
     if (this.state.spanId) {
       panel.setOption('focusedSpanId' as any, this.state.spanId as any);
     }

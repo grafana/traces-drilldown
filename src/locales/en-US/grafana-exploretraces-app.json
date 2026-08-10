@@ -283,5 +283,14 @@
       "subtitle": "Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.",
       "title": "RED metrics for traces"
     }
+  },
+  "traces-to-logs": {
+    "provenance-configured": "Configured on the Tempo data source: {{name}}",
+    "provenance-correlation": "From a correlation to {{name}}",
+    "provenance-detected": "Auto-detected in {{name}}. Trace to logs is not configured on the Tempo data source.",
+    "save-action": "Save to data source",
+    "save-tooltip": "Save this as the trace to logs configuration on the Tempo data source, so everyone in the org gets it without detection. You can refine it in the data source settings afterwards.",
+    "span-link-title": "Logs for this span",
+    "trace-link-title": "Logs for this trace"
   }
 }
