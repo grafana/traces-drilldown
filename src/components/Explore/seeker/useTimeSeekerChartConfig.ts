@@ -4,7 +4,6 @@ import { AxisPlacement, DrawStyle, UPlotConfigBuilder } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 import { getMetricColor } from './getMetricColor';
 import type uPlot from 'uplot';
-import { isUserSelection } from 'utils/utils';
 
 type InteractionMode = 'idle' | 'dragging' | 'panning' | 'programmatic';
 
@@ -100,20 +99,19 @@ export function useTimeSeekerChartConfig({
         return;
       }
 
-      if (!isUserSelection(u)) {
-        return;
+      const xDrag = Boolean(u.cursor?.drag?.x);
+      if (xDrag && u.select.left != null && u.select.width != null) {
+        const from = u.posToVal(u.select.left, 'x');
+        const to = u.posToVal(u.select.left + u.select.width, 'x');
+        const newRange: AbsoluteTimeRange = { from, to };
+        setTimelineRange(newRange);
+
+        if (!suppressNextTimeRangeUpdate.current) {
+          onChangeTimeRange(newRange);
+        }
+
+        suppressNextTimeRangeUpdate.current = false;
       }
-
-      const from = u.posToVal(u.select.left, 'x');
-      const to = u.posToVal(u.select.left + u.select.width, 'x');
-      const newRange: AbsoluteTimeRange = { from, to };
-      setTimelineRange(newRange);
-
-      if (!suppressNextTimeRangeUpdate.current) {
-        onChangeTimeRange(newRange);
-      }
-
-      suppressNextTimeRangeUpdate.current = false;
     });
 
     b.addHook('ready', (u: uPlot) => {
@@ -153,6 +151,7 @@ export function useTimeSeekerChartConfig({
       requestAnimationFrame(() => {
         const left = u.valToPos(timelineRange.from, 'x');
         const right = u.valToPos(timelineRange.to, 'x');
+        isProgrammaticSelect.current = true;
         u.setSelect({
           left,
           top: 0,

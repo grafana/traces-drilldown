@@ -11,7 +11,6 @@ import {
   SceneTimeRange,
   sceneUtils,
 } from '@grafana/scenes';
-import type uPlot from 'uplot';
 
 import { TraceExploration } from '../pages/Explore';
 import {
@@ -224,35 +223,3 @@ export const getOpenTrace = (scene: SceneObject) => {
     scene.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
   };
 };
-
-export function isDefined<T>(value: T): value is NonNullable<T> {
-  return value !== null && value !== undefined;
-}
-
-/**
- * Whether the current selection came from a real user x-drag rather than a programmatic change.
- * @param u - the uPlot instance.
- * @returns true if the selection was user-initiated.
- */
-export function isUserSelection(u: uPlot): boolean {
-  const xDrag = Boolean(u.cursor?.drag?.x);
-  const mouseEvent = u.cursor?.event instanceof MouseEvent;
-
-  if (!xDrag) {
-    return false;
-  }
-
-  if (!mouseEvent) {
-    return false;
-  }
-
-  if (!isDefined(u.select.left)) {
-    return false;
-  }
-
-  if (!u.select.width) {
-    return false;
-  }
-
-  return true;
-}
