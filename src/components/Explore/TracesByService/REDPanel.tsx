@@ -40,9 +40,7 @@ import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
-import { useServiceName } from 'pages/Explore/TraceExploration';
 import { locationService } from '@grafana/runtime';
-import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 import { TIME_SEEKER_FEATURE_FLAG_KEY, useFlagTracesDrilldownTimeSeeker } from 'featureFlags/featureFlags';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 
@@ -270,8 +268,6 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const { value: metric } = getMetricVariable(model).useState();
     const traceExploration = getTraceExplorationScene(model);
     const styles = useStyles2(getStyles);
-    const serviceName = useServiceName(model);
-    const timeRange = sceneGraph.getTimeRange(model).useState();
     const { timeSeekerScene } = traceExploration.useState();
     const timeSeekerEnabled = useFlagTracesDrilldownTimeSeeker();
     const embedded = traceExploration.state.embedded === true;
@@ -351,14 +347,6 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
         )}
         {showTimeSeeker && timeSeekerScene != null && <timeSeekerScene.Component model={timeSeekerScene} />}
         <panel.Component model={panel} />
-        {!embeddedMini && serviceName && (
-          <InsightsTimelineWidget
-            serviceName={serviceName}
-            metric={metric as MetricFunction}
-            startTime={String(timeRange.value.from.valueOf())}
-            endTime={String(timeRange.value.to.valueOf())}
-          />
-        )}
       </div>
     );
   };
