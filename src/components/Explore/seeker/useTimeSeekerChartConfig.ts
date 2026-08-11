@@ -12,7 +12,7 @@ type UPlotWithCleanupHandlers = uPlot & {
   _cleanupBottomAxisPan?: () => void;
 };
 
-export interface UseTimeSeekerChartConfigParams {
+interface UseTimeSeekerChartConfigParams {
   theme: GrafanaTheme2;
   metric?: MetricFunction;
   visibleRange: AbsoluteTimeRange;
