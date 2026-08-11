@@ -164,7 +164,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
     useEffect(() => {
       if (!groupBy || groupBy === 'All' || groupBy === '') {
-        model.onChange(favoriteAttributes[0]);
+        model.onChange(favoriteAttributes[0], true);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupBy]);
@@ -247,11 +247,7 @@ function BreakdownCreateAlertModalBridge({
   }
 
   return (
-    <ModalComponent
-      panel={payload.panel}
-      range={payload.range}
-      onDismiss={() => scene.clearBreakdownCreateAlert()}
-    />
+    <ModalComponent panel={payload.panel} range={payload.range} onDismiss={() => scene.clearBreakdownCreateAlert()} />
   );
 }
 
