@@ -2,6 +2,6 @@
   "features": {
     "bundleGrafanaUI": false,
     "useReactRouterV6": true,
-    "useExperimentalRspack": false
+    "useExperimentalRspack": true
   }
 }
