@@ -3,8 +3,8 @@ import { AbsoluteTimeRange, GrafanaTheme2 } from '@grafana/data';
 import { AxisPlacement, DrawStyle, UPlotConfigBuilder } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 import { getMetricColor } from './getMetricColor';
+import { areRangesEqual } from './rangeUtils';
 import type uPlot from 'uplot';
-import { isUserSelection } from 'utils/utils';
 
 type InteractionMode = 'idle' | 'dragging' | 'panning' | 'programmatic';
 
@@ -13,7 +13,7 @@ type UPlotWithCleanupHandlers = uPlot & {
   _cleanupBottomAxisPan?: () => void;
 };
 
-export interface UseTimeSeekerChartConfigParams {
+interface UseTimeSeekerChartConfigParams {
   theme: GrafanaTheme2;
   metric?: MetricFunction;
   visibleRange: AbsoluteTimeRange;
@@ -100,20 +100,23 @@ export function useTimeSeekerChartConfig({
         return;
       }
 
-      if (!isUserSelection(u)) {
-        return;
+      const xDrag = Boolean(u.cursor?.drag?.x);
+      if (xDrag && u.select.left != null && u.select.width > 0) {
+        const from = u.posToVal(u.select.left, 'x');
+        const to = u.posToVal(u.select.left + u.select.width, 'x');
+        const newRange: AbsoluteTimeRange = { from, to };
+
+        // Skip programmatic redraws of the current range (init brush) so refresh keeps a relative range relative (#815).
+        if (!areRangesEqual(newRange, { from: timelineRange.from, to: timelineRange.to })) {
+          setTimelineRange(newRange);
+
+          if (!suppressNextTimeRangeUpdate.current) {
+            onChangeTimeRange(newRange);
+          }
+        }
+
+        suppressNextTimeRangeUpdate.current = false;
       }
-
-      const from = u.posToVal(u.select.left, 'x');
-      const to = u.posToVal(u.select.left + u.select.width, 'x');
-      const newRange: AbsoluteTimeRange = { from, to };
-      setTimelineRange(newRange);
-
-      if (!suppressNextTimeRangeUpdate.current) {
-        onChangeTimeRange(newRange);
-      }
-
-      suppressNextTimeRangeUpdate.current = false;
     });
 
     b.addHook('ready', (u: uPlot) => {
