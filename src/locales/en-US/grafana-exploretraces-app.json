@@ -115,9 +115,6 @@
     "include": "Include",
     "title": "Highest difference"
   },
-  "insights-timeline-widget": {
-    "label": "Insights"
-  },
   "inspect-attribute-action": {
     "inspect": "Inspect"
   },
