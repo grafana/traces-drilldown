@@ -14,6 +14,7 @@ import { UPlotConfigBuilder, useTheme2 } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 import { DragStyles } from './types';
 import { useTimeSeekerChartConfig } from './useTimeSeekerChartConfig';
+import { areRangesEqual } from './rangeUtils';
 
 // ============================================================================
 // Constants
@@ -21,8 +22,6 @@ import { useTimeSeekerChartConfig } from './useTimeSeekerChartConfig';
 
 /** Factor to expand selection into visible context window (8x the selection span) */
 const CONTEXT_WINDOW_ZOOM_FACTOR = 8;
-/** Tolerance in ms for detecting same time range */
-const TIME_RANGE_TOLERANCE_MS = 1000;
 /** Factor for pan operations (25% of visible span) */
 const PAN_FACTOR = 0.25;
 /** Minimum width in pixels for selection handles */
@@ -118,14 +117,6 @@ function computeContextWindowFromSelection(from: number, to: number, maxTime: nu
   }
 
   return { from: newFrom, to: newTo };
-}
-
-function areRangesEqual(
-  a: { from: number; to: number },
-  b: { from: number; to: number },
-  tolerance = TIME_RANGE_TOLERANCE_MS
-): boolean {
-  return Math.abs(a.from - b.from) < tolerance && Math.abs(a.to - b.to) < tolerance;
 }
 
 /**
