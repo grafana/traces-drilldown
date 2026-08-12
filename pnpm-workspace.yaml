@@ -11,6 +11,8 @@ minimumReleaseAge: 7200
 # Temporary: fast-uri@4.1.2 is ~2h under the age gate; remove after it matures.
 minimumReleaseAgeExclude:
   - fast-uri@4.1.2
+  # Renovate security update: js-yaml@4.3.1
+  - js-yaml@4.3.1
 # Fail install if a package's trust evidence is weaker than an earlier release (e.g. lost trusted publisher).
 trustPolicy: no-downgrade
 # Transitive deps must come from the registry/workspace; block git/tarball URLs except on direct deps.
@@ -39,7 +41,7 @@ overrides:
   uuid: ^14.0.0
   js-cookie: ^3.0.7
   ws: 8.21.0
-  js-yaml: 4.3.0
+  js-yaml: 4.3.1
   '@opentelemetry/core': 2.8.0
   qs: ^6.15.2
   brace-expansion@^1: 1.1.18
