@@ -43,6 +43,7 @@ import { exemplarsTransformations, removeExemplarsTransformation } from '../../.
 import { locationService } from '@grafana/runtime';
 import { TIME_SEEKER_FEATURE_FLAG_KEY, useFlagTracesDrilldownTimeSeeker } from 'featureFlags/featureFlags';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
+import { getTestIdFromMetric } from 'utils/testIds';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -323,7 +324,11 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     };
 
     return (
-      <div className={styles.container} onClick={() => selectMetric(embeddedMini)}>
+      <div
+        className={styles.container}
+        onClick={() => selectMetric(embeddedMini)}
+        data-testid={getTestIdFromMetric(metric)}
+      >
         {!embeddedMini && (
           <div className={styles.headerContainer}>
             <div className={styles.titleContainer}>

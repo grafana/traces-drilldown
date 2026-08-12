@@ -20,13 +20,19 @@ import { getMetricsTempoQuery } from '../queries/generateMetricsQuery';
 import { StepQueryRunner } from '../queries/StepQueryRunner';
 import { RadioButtonList, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
-import { fieldHasEmptyValues, getOpenTrace, getTraceExplorationScene, getUrlForExploration } from '../../../utils/utils';
+import {
+  fieldHasEmptyValues,
+  getOpenTrace,
+  getTraceExplorationScene,
+  getUrlForExploration,
+} from '../../../utils/utils';
 import { MINI_PANEL_HEIGHT } from './TracesByServiceScene';
 import { buildHistogramQuery } from '../queries/histogram';
 import { histogramPanelConfig } from '../panels/histogram';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 import { StreamingIndicator } from '../StreamingIndicator';
+import { getTestIdFromMetric } from 'utils/testIds';
 
 export interface MiniREDPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -94,7 +100,11 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
         $data: new StepQueryRunner({
           maxDataPoints: this.state.metric === 'duration' ? 24 : 64,
           datasource: explorationDS,
-          queries: [this.state.metric === 'duration' ? buildHistogramQuery() : getMetricsTempoQuery({ metric: this.state.metric, sample: true })],
+          queries: [
+            this.state.metric === 'duration'
+              ? buildHistogramQuery()
+              : getMetricsTempoQuery({ metric: this.state.metric, sample: true }),
+          ],
         }),
         transformations:
           this.state.metric === 'duration' || this.state.embeddedMini
@@ -158,7 +168,11 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
     }
 
     return (
-      <div className={css([styles.container, styles.clickable])} onClick={() => selectMetric(embeddedMini)}>
+      <div
+        className={css([styles.container, styles.clickable])}
+        onClick={() => selectMetric(embeddedMini)}
+        data-testid={getTestIdFromMetric(model.state.metric)}
+      >
         {!embeddedMini && (
           <div className={styles.headerWrapper}>
             <RadioButtonList
