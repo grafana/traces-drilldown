@@ -121,9 +121,13 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
   public onChange = (value: string, ignore?: boolean) => {
     const variable = getGroupByVariable(this);
-    if (variable.getValueText() !== value) {
-      variable.changeValueTo(value, undefined, !ignore);
+    if (variable.getValueText() === value) {
+      return;
+    }
 
+    variable.changeValueTo(value, undefined, !ignore);
+
+    if (!ignore) {
       reportAppInteraction(
         USER_EVENTS_PAGES.analyse_traces,
         USER_EVENTS_ACTIONS.analyse_traces.breakdown_group_by_changed,

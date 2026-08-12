@@ -32,7 +32,7 @@ import { histogramPanelConfig } from '../panels/histogram';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
 import { StreamingIndicator } from '../StreamingIndicator';
-import { testIds } from 'utils/testIds';
+import { getTestIdFromMetric } from 'utils/testIds';
 
 export interface MiniREDPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -170,8 +170,8 @@ export class MiniREDPanel extends SceneObjectBase<MiniREDPanelState> {
     return (
       <div
         className={css([styles.container, styles.clickable])}
-        onClick={(e) => selectMetric(embeddedMini)}
-        data-testid={testIds.redPanel(String(model.state.metric))}
+        onClick={() => selectMetric(embeddedMini)}
+        data-testid={getTestIdFromMetric(model.state.metric)}
       >
         {!embeddedMini && (
           <div className={styles.headerWrapper}>
