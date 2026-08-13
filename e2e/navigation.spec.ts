@@ -1,7 +1,9 @@
 import { expect, test } from '@grafana/plugin-e2e';
 import { ExplorePage } from './fixtures/explore';
-import { getTestIdFromMetric, testIds } from '../src/utils/testIds';
+import { getTestIdFromAttribute, getTestIdFromMetric, testIds } from '../src/utils/testIds';
 import type { Page } from '@playwright/test';
+import { Components } from '@grafana/e2e-selectors';
+import { AttributeItem } from '../src/types';
 
 test.describe('navigating app', () => {
   let explorePage: ExplorePage;
@@ -36,17 +38,29 @@ test.describe('ensure back button works for main actions', () => {
   });
 
   test('clicking on errors panel, browser back and browser forward should work as expected', async ({ page }) => {
-    await assertBackAndForwardNavigationWorks(page, 'rate', 'errors');
+    await assertBackAndForwardNavigationWorksForMetrics(page, 'rate', 'errors');
   });
 
   test('clicking on duration panel, browser back and browser forward should work as expected', async ({ page }) => {
-    await assertBackAndForwardNavigationWorks(page, 'rate', 'duration');
+    await assertBackAndForwardNavigationWorksForMetrics(page, 'rate', 'duration');
+  });
+
+  test('clicking on an include button, browser back and browser forward should work as expected', async ({ page }) => {
+    await assertBackAndForwardNavigationWorksForFilters(page, 'include');
+  });
+
+  test('clicking on an exclude button, browser back and browser forward should work as expected', async ({ page }) => {
+    await assertBackAndForwardNavigationWorksForFilters(page, 'exclude');
   });
 });
 
 type MetricType = 'rate' | 'errors' | 'duration';
 
-async function assertBackAndForwardNavigationWorks(page: Page, startMetric: MetricType, switchToMetric: MetricType) {
+async function assertBackAndForwardNavigationWorksForMetrics(
+  page: Page,
+  startMetric: MetricType,
+  switchToMetric: MetricType
+) {
   const explorePage = new ExplorePage(page);
   await explorePage.assertNotLoading();
 
@@ -98,4 +112,90 @@ async function assertUnCheckedForREDPanelRadio(page: Page, metric: MetricType) {
 
 async function clickOnREDPanelRadio(page: Page, metric: MetricType) {
   await page.getByTestId(getTestIdFromMetric(metric)).getByRole('radio').first().click();
+}
+
+async function assertBackAndForwardNavigationWorksForFilters(page: Page, toBeClicked: 'include' | 'exclude') {
+  const explorePage = new ExplorePage(page);
+  const serviceNameAttribute: AttributeItem = {
+    label: 'service.name',
+    scope: 'Resource',
+    value: 'resource.service.name',
+  };
+  const spanNameAttribute: AttributeItem = { label: 'name', scope: 'Span', value: 'name' };
+  const serviceNameTestId = getTestIdFromAttribute(serviceNameAttribute);
+  const spanNameTestId = getTestIdFromAttribute(spanNameAttribute);
+
+  await expect(page.getByRole('button', { name: toBeClicked }).first()).toBeVisible();
+
+  await assertAdHocFilterEmpty(page, serviceNameAttribute);
+  await assertSelectedLabel(page, 'resource.service.name');
+  await assertSelectedAttributes(page, serviceNameTestId, spanNameTestId);
+  await explorePage.assertNotLoading();
+  const initialPanelTexts = await getPanelTexts(page);
+  expect(initialPanelTexts.length).toBeGreaterThan(0);
+
+  await page.getByRole('button', { name: toBeClicked }).first().click();
+  await explorePage.assertNotLoading();
+
+  await assertAdHocFilterPopulated(page, serviceNameAttribute);
+  await assertSelectedLabel(page, 'name');
+  await assertSelectedAttributes(page, spanNameTestId, serviceNameTestId);
+  const afterClickPanelTexts = await getPanelTexts(page);
+  expect(afterClickPanelTexts.length).toBeGreaterThan(0);
+
+  await page.goBack();
+  await explorePage.assertNotLoading();
+
+  await assertAdHocFilterEmpty(page, serviceNameAttribute);
+  await assertSelectedLabel(page, 'resource.service.name');
+  await assertSelectedAttributes(page, serviceNameTestId, spanNameTestId);
+  await assertPanelTexts(page, initialPanelTexts);
+
+  await page.goForward();
+  await explorePage.assertNotLoading();
+
+  await assertAdHocFilterPopulated(page, serviceNameAttribute);
+  await assertSelectedLabel(page, 'name');
+  await assertSelectedAttributes(page, spanNameTestId, serviceNameTestId);
+  await assertPanelTexts(page, afterClickPanelTexts);
+}
+
+function getFilterNameFromAttribute(attribute: AttributeItem): string {
+  return `Edit filter with key ${attribute.value}`;
+}
+
+async function assertAdHocFilterEmpty(page: Page, attribute: AttributeItem) {
+  const name = getFilterNameFromAttribute(attribute);
+
+  await expect(page.getByRole('button', { name })).not.toBeVisible();
+  await expect(page.getByRole('button', { name })).toHaveCount(0);
+}
+
+async function assertAdHocFilterPopulated(page: Page, attribute: AttributeItem) {
+  const name = getFilterNameFromAttribute(attribute);
+
+  await expect(page.getByRole('button', { name })).toBeVisible();
+  await expect(page.getByRole('button', { name })).toHaveCount(1);
+}
+
+async function assertSelectedLabel(page: Page, label: string) {
+  await expect(page.getByText(`Selected: ${label}`)).toBeVisible();
+}
+
+async function assertSelectedAttributes(page: Page, selectedId: string, notSelectedId: string) {
+  await expect(page.getByTestId(selectedId)).toBeVisible();
+  await expect(page.getByTestId(selectedId)).toHaveAttribute('data-selected', 'true');
+  await expect(page.getByTestId(notSelectedId)).toBeVisible();
+  await expect(page.getByTestId(notSelectedId)).toHaveAttribute('data-selected', 'false');
+}
+
+async function getPanelTexts(page: Page): Promise<string[]> {
+  const panels = page.getByTestId(Components.Panels.Panel.headerContainer);
+  // make sure at least one panel is visible
+  await expect(panels.first()).toBeVisible();
+  return panels.allTextContents();
+}
+
+async function assertPanelTexts(page: Page, expectedPanelTexts: string[]) {
+  await expect.poll(() => getPanelTexts(page)).toEqual(expectedPanelTexts);
 }
