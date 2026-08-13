@@ -43,9 +43,10 @@ function drilldownUrl(path: string) {
 
 describe('TRACE_RESOURCE_ATTRIBUTE_LINKS', () => {
   it.each(TRACE_RESOURCE_ATTRIBUTE_LINKS)(
-    'registers a unique TraceView category for $attributeName',
+    'registers a unique group for $attributeName',
     ({ attributeName }) => {
       expect(TRACE_RESOURCE_ATTRIBUTE_LINKS.filter((c) => c.attributeName === attributeName)).toHaveLength(1);
+      expect(linkFor(attributeName).group).toEqual({ name: attributeName });
     }
   );
 
@@ -66,8 +67,7 @@ describe('makeTraceResourceAttributeLink', () => {
   it('registers TraceView metadata', () => {
     const link = linkFor('service.name');
 
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- TraceView matches rows via category
-    expect(link.category).toBe('service.name');
+    expect(link.group).toEqual({ name: 'service.name' });
     expect(link.targets).toEqual(['grafana/traceview/resource-attributes']);
     expect(link.title).toBe(RESOURCE_ATTRIBUTE_LINK_LABEL);
     expect(link.description).toBe(RESOURCE_ATTRIBUTE_LINK_LABEL);

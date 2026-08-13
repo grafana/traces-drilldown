@@ -87,9 +87,12 @@ function attrValue(
   return attributes?.[name]?.[0]?.trim() || undefined;
 }
 
-/** filterNames — TraceQL filter keys; defaults to the row attribute */
+/** filterNames — TraceQL filter keys; defaults to the row attribute when omitted or empty */
 function filterNames(config: TraceResourceAttributeLinkConfig): TraceResourceAttributeName[] {
-  return [...('filters' in config ? config.filters : [config.attributeName])];
+  if ('filters' in config && config.filters.length > 0) {
+    return [...config.filters];
+  }
+  return [config.attributeName];
 }
 
 /** makeTraceResourceAttributeLink — TraceView link (`category === attribute.key`) that opens Traces Drilldown */
@@ -102,8 +105,9 @@ export function makeTraceResourceAttributeLink(
   return {
     targets: [PluginExtensionPoints.TraceViewResourceAttributes],
     ...linkCopy,
-    // TraceView matches the link to an attribute row via category === attribute.key
+    // TraceView matches a row via category === key today or group.name
     category: config.attributeName,
+    group: { name: config.attributeName },
     path: EXPLORATIONS_ROUTE,
     configure: (context) => {
       const values: Record<string, string> = {};
