@@ -42,10 +42,12 @@ function drilldownUrl(path: string) {
 }
 
 describe('TRACE_RESOURCE_ATTRIBUTE_LINKS', () => {
-  it('registers a unique TraceView category per attribute', () => {
-    const categories = TRACE_RESOURCE_ATTRIBUTE_LINKS.map((c) => c.attributeName);
-    expect(new Set(categories).size).toBe(categories.length);
-  });
+  it.each(TRACE_RESOURCE_ATTRIBUTE_LINKS)(
+    'registers a unique TraceView category for $attributeName',
+    ({ attributeName }) => {
+      expect(TRACE_RESOURCE_ATTRIBUTE_LINKS.filter((c) => c.attributeName === attributeName)).toHaveLength(1);
+    }
+  );
 
   it('declares matching title and description in plugin.json', () => {
     expect(pluginJson.extensions?.addedLinks).toEqual(
