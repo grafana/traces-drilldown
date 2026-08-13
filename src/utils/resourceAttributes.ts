@@ -7,17 +7,6 @@ import {
 
 import { EXPLORATIONS_ROUTE, RESOURCE_ATTR, VAR_DATASOURCE, VAR_FILTERS, VAR_PRIMARY_SIGNAL } from './shared';
 
-export type TraceResourceAttributeLinkConfig = {
-  /** TraceView row key (`link.category === attribute.key`). Always required. */
-  attributeName: string;
-  /**
-   * Resource attributes applied as TraceQL filters.
-   * Defaults to `[attributeName]`. Omit the row key when a secondary attribute
-   * should open a parent entity (e.g. container.name → k8s.deployment.name).
-   */
-  filters?: string[];
-};
-
 const HOST_OS_PROCESS_TELEMETRY_ATTRIBUTES = [
   'host.arch',
   'os.type',
@@ -45,19 +34,19 @@ const HOST_OS_PROCESS_TELEMETRY_ATTRIBUTES = [
 ] as const;
 
 /** withService — filter service.name plus this attribute */
-const withService = (attributeName: string): TraceResourceAttributeLinkConfig => ({
+const withService = <T extends string>(attributeName: T) => ({
   attributeName,
-  filters: ['service.name', attributeName],
+  filters: ['service.name', attributeName] as const,
 });
 
 /** asEntity — show the link on this row, filter the parent entity */
-const asEntity = (attributeName: string, entity: string): TraceResourceAttributeLinkConfig => ({
+const asEntity = <T extends string, E extends string>(attributeName: T, entity: E) => ({
   attributeName,
-  filters: [entity],
+  filters: [entity] as const,
 });
 
 /** TRACE_RESOURCE_ATTRIBUTE_LINKS — rows with no helper filter only that attribute */
-export const TRACE_RESOURCE_ATTRIBUTE_LINKS: TraceResourceAttributeLinkConfig[] = [
+export const TRACE_RESOURCE_ATTRIBUTE_LINKS = [
   { attributeName: 'service.name' },
   { attributeName: 'service.namespace' },
   withService('service.version'),
@@ -75,7 +64,11 @@ export const TRACE_RESOURCE_ATTRIBUTE_LINKS: TraceResourceAttributeLinkConfig[] 
   asEntity('k8s.pod.ip', 'k8s.pod.name'),
   asEntity('k8s.pod.start_time', 'k8s.pod.name'),
   ...HOST_OS_PROCESS_TELEMETRY_ATTRIBUTES.map((attributeName) => ({ attributeName })),
-];
+] as const;
+
+/** Closed set of OTel resource attribute keys we register as TraceView rows. */
+export type TraceResourceAttributeName = (typeof TRACE_RESOURCE_ATTRIBUTE_LINKS)[number]['attributeName'];
+export type TraceResourceAttributeLinkConfig = (typeof TRACE_RESOURCE_ATTRIBUTE_LINKS)[number];
 
 /** Visible label in TraceView (menu uses description, then title). */
 export const RESOURCE_ATTRIBUTE_LINK_LABEL = 'Traces Drilldown';
@@ -87,13 +80,16 @@ const linkCopy = {
   icon: RESOURCE_ATTRIBUTE_LINK_ICON,
 };
 
-function attrValue(attributes: Record<string, string[]> | undefined, name: string): string | undefined {
+function attrValue(
+  attributes: Record<string, string[]> | undefined,
+  name: TraceResourceAttributeName
+): string | undefined {
   return attributes?.[name]?.[0]?.trim() || undefined;
 }
 
 /** filterNames — TraceQL filter keys; defaults to the row attribute */
-function filterNames(config: TraceResourceAttributeLinkConfig): string[] {
-  return config.filters ?? [config.attributeName];
+function filterNames(config: TraceResourceAttributeLinkConfig): TraceResourceAttributeName[] {
+  return [...('filters' in config ? config.filters : [config.attributeName])];
 }
 
 /** makeTraceResourceAttributeLink — TraceView link (`category === attribute.key`) that opens Traces Drilldown */

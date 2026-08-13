@@ -6,6 +6,7 @@ import {
   RESOURCE_ATTRIBUTE_LINK_ICON,
   RESOURCE_ATTRIBUTE_LINK_LABEL,
   TRACE_RESOURCE_ATTRIBUTE_LINKS,
+  type TraceResourceAttributeName,
 } from './resourceAttributes';
 
 const timeRange: AbsoluteTimeRange = { from: 1000, to: 2000 };
@@ -21,7 +22,7 @@ const context: PluginExtensionResourceAttributesContext = {
   timeRange,
 };
 
-function linkFor(attributeName: string) {
+function linkFor(attributeName: TraceResourceAttributeName) {
   const config = TRACE_RESOURCE_ATTRIBUTE_LINKS.find((c) => c.attributeName === attributeName);
   if (!config) {
     throw new Error(`Missing TRACE_RESOURCE_ATTRIBUTE_LINKS entry for ${attributeName}`);
@@ -29,7 +30,10 @@ function linkFor(attributeName: string) {
   return makeTraceResourceAttributeLink(config);
 }
 
-function configure(attributeName: string, overrides?: Partial<PluginExtensionResourceAttributesContext>) {
+function configure(
+  attributeName: TraceResourceAttributeName,
+  overrides?: Partial<PluginExtensionResourceAttributesContext>
+) {
   return linkFor(attributeName).configure?.({ ...context, ...overrides });
 }
 
