@@ -6,6 +6,7 @@ import { lt } from 'semver';
 import { EmbeddedTraceExplorationState, OpenInExploreTracesButtonProps } from 'exposedComponents/types';
 import { SuspendedEmbeddedTraceExploration, SuspendedOpenInExploreTracesButton } from 'exposedComponents';
 import { linkConfigs } from 'utils/links';
+import { makeTraceResourceAttributeLink, TRACE_RESOURCE_ATTRIBUTE_LINKS } from 'utils/resourceAttributes';
 import { JsonData } from './components/AppConfig/AppConfig';
 import pluginJson from './plugin.json';
 
@@ -46,4 +47,8 @@ export const plugin = new AppPlugin<JsonData>()
 
 for (const linkConfig of linkConfigs) {
   plugin.addLink(linkConfig);
+}
+
+for (const config of TRACE_RESOURCE_ATTRIBUTE_LINKS) {
+  plugin.addLink(makeTraceResourceAttributeLink(config));
 }
