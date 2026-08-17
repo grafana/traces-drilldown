@@ -213,7 +213,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
             <AttributesSidebar
               options={getAttributesAsOptions(attributes ?? [])}
               selected={groupBy}
-              onAttributeChange={(attribute) => model.onChange(attribute ?? '')}
+              onAttributeChange={(attribute, ignore) => model.onChange(attribute ?? '', ignore)}
               model={model}
               showFavorites={true}
             />
