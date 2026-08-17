@@ -1,4 +1,5 @@
 import { VariableValue } from '@grafana/scenes';
+import { AttributeItem } from '../types';
 
 export const testIds = {
   emptyState: 'data-testid empty-state',
@@ -21,4 +22,11 @@ export function getTestIdFromMetric(metric: VariableValue | string): string {
   }
 
   return 'data-testid unknown-panel';
+}
+
+export function getTestIdFromAttribute(attribute: AttributeItem): string {
+  if (!attribute?.value) {
+    return 'data-testid unknown-attribute-item';
+  }
+  return `data-testid ${attribute.value}-attribute-item`;
 }

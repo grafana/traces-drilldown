@@ -8,8 +8,8 @@ import { MIN_PANEL_HEIGHT, RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'u
 import { getFiltersVariable } from 'utils/utils';
 import { SceneObject } from '@grafana/scenes';
 import { useFavoriteAttributes } from 'hooks';
-
-type ScopeType = 'All' | 'Resource' | 'Span' | 'Favorites';
+import { AttributeItem, ScopeType } from '../../types';
+import { getTestIdFromAttribute } from 'utils/testIds';
 
 interface BaseAttributesSidebarProps {
   /** Array of available attribute options */
@@ -27,7 +27,7 @@ interface SingleAttributesSidebarProps extends BaseAttributesSidebarProps {
   /** Currently selected attribute value(s) - string for single mode, string[] for multi mode */
   selected?: string;
   /** Callback when attribute selection changes - receives string | undefined for single mode, string[] for multi mode */
-  onAttributeChange: (attribute: string | undefined) => void;
+  onAttributeChange: (attribute: string | undefined, ignore?: boolean) => void;
 
   isMulti?: false;
 }
@@ -36,15 +36,9 @@ interface MultiAttributesSidebarProps extends BaseAttributesSidebarProps {
   /** Currently selected attribute value(s) - string for single mode, string[] for multi mode */
   selected?: string[];
   /** Callback when attribute selection changes - receives string | undefined for single mode, string[] for multi mode */
-  onAttributeChange: (attribute: string[] | undefined) => void;
+  onAttributeChange: (attribute: string[] | undefined, ignore?: boolean) => void;
 
   isMulti: true;
-}
-
-interface AttributeItem {
-  label: string;
-  value: string;
-  scope: ScopeType;
 }
 
 export function AttributesSidebar({
@@ -182,7 +176,7 @@ export function AttributesSidebar({
       const nextIndex = currentIndex + 1;
 
       if (nextIndex < filteredAttributes.length) {
-        onAttributeChange(filteredAttributes[nextIndex].value);
+        onAttributeChange(filteredAttributes[nextIndex].value, true);
         return;
       }
     }
@@ -428,6 +422,8 @@ export function AttributesSidebar({
                   onDragOver={(e) => handleDragOver(e, index)}
                   onDragLeave={handleItemDragLeave}
                   onDrop={() => handleDrop(index)}
+                  data-testid={getTestIdFromAttribute(attribute)}
+                  data-selected={isSelected}
                 >
                   {isMulti && (
                     <Checkbox

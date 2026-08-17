@@ -1,4 +1,5 @@
 import { DataFrame, FieldType } from '@grafana/data';
+import { CustomVariable } from '@grafana/scenes';
 
 import {
   AttributesComparisonScene,
@@ -6,6 +7,21 @@ import {
   normalizeTraceQlLabelString,
   sumNumberFieldValues,
 } from './AttributesComparisonScene';
+import { getGroupByVariable } from 'utils/utils';
+import { reportAppInteraction } from 'utils/analytics';
+
+jest.mock('utils/utils', () => ({
+  getGroupByVariable: jest.fn(),
+  getAttributesAsOptions: jest.fn(),
+  getPrimarySignalVariable: jest.fn(),
+  getTraceByServiceScene: jest.fn(),
+  getTraceExplorationScene: jest.fn(),
+}));
+
+jest.mock('utils/analytics', () => ({
+  ...jest.requireActual('utils/analytics'),
+  reportAppInteraction: jest.fn(),
+}));
 
 describe('hasSelectionValues', () => {
   it('returns true when Selection field has at least one value > 0', () => {
@@ -170,6 +186,39 @@ describe('AttributesComparisonScene', () => {
       (Storage.prototype.getItem as jest.Mock).mockReturnValue('true');
       new AttributesComparisonScene({});
       expect(Storage.prototype.getItem).toHaveBeenCalledWith('grafana.drilldown.traces.hideBaselineOnly');
+    });
+  });
+
+  describe('onChange', () => {
+    let mockVariable: { getValueText: jest.Mock; changeValueTo: jest.Mock };
+    let scene: AttributesComparisonScene;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+
+      mockVariable = {
+        getValueText: jest.fn(() => ''),
+        changeValueTo: jest.fn(),
+      };
+      jest.mocked(getGroupByVariable).mockReturnValue(mockVariable as unknown as CustomVariable);
+
+      scene = new AttributesComparisonScene({});
+    });
+
+    it('should replace state and skip analytics when ignore is true', () => {
+      scene.onChange('span.http.method', true);
+
+      expect(mockVariable.changeValueTo).toHaveBeenCalledWith('span.http.method', undefined, false);
+      expect(reportAppInteraction).not.toHaveBeenCalled();
+    });
+
+    it('should push state and report analytics when ignore is omitted', () => {
+      scene.onChange('span.http.method');
+
+      expect(mockVariable.changeValueTo).toHaveBeenCalledWith('span.http.method', undefined, true);
+      expect(reportAppInteraction).toHaveBeenCalledWith('analyse_traces', 'select_attribute_in_comparison_clicked', {
+        value: 'span.http.method',
+      });
     });
   });
 });

@@ -67,10 +67,19 @@ export type SearchResponse = {
   traces: TraceSearchMetadata[];
   metrics: SearchMetrics;
 };
+
 export interface TempoDatasource {
   traceQuery?: {
     timeShiftEnabled?: boolean;
     spanStartTimeShift?: string;
     spanEndTimeShift?: string;
   };
+}
+
+export type ScopeType = 'All' | 'Resource' | 'Span' | 'Favorites';
+
+export interface AttributeItem {
+  label: string;
+  value: string;
+  scope: ScopeType;
 }

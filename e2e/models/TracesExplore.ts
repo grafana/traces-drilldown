@@ -4,6 +4,7 @@ import { GrafanaPage, NavigateOptions, PluginTestCtx } from '@grafana/plugin-e2e
 import pluginJson from '../../src/plugin.json';
 import { getTestIdFromMetric, testIds } from '../../src/utils/testIds';
 import { MetricFunction } from '../../src/utils/shared';
+import { AttributeItem } from '../../src/types';
 
 export class TracesExplorePage extends GrafanaPage {
   constructor(readonly ctx: PluginTestCtx) {
@@ -64,5 +65,34 @@ export class TracesExplorePage extends GrafanaPage {
 
   async clickOnREDPanelRadio(metric: MetricFunction) {
     await this.page.getByTestId(getTestIdFromMetric(metric)).getByRole('radio').first().click();
+  }
+
+  getFilterNameFromAttribute(attribute: AttributeItem): string {
+    return `Edit filter with key ${attribute.value}`;
+  }
+
+  async assertAdHocFilterEmpty(attribute: AttributeItem) {
+    const name = this.getFilterNameFromAttribute(attribute);
+
+    await expect(this.page.getByRole('button', { name })).not.toBeVisible();
+    await expect(this.page.getByRole('button', { name })).toHaveCount(0);
+  }
+
+  async assertAdHocFilterPopulated(attribute: AttributeItem) {
+    const name = this.getFilterNameFromAttribute(attribute);
+
+    await expect(this.page.getByRole('button', { name })).toBeVisible();
+    await expect(this.page.getByRole('button', { name })).toHaveCount(1);
+  }
+
+  async assertSelectedLabel(label: string) {
+    await expect(this.page.getByText(`Selected: ${label}`)).toBeVisible();
+  }
+
+  async assertSelectedAttributes(selectedId: string, notSelectedId: string) {
+    await expect(this.page.getByTestId(selectedId)).toBeVisible();
+    await expect(this.page.getByTestId(selectedId)).toHaveAttribute('data-selected', 'true');
+    await expect(this.page.getByTestId(notSelectedId)).toBeVisible();
+    await expect(this.page.getByTestId(notSelectedId)).toHaveAttribute('data-selected', 'false');
   }
 }
