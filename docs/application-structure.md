@@ -1,6 +1,6 @@
 # Application structure
 
-**What this file is for:** A **product map** (entry → exploration → trace view → exit/embed). For *why* the app exists, see `project-intent.md`. Use this doc when implementing or reviewing UI and URL behavior.
+**What this file is for:** A **product map** (entry → exploration → trace view → exit/embed). For _why_ the app exists, see `project-intent.md`. Use this doc when implementing or reviewing UI and URL behavior.
 
 ## Entry points
 
@@ -89,6 +89,16 @@ Users reach the trace view in several ways:
 The drawer content is a **full trace visualization** (the standard Grafana traces panel): the full trace with all spans, their timing, and service/operation hierarchy. When a `spanId` is present (from the list, exceptions, or URL), the view **focuses that span** so the user lands on the relevant part of the trace.
 
 While the trace is loading, a skeleton layout is shown. If the trace is not found (e.g. 404), an error message is shown; when the data source uses time-shifted search, the message can explain that the trace may exist outside the current time range. Other failures show a short error state. If no trace is selected, the drawer shows an empty state (“No trace selected”).
+
+### Logs for the trace
+
+Once the trace has loaded, the app works out where its logs live and, if it finds them, adds a **“Logs for this trace”** action to the panel header and a **“Logs for this span”** link to each span. Resolution is layered, in strict precedence order (`src/tracesToLogs/`):
+
+1. **Configured** — `tracesToLogsV2` on the Tempo data source. Authoritative. Core renders the span links for it, so the app adds none of its own; it only offers the trace-wide action.
+2. **Correlation** — a Grafana Correlation from the Tempo data source to a Loki data source, used to pick the target. Correlations are also rendered as span links, which Explore does for free but a plugin scene has to ask for.
+3. **Detected** — nothing is configured, so candidate Loki data sources (max 5) are probed with a series of known query shapes, and the first that returns log lines for the trace wins.
+
+The action is always on screen, in one of three states: a spinner while probing, a live link once a target is found, and a greyed out button with a tooltip explaining why when nothing matched. Span links only appear when a probe actually returned rows, so a dead link is never shown. The action's tooltip states which layer produced it. When the shape was detected and the user may write data sources, a **“Save to data source”** action persists it to `tracesToLogsV2`, promoting the guess into the deterministic org-wide path.
 
 ### Closing and context
 
