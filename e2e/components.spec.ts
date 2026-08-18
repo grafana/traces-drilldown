@@ -1,71 +1,69 @@
-import { expect, test } from '@grafana/plugin-e2e';
-import { ExplorePage } from './fixtures/explore';
+import { expect, test } from './index';
 
 test.describe('components', () => {
-  let explorePage: ExplorePage;
-
-  test.beforeEach(async ({ page }) => {
-    explorePage = new ExplorePage(page);
-    await explorePage.gotoExplorePage();
-    await explorePage.assertNotLoading();
-    await explorePage.waitForExploreReady(10000);
-  });
-
-  test.afterEach(async () => {
-    if (explorePage) {
-      await explorePage.unroute();
-    }
-  });
-
-  test('in header are visible', async ({ page }) => {
-    await expect(page.getByText('Data source')).toBeVisible();
-    await expect(page.getByTestId('plugin-info-button')).toBeVisible();
+  test('in header are visible', async ({ tracesExplorePage, selectors }) => {
+    await expect(tracesExplorePage.page.getByText('Data source')).toBeVisible();
+    await expect(tracesExplorePage.page.getByTestId('plugin-info-button')).toBeVisible();
     // Toolbar time picker only — seeker also mounts TimeRangeInput with the same test id
-    await expect(page.getByRole('button', { name: /Time range selected/ })).toBeVisible();
-    await expect(page.getByTestId('data-testid RefreshPicker run button')).toBeVisible();
-    await expect(page.getByTestId('data-testid RefreshPicker interval button')).toBeVisible();
+    await expect(tracesExplorePage.page.getByRole('button', { name: /Time range selected/ })).toBeVisible();
+    await expect(tracesExplorePage.getByGrafanaSelector(selectors.components.RefreshPicker.runButtonV2)).toBeVisible();
+    await expect(
+      tracesExplorePage.getByGrafanaSelector(selectors.components.RefreshPicker.intervalButtonV2)
+    ).toBeVisible();
   });
 
-  test('in filters bar are visible', async ({ page }) => {
-    await expect(page.getByText('Root spans')).toBeVisible();
-    await expect(page.getByText('All spans')).toBeVisible();
-    await expect(page.getByRole('combobox').first()).toBeVisible();
+  test('in filters bar are visible', async ({ tracesExplorePage }) => {
+    await expect(tracesExplorePage.page.getByText('Root spans')).toBeVisible();
+    await expect(tracesExplorePage.page.getByText('All spans')).toBeVisible();
+    await expect(tracesExplorePage.page.getByRole('combobox').first()).toBeVisible();
   });
 
-  test('for RED metrics are visible', async ({ page }) => {
-    await expect(page.getByText('Span rate')).toBeVisible({ timeout: 20000 });
-    await expect(page.getByTestId('data-testid Panel header ').locator('canvas')).toBeVisible({ timeout: 20000 });
-    await expect(page.getByTestId('data-testid Panel header Histogram by duration').locator('canvas')).toBeVisible({
+  test('for RED metrics are visible', async ({ tracesExplorePage, selectors }) => {
+    await expect(tracesExplorePage.page.getByText('Span rate')).toBeVisible({ timeout: 20000 });
+    await expect(
+      tracesExplorePage.getByGrafanaSelector(selectors.components.Panels.Panel.title('')).locator('canvas')
+    ).toBeVisible({
+      timeout: 20000,
+    });
+    await expect(
+      tracesExplorePage
+        .getByGrafanaSelector(selectors.components.Panels.Panel.title('Histogram by duration'))
+        .locator('canvas')
+    ).toBeVisible({
       timeout: 20000,
     });
   });
 
-  test('for tabs are visible', async ({ page }) => {
-    await expect(page.getByTestId('data-testid Tab Breakdown')).toBeVisible();
-    await expect(page.getByTestId('data-testid Tab Service structure')).toBeVisible();
-    await expect(page.getByTestId('data-testid Tab Comparison')).toBeVisible();
-    await expect(page.getByTestId('data-testid Tab Traces')).toBeVisible();
+  test('for tabs are visible', async ({ tracesExplorePage, selectors }) => {
+    await expect(tracesExplorePage.getByGrafanaSelector(selectors.components.Tab.title('Breakdown'))).toBeVisible();
+    await expect(
+      tracesExplorePage.getByGrafanaSelector(selectors.components.Tab.title('Service structure'))
+    ).toBeVisible();
+    await expect(tracesExplorePage.getByGrafanaSelector(selectors.components.Tab.title('Comparison'))).toBeVisible();
+    await expect(tracesExplorePage.getByGrafanaSelector(selectors.components.Tab.title('Traces'))).toBeVisible();
   });
 
-  test('for breakdown tab are visible', async ({ page }) => {
-    await expect(page.getByText('Attributes are ordered by')).toBeVisible();
-    await expect(page.getByRole('tab', { name: 'Favorites' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: 'All' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: 'Resource' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: 'Span' })).toBeVisible();
+  test('for breakdown tab are visible', async ({ tracesExplorePage }) => {
+    await expect(tracesExplorePage.page.getByText('Attributes are ordered by')).toBeVisible();
+    await expect(tracesExplorePage.page.getByRole('tab', { name: 'Favorites' })).toBeVisible();
+    await expect(tracesExplorePage.page.getByRole('tab', { name: 'All' })).toBeVisible();
+    await expect(tracesExplorePage.page.getByRole('tab', { name: 'Resource' })).toBeVisible();
+    await expect(tracesExplorePage.page.getByRole('tab', { name: 'Span' })).toBeVisible();
 
-    await expect(page.getByTitle('service.name')).toBeVisible();
+    await expect(tracesExplorePage.page.getByTitle('service.name')).toBeVisible();
 
-    await expect(page.getByText('View', { exact: true })).toBeVisible();
-    await expect(page.getByLabel('Single')).toBeVisible();
-    await expect(page.getByLabel('Grid')).toBeVisible();
-    await expect(page.getByLabel('Rows')).toBeVisible();
+    await expect(tracesExplorePage.page.getByText('View', { exact: true })).toBeVisible();
+    await expect(tracesExplorePage.page.getByLabel('Single')).toBeVisible();
+    await expect(tracesExplorePage.page.getByLabel('Grid')).toBeVisible();
+    await expect(tracesExplorePage.page.getByLabel('Rows')).toBeVisible();
 
     // Breakdown grid filter (ByFrameRepeater); debounced ~250ms before panels re-render.
-    const breakdownPanelSearch = page.locator('#searchFieldInput');
+    const breakdownPanelSearch = tracesExplorePage.page.locator('#searchFieldInput');
     await expect(breakdownPanelSearch).toBeVisible({ timeout: 20000 });
     await breakdownPanelSearch.fill('mythical');
-    await expect(page.locator('#trace-exploration').getByText('mythical-server', { exact: true })).toBeVisible({
+    await expect(
+      tracesExplorePage.page.locator('#trace-exploration').getByText('mythical-server', { exact: true })
+    ).toBeVisible({
       timeout: 20000,
     });
   });

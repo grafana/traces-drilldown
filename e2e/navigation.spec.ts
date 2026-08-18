@@ -1,120 +1,83 @@
-import { expect, test } from '@grafana/plugin-e2e';
-import type { Page } from '@playwright/test';
 import { AttributeItem } from '../src/types';
-import { ExplorePage } from './fixtures/explore';
-import { getTestIdFromAttribute, getTestIdFromMetric, testIds } from '../src/utils/testIds';
+import { MetricFunction } from '../src/utils/shared';
+import { getTestIdFromAttribute } from '../src/utils/testIds';
+import { expect, test } from './index';
+import { TracesExplorePage } from './models/TracesExplore';
 
 test.describe('navigating app', () => {
-  let explorePage: ExplorePage;
-
-  test.beforeEach(async ({ page }) => {
-    explorePage = new ExplorePage(page);
-    await explorePage.gotoExplorePage();
-    await explorePage.assertNotLoading();
-  });
-
-  test.afterEach(async () => {
-    await explorePage.unroute();
-  });
-
-  test('explore page should render successfully', async ({ page }) => {
-    await expect(page.getByText('Data source')).toBeVisible();
-    await explorePage.assertMissingData();
+  test('explore page should render successfully', async ({ tracesExplorePage }) => {
+    await tracesExplorePage.assertMissingData();
   });
 });
 
 test.describe('ensure back button works for main actions', () => {
-  let explorePage: ExplorePage;
-
-  test.beforeEach(async ({ page }) => {
-    explorePage = new ExplorePage(page);
-    await explorePage.gotoExplorePage();
-    await explorePage.assertNotLoading();
+  test('clicking on errors panel, browser back and browser forward should work as expected', async ({
+    tracesExplorePage,
+  }) => {
+    await assertBackAndForwardNavigationWorksForMetrics(tracesExplorePage, 'rate', 'errors');
   });
 
-  test.afterEach(async () => {
-    await explorePage.unroute();
+  test('clicking on duration panel, browser back and browser forward should work as expected', async ({
+    tracesExplorePage,
+  }) => {
+    await assertBackAndForwardNavigationWorksForMetrics(tracesExplorePage, 'rate', 'duration');
   });
 
-  test('clicking on errors panel, browser back and browser forward should work as expected', async ({ page }) => {
-    await assertBackAndForwardNavigationWorksForMetrics(page, 'rate', 'errors');
+  test('clicking on an include button, browser back and browser forward should work as expected', async ({
+    tracesExplorePage,
+  }) => {
+    await assertBackAndForwardNavigationWorksForFilters(tracesExplorePage, 'include');
   });
 
-  test('clicking on duration panel, browser back and browser forward should work as expected', async ({ page }) => {
-    await assertBackAndForwardNavigationWorksForMetrics(page, 'rate', 'duration');
-  });
-
-  test('clicking on an include button, browser back and browser forward should work as expected', async ({ page }) => {
-    await assertBackAndForwardNavigationWorksForFilters(page, 'include');
-  });
-
-  test('clicking on an exclude button, browser back and browser forward should work as expected', async ({ page }) => {
-    await assertBackAndForwardNavigationWorksForFilters(page, 'exclude');
+  test('clicking on an exclude button, browser back and browser forward should work as expected', async ({
+    tracesExplorePage,
+  }) => {
+    await assertBackAndForwardNavigationWorksForFilters(tracesExplorePage, 'exclude');
   });
 });
 
-type MetricType = 'rate' | 'errors' | 'duration';
-
 async function assertBackAndForwardNavigationWorksForMetrics(
-  page: Page,
-  startMetric: MetricType,
-  switchToMetric: MetricType
+  tracesExplorePage: TracesExplorePage,
+  startMetric: MetricFunction,
+  switchToMetric: MetricFunction
 ) {
-  const explorePage = new ExplorePage(page);
-  await explorePage.assertNotLoading();
+  await tracesExplorePage.assertNotLoading();
 
-  await assertREDPanelRadioVisible(page, startMetric);
-  await assertREDPanelRadioVisible(page, switchToMetric);
+  await tracesExplorePage.assertREDPanelRadioVisible(startMetric);
+  await tracesExplorePage.assertREDPanelRadioVisible(switchToMetric);
 
-  await assertCheckedForREDPanelRadio(page, startMetric);
-  await assertUnCheckedForREDPanelRadio(page, switchToMetric);
+  await tracesExplorePage.assertCheckedForREDPanelRadio(startMetric);
+  await tracesExplorePage.assertUnCheckedForREDPanelRadio(switchToMetric);
 
-  await clickOnREDPanelRadio(page, switchToMetric);
-  await explorePage.assertNotLoading();
+  await tracesExplorePage.clickOnREDPanelRadio(switchToMetric);
+  await tracesExplorePage.assertNotLoading();
 
-  await assertCheckedForREDPanelRadio(page, switchToMetric);
-  await assertUnCheckedForREDPanelRadio(page, startMetric);
+  await tracesExplorePage.assertCheckedForREDPanelRadio(switchToMetric);
+  await tracesExplorePage.assertUnCheckedForREDPanelRadio(startMetric);
 
-  await expect(page.getByTestId(testIds.errorState)).not.toBeVisible();
+  await tracesExplorePage.assertNoErrorState();
 
-  await page.goBack();
-  await explorePage.assertNotLoading();
+  await tracesExplorePage.page.goBack();
+  await tracesExplorePage.assertNotLoading();
 
-  await assertCheckedForREDPanelRadio(page, startMetric);
-  await assertUnCheckedForREDPanelRadio(page, switchToMetric);
+  await tracesExplorePage.assertCheckedForREDPanelRadio(startMetric);
+  await tracesExplorePage.assertUnCheckedForREDPanelRadio(switchToMetric);
 
-  await expect(page.getByTestId(testIds.errorState)).not.toBeVisible();
+  await tracesExplorePage.assertNoErrorState();
 
-  await page.goForward();
-  await explorePage.assertNotLoading();
+  await tracesExplorePage.page.goForward();
+  await tracesExplorePage.assertNotLoading();
 
-  await assertCheckedForREDPanelRadio(page, switchToMetric);
-  await assertUnCheckedForREDPanelRadio(page, startMetric);
+  await tracesExplorePage.assertCheckedForREDPanelRadio(switchToMetric);
+  await tracesExplorePage.assertUnCheckedForREDPanelRadio(startMetric);
 
-  await expect(page.getByTestId(testIds.errorState)).not.toBeVisible();
+  await tracesExplorePage.assertNoErrorState();
 }
 
-async function assertREDPanelRadioVisible(page: Page, metric: MetricType) {
-  await expect(page.getByTestId(getTestIdFromMetric(metric))).toBeVisible();
-  await expect(page.getByTestId(getTestIdFromMetric(metric)).getByRole('radio').first()).toBeVisible();
-}
-
-async function assertCheckedForREDPanelRadio(page: Page, metric: MetricType) {
-  // toBeChecked() is flaky here: `checked` property flickers during re-renders; the attribute is stable.
-  await expect(page.getByTestId(getTestIdFromMetric(metric)).getByRole('radio').first()).toHaveAttribute('checked');
-}
-
-async function assertUnCheckedForREDPanelRadio(page: Page, metric: MetricType) {
-  // toBeChecked() is flaky here: `checked` property flickers during re-renders; the attribute is stable.
-  await expect(page.getByTestId(getTestIdFromMetric(metric)).getByRole('radio').first()).not.toHaveAttribute('checked');
-}
-
-async function clickOnREDPanelRadio(page: Page, metric: MetricType) {
-  await page.getByTestId(getTestIdFromMetric(metric)).getByRole('radio').first().click();
-}
-
-async function assertBackAndForwardNavigationWorksForFilters(page: Page, toBeClicked: 'include' | 'exclude') {
-  const explorePage = new ExplorePage(page);
+async function assertBackAndForwardNavigationWorksForFilters(
+  tracesExplorePage: TracesExplorePage,
+  toBeClicked: 'include' | 'exclude'
+) {
   const serviceNameAttribute: AttributeItem = {
     label: 'service.name',
     scope: 'Resource',
@@ -124,60 +87,31 @@ async function assertBackAndForwardNavigationWorksForFilters(page: Page, toBeCli
   const serviceNameTestId = getTestIdFromAttribute(serviceNameAttribute);
   const spanNameTestId = getTestIdFromAttribute(spanNameAttribute);
 
-  await expect(page.getByRole('button', { name: toBeClicked }).first()).toBeVisible();
+  await expect(tracesExplorePage.page.getByRole('button', { name: toBeClicked }).first()).toBeVisible();
 
-  await assertAdHocFilterEmpty(page, serviceNameAttribute);
-  await assertSelectedLabel(page, 'resource.service.name');
-  await assertSelectedAttributes(page, serviceNameTestId, spanNameTestId);
-  await explorePage.assertNotLoading();
+  await tracesExplorePage.assertAdHocFilterEmpty(serviceNameAttribute);
+  await tracesExplorePage.assertSelectedLabel('resource.service.name');
+  await tracesExplorePage.assertSelectedAttributes(serviceNameTestId, spanNameTestId);
+  await tracesExplorePage.assertNotLoading();
 
-  await page.getByRole('button', { name: toBeClicked }).first().click();
-  await explorePage.assertNotLoading();
+  await tracesExplorePage.page.getByRole('button', { name: toBeClicked }).first().click();
+  await tracesExplorePage.assertNotLoading();
 
-  await assertAdHocFilterPopulated(page, serviceNameAttribute);
-  await assertSelectedLabel(page, 'name');
-  await assertSelectedAttributes(page, spanNameTestId, serviceNameTestId);
+  await tracesExplorePage.assertAdHocFilterPopulated(serviceNameAttribute);
+  await tracesExplorePage.assertSelectedLabel('name');
+  await tracesExplorePage.assertSelectedAttributes(spanNameTestId, serviceNameTestId);
 
-  await page.goBack();
-  await explorePage.assertNotLoading();
+  await tracesExplorePage.page.goBack();
+  await tracesExplorePage.assertNotLoading();
 
-  await assertAdHocFilterEmpty(page, serviceNameAttribute);
-  await assertSelectedLabel(page, 'resource.service.name');
-  await assertSelectedAttributes(page, serviceNameTestId, spanNameTestId);
+  await tracesExplorePage.assertAdHocFilterEmpty(serviceNameAttribute);
+  await tracesExplorePage.assertSelectedLabel('resource.service.name');
+  await tracesExplorePage.assertSelectedAttributes(serviceNameTestId, spanNameTestId);
 
-  await page.goForward();
-  await explorePage.assertNotLoading();
+  await tracesExplorePage.page.goForward();
+  await tracesExplorePage.assertNotLoading();
 
-  await assertAdHocFilterPopulated(page, serviceNameAttribute);
-  await assertSelectedLabel(page, 'name');
-  await assertSelectedAttributes(page, spanNameTestId, serviceNameTestId);
-}
-
-function getFilterNameFromAttribute(attribute: AttributeItem): string {
-  return `Edit filter with key ${attribute.value}`;
-}
-
-async function assertAdHocFilterEmpty(page: Page, attribute: AttributeItem) {
-  const name = getFilterNameFromAttribute(attribute);
-
-  await expect(page.getByRole('button', { name })).not.toBeVisible();
-  await expect(page.getByRole('button', { name })).toHaveCount(0);
-}
-
-async function assertAdHocFilterPopulated(page: Page, attribute: AttributeItem) {
-  const name = getFilterNameFromAttribute(attribute);
-
-  await expect(page.getByRole('button', { name })).toBeVisible();
-  await expect(page.getByRole('button', { name })).toHaveCount(1);
-}
-
-async function assertSelectedLabel(page: Page, label: string) {
-  await expect(page.getByText(`Selected: ${label}`)).toBeVisible();
-}
-
-async function assertSelectedAttributes(page: Page, selectedId: string, notSelectedId: string) {
-  await expect(page.getByTestId(selectedId)).toBeVisible();
-  await expect(page.getByTestId(selectedId)).toHaveAttribute('data-selected', 'true');
-  await expect(page.getByTestId(notSelectedId)).toBeVisible();
-  await expect(page.getByTestId(notSelectedId)).toHaveAttribute('data-selected', 'false');
+  await tracesExplorePage.assertAdHocFilterPopulated(serviceNameAttribute);
+  await tracesExplorePage.assertSelectedLabel('name');
+  await tracesExplorePage.assertSelectedAttributes(spanNameTestId, serviceNameTestId);
 }
