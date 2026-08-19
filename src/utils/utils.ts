@@ -26,6 +26,14 @@ import {
   VAR_PRIMARY_SIGNAL,
   VAR_SPAN_LIST_COLUMNS,
   VAR_DURATION_PERCENTILES,
+  NO_LABELS,
+  LabelValueType,
+  ALWAYS_QUOTED_KEYS,
+  ALWAYS_KEYWORD_KEYS,
+  ALWAYS_DURATION_KEYS,
+  KEYWORD_STATUS_VALUES,
+  KEYWORD_KIND_VALUES,
+  DURATION_REGEX,
 } from './shared';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
 import { PrimarySignalVariable } from 'pages/Explore/PrimarySignalVariable';
@@ -91,12 +99,12 @@ export function getLabelKey(frame: DataFrame) {
   const labels = frame.fields.find((f) => f.type === 'number')?.labels;
 
   if (!labels) {
-    return 'No labels';
+    return NO_LABELS;
   }
 
   const keys = Object.keys(labels);
   if (keys.length === 0) {
-    return 'No labels';
+    return NO_LABELS;
   }
 
   return keys[0].replace(/"/g, '');
@@ -106,12 +114,12 @@ export function getLabelValue(frame: DataFrame, labelName?: string) {
   const labels = frame.fields.find((f) => f.type === 'number')?.labels;
 
   if (!labels) {
-    return 'No labels';
+    return NO_LABELS;
   }
 
   const keys = Object.keys(labels).filter((k) => k !== 'p'); // remove the percentile label
   if (keys.length === 0) {
-    return 'No labels';
+    return NO_LABELS;
   }
 
   return labels[labelName || keys[0]].replace(/"/g, '');
@@ -223,3 +231,120 @@ export const getOpenTrace = (scene: SceneObject) => {
     scene.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
   };
 };
+
+export function getRawLabelValue(frame: DataFrame, labelName?: string): string | null {
+  const labels = frame.fields.find((f) => f.type === 'number')?.labels;
+  if (!labels) {
+    return null;
+  }
+
+  const keys = Object.keys(labels).filter((k) => k !== 'p'); // remove the percentile label
+  if (keys.length === 0) {
+    return null;
+  }
+
+  return labels[labelName || keys[0]];
+}
+
+export function isNumberValue(value?: unknown): boolean {
+  if (value === null || value === undefined || value === '') {
+    return false;
+  }
+
+  if (typeof value === 'number' && !isNaN(value)) {
+    return true;
+  }
+
+  if (typeof value === 'boolean') {
+    return false;
+  }
+
+  return isNumber.test(String(value).trim());
+}
+
+export function isBooleanValue(value?: unknown): boolean {
+  if (value === null || value === undefined || value === '') {
+    return false;
+  }
+
+  if (typeof value === 'boolean') {
+    return true;
+  }
+
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  if (value.trim().toLowerCase() === 'true' || value.trim().toLowerCase() === 'false') {
+    return true;
+  }
+
+  return false;
+}
+
+export function isQuotedValue(value?: unknown): boolean {
+  if (value === null || value === undefined || value === '') {
+    return false;
+  }
+
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.startsWith(`"`) && trimmed.endsWith(`"`)) {
+    return true;
+  }
+
+  if (trimmed.startsWith(`'`) && trimmed.endsWith(`'`)) {
+    return true;
+  }
+
+  return false;
+}
+
+export function getLabelValueType(value?: unknown, key = ''): LabelValueType {
+  if (ALWAYS_QUOTED_KEYS.has(key)) {
+    return 'quoted';
+  }
+
+  if (ALWAYS_KEYWORD_KEYS.has(key)) {
+    return KEYWORD_STATUS_VALUES.has(String(value)) || KEYWORD_KIND_VALUES.has(String(value)) ? 'bare' : 'unknown';
+  }
+
+  if (ALWAYS_DURATION_KEYS.has(key)) {
+    return DURATION_REGEX.test(String(value)) ? 'bare' : 'unknown';
+  }
+
+  if (isNumberValue(value)) {
+    return 'bare';
+  }
+
+  if (isBooleanValue(value)) {
+    return 'bare';
+  }
+
+  if (isQuotedValue(value)) {
+    return 'quoted';
+  }
+
+  return 'unknown';
+}
+
+export function toLabelValueType(valueType?: unknown, value?: unknown): LabelValueType {
+  switch (valueType) {
+    case 'int':
+    case 'float':
+      return isNumberValue(value) ? 'bare' : 'unknown';
+    case 'bool':
+      return isBooleanValue(value) ? 'bare' : 'unknown';
+    case 'duration':
+      return DURATION_REGEX.test(String(value)) ? 'bare' : 'unknown';
+    case 'keyword':
+      return KEYWORD_STATUS_VALUES.has(String(value)) || KEYWORD_KIND_VALUES.has(String(value)) ? 'bare' : 'unknown';
+    case 'string':
+      return 'quoted';
+  }
+
+  return 'unknown';
+}

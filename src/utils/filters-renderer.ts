@@ -1,4 +1,6 @@
 import { AdHocVariableFilter } from '@grafana/data';
+import { isUseValueTypeFilteringEnabled } from '../featureFlags/featureFlags';
+import { AdHocFilterWithValueType } from './shared';
 
 /**
  * Escapes a value for use inside TraceQL double-quoted string literals.
@@ -23,7 +25,13 @@ export type TraceQLAdHocJoin = '&&' | '||';
 export function renderTraceQLAdHocFilters(filters: AdHocVariableFilter[], joinWith: TraceQLAdHocJoin): string {
   const expr = filters
     .filter((f) => f.key && f.operator && f.value)
-    .map((filter) => renderFilter(filter))
+    .map((filter) => {
+      if (!isUseValueTypeFilteringEnabled()) {
+        return renderFilter(filter);
+      }
+
+      return newRenderFilter(filter, renderFilter);
+    })
     .join(joinWith);
   return expr.length ? expr : 'true';
 }
@@ -47,8 +55,8 @@ function renderFilter(filter: AdHocVariableFilter) {
         'trace:duration',
         'event:timeSinceStart',
       ].includes(filter.key) &&
-      !['true', 'false'].includes(val)) &&
-      !isQuotedNumericString(val)
+      !['true', 'false'].includes(val) &&
+      !isQuotedNumericString(val))
   ) {
     if (typeof val === 'string') {
       val = `"${escapeTraceQlStringLiteral(val)}"`;
@@ -58,10 +66,31 @@ function renderFilter(filter: AdHocVariableFilter) {
   return `${filter.key}${filter.operator}${val}`;
 }
 
+export function newRenderFilter(filter: AdHocFilterWithValueType, fallback: (filter: AdHocVariableFilter) => string) {
+  if (!filter.meta?.valueType) {
+    return fallback(filter);
+  }
+
+  if (filter.meta.valueType === 'unknown') {
+    return fallback(filter);
+  }
+
+  if (filter.meta.valueType === 'quoted') {
+    return `${filter.key}${filter.operator}"${escapeTraceQlStringLiteral(filter.value)}"`;
+  }
+
+  return `${filter.key}${filter.operator}${filter.value}`;
+}
+
 function isNumber(value?: string | number): boolean {
   return value != null && value !== '' && !isNaN(Number(value.toString().trim()));
 }
 
 function isQuotedNumericString(value: string): boolean {
-  return typeof value === 'string' && value.length >= 2 && isNumber(value.slice(1, -1)) && ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")));
+  return (
+    typeof value === 'string' &&
+    value.length >= 2 &&
+    isNumber(value.slice(1, -1)) &&
+    ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))
+  );
 }
