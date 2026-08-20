@@ -91,7 +91,7 @@
     "@grafana/i18n": "13.1.0",
     "@grafana/lezer-traceql": "^0.0.23",
     "@grafana/runtime": "13.1.0",
-    "@grafana/scenes": "7.4.0",
+    "@grafana/scenes": "8.16.0",
     "@grafana/schema": "13.1.0",
     "@grafana/ui": "13.1.0",
     "@lezer/common": "^1.2.3",
