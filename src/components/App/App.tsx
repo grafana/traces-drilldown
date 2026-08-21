@@ -16,6 +16,17 @@ export const usePluginJsonData = (): JsonData => {
 };
 
 class App extends React.PureComponent<AppRootProps<JsonData>> {
+  componentDidMount() {
+    // Initialize Faro for internal Frontend Observability (Grafana Cloud hosts only)
+    void import('../../faro/faro')
+      .then(({ initFaro }) => {
+        void initFaro();
+      })
+      .catch((error) => {
+        console.error('Failed to initialize Faro', error);
+      });
+  }
+
   render() {
     return (
       <PluginPage layout={PageLayoutType.Custom} pageNav={{ text: t('app.page-title', 'Traces Drilldown') }}>
