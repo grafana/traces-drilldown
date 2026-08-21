@@ -8,6 +8,10 @@ export const testIds = {
   ratePanel: `data-testid rate-panel`,
   errorsPanel: `data-testid errors-panel`,
   durationPanel: `data-testid duration-panel`,
+  breakdownContainer: `data-testid breakdown container`,
+  serviceStructureContainer: `data-testid service structure container`,
+  comparisonContainer: `data-testid comparison container`,
+  tracesContainer: `data-testid traces container`,
 };
 
 export function getTestIdFromMetric(metric: VariableValue | string): string {

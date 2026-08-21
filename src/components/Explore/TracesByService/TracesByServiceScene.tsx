@@ -161,14 +161,14 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     }
   }
 
-    private updateExceptionsScene(metric: MetricFunction) {
+  private updateExceptionsScene(metric: MetricFunction) {
     if (metric === 'errors') {
       if (!this.state.exceptionsScene) {
         const exceptionsScene = new ExceptionsScene({});
         this.setState({
-          exceptionsScene
+          exceptionsScene,
         });
-        
+
         // Activate the scene after it's been set in state to ensure it starts fetching data
         setTimeout(() => {
           exceptionsScene.activate();
@@ -178,7 +178,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
       // Remove exceptions scene if metric is not errors
       if (this.state.exceptionsScene) {
         this.setState({
-          exceptionsScene: undefined
+          exceptionsScene: undefined,
         });
       }
     }
@@ -194,7 +194,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     const timeRange = sceneGraph.getTimeRange(this);
     const options = {
       timeRange: timeRange.state.value,
-      filters: []
+      filters: [],
     };
 
     ds.getTagKeys?.(options).then((tagKeys: GetTagResponse | MetricFindValue[]) => {
@@ -244,6 +244,12 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     });
   }
 
+  public onUserSetActionView(actionView: ActionViewType) {
+    this._urlSync.performBrowserHistoryAction(() => {
+      this.setActionView(actionView);
+    });
+  }
+
   public setActionView(actionView?: ActionViewType) {
     const { body } = this.state;
     const actionViewDef = actionViewsDefinitions.find((v) => v.value === actionView);
@@ -251,28 +257,28 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     const metric = traceExploration.getMetricVariable().getValue();
     const prefixLen = getActionViewPrefixLen(traceExploration.state.hideRedPanels);
 
-    if (body.state.children.length > prefixLen - 1) {
-      if (actionViewDef) {
-        let scene: SceneObject;
-        if (actionView === 'exceptions' && this.state.exceptionsScene) {
-          // Use the persistent exceptions scene to maintain data subscription
-          scene = new SceneFlexItem({
-            body: this.state.exceptionsScene,
-          });
-        } else {
-          scene = actionViewDef.getScene(metric as MetricFunction);
-        }
-        
-        body.setState({
-          children: [...body.state.children.slice(0, prefixLen), scene],
-        });
-        reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.action_view_changed, {
-          oldAction: this.state.actionView,
-          newAction: actionView,
-        });
-        this.setState({ actionView: actionViewDef.value });
-      }
+    if (body.state.children.length <= prefixLen - 1 || !actionViewDef) {
+      return;
     }
+
+    let scene: SceneObject;
+    if (actionView === 'exceptions' && this.state.exceptionsScene) {
+      // Use the persistent exceptions scene to maintain data subscription
+      scene = new SceneFlexItem({
+        body: this.state.exceptionsScene,
+      });
+    } else {
+      scene = actionViewDef.getScene(metric as MetricFunction);
+    }
+
+    body.setState({
+      children: [...body.state.children.slice(0, prefixLen), scene],
+    });
+    reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.action_view_changed, {
+      oldAction: this.state.actionView,
+      newAction: actionView,
+    });
+    this.setState({ actionView: actionViewDef.value });
   }
 
   private updateQueryRunner(metric: MetricFunction) {
@@ -320,19 +326,38 @@ const MetricTypeTooltip = () => {
 
   return (
     <Stack direction={'column'} gap={1}>
-      <div className={styles.tooltip.title}><Trans i18nKey="traces-by-service.tooltip.title">RED metrics for traces</Trans></div>
+      <div className={styles.tooltip.title}>
+        <Trans i18nKey="traces-by-service.tooltip.title">RED metrics for traces</Trans>
+      </div>
       <span className={styles.tooltip.subtitle}>
-        <Trans i18nKey="traces-by-service.tooltip.subtitle">Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.</Trans>
+        <Trans i18nKey="traces-by-service.tooltip.subtitle">
+          Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.
+        </Trans>
       </span>
       <div className={styles.tooltip.text}>
         <div>
-          <span className={styles.tooltip.emphasize}><Trans i18nKey="traces-by-service.tooltip.rate-label">Rate</Trans></span> <Trans i18nKey="traces-by-service.tooltip.rate-description">- Spans per second that match your filter, useful to find unusual spikes in activity</Trans>
+          <span className={styles.tooltip.emphasize}>
+            <Trans i18nKey="traces-by-service.tooltip.rate-label">Rate</Trans>
+          </span>{' '}
+          <Trans i18nKey="traces-by-service.tooltip.rate-description">
+            - Spans per second that match your filter, useful to find unusual spikes in activity
+          </Trans>
         </div>
         <div>
-          <span className={styles.tooltip.emphasize}><Trans i18nKey="traces-by-service.tooltip.errors-label">Errors</Trans></span> <Trans i18nKey="traces-by-service.tooltip.errors-description">-Spans that are failing, overall issues in tracing ecosystem</Trans>
+          <span className={styles.tooltip.emphasize}>
+            <Trans i18nKey="traces-by-service.tooltip.errors-label">Errors</Trans>
+          </span>{' '}
+          <Trans i18nKey="traces-by-service.tooltip.errors-description">
+            -Spans that are failing, overall issues in tracing ecosystem
+          </Trans>
         </div>
         <div>
-          <span className={styles.tooltip.emphasize}><Trans i18nKey="traces-by-service.tooltip.duration-label">Duration</Trans></span> <Trans i18nKey="traces-by-service.tooltip.duration-description">- Amount of time those spans take, represented as a heat map (responds time, latency)</Trans>
+          <span className={styles.tooltip.emphasize}>
+            <Trans i18nKey="traces-by-service.tooltip.duration-label">Duration</Trans>
+          </span>{' '}
+          <Trans i18nKey="traces-by-service.tooltip.duration-description">
+            - Amount of time those spans take, represented as a heat map (responds time, latency)
+          </Trans>
         </div>
       </div>
 
