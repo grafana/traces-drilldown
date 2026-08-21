@@ -50,7 +50,7 @@ function beforeSend(event: TransportItem): TransportItem | null {
 
 /**
  * Initialize an isolated Faro instance for Grafana Cloud hosts only.
- * No-op on unknown hosts or while collector URLs are still placeholders.
+ * No-op on unknown hosts or when no Faro environment is configured (e.g. local).
  */
 export async function initFaro() {
   if (getFaro()) {
