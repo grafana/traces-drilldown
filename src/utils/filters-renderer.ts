@@ -47,8 +47,8 @@ function renderFilter(filter: AdHocVariableFilter) {
         'trace:duration',
         'event:timeSinceStart',
       ].includes(filter.key) &&
-      !['true', 'false'].includes(val)) &&
-      !isQuotedNumericString(val)
+      !['true', 'false'].includes(val) &&
+      !isQuotedNumericString(val))
   ) {
     if (typeof val === 'string') {
       val = `"${escapeTraceQlStringLiteral(val)}"`;
@@ -63,5 +63,10 @@ function isNumber(value?: string | number): boolean {
 }
 
 function isQuotedNumericString(value: string): boolean {
-  return typeof value === 'string' && value.length >= 2 && isNumber(value.slice(1, -1)) && ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")));
+  return (
+    typeof value === 'string' &&
+    value.length >= 2 &&
+    isNumber(value.slice(1, -1)) &&
+    ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")))
+  );
 }

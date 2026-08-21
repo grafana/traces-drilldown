@@ -23,16 +23,19 @@ interface ExceptionsTableProps {
   rows: ExceptionRow[];
   theme: GrafanaTheme2;
   scene: SceneObject;
-  onFilterClick?: (
-    key: string,
-    value: string,
-    operator?: ExceptionMessageFilterOperator,
-    append?: boolean
-  ) => void;
+  onFilterClick?: (key: string, value: string, operator?: ExceptionMessageFilterOperator, append?: boolean) => void;
 }
 
 // Component to conditionally show tooltip only when text is truncated
-const TruncatedMessage = ({ message, onClick, className }: { message: string; onClick: (e: React.MouseEvent) => void; className: string }) => {
+const TruncatedMessage = ({
+  message,
+  onClick,
+  className,
+}: {
+  message: string;
+  onClick: (e: React.MouseEvent) => void;
+  className: string;
+}) => {
   const textRef = useRef<HTMLDivElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
 
@@ -41,21 +44,19 @@ const TruncatedMessage = ({ message, onClick, className }: { message: string; on
       const element = textRef.current;
       if (element) {
         // Check both horizontal and vertical overflow for webkit-line-clamp
-        const isOverflowing = 
-          element.scrollWidth > element.clientWidth || 
-          element.scrollHeight > element.clientHeight;
+        const isOverflowing = element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
         setIsTruncated(isOverflowing);
       }
     };
 
     checkTruncation();
-    
+
     // Recheck on window resize
     window.addEventListener('resize', checkTruncation);
-    
+
     // Small delay to ensure styles are applied
     const timer = setTimeout(checkTruncation, 100);
-    
+
     return () => {
       window.removeEventListener('resize', checkTruncation);
       clearTimeout(timer);
@@ -63,11 +64,7 @@ const TruncatedMessage = ({ message, onClick, className }: { message: string; on
   }, [message]);
 
   const content = (
-    <div 
-      ref={textRef}
-      className={className}
-      onClick={onClick}
-    >
+    <div ref={textRef} className={className} onClick={onClick}>
       {message}
     </div>
   );
@@ -147,20 +144,41 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
         <thead>
           <tr className={styles.headerRow}>
             <th className={styles.headerCell}>
-              <span><Trans i18nKey="exceptions-table.header.exception-details">Exception Details</Trans></span>
-              <Tooltip content={t('exceptions-table.header.exception-details-tooltip', 'Exception type, message, service, and last seen timestamp. Use the include/exclude buttons to include or exclude exception messages, or click on type or message to filter.')}>
+              <span>
+                <Trans i18nKey="exceptions-table.header.exception-details">Exception Details</Trans>
+              </span>
+              <Tooltip
+                content={t(
+                  'exceptions-table.header.exception-details-tooltip',
+                  'Exception type, message, service, and last seen timestamp. Use the include/exclude buttons to include or exclude exception messages, or click on type or message to filter.'
+                )}
+              >
                 <Icon name="info-circle" size="sm" className={styles.headerIcon} />
               </Tooltip>
             </th>
             <th className={styles.headerCellOccurrences}>
-              <span><Trans i18nKey="exceptions-table.header.occurrences">Occurrences</Trans></span>
-              <Tooltip content={t('exceptions-table.header.occurrences-tooltip', 'Total number of times this exception has occurred')}>
+              <span>
+                <Trans i18nKey="exceptions-table.header.occurrences">Occurrences</Trans>
+              </span>
+              <Tooltip
+                content={t(
+                  'exceptions-table.header.occurrences-tooltip',
+                  'Total number of times this exception has occurred'
+                )}
+              >
                 <Icon name="info-circle" size="sm" className={styles.headerIcon} />
               </Tooltip>
             </th>
             <th className={styles.headerCellFrequency}>
-              <span><Trans i18nKey="exceptions-table.header.frequency">Frequency</Trans></span>
-              <Tooltip content={t('exceptions-table.header.frequency-tooltip', 'Visual representation of exception frequency over time')}>
+              <span>
+                <Trans i18nKey="exceptions-table.header.frequency">Frequency</Trans>
+              </span>
+              <Tooltip
+                content={t(
+                  'exceptions-table.header.frequency-tooltip',
+                  'Visual representation of exception frequency over time'
+                )}
+              >
                 <Icon name="info-circle" size="sm" className={styles.headerIcon} />
               </Tooltip>
             </th>
@@ -175,7 +193,7 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
               : { sharedPrefix: '', remainders: [] as string[] };
             return (
               <React.Fragment key={index}>
-                <tr 
+                <tr
                   className={styles.tableRow}
                   onClick={() => handleRowClick(index)}
                   role="button"
@@ -193,7 +211,7 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                     <div className={styles.exceptionDetailsContainer}>
                       <div className={styles.contentWithButtonsContainer}>
                         <div className={styles.exceptionContentContainer}>
-                          <div 
+                          <div
                             className={styles.exceptionType}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -219,14 +237,17 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                                     <div className={styles.groupedMessagesTooltipTitle}>
                                       <Trans i18nKey="exceptions-table.grouped-messages-title">Grouped messages</Trans>
                                     </div>
-                                      {sharedPrefix && (
-                                        <div className={styles.groupedMessagesSharedPrefix}>
-                                          <span className={styles.groupedMessagesLabel}>
-                                            <Trans i18nKey="exceptions-table.grouped-messages-common-prefix">Common</Trans>:
-                                          </span>{' '}
-                                          {sharedPrefix}
-                                        </div>
-                                      )}
+                                    {sharedPrefix && (
+                                      <div className={styles.groupedMessagesSharedPrefix}>
+                                        <span className={styles.groupedMessagesLabel}>
+                                          <Trans i18nKey="exceptions-table.grouped-messages-common-prefix">
+                                            Common
+                                          </Trans>
+                                          :
+                                        </span>{' '}
+                                        {sharedPrefix}
+                                      </div>
+                                    )}
                                     <ul className={styles.groupedMessagesList}>
                                       {remainders.map((groupedMessage, groupedMessageIndex) => (
                                         <li key={`${groupedMessage}-${groupedMessageIndex}`}>{groupedMessage}</li>
@@ -292,9 +313,9 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                 </tr>
                 {isExpanded && (
                   <tr>
-                    <td 
-                      colSpan={3} 
-                      className={styles.accordionCell} 
+                    <td
+                      colSpan={3}
+                      className={styles.accordionCell}
                       id={`exception-accordion-content-${index}`}
                       role="region"
                       aria-labelledby={`exception-accordion-content-${index}`}
@@ -318,7 +339,7 @@ const getStyles = (theme: GrafanaTheme2) => {
     fontWeight: theme.typography.fontWeightMedium,
     color: theme.colors.text.secondary,
     backgroundColor: theme.colors.background.secondary,
-    
+
     '> span': {
       marginRight: theme.spacing(0.5),
     },
@@ -510,4 +531,3 @@ const getStyles = (theme: GrafanaTheme2) => {
     }),
   };
 };
-

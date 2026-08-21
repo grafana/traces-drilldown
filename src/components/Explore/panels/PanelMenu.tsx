@@ -123,10 +123,7 @@ const onExploreClick = () => {
   reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.open_in_explore_clicked);
 };
 
-function buildPanelMenuItems(
-  model: SceneObject<PanelMenuState>,
-  isCreateAlertAvailable: boolean
-): PanelMenuItem[] {
+function buildPanelMenuItems(model: SceneObject<PanelMenuState>, isCreateAlertAvailable: boolean): PanelMenuItem[] {
   const items: PanelMenuItem[] = [
     {
       text: t('panel-menu.navigation', 'Navigation'),

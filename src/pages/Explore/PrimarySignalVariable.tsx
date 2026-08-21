@@ -77,7 +77,9 @@ export class PrimarySignalVariable extends CustomVariable {
           className={styles.buttonGroup}
         />
         <Select
-          options={[{ label: t('primary-signal-variable.primary-signal-label', 'Primary signal'), options: selectOptions }]}
+          options={[
+            { label: t('primary-signal-variable.primary-signal-label', 'Primary signal'), options: selectOptions },
+          ]}
           value={''}
           placeholder=""
           isSearchable={false}

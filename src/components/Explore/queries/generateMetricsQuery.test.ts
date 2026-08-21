@@ -1,6 +1,10 @@
 import { FieldType, type DataFrame } from '@grafana/data';
 
-import { generateMetricsQuery, generateMetricsQueryForBreakdownTile, getMetricsTempoQuery } from './generateMetricsQuery';
+import {
+  generateMetricsQuery,
+  generateMetricsQueryForBreakdownTile,
+  getMetricsTempoQuery,
+} from './generateMetricsQuery';
 import { ALL } from '../../../utils/shared';
 
 describe('generateMetricsQuery', () => {

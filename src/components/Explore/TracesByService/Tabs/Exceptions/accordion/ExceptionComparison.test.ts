@@ -7,9 +7,33 @@ describe('buildDistribution', () => {
   it('builds sorted distribution with percent-of-total and percent-of-max', () => {
     const attributeKey = 'resource.service.name';
     const series: DataFrame[] = [
-      createFrame([createField('time', Array.from({ length: 10 }, (_, i) => i), {}, 'time'), createField(attributeKey, Array(10).fill('svc-a'), {}, 'string')]),
-      createFrame([createField('time', Array.from({ length: 1 }, (_, i) => i), {}, 'time'), createField(attributeKey, ['svc-c'], {}, 'string')]),
-      createFrame([createField('time', Array.from({ length: 5 }, (_, i) => i), {}, 'time'), createField(attributeKey, Array(5).fill('svc-b'), {}, 'string')]),
+      createFrame([
+        createField(
+          'time',
+          Array.from({ length: 10 }, (_, i) => i),
+          {},
+          'time'
+        ),
+        createField(attributeKey, Array(10).fill('svc-a'), {}, 'string'),
+      ]),
+      createFrame([
+        createField(
+          'time',
+          Array.from({ length: 1 }, (_, i) => i),
+          {},
+          'time'
+        ),
+        createField(attributeKey, ['svc-c'], {}, 'string'),
+      ]),
+      createFrame([
+        createField(
+          'time',
+          Array.from({ length: 5 }, (_, i) => i),
+          {},
+          'time'
+        ),
+        createField(attributeKey, Array(5).fill('svc-b'), {}, 'string'),
+      ]),
     ];
 
     const items = buildDistribution(series, attributeKey, 10);
@@ -58,10 +82,7 @@ describe('buildDistribution', () => {
   it('keeps single-row select results', () => {
     const attributeKey = 'resource.service.name';
     const series: DataFrame[] = [
-      createFrame([
-        createField('time', [1], {}, 'time'),
-        createField(attributeKey, ['svc-a'], {}, 'string'),
-      ]),
+      createFrame([createField('time', [1], {}, 'time'), createField(attributeKey, ['svc-a'], {}, 'string')]),
     ];
 
     const items = buildDistribution(series, attributeKey, 10);
@@ -72,10 +93,12 @@ describe('buildDistribution', () => {
       }),
     ]);
   });
-  
+
   it('falls back to Unknown when the selected attribute field is missing', () => {
     const attributeKey = 'resource.service.name';
-    const series: DataFrame[] = [createFrame([createField('time', [1, 2], {}, 'time'), createField('name', ['op-a', 'op-b'], {}, 'string')])];
+    const series: DataFrame[] = [
+      createFrame([createField('time', [1, 2], {}, 'time'), createField('name', ['op-a', 'op-b'], {}, 'string')]),
+    ];
 
     const items = buildDistribution(series, attributeKey, 10);
     expect(items).toEqual([
@@ -110,5 +133,3 @@ describe('getAttributeKeys', () => {
     expect(result).toEqual(defaults);
   });
 });
-
-

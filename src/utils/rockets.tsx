@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export const LightModeRocket = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="73" height="72" viewBox="0 0 73 72" fill="none">

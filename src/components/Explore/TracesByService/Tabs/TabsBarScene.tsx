@@ -61,9 +61,7 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
     const dataState = sceneGraph.getData(model).useState();
     const tracesCount = dataState.data?.series?.[0]?.length;
 
-    const { component: SpanLatencyComponent } = usePluginComponent(
-      'grafana-adaptivetraces-app/span-latency/v1'
-    );
+    const { component: SpanLatencyComponent } = usePluginComponent('grafana-adaptivetraces-app/span-latency/v1');
 
     const filtersVariable = getFiltersVariable(model);
     const { filters } = filtersVariable.useState();

@@ -1,0 +1,9 @@
+pre-commit:
+  parallel: true
+  commands:
+    frontend-lint:
+      glob: '*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}'
+      run: |
+        pnpm prettier --write {staged_files}
+
+      stage_fixed: true

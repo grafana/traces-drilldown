@@ -1,11 +1,7 @@
 import React from 'react';
 
 import { Trans } from '@grafana/i18n';
-import {
-  SceneObjectState,
-  SceneObjectBase,
-  SceneComponentProps,
-} from '@grafana/scenes';
+import { SceneObjectState, SceneObjectBase, SceneComponentProps } from '@grafana/scenes';
 import { Button } from '@grafana/ui';
 
 interface InspectAttributeActionState extends SceneObjectState {

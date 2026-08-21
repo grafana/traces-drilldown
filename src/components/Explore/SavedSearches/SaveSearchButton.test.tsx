@@ -31,7 +31,9 @@ describe('SaveSearchButton', () => {
         text: 'test-datasource-uid',
       },
     } as DataSourceVariable);
-    mockGetTraceExplorationScene.mockReturnValue({ state: { embedded: false } } as ReturnType<typeof getTraceExplorationScene>);
+    mockGetTraceExplorationScene.mockReturnValue({ state: { embedded: false } } as ReturnType<
+      typeof getTraceExplorationScene
+    >);
     const mockFilters = [{ key: 'job', operator: '=' as const, value: 'test' }];
     mockGetFiltersVariable.mockReturnValue({
       state: { filters: mockFilters },

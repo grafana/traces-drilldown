@@ -26,7 +26,9 @@ describe('ExceptionUtils', () => {
 
     it('should normalize volatile identifiers in exception messages', () => {
       expect(
-        normalizeExceptionMessage('Request 123 failed for 4f4e6f95-4a67-4fce-90b0-51e8b8fb4d4a from 10.0.0.1 at 2026-01-20T12:34:56Z')
+        normalizeExceptionMessage(
+          'Request 123 failed for 4f4e6f95-4a67-4fce-90b0-51e8b8fb4d4a from 10.0.0.1 at 2026-01-20T12:34:56Z'
+        )
       ).toBe('Request <num> failed for <uuid> from <ip> at <timestamp>');
     });
 
@@ -35,8 +37,7 @@ describe('ExceptionUtils', () => {
         'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-1.grafana.net/oncall/api/internal/v1/user';
       const b =
         'Error: HttpException: Connection closed before full header was received, uri = https://oncall-prod-us-central-2.grafana.net/oncall/mobile_app/v1/gateway/incident/api/OrgService.GetOrg';
-      const expected =
-        'Error: HttpException: Connection closed before full header was received, uri = <url>';
+      const expected = 'Error: HttpException: Connection closed before full header was received, uri = <url>';
       expect(normalizeExceptionMessage(a)).toBe(expected);
       expect(normalizeExceptionMessage(b)).toBe(expected);
     });
@@ -44,8 +45,7 @@ describe('ExceptionUtils', () => {
 
   describe('normalizedExceptionMessageToTraceQLRegexPattern', () => {
     it('matches raw URLs against grouped messages with <url>', () => {
-      const normalized =
-        'Error: HttpException: Connection closed before full header was received, uri = <url>';
+      const normalized = 'Error: HttpException: Connection closed before full header was received, uri = <url>';
       const pattern = normalizedExceptionMessageToTraceQLRegexPattern(normalized);
       expect(normalizedExceptionMessageNeedsRegexMatch(normalized)).toBe(true);
       const re = new RegExp(pattern);
@@ -142,11 +142,9 @@ describe('ExceptionUtils', () => {
     it('should create time series from timestamps', () => {
       const timestamps = [1000, 2000, 3000, 1500, 2500];
       const result = createTimeSeries(timestamps);
-      
+
       expect(result).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ time: expect.any(Number), count: expect.any(Number) })
-        ])
+        expect.arrayContaining([expect.objectContaining({ time: expect.any(Number), count: expect.any(Number) })])
       );
       expect(result.length).toBeGreaterThan(0);
     });
@@ -163,7 +161,7 @@ describe('ExceptionUtils', () => {
     it('should sort results by time', () => {
       const timestamps = [3000, 1000, 2000];
       const result = createTimeSeries(timestamps);
-      
+
       for (let i = 1; i < result.length; i++) {
         expect(result[i].time).toBeGreaterThanOrEqual(result[i - 1].time);
       }
@@ -173,11 +171,11 @@ describe('ExceptionUtils', () => {
       const baseTime = 1000000;
       const timestamps = [
         baseTime,
-        baseTime + 100,  // Same bucket
+        baseTime + 100, // Same bucket
         baseTime + 1000, // Different bucket
-        baseTime + 1100  // Same as previous bucket
+        baseTime + 1100, // Same as previous bucket
       ];
-      
+
       const result = createTimeSeries(timestamps);
       expect(result.length).toBeLessThanOrEqual(timestamps.length);
     });
@@ -189,7 +187,7 @@ describe('ExceptionUtils', () => {
       type: FieldType.string,
       values,
       config: {},
-      state: {}
+      state: {},
     });
 
     const createTimeField = (values: number[]): Field => ({
@@ -197,7 +195,7 @@ describe('ExceptionUtils', () => {
       type: FieldType.time,
       values,
       config: {},
-      state: {}
+      state: {},
     });
 
     beforeEach(() => {
@@ -214,21 +212,9 @@ describe('ExceptionUtils', () => {
         'Null pointer exception',
         'Database connection failed', // Duplicate
       ]);
-      const typeField = createMockField('exception.type', [
-        'SQLException',
-        'NullPointerException',
-        'SQLException',
-      ]);
-      const serviceField = createMockField('service.name', [
-        'user-service',
-        'payment-service',
-        'user-service',
-      ]);
-      const timeField = createTimeField([
-        1699999800000, 
-        1699999900000,
-        1699999950000, 
-      ]);
+      const typeField = createMockField('exception.type', ['SQLException', 'NullPointerException', 'SQLException']);
+      const serviceField = createMockField('service.name', ['user-service', 'payment-service', 'user-service']);
+      const timeField = createTimeField([1699999800000, 1699999900000, 1699999950000]);
 
       const result = aggregateExceptions(messageField, typeField, timeField, serviceField);
 
@@ -237,7 +223,7 @@ describe('ExceptionUtils', () => {
       expect(result.occurrences[0]).toBe(2);
       expect(result.types[0]).toBe('SQLException');
       expect(result.services[0]).toBe('user-service');
-      
+
       expect(result.messages[1]).toBe('Null pointer exception');
       expect(result.occurrences[1]).toBe(1);
       expect(result.types[1]).toBe('NullPointerException');
@@ -245,10 +231,7 @@ describe('ExceptionUtils', () => {
     });
 
     it('should handle missing optional fields', () => {
-      const messageField = createMockField('exception.message', [
-        'Error 1',
-        'Error 2',
-      ]);
+      const messageField = createMockField('exception.message', ['Error 1', 'Error 2']);
 
       const result = aggregateExceptions(messageField);
 
@@ -301,11 +284,7 @@ describe('ExceptionUtils', () => {
         'Payment failed while processing customer bravo request due to timeout in upstream dependency',
         'Completely different problem in another subsystem',
       ]);
-      const typeField = createMockField('exception.type', [
-        'TimeoutException',
-        'TimeoutException',
-        'OtherException',
-      ]);
+      const typeField = createMockField('exception.type', ['TimeoutException', 'TimeoutException', 'OtherException']);
 
       const result = aggregateExceptions(messageField, typeField);
 
@@ -365,20 +344,14 @@ describe('ExceptionUtils', () => {
     });
 
     it('should create time series for each exception', () => {
-      const messageField = createMockField('exception.message', [
-        'Error alpha',
-        'Error alpha',
-        'Error beta',
-      ]);
+      const messageField = createMockField('exception.message', ['Error alpha', 'Error alpha', 'Error beta']);
       const timeField = createTimeField([1000, 2000, 3000]);
 
       const result = aggregateExceptions(messageField, undefined, timeField);
 
       expect(result.timeSeries).toHaveLength(2);
       expect(result.timeSeries[0]).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ time: expect.any(Number), count: expect.any(Number) })
-        ])
+        expect.arrayContaining([expect.objectContaining({ time: expect.any(Number), count: expect.any(Number) })])
       );
     });
 
@@ -410,4 +383,4 @@ describe('ExceptionUtils', () => {
       expect(result.occurrences).toEqual([1, 1]);
     });
   });
-}); 
+});
