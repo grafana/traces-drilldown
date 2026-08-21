@@ -1,10 +1,12 @@
-import { Page, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 import { GrafanaPage, NavigateOptions, PluginTestCtx } from '@grafana/plugin-e2e';
 
 import pluginJson from '../../src/plugin.json';
 import { getTestIdFromMetric, testIds } from '../../src/utils/testIds';
 import { MetricFunction } from '../../src/utils/shared';
 import { AttributeItem } from '../../src/types';
+
+export type RateTabs = 'Service structure' | 'Comparison' | 'Traces' | 'Breakdown';
 
 export class TracesExplorePage extends GrafanaPage {
   constructor(readonly ctx: PluginTestCtx) {
@@ -94,5 +96,19 @@ export class TracesExplorePage extends GrafanaPage {
     await expect(this.page.getByTestId(selectedId)).toHaveAttribute('data-selected', 'true');
     await expect(this.page.getByTestId(notSelectedId)).toBeVisible();
     await expect(this.page.getByTestId(notSelectedId)).toHaveAttribute('data-selected', 'false');
+  }
+
+  getTab(tab: RateTabs): Locator {
+    return this.getByGrafanaSelector(this.ctx.selectors.components.Tab.title(tab));
+  }
+
+  async assertTabSelected(tab: RateTabs) {
+    await expect(this.getTab(tab)).toBeVisible();
+    await expect(this.getTab(tab)).toHaveAttribute('aria-selected', 'true');
+  }
+
+  async assertTabNotSelected(tab: RateTabs) {
+    await expect(this.getTab(tab)).toBeVisible();
+    await expect(this.getTab(tab)).toHaveAttribute('aria-selected', 'false');
   }
 }
