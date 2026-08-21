@@ -1,7 +1,21 @@
 import { AdHocVariableFilter } from '@grafana/data';
-import { renderTraceQLAdHocFilters, renderTraceQLLabelFilters } from './filters-renderer';
+import { newRenderFilter, renderTraceQLAdHocFilters, renderTraceQLLabelFilters } from './filters-renderer';
+import { isUseValueTypeFilteringEnabled } from '../featureFlags/featureFlags';
+import { AdHocFilterWithValueType, LabelValueType } from './shared';
+
+jest.mock('../featureFlags/featureFlags', () => ({
+  ...jest.requireActual('../featureFlags/featureFlags'),
+  isUseValueTypeFilteringEnabled: jest.fn(),
+}));
+
+const mockIsUseValueTypeFilteringEnabled = jest.mocked(isUseValueTypeFilteringEnabled);
 
 describe('filters-renderer', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockIsUseValueTypeFilteringEnabled.mockReturnValue(false);
+  });
+
   describe('renderTraceQLLabelFilters', () => {
     it('should render a single filter correctly', () => {
       const filters: AdHocVariableFilter[] = [{ key: 'service.name', operator: '=', value: 'test' }];
@@ -156,6 +170,62 @@ describe('filters-renderer', () => {
         { key: 'kind', operator: '=', value: 'server' },
       ];
       expect(renderTraceQLAdHocFilters(filters, '&&')).toBe('service.name="a"&&kind=server');
+    });
+  });
+
+  describe('newRenderFilter', () => {
+    const fallback = () => 'result from fallback';
+
+    it('should fallback to renderFilter when meta is missing', () => {
+      const filter = { key: 'span.debug', operator: '=', value: 'false' };
+      expect(newRenderFilter(filter, fallback)).toEqual('result from fallback');
+    });
+
+    it('should fallback to renderFilter when valueType is missing', () => {
+      const filter = { key: 'span.debug', operator: '=', value: 'false', meta: {} } as AdHocFilterWithValueType;
+      expect(newRenderFilter(filter, fallback)).toEqual('result from fallback');
+    });
+
+    it('should fallback to renderFilter when valueType is "unknown"', () => {
+      const valueType: LabelValueType = 'unknown';
+      const filter = { key: 'span.debug', operator: '=', value: 'false', meta: { valueType } };
+      expect(newRenderFilter(filter, fallback)).toEqual('result from fallback');
+    });
+
+    it('should add quotes around values when valuType is "quoted"', () => {
+      const valueType: LabelValueType = 'quoted';
+      const filter = { key: 'span.debug', operator: '=', value: 'false', meta: { valueType } };
+      expect(newRenderFilter(filter, fallback)).toEqual('span.debug="false"');
+    });
+
+    it('should not add quotes around values when valuType is bare', () => {
+      const valueType: LabelValueType = 'bare';
+      const filter = { key: 'span.debug', operator: '=', value: 'false', meta: { valueType } };
+      expect(newRenderFilter(filter, fallback)).toEqual('span.debug=false');
+    });
+
+    it('should not add quotes around values when valuType is bare', () => {
+      const valueType: LabelValueType = 'bare';
+      const filter = { key: 'duration', operator: '>', value: '123', meta: { valueType } };
+      expect(newRenderFilter(filter, fallback)).toEqual('duration>123');
+    });
+
+    it('should not add quotes around values when valuType is bare', () => {
+      const valueType: LabelValueType = 'bare';
+      const filter = { key: 'duration', operator: '>', value: '123.45', meta: { valueType } };
+      expect(newRenderFilter(filter, fallback)).toEqual('duration>123.45');
+    });
+
+    it('should not add quotes around values when valuType is bare', () => {
+      const valueType: LabelValueType = 'bare';
+      const filter = { key: 'duration', operator: '>', value: '123s', meta: { valueType } };
+      expect(newRenderFilter(filter, fallback)).toEqual('duration>123s');
+    });
+
+    it('should not add quotes around values when valuType is bare', () => {
+      const valueType: LabelValueType = 'bare';
+      const filter = { key: 'status', operator: '=', value: 'ok', meta: { valueType } };
+      expect(newRenderFilter(filter, fallback)).toEqual('status=ok');
     });
   });
 });

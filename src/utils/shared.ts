@@ -1,5 +1,6 @@
-import { BusEventWithPayload, DataFrame } from '@grafana/data';
+import { BusEventWithPayload, DataFrame, MetricFindValue } from '@grafana/data';
 import pluginJson from '../plugin.json';
+import { AdHocFilterWithLabels } from '@grafana/scenes';
 
 export type MetricFunction = 'rate' | 'errors' | 'duration';
 
@@ -127,3 +128,32 @@ export const filterStreamingProgressTransformations = [
     },
   },
 ];
+
+export type LabelValueType = 'quoted' | 'bare' | 'unknown';
+
+export type AdHocFilterWithValueType = AdHocFilterWithLabels<{ valueType: LabelValueType }>;
+export type MetricFindValueWithMeta = MetricFindValue & { meta?: { valueType: LabelValueType } };
+
+export const NO_LABELS = 'No labels';
+
+export const ALWAYS_QUOTED_KEYS: ReadonlySet<string> = new Set([
+  'span.messaging.destination.partition.id',
+  'span.network.protocol.version',
+]);
+export const ALWAYS_KEYWORD_KEYS: ReadonlySet<string> = new Set(['status', 'kind', 'span:status', 'span:kind']);
+export const ALWAYS_DURATION_KEYS: ReadonlySet<string> = new Set([
+  'duration',
+  'span:duration',
+  'trace:duration',
+  'event:timeSinceStart',
+]);
+export const DURATION_REGEX = /^\d+(\.\d+)?$|^(\d+(\.\d+)?(ns|us|µs|ms|s|m|h|d|w|y))+$/;
+export const KEYWORD_STATUS_VALUES: ReadonlySet<string> = new Set(['ok', 'error', 'unset']);
+export const KEYWORD_KIND_VALUES: ReadonlySet<string> = new Set([
+  'unspecified',
+  'internal',
+  'server',
+  'client',
+  'producer',
+  'consumer',
+]);
