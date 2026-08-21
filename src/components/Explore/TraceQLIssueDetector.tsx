@@ -1,10 +1,5 @@
 import { LoadingState, dateTime } from '@grafana/data';
-import {
-  SceneObjectBase,
-  SceneObjectState,
-  SceneTimeRange,
-  SceneQueryRunner,
-} from '@grafana/scenes';
+import { SceneObjectBase, SceneObjectState, SceneTimeRange, SceneQueryRunner } from '@grafana/scenes';
 import { getDatasourceVariable } from '../../utils/utils';
 import { Alert, LinkButton } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
@@ -23,7 +18,7 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
     this.addActivationHandler(this._onActivate.bind(this));
   }
 
-  private _onActivate() {    
+  private _onActivate() {
     this.runIssueDetectionQuery();
 
     const datasourceVar = getDatasourceVariable(this);
@@ -39,7 +34,7 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
 
   private runIssueDetectionQuery() {
     const datasourceVar = getDatasourceVariable(this);
-    
+
     // Create a minimal time range to reduce resource usage
     const now = dateTime();
     const from = dateTime(now).subtract(1, 'minute');
@@ -47,22 +42,24 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
       from: from.toISOString(),
       to: now.toISOString(),
     });
-    
+
     const issueDetector = new SceneQueryRunner({
       maxDataPoints: 1,
       datasource: { uid: String(datasourceVar.state.value) },
       $timeRange: minimalTimeRange,
-      queries: [{
-        refId: 'issueDetectorQuery',
-        query: '{} | rate()',
-        queryType: 'traceql',
-        tableType: 'spans',
-        limit: 1,
-        spss: 1,
-        filters: [],
-      }],
+      queries: [
+        {
+          refId: 'issueDetectorQuery',
+          query: '{} | rate()',
+          queryType: 'traceql',
+          tableType: 'spans',
+          limit: 1,
+          spss: 1,
+          filters: [],
+        },
+      ],
     });
-    
+
     this._subs.add(
       issueDetector.subscribeToState((state) => {
         if (state.data?.state === LoadingState.Error) {
@@ -75,7 +72,7 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
         }
       })
     );
-    
+
     issueDetector.activate();
   }
 
@@ -84,7 +81,7 @@ export class TraceQLIssueDetector extends SceneObjectBase<TraceQLIssueDetectorSt
       hasIssue: false,
     });
   }
-} 
+}
 
 export const TraceQLConfigWarning: React.FC<{ detector: TraceQLIssueDetector }> = ({ detector }) => {
   const { hasIssue } = detector.useState();
@@ -94,12 +91,12 @@ export const TraceQLConfigWarning: React.FC<{ detector: TraceQLIssueDetector }> 
   }
 
   return (
-    <Alert
-      severity="warning"
-      title={t('traceql-issue-detector.warning-title', 'TraceQL metrics not configured')}
-    >
+    <Alert severity="warning" title={t('traceql-issue-detector.warning-title', 'TraceQL metrics not configured')}>
       <p>
-        {t('traceql-issue-detector.warning-message', 'We found an error running a TraceQL metrics query: "localblocks processor not found". This typically means the "local-blocks" processor is not configured in Tempo, which is required for Grafana Traces Drilldown to work.')}
+        {t(
+          'traceql-issue-detector.warning-message',
+          'We found an error running a TraceQL metrics query: "localblocks processor not found". This typically means the "local-blocks" processor is not configured in Tempo, which is required for Grafana Traces Drilldown to work.'
+        )}
         <LinkButton
           icon="external-link-alt"
           fill="text"

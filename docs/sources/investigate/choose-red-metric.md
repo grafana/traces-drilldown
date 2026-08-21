@@ -14,9 +14,9 @@ weight: 300
 Traces Drilldown uses RED metrics generated from your tracing data to guide your investigation.
 In this context, RED metrics mean:
 
-* **Rate** shows the rate of incoming spans per second.
-* **Errors** show spans that are failing.
-* **Duration** displays the amount of time those spans take; represented as a heat map that shows response time and latency.
+- **Rate** shows the rate of incoming spans per second.
+- **Errors** show spans that are failing.
+- **Duration** displays the amount of time those spans take; represented as a heat map that shows response time and latency.
 
 When you select a RED metric, the tabs underneath the metric selection change to match the context.
 **Breakdown** and **Comparison** tabs are always present regardless of which metric you choose.

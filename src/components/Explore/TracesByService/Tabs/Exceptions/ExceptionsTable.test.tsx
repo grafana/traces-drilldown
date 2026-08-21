@@ -199,8 +199,11 @@ describe('ExceptionsTable', () => {
     const longMessageRows: ExceptionRow[] = [
       {
         type: 'Error',
-        message: 'This is a very long exception message that should be truncated in the UI but still fully accessible via tooltip when the user hovers over it',
-        groupedMessages: ['This is a very long exception message that should be truncated in the UI but still fully accessible via tooltip when the user hovers over it'],
+        message:
+          'This is a very long exception message that should be truncated in the UI but still fully accessible via tooltip when the user hovers over it',
+        groupedMessages: [
+          'This is a very long exception message that should be truncated in the UI but still fully accessible via tooltip when the user hovers over it',
+        ],
         service: 'test-service',
         lastSeen: '1m ago',
         occurrences: 1,
@@ -272,7 +275,9 @@ describe('ExceptionsTable', () => {
       },
     ];
 
-    render(<ExceptionsTable rows={groupedRows} theme={mockTheme} scene={mockScene} onFilterClick={mockOnFilterClick} />);
+    render(
+      <ExceptionsTable rows={groupedRows} theme={mockTheme} scene={mockScene} onFilterClick={mockOnFilterClick} />
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Include exception message' }));
     expect(mockOnFilterClick).toHaveBeenCalledWith(
@@ -291,4 +296,3 @@ describe('ExceptionsTable', () => {
     );
   });
 });
-

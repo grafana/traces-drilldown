@@ -1,6 +1,6 @@
 # Application structure
 
-**What this file is for:** A **product map** (entry → exploration → trace view → exit/embed). For *why* the app exists, see `project-intent.md`. Use this doc when implementing or reviewing UI and URL behavior.
+**What this file is for:** A **product map** (entry → exploration → trace view → exit/embed). For _why_ the app exists, see `project-intent.md`. Use this doc when implementing or reviewing UI and URL behavior.
 
 ## Entry points
 

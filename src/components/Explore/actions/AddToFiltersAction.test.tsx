@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react'; 
+import { render, fireEvent } from '@testing-library/react';
 import { AddToFiltersAction, addToFilters } from './AddToFiltersAction';
 import { DataFrame } from '@grafana/data';
 import { AdHocFiltersVariable } from '@grafana/scenes';
@@ -19,7 +19,7 @@ describe('AddToFiltersAction', () => {
       state: { filters: [] },
       setState: jest.fn(),
     } as unknown as AdHocFiltersVariable;
-    
+
     frame = {
       fields: [
         {
@@ -27,17 +27,17 @@ describe('AddToFiltersAction', () => {
           type: 'string',
         },
       ],
-    } as unknown as DataFrame; 
-    
+    } as unknown as DataFrame;
+
     onClick = jest.fn();
     mockGetFiltersVariable.mockReturnValue(variable);
-    mockGetLabelValue.mockReturnValue('value1'); 
+    mockGetLabelValue.mockReturnValue('value1');
   });
 
   it('should render both Include and Exclude buttons', () => {
     const action = new AddToFiltersAction({ frame, onClick, labelKey: 'label1' });
     const { getByRole } = render(<AddToFiltersAction.Component model={action} />);
-    
+
     expect(getByRole('button', { name: /include/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /exclude/i })).toBeInTheDocument();
   });
@@ -63,7 +63,7 @@ describe('AddToFiltersAction', () => {
   });
 
   it('should not add include filter when labelKey is provided and does not exist in labels', () => {
-    const action = new AddToFiltersAction({frame, onClick, labelKey: 'nonExistentLabel'});
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'nonExistentLabel' });
     action.onIncludeClick();
 
     expect(variable.setState).not.toHaveBeenCalled();
@@ -71,7 +71,7 @@ describe('AddToFiltersAction', () => {
   });
 
   it('should not add exclude filter when labelKey is provided and does not exist in labels', () => {
-    const action = new AddToFiltersAction({frame, onClick, labelKey: 'nonExistentLabel'});
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'nonExistentLabel' });
     action.onExcludeClick();
 
     expect(variable.setState).not.toHaveBeenCalled();
@@ -112,10 +112,10 @@ describe('AddToFiltersAction', () => {
     const action = new AddToFiltersAction({ frame, onClick, labelKey: 'label1' });
     const onIncludeClickSpy = jest.spyOn(action, 'onIncludeClick');
     const { getByRole } = render(<AddToFiltersAction.Component model={action} />);
-    
+
     const includeButton = getByRole('button', { name: /include/i });
     fireEvent.click(includeButton);
-    
+
     expect(onIncludeClickSpy).toHaveBeenCalled();
   });
 
@@ -123,10 +123,10 @@ describe('AddToFiltersAction', () => {
     const action = new AddToFiltersAction({ frame, onClick, labelKey: 'label1' });
     const onExcludeClickSpy = jest.spyOn(action, 'onExcludeClick');
     const { getByRole } = render(<AddToFiltersAction.Component model={action} />);
-    
+
     const excludeButton = getByRole('button', { name: /exclude/i });
     fireEvent.click(excludeButton);
-    
+
     expect(onExcludeClickSpy).toHaveBeenCalled();
   });
 });
@@ -166,10 +166,8 @@ describe('addToFilters', () => {
   });
 
   it('should append filter when append is true', () => {
-    variable.state.filters = [
-      { key: 'existingKey', operator: '=', value: 'existingValue' },
-    ];
-    
+    variable.state.filters = [{ key: 'existingKey', operator: '=', value: 'existingValue' }];
+
     addToFilters(variable, 'existingKey', 'newValue', '=', true);
 
     expect(variable.setState).toHaveBeenCalledWith({

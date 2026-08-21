@@ -45,7 +45,9 @@ const AppConfig = ({ plugin }: Props) => {
       <FieldSet label={t('app-config.fieldset.enable-disable', 'Enable / Disable')}>
         {!enabled && (
           <>
-            <div className={s.colorWeak}><Trans i18nKey="app-config.plugin-not-enabled">The plugin is currently not enabled.</Trans></div>
+            <div className={s.colorWeak}>
+              <Trans i18nKey="app-config.plugin-not-enabled">The plugin is currently not enabled.</Trans>
+            </div>
             <Button
               className={s.marginTop}
               variant="primary"
@@ -65,7 +67,9 @@ const AppConfig = ({ plugin }: Props) => {
         {/* Disable the plugin */}
         {enabled && (
           <>
-            <div className={s.colorWeak}><Trans i18nKey="app-config.plugin-enabled">The plugin is currently enabled.</Trans></div>
+            <div className={s.colorWeak}>
+              <Trans i18nKey="app-config.plugin-enabled">The plugin is currently enabled.</Trans>
+            </div>
             <Button
               className={s.marginTop}
               variant="destructive"
@@ -87,7 +91,10 @@ const AppConfig = ({ plugin }: Props) => {
       <FieldSet label={t('app-config.fieldset.time-seeker-settings', 'Time Seeker Settings')} className={s.marginTopXl}>
         <Field
           label={t('app-config.field.query-range', 'Query Range')}
-          description={t('app-config.field.query-range-description', 'The time range for each cached batch in the Time Seeker. Larger values mean fewer queries but more data per query.')}
+          description={t(
+            'app-config.field.query-range-description',
+            'The time range for each cached batch in the Time Seeker. Larger values mean fewer queries but more data per query.'
+          )}
         >
           <Combobox<number>
             width={30}

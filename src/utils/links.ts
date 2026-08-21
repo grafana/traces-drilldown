@@ -75,11 +75,11 @@ export function contextToLink(context?: PluginExtensionPanelContext) {
       filters = parseResult.filters.filter(
         (filter) => filter.scope && filter.tag && filter.operator && filter.value && filter.value.length
       );
-      
+
       // Log any parsing errors to console for debugging
       if (parseResult.errors.length > 0) {
         console.warn('TraceQL parsing warnings for query:', tempoQuery.query);
-        parseResult.errors.forEach(error => {
+        parseResult.errors.forEach((error) => {
           console.warn(`- ${error.type}: ${error.message}`);
         });
       }
@@ -174,8 +174,7 @@ export function traceqlFiltersToAdHoc(traceqlFilters: TraceqlFilter[]): AdHocVar
       // Use only the tag as key for intrinsic scope so saved queries like "kind=server" stay as-is
       // instead of becoming "intrinsic.kind=server"
       const tag = f.tag!;
-      const key =
-        f.scope === 'intrinsic' ? tag : `${f.scope}${getScopeSeparator(f)}${tag}`;
+      const key = f.scope === 'intrinsic' ? tag : `${f.scope}${getScopeSeparator(f)}${tag}`;
       const value = Array.isArray(f.value) ? f.value.join('|') : String(f.value ?? '');
       return { key, operator: f.operator ?? '=', value };
     });

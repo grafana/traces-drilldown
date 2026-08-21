@@ -92,7 +92,10 @@ export const TimeSeekerControls: React.FC = () => {
       <div className={styles.floatingControlsContent}>
         {hasLargeBatchWarning && (
           <Tooltip
-            content={t('time-seeker-controls.large-batch-warning', 'The time seeker needs to load a large amount of data. Performance may be impacted.')}
+            content={t(
+              'time-seeker-controls.large-batch-warning',
+              'The time seeker needs to load a large amount of data. Performance may be impacted.'
+            )}
             placement="bottom"
           >
             <Icon name="exclamation-triangle" size="sm" style={{ color: theme.colors.warning.main }} />
@@ -133,7 +136,13 @@ export const TimeSeekerControls: React.FC = () => {
           size="sm"
           variant="secondary"
         />
-        <IconButton name="calendar-alt" tooltip={t('time-seeker-controls.set-range', 'Set range')} onClick={handleButtonClick} size="sm" variant="secondary" />
+        <IconButton
+          name="calendar-alt"
+          tooltip={t('time-seeker-controls.set-range', 'Set range')}
+          onClick={handleButtonClick}
+          size="sm"
+          variant="secondary"
+        />
         <div ref={timeRangeInputContainerRef} className={styles.timeRangeInputContainer}>
           <TimeRangeInput
             value={timeRangeValue}
