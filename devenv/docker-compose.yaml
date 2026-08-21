@@ -27,6 +27,30 @@ services:
     ports:
       - '3200:3200' # tempo
 
+  loki:
+    image: grafana/loki:3.5.9
+    command: ['-config.file=/etc/loki.yaml']
+    volumes:
+      - ./loki.yaml:/etc/loki.yaml
+    ports:
+      - '3100:3100' # loki
+
+  # Emits traces and matching logs, correlated by trace id, so trace to logs has something to
+  # resolve against. See devenv/trace-log-generator/generate.py for the log shapes it covers.
+  trace-log-generator:
+    image: python:3.13-alpine
+    command: ['python', '/app/generate.py']
+    restart: always
+    volumes:
+      - ./trace-log-generator:/app:ro
+    environment:
+      - TEMPO_OTLP_HTTP=http://tempo:4318
+      - LOKI_URL=http://loki:3100
+      - INTERVAL_SECONDS=5
+    depends_on:
+      - tempo
+      - loki
+
   # generates uninteresting traces, but is useful for testing
   k6-tracing:
     image: ghcr.io/grafana/xk6-client-tracing:latest@sha256:94c45fda864d2b8c05a477f66b1105cba6ae372dd0a8760d446d978c5eb1708f
