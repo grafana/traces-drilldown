@@ -43,6 +43,22 @@ the `grafana/docs` image which internally uses Hugo to generate the static site.
 2. Start the dev build: `pnpm dev` (or `pnpm start` to install and watch)
 3. Run Grafana + Tempo locally: `pnpm server` (Grafana at http://localhost:3000)
 
+### Configure precommit hooks
+
+We use pre-commit hooks (via [lefthook](https://github.com/evilmartians/lefthook)) to lint, fix, and format code as you commit your changes.
+
+To install the precommit hooks:
+
+```sh
+pnpm lefthook install
+```
+
+To remove precommit hooks:
+
+```sh
+pnpm lefthook uninstall
+```
+
 See [AGENTS.md](AGENTS.md) for architecture, Scenes patterns, and Tempo/TraceQL expectations. Plugin build and E2E details live in [`.config/AGENTS/instructions.md`](.config/AGENTS/instructions.md).
 
 ### Before you open a pull request
