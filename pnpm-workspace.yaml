@@ -11,6 +11,8 @@ minimumReleaseAge: 7200
 # Temporary: fast-uri@4.1.2 is ~2h under the age gate; remove after it matures.
 minimumReleaseAgeExclude:
   - fast-uri@4.1.2
+  # Renovate security update: react-router@8.3.0
+  - react-router@8.3.0
 # Fail install if a package's trust evidence is weaker than an earlier release (e.g. lost trusted publisher).
 trustPolicy: no-downgrade
 # Transitive deps must come from the registry/workspace; block git/tarball URLs except on direct deps.
@@ -28,7 +30,7 @@ overrides:
   semver: ^7.7.4
   ua-parser-js: 2.0.10
   lodash: ^4.18.0
-  react-router: ^6.30.2
+  react-router: ^8.0.0
   serialize-javascript: ^7.0.5
   immutable: ^5.1.8
   dompurify: ^3.4.13
