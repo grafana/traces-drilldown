@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { render, screen } from '@testing-library/react';
 
 import { DataLinksCustomContext } from './DataLinksCustomContext';
-import { DataLinksContext, useDataLinksContext } from '@grafana/data';
+import { DataLinksContext, locationUtil, useDataLinksContext } from '@grafana/data';
 import { getDataSourceSrv, usePluginFunctions } from '@grafana/runtime';
 
 // --- Mocks ---
@@ -84,6 +84,11 @@ beforeEach(() => {
   jest.clearAllMocks();
   capturedContext = null;
   setupAllConditionsMet();
+  locationUtil.initialize({
+    config: { appSubUrl: '/grafana' } as Parameters<typeof locationUtil.initialize>[0]['config'],
+    getTimeRangeForUrl: () => ({ from: 'now-1h', to: 'now' }),
+    getVariablesUrlParams: () => ({}),
+  });
 });
 
 // --- Tests ---
