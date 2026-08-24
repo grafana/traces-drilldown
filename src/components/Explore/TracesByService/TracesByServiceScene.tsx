@@ -244,6 +244,12 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     });
   }
 
+  public onUserSetActionView(actionView: ActionViewType) {
+    this._urlSync.performBrowserHistoryAction(() => {
+      this.setActionView(actionView);
+    });
+  }
+
   public setActionView(actionView?: ActionViewType) {
     const { body } = this.state;
     const actionViewDef = actionViewsDefinitions.find((v) => v.value === actionView);
@@ -251,28 +257,28 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     const metric = traceExploration.getMetricVariable().getValue();
     const prefixLen = getActionViewPrefixLen(traceExploration.state.hideRedPanels);
 
-    if (body.state.children.length > prefixLen - 1) {
-      if (actionViewDef) {
-        let scene: SceneObject;
-        if (actionView === 'exceptions' && this.state.exceptionsScene) {
-          // Use the persistent exceptions scene to maintain data subscription
-          scene = new SceneFlexItem({
-            body: this.state.exceptionsScene,
-          });
-        } else {
-          scene = actionViewDef.getScene(metric as MetricFunction);
-        }
-
-        body.setState({
-          children: [...body.state.children.slice(0, prefixLen), scene],
-        });
-        reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.action_view_changed, {
-          oldAction: this.state.actionView,
-          newAction: actionView,
-        });
-        this.setState({ actionView: actionViewDef.value });
-      }
+    if (body.state.children.length <= prefixLen - 1 || !actionViewDef) {
+      return;
     }
+
+    let scene: SceneObject;
+    if (actionView === 'exceptions' && this.state.exceptionsScene) {
+      // Use the persistent exceptions scene to maintain data subscription
+      scene = new SceneFlexItem({
+        body: this.state.exceptionsScene,
+      });
+    } else {
+      scene = actionViewDef.getScene(metric as MetricFunction);
+    }
+
+    body.setState({
+      children: [...body.state.children.slice(0, prefixLen), scene],
+    });
+    reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.action_view_changed, {
+      oldAction: this.state.actionView,
+      newAction: actionView,
+    });
+    this.setState({ actionView: actionViewDef.value });
   }
 
   private updateQueryRunner(metric: MetricFunction) {

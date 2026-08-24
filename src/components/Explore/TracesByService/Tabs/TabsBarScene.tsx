@@ -153,7 +153,7 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
                 key={index}
                 label={tab.displayName(metric as MetricFunction)}
                 active={actionView === tab.value}
-                onChangeTab={() => metricScene.setActionView(tab.value)}
+                onChangeTab={() => metricScene.onUserSetActionView(tab.value)}
                 counter={
                   tab.value === 'traceList' ? tracesCount : tab.value === 'exceptions' ? exceptionsCount : undefined
                 }

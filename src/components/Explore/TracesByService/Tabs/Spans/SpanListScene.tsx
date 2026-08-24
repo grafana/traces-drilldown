@@ -33,6 +33,7 @@ import {
 } from '../../../../../utils/shared';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
+import { testIds } from 'utils/testIds';
 
 export interface SpanListSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -242,7 +243,7 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
     }
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid={testIds.tracesContainer}>
         <div className={styles.header}>
           <div className={styles.description}>
             <Trans i18nKey="span-list-scene.description">View a list of spans for the current set of filters.</Trans>

@@ -32,6 +32,7 @@ import { EmptyState } from '../../../../states/EmptyState/EmptyState';
 import { css } from '@emotion/css';
 import { getOpenTrace, getTraceExplorationScene } from 'utils/utils';
 import { structureDisplayName } from '../TabsBarScene';
+import { testIds } from 'utils/testIds';
 
 export interface ServicesTabSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -347,7 +348,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
     );
 
     return (
-      <Stack direction={'column'} gap={1}>
+      <Stack direction={'column'} gap={1} data-testid={testIds.serviceStructureContainer}>
         <div className={styles.description}>{description}</div>
         {isLoading && (
           <Stack direction={'column'} gap={2}>
