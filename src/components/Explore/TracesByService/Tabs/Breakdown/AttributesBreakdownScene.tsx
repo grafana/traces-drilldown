@@ -38,6 +38,7 @@ import { AttributesDescription } from './AttributesDescription';
 import { PercentilesSelect } from './PercentilesSelect';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 import { useFavoriteAttributes } from 'hooks/useFavoriteAttributes';
+import { testIds } from 'utils/testIds';
 
 const CREATE_ALERT_FROM_PANEL_PLUGIN_ID = 'grafana/alerting/create-alert-from-panel/v1';
 
@@ -174,7 +175,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
     }, [groupBy]);
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid={testIds.breakdownContainer}>
         <BreakdownCreateAlertModalBridge payload={createAlertPayload} scene={model} />
         <div className={styles.controls}>
           <AttributesDescription
