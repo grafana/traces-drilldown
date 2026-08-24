@@ -1,12 +1,10 @@
 import React from 'react';
 
-import { DataFrame, GrafanaTheme2 } from '@grafana/data';
+import { DataFrame } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, AdHocFiltersVariable } from '@grafana/scenes';
-import { t, Trans } from '@grafana/i18n';
-import { useStyles2 } from '@grafana/ui';
-import { css } from '@emotion/css';
 import { getFiltersVariable, getLabelValue, getLabelValueType, getRawLabelValue } from '../../../utils/utils';
 import { DATABASE_CALLS_KEY } from 'pages/Explore/primary-signals';
+import { IncludeExcludeButtons } from './IncludeExcludeButtons';
 import { useFlagUseValueTypeFiltering } from 'featureFlags/featureFlags';
 import { AdHocFilterWithValueType } from 'utils/shared';
 
@@ -48,38 +46,25 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
   };
 
   public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
-    const styles = useStyles2(getStyles);
     const useValueFiltering = useFlagUseValueTypeFiltering();
 
     return (
-      <div className={styles.group} role="group" aria-label={t('add-to-filters-action.aria-label', 'Add to filters')}>
-        <button
-          type="button"
-          className={styles.segment}
-          onClick={() => {
-            if (!useValueFiltering) {
-              model.onIncludeClick();
-              return;
-            }
-            model.newOnIncludeClick();
-          }}
-        >
-          <Trans i18nKey="add-to-filters-action.include">Include</Trans>
-        </button>
-        <button
-          type="button"
-          className={styles.segment}
-          onClick={() => {
-            if (!useValueFiltering) {
-              model.onExcludeClick();
-              return;
-            }
-            model.newOnExcludeClick();
-          }}
-        >
-          <Trans i18nKey="add-to-filters-action.exclude">Exclude</Trans>
-        </button>
-      </div>
+      <IncludeExcludeButtons
+        onInclude={() => {
+          if (!useValueFiltering) {
+            model.onIncludeClick();
+            return;
+          }
+          model.newOnIncludeClick();
+        }}
+        onExclude={() => {
+          if (!useValueFiltering) {
+            model.onExcludeClick();
+            return;
+          }
+          model.newOnExcludeClick();
+        }}
+      />
     );
   };
 
@@ -125,41 +110,6 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
     newAddToFilters(variable, filter);
 
     this.state.onClick({ labelName });
-  };
-}
-
-function getStyles(theme: GrafanaTheme2) {
-  return {
-    group: css({
-      display: 'inline-flex',
-      alignItems: 'stretch',
-      border: `1px solid ${theme.colors.border.medium}`,
-      borderRadius: theme.shape.radius.default,
-      padding: 0,
-      gap: theme.spacing(1.5),
-      overflow: 'hidden',
-    }),
-    segment: css({
-      ...theme.typography.bodySmall,
-      fontWeight: theme.typography.fontWeightBold,
-      lineHeight: 1.2,
-      color: theme.colors.text.primary,
-      background: 'transparent',
-      border: 'none',
-      margin: 0,
-      cursor: 'pointer',
-      display: 'inline-flex',
-      alignItems: 'center',
-      alignSelf: 'stretch',
-      padding: theme.spacing(0.5, 1),
-      '&:hover': {
-        backgroundColor: theme.colors.background.secondary,
-      },
-      '&:focus-visible': {
-        outline: 'none',
-        boxShadow: `inset 0 0 0 2px ${theme.colors.primary.border}`,
-      },
-    }),
   };
 }
 
