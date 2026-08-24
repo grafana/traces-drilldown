@@ -19,6 +19,7 @@ jest.mock('@grafana/data', () => {
 });
 
 jest.mock('@grafana/runtime', () => ({
+  config: { appSubUrl: '/grafana' },
   getDataSourceSrv: jest.fn(),
   usePluginFunctions: jest.fn(),
 }));
@@ -179,7 +180,7 @@ describe('DataLinksCustomContext', () => {
       const linkModel = createMockLinkModel();
       const result = capturedContext.dataLinkPostProcessor({ linkModel });
 
-      expect(result.href).toBe(mockPath);
+      expect(result.href).toBe(`/grafana${mockPath}`);
       expect(mockExtensionFn).toHaveBeenCalledWith(
         expect.objectContaining({
           targets: expect.arrayContaining([
