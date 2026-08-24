@@ -98,12 +98,12 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
                 <div className={styles.title}><Trans i18nKey="highest-difference-panel.title">Highest difference</Trans></div>
                 <Stack gap={0.5}>
                   {!includeFilterExists && (
-                    <Button size="sm" variant="primary" fill="text" onClick={() => model.onIncludeClick()}>
+                    <Button size="sm" variant="secondary" onClick={() => model.onIncludeClick()}>
                       <Trans i18nKey="highest-difference-panel.include">Include</Trans>
                     </Button>
                   )}
                   {!excludeFilterExists && (
-                    <Button size="sm" variant="primary" fill="text" onClick={() => model.onExcludeClick()}>
+                    <Button size="sm" variant="secondary" onClick={() => model.onExcludeClick()}>
                       <Trans i18nKey="highest-difference-panel.exclude">Exclude</Trans>
                     </Button>
                   )}

@@ -1,10 +1,9 @@
 import React from 'react';
 
-import { DataFrame, GrafanaTheme2 } from '@grafana/data';
+import { DataFrame } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, AdHocFiltersVariable } from '@grafana/scenes';
-import { t, Trans } from '@grafana/i18n';
-import { useStyles2 } from '@grafana/ui';
-import { css } from '@emotion/css';
+import { Trans } from '@grafana/i18n';
+import { Button, Stack } from '@grafana/ui';
 import { getFiltersVariable, getLabelValue } from '../../../utils/utils';
 import { DATABASE_CALLS_KEY } from 'pages/Explore/primary-signals';
 
@@ -46,53 +45,16 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
   };
 
   public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
-    const styles = useStyles2(getStyles);
-
     return (
-      <div className={styles.group} role="group" aria-label={t('add-to-filters-action.aria-label', 'Add to filters')}>
-        <button type="button" className={styles.segment} onClick={model.onIncludeClick}>
+      <Stack gap={0.5}>
+        <Button size="sm" variant="secondary" onClick={model.onIncludeClick}>
           <Trans i18nKey="add-to-filters-action.include">Include</Trans>
-        </button>
-        <button type="button" className={styles.segment} onClick={model.onExcludeClick}>
+        </Button>
+        <Button size="sm" variant="secondary" onClick={model.onExcludeClick}>
           <Trans i18nKey="add-to-filters-action.exclude">Exclude</Trans>
-        </button>
-      </div>
+        </Button>
+      </Stack>
     );
-  };
-}
-
-function getStyles(theme: GrafanaTheme2) {
-  return {
-    group: css({
-      display: 'inline-flex',
-      alignItems: 'stretch',
-      border: `1px solid ${theme.colors.border.medium}`,
-      borderRadius: theme.shape.radius.default,
-      padding: 0,
-      gap: theme.spacing(1.5),
-      overflow: 'hidden',
-    }),
-    segment: css({
-      ...theme.typography.bodySmall,
-      fontWeight: theme.typography.fontWeightBold,
-      lineHeight: 1.2,
-      color: theme.colors.text.primary,
-      background: 'transparent',
-      border: 'none',
-      margin: 0,
-      cursor: 'pointer',
-      display: 'inline-flex',
-      alignItems: 'center',
-      alignSelf: 'stretch',
-      padding: theme.spacing(0.5, 1),
-      '&:hover': {
-        backgroundColor: theme.colors.background.secondary,
-      },
-      '&:focus-visible': {
-        outline: 'none',
-        boxShadow: `inset 0 0 0 2px ${theme.colors.primary.border}`,
-      },
-    }),
   };
 }
 

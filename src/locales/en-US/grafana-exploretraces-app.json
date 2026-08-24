@@ -3,7 +3,6 @@
     "loading": "Loading Adaptive Traces..."
   },
   "add-to-filters-action": {
-    "aria-label": "Add to filters",
     "exclude": "Exclude",
     "include": "Include"
   },
