@@ -32,6 +32,7 @@ import { EmptyState } from '../../../../states/EmptyState/EmptyState';
 import { css } from '@emotion/css';
 import { getOpenTrace, getTraceExplorationScene } from 'utils/utils';
 import { structureDisplayName } from '../TabsBarScene';
+import { testIds } from 'utils/testIds';
 
 export interface ServicesTabSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -255,8 +256,16 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       case 'rate':
         description = (
           <>
-            <div><Trans i18nKey="structure-scene.rate-description">Analyse the service structure of the traces that match the current filters.</Trans></div>
-            <div><Trans i18nKey="structure-scene.rate-panel-info">Each panel represents an aggregate view compiled using spans from multiple traces.</Trans></div>
+            <div>
+              <Trans i18nKey="structure-scene.rate-description">
+                Analyse the service structure of the traces that match the current filters.
+              </Trans>
+            </div>
+            <div>
+              <Trans i18nKey="structure-scene.rate-panel-info">
+                Each panel represents an aggregate view compiled using spans from multiple traces.
+              </Trans>
+            </div>
           </>
         );
         emptyMsg = 'server';
@@ -264,8 +273,16 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       case 'errors':
         description = (
           <>
-            <div><Trans i18nKey="structure-scene.errors-description">Analyse the errors structure of the traces that match the current filters.</Trans></div>
-            <div><Trans i18nKey="structure-scene.errors-panel-info">Each panel represents an aggregate view compiled using spans from multiple traces.</Trans></div>
+            <div>
+              <Trans i18nKey="structure-scene.errors-description">
+                Analyse the errors structure of the traces that match the current filters.
+              </Trans>
+            </div>
+            <div>
+              <Trans i18nKey="structure-scene.errors-panel-info">
+                Each panel represents an aggregate view compiled using spans from multiple traces.
+              </Trans>
+            </div>
           </>
         );
         emptyMsg = 'error';
@@ -273,8 +290,16 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       case 'duration':
         description = (
           <>
-            <div><Trans i18nKey="structure-scene.duration-description">Analyse the structure of slow spans from the traces that match the current filters.</Trans></div>
-            <div><Trans i18nKey="structure-scene.duration-panel-info">Each panel represents an aggregate view compiled using spans from multiple traces.</Trans></div>
+            <div>
+              <Trans i18nKey="structure-scene.duration-description">
+                Analyse the structure of slow spans from the traces that match the current filters.
+              </Trans>
+            </div>
+            <div>
+              <Trans i18nKey="structure-scene.duration-panel-info">
+                Each panel represents an aggregate view compiled using spans from multiple traces.
+              </Trans>
+            </div>
           </>
         );
         emptyMsg = 'slow';
@@ -290,7 +315,10 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         </Text>
         <Text textAlignment={'center'} variant="body">
           <div className={styles.longText}>
-            <Trans i18nKey="structure-scene.no-data-message">The structure tab shows {{ emptyMsg }} spans beneath what you are currently investigating. Currently, there are no descendant {{ emptyMsg }} spans beneath the spans you are investigating.</Trans>
+            <Trans i18nKey="structure-scene.no-data-message">
+              The structure tab shows {{ emptyMsg }} spans beneath what you are currently investigating. Currently,
+              there are no descendant {{ emptyMsg }} spans beneath the spans you are investigating.
+            </Trans>
           </div>
         </Text>
         <Stack gap={0.5} alignItems={'center'}>
@@ -320,7 +348,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
     );
 
     return (
-      <Stack direction={'column'} gap={1}>
+      <Stack direction={'column'} gap={1} data-testid={testIds.serviceStructureContainer}>
         <div className={styles.description}>{description}</div>
         {isLoading && (
           <Stack direction={'column'} gap={2}>
@@ -370,9 +398,7 @@ function buildQuery(metric: MetricFunction) {
       break;
   }
 
-  const rootSelectors = `${VAR_FILTERS_EXPR} ${
-    selectionQuery.length ? `&& ${selectionQuery}` : ''
-  }`;
+  const rootSelectors = `${VAR_FILTERS_EXPR} ${selectionQuery.length ? `&& ${selectionQuery}` : ''}`;
 
   // ({${rootSelectors}} &>> { ${metricQuery} }) # finds trees of spans in error or with high duration
   //    || ({${rootSelectors}})                  # finds single spans in error or with high duration
