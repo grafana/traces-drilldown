@@ -1,0 +1,25 @@
+name: Create Plugin Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *' # run once a month on the 1st day
+
+permissions: {}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required for create-github-app-token OIDC auth
+    steps:
+      - id: get-github-token
+        uses: grafana/shared-workflows/actions/create-github-app-token@46f48da11e78ebdba7a8747ae456b11062fac83e # create-github-app-token/v0.3.1 (2026-06-01)
+        with:
+          github_app: grafana-plugins-platform-bot
+
+      - uses: grafana/plugin-actions/create-plugin-update@143b102daefed8b8dff14becfdd7eabcdbfa0ec7 # create-plugin-update/v2.0.3 (2026-08-20)
+        with:
+          token: ${{ steps.get-github-token.outputs.token }}
+          node-version: '22'

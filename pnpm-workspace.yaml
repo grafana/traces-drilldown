@@ -11,6 +11,8 @@ minimumReleaseAge: 7200
 # Temporary: fast-uri@4.1.2 is ~2h under the age gate; remove after it matures.
 minimumReleaseAgeExclude:
   - fast-uri@4.1.2
+  # Renovate security update: react-router-dom@6.30.5
+  - react-router-dom@6.30.5
 # Fail install if a package's trust evidence is weaker than an earlier release (e.g. lost trusted publisher).
 trustPolicy: no-downgrade
 # Transitive deps must come from the registry/workspace; block git/tarball URLs except on direct deps.
@@ -46,4 +48,4 @@ overrides:
   brace-expansion@^5: '>=5.0.9'
   fast-uri: '>=4.1.2'
   postcss: ^8.5.23
-  nanoid@^3: '>=3.3.17 <4'
+  nanoid@^3: '>=3.3.18 <4'
