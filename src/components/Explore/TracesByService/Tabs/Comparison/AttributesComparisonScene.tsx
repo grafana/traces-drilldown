@@ -48,6 +48,7 @@ import { formatUnixRangeDurationSeconds } from '../../../../../utils/dates';
 import { AttributesDescription } from '../Breakdown/AttributesDescription';
 import { isEqual } from 'lodash';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
+import { testIds } from 'utils/testIds';
 
 const HIDE_BASELINE_ONLY_LS_KEY = 'grafana.drilldown.traces.hideBaselineOnly';
 
@@ -228,7 +229,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     const styles = useStyles2(getStyles);
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid={testIds.comparisonContainer}>
         <div className={styles.controls}>
           <AttributesDescription
             description={t(
