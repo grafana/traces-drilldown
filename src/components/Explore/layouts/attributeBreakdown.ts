@@ -155,6 +155,7 @@ export function getLayoutChild(
           onBreakdownCreateAlert,
         })
       )
+      .setShowMenuAlways(true)
       .setData(dataNode);
 
     const actions = actionsFn(frame);
