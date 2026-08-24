@@ -2,10 +2,9 @@ import React from 'react';
 
 import { DataFrame } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, AdHocFiltersVariable } from '@grafana/scenes';
-import { Trans } from '@grafana/i18n';
-import { Button, Stack } from '@grafana/ui';
 import { getFiltersVariable, getLabelValue } from '../../../utils/utils';
 import { DATABASE_CALLS_KEY } from 'pages/Explore/primary-signals';
+import { IncludeExcludeButtons } from './IncludeExcludeButtons';
 
 interface AddToFiltersActionState extends SceneObjectState {
   frame: DataFrame;
@@ -45,16 +44,7 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
   };
 
   public static Component = ({ model }: SceneComponentProps<AddToFiltersAction>) => {
-    return (
-      <Stack gap={0.5}>
-        <Button size="sm" variant="secondary" onClick={model.onIncludeClick}>
-          <Trans i18nKey="add-to-filters-action.include">Include</Trans>
-        </Button>
-        <Button size="sm" variant="secondary" onClick={model.onExcludeClick}>
-          <Trans i18nKey="add-to-filters-action.exclude">Exclude</Trans>
-        </Button>
-      </Stack>
-    );
+    return <IncludeExcludeButtons onInclude={model.onIncludeClick} onExclude={model.onExcludeClick} />;
   };
 }
 

@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { GrafanaTheme2 } from '@grafana/data';
-import { Button, Icon, Stack, useStyles2, Tooltip } from '@grafana/ui';
+import { Icon, useStyles2, Tooltip } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
 import { css } from '@emotion/css';
 import { SparklineCell } from './SparklineCell';
 import { ExceptionAccordionContent } from './accordion/ExceptionAccordion';
 import { SceneObject } from '@grafana/scenes';
+import { IncludeExcludeButtons } from 'components/Explore/actions/IncludeExcludeButtons';
 
 import { ExceptionMessageFilterOperator, getExceptionMessageFilter } from './ExceptionUtils';
 
@@ -264,24 +265,12 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                             )}
                           </div>
                         </div>
-                        <Stack gap={0.5}>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={(e) => handleMessageFilterClick(row.message, 'include', e)}
-                            aria-label={t('exceptions-table.include-aria-label', 'Include exception message')}
-                          >
-                            <Trans i18nKey="exceptions-table.include">Include</Trans>
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={(e) => handleMessageFilterClick(row.message, 'exclude', e)}
-                            aria-label={t('exceptions-table.exclude-aria-label', 'Exclude exception message')}
-                          >
-                            <Trans i18nKey="exceptions-table.exclude">Exclude</Trans>
-                          </Button>
-                        </Stack>
+                        <IncludeExcludeButtons
+                          onInclude={(e) => handleMessageFilterClick(row.message, 'include', e)}
+                          onExclude={(e) => handleMessageFilterClick(row.message, 'exclude', e)}
+                          includeAriaLabel={t('exceptions-table.include-aria-label', 'Include exception message')}
+                          excludeAriaLabel={t('exceptions-table.exclude-aria-label', 'Exclude exception message')}
+                        />
                       </div>
                     </div>
                   </td>
