@@ -13,8 +13,8 @@ test.describe('components', () => {
   });
 
   test('in filters bar are visible', async ({ tracesExplorePage }) => {
-    await expect(tracesExplorePage.page.getByText('Root spans')).toBeVisible();
-    await expect(tracesExplorePage.page.getByText('All spans')).toBeVisible();
+    await expect(tracesExplorePage.page.getByRole('radio', { name: 'Root spans' })).toBeVisible();
+    await expect(tracesExplorePage.page.getByRole('radio', { name: 'All spans' })).toBeVisible();
     await expect(tracesExplorePage.page.getByRole('combobox').first()).toBeVisible();
   });
 

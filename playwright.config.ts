@@ -36,6 +36,8 @@ export default defineConfig<PluginOptions>({
     //   mode: 'on',
     // }
   },
+  /* Default 30s is consumed by tracesExplorePage setup (goto + 30s ready wait). */
+  timeout: 90_000,
   expect: { timeout: 15000 },
 
   /* Configure projects for major browsers */
