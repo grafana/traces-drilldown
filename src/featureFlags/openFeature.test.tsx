@@ -5,7 +5,6 @@ import { TypedInMemoryProvider, OpenFeature } from '@openfeature/web-sdk';
 import { logWarning } from '@grafana/runtime';
 
 import {
-  GRAFANA_OPEN_FEATURE_DOMAIN,
   isUseValueTypeFilteringEnabled,
   TIME_SEEKER_FEATURE_FLAG_KEY,
   TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER,
@@ -147,7 +146,7 @@ describe('openFeature', () => {
     it('should return true when the core-domain provider maps the flag on', async () => {
       setProviderAndWaitSpy.mockRestore();
       await OpenFeature.setProviderAndWait(
-        GRAFANA_OPEN_FEATURE_DOMAIN,
+        PLUGIN_OPEN_FEATURE_DOMAIN,
         new TypedInMemoryProvider({
           [TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER]: {
             disabled: false,
@@ -165,7 +164,7 @@ describe('openFeature', () => {
     it('returns the hook default when the flag is unset in the test provider', () => {
       const { result } = renderHook(() => useFlagUseValueTypeFiltering(), {
         wrapper: ({ children }) => (
-          <OpenFeatureTestProvider domain={GRAFANA_OPEN_FEATURE_DOMAIN}>{children}</OpenFeatureTestProvider>
+          <OpenFeatureTestProvider domain={PLUGIN_OPEN_FEATURE_DOMAIN}>{children}</OpenFeatureTestProvider>
         ),
       });
       expect(result.current).toBe(false);
@@ -175,7 +174,7 @@ describe('openFeature', () => {
       const { result } = renderHook(() => useFlagUseValueTypeFiltering(), {
         wrapper: ({ children }) => (
           <OpenFeatureTestProvider
-            domain={GRAFANA_OPEN_FEATURE_DOMAIN}
+            domain={PLUGIN_OPEN_FEATURE_DOMAIN}
             flagValueMap={{ [TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER]: true }}
           >
             {children}

@@ -1,6 +1,7 @@
 import type { FeatureToggles } from '@grafana/data';
 import { useBooleanFlagDetails } from '@openfeature/react-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
+import { PLUGIN_OPEN_FEATURE_DOMAIN } from './openFeature';
 
 // Grafana core feature flag domain
 export const GRAFANA_OPEN_FEATURE_DOMAIN = 'internal-grafana-core';
@@ -40,12 +41,12 @@ export function useFlagTempoAlerting(): boolean {
 }
 
 export function useFlagUseValueTypeFiltering(): boolean {
-  return isUseValueTypeFilteringEnabled();
+  return useBooleanFlagDetails(TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER, false).value;
 }
 
 /** Reads the current flag value synchronously from the OpenFeature client. */
 export function isUseValueTypeFilteringEnabled(): boolean {
-  return OpenFeature.getClient(GRAFANA_OPEN_FEATURE_DOMAIN).getBooleanValue(
+  return OpenFeature.getClient(PLUGIN_OPEN_FEATURE_DOMAIN).getBooleanValue(
     TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER,
     false
   );
