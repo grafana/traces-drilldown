@@ -10,12 +10,12 @@ If your change is minor, please feel free to submit a [pull request](https://hel
 
 Use [GitHub Issues](https://github.com/grafana/traces-drilldown/issues/new) to report bugs, ask questions, or propose larger changes.
 
-| Situation | What to do |
-|-----------|------------|
-| **Bug** — something is broken or regressed | [Open a bug report](https://github.com/grafana/traces-drilldown/issues/new?template=bug_report.md) with reproduction steps, expected vs actual behavior, Grafana/Tempo versions, and screenshots or recordings if helpful. |
-| **Small fix** — typo, clear one-file change, docs tweak | Open a pull request directly; link a related issue if one exists. |
-| **Feature or larger change** — new UI, behavior change, refactor | [Open a feature request](https://github.com/grafana/traces-drilldown/issues/new?template=feature_request.md) to discuss scope, or open a draft PR with context in the description. |
-| **Documentation only** | Open a PR and add the `type/doc` label. |
+| Situation                                                        | What to do                                                                                                                                                                                                                 |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bug** — something is broken or regressed                       | [Open a bug report](https://github.com/grafana/traces-drilldown/issues/new?template=bug_report.md) with reproduction steps, expected vs actual behavior, Grafana/Tempo versions, and screenshots or recordings if helpful. |
+| **Small fix** — typo, clear one-file change, docs tweak          | Open a pull request directly; link a related issue if one exists.                                                                                                                                                          |
+| **Feature or larger change** — new UI, behavior change, refactor | [Open a feature request](https://github.com/grafana/traces-drilldown/issues/new?template=feature_request.md) to discuss scope, or open a draft PR with context in the description.                                         |
+| **Documentation only**                                           | Open a PR and add the `type/doc` label.                                                                                                                                                                                    |
 
 For bugs, check [Tempo](https://grafana.com/docs/tempo/latest/) and [TraceQL](https://grafana.com/docs/tempo/latest/traceql/) behavior first — a trace missing outside the selected time window may be expected, not a plugin bug.
 
@@ -42,6 +42,12 @@ the `grafana/docs` image which internally uses Hugo to generate the static site.
 1. Install dependencies: `pnpm install --frozen-lockfile --ignore-scripts`
 2. Start the dev build: `pnpm dev` (or `pnpm start` to install and watch)
 3. Run Grafana + Tempo locally: `pnpm server` (Grafana at http://localhost:3000)
+
+The devenv also runs Loki (http://localhost:3100) and `devenv/trace-log-generator`, which emits traces
+together with matching logs so trace to logs has something to resolve against. It cycles through log
+shapes (`otel`, `otlp-gateway`, `job-logfmt`, `line-only`) plus a `silent` flavour with no logs at all;
+`docker logs devenv-trace-log-generator-1` prints each trace id with its flavour, which is the quickest
+way to open a trace in a known state.
 
 See [AGENTS.md](AGENTS.md) for architecture, Scenes patterns, and Tempo/TraceQL expectations. Plugin build and E2E details live in [`.config/AGENTS/instructions.md`](.config/AGENTS/instructions.md).
 

@@ -17,6 +17,20 @@ datasources:
     apiVersion: 1
     uid: tempo
 
+  # Deliberately left without a trace-to-logs configuration on the Tempo data source above, so the
+  # devenv reproduces the state most users are in and exercises the detection path.
+  - name: Loki
+    type: loki
+    access: proxy
+    orgId: 1
+    url: http://loki:3100
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: true
+    apiVersion: 1
+    uid: loki
+
   - name: Tempo (Local Port Forward)
     type: tempo
     access: proxy
