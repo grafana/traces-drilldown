@@ -584,7 +584,6 @@ function getStyles(theme: GrafanaTheme2) {
     attributeLabel: css({
       fontSize: theme.typography.bodySmall.fontSize,
       fontWeight: theme.typography.fontWeightMedium,
-      //color: theme.colors.text.primary,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
