@@ -23,16 +23,12 @@ function fixedColorsFromOverrides(overrides: unknown[]) {
 describe('barsPanelConfig', () => {
   it('uses blue for rate (not green)', () => {
     const panel = barsPanelConfig('rate').build();
-    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([
-      { matcher: '.*', fixedColor: 'blue' },
-    ]);
+    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([{ matcher: '.*', fixedColor: 'blue' }]);
   });
 
   it('uses semi-dark-red for errors', () => {
     const panel = barsPanelConfig('errors').build();
-    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([
-      { matcher: '.*', fixedColor: 'semi-dark-red' },
-    ]);
+    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([{ matcher: '.*', fixedColor: 'semi-dark-red' }]);
   });
 
   it('applies axisWidth when provided', () => {
@@ -49,22 +45,16 @@ describe('linesPanelConfig', () => {
 
   it('uses semi-dark-blue for duration when metric is set', () => {
     const panel = linesPanelConfig('duration').build();
-    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([
-      { matcher: '.*', fixedColor: 'semi-dark-blue' },
-    ]);
+    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([{ matcher: '.*', fixedColor: 'semi-dark-blue' }]);
   });
 
   it('uses blue for rate when metric is set', () => {
     const panel = linesPanelConfig('rate').build();
-    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([
-      { matcher: '.*', fixedColor: 'blue' },
-    ]);
+    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([{ matcher: '.*', fixedColor: 'blue' }]);
   });
 
   it('uses semi-dark-red for errors when metric is set', () => {
     const panel = linesPanelConfig('errors').build();
-    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([
-      { matcher: '.*', fixedColor: 'semi-dark-red' },
-    ]);
+    expect(fixedColorsFromOverrides(colorOverrides(panel))).toEqual([{ matcher: '.*', fixedColor: 'semi-dark-red' }]);
   });
 });

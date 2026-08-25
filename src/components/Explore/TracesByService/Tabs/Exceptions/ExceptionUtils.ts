@@ -1,9 +1,9 @@
-import { Field } from "@grafana/data";
-import { SceneObject } from "@grafana/scenes";
+import { Field } from '@grafana/data';
+import { SceneObject } from '@grafana/scenes';
 
-import { calculateBucketSize } from "utils/dates";
-import { escapeTraceQlStringLiteral } from "utils/filters-renderer";
-import { getDatasourceVariable } from "utils/utils";
+import { calculateBucketSize } from 'utils/dates';
+import { escapeTraceQlStringLiteral } from 'utils/filters-renderer';
+import { getDatasourceVariable } from 'utils/utils';
 
 const GROUPING_EDGE_LENGTH = 20;
 type PlaceholderPattern = {
@@ -52,24 +52,29 @@ const PLACEHOLDER_PATTERNS: PlaceholderPattern[] = [
 
 const PLACEHOLDER_TOKEN_REGEX = new RegExp(`(${PLACEHOLDER_PATTERNS.map((p) => p.token).join('|')})`);
 
-export function aggregateExceptions(messageField: Field<string>, typeField?: Field<string>, timeField?: Field<number>, serviceField?: Field<string>) {
+export function aggregateExceptions(
+  messageField: Field<string>,
+  typeField?: Field<string>,
+  timeField?: Field<number>,
+  serviceField?: Field<string>
+) {
   const occurrences = new Map<string, number>();
   const representativeMessages = new Map<string, string>();
   const groupedMessages = new Map<string, Set<string>>();
   const types = new Map<string, string>();
   const lastSeenTimes = new Map<string, number>();
   const services = new Map<string, string>();
-  const timeSeries = new Map<string, Array<{time: number, count: number}>>();
-  
+  const timeSeries = new Map<string, Array<{ time: number; count: number }>>();
+
   // Collect timestamps for each message
   const messageTimestamps = new Map<string, number[]>();
-  
+
   for (let i = 0; i < messageField.values.length; i++) {
     const message = messageField.values[i];
     const type = typeField?.values[i];
     const timestamp = timeField?.values[i];
     const service = serviceField?.values[i];
-    
+
     if (message) {
       const rawMessage = normalizeRawExceptionMessage(message);
       const normalizedMessage = normalizeExceptionMessage(message);
@@ -89,7 +94,7 @@ export function aggregateExceptions(messageField: Field<string>, typeField?: Fie
       if (rawMessage) {
         groupedMessages.get(groupedMessageKey)?.add(rawMessage);
       }
-      
+
       if (!types.has(groupedMessageKey) && type) {
         types.set(groupedMessageKey, type);
       }
@@ -104,7 +109,7 @@ export function aggregateExceptions(messageField: Field<string>, typeField?: Fie
           messageTimestamps.set(groupedMessageKey, []);
         }
         messageTimestamps.get(groupedMessageKey)!.push(timestampMs);
-                    
+
         const currentLastSeen = lastSeenTimes.get(groupedMessageKey) || 0;
         if (timestampMs > currentLastSeen) {
           lastSeenTimes.set(groupedMessageKey, timestampMs);
@@ -127,26 +132,32 @@ export function aggregateExceptions(messageField: Field<string>, typeField?: Fie
     occurrences: sortedEntries.map(([, count]) => count),
     services: sortedEntries.map(([groupedMessageKey]) => services.get(groupedMessageKey) || ''),
     timeSeries: sortedEntries.map(([groupedMessageKey]) => timeSeries.get(groupedMessageKey) || []),
-    groupedMessages: sortedEntries.map(([groupedMessageKey]) => Array.from(groupedMessages.get(groupedMessageKey) || [])),
+    groupedMessages: sortedEntries.map(([groupedMessageKey]) =>
+      Array.from(groupedMessages.get(groupedMessageKey) || [])
+    ),
     lastSeenTimes: sortedEntries.map(([groupedMessageKey]) => {
       const lastSeenMs = lastSeenTimes.get(groupedMessageKey);
-      
+
       if (!lastSeenMs) {
         return '';
       }
-      
+
       const now = Date.now();
       const diffMs = now - lastSeenMs;
-      
-      if (diffMs < 60000) { // Less than 1 minute
+
+      if (diffMs < 60000) {
+        // Less than 1 minute
         return 'Just now';
-      } else if (diffMs < 3600000) { // Less than 1 hour
+      } else if (diffMs < 3600000) {
+        // Less than 1 hour
         const minutes = Math.floor(diffMs / 60000);
         return `${minutes}m ago`;
-      } else if (diffMs < 86400000) { // Less than 1 day
+      } else if (diffMs < 86400000) {
+        // Less than 1 day
         const hours = Math.floor(diffMs / 3600000);
         return `${hours}h ago`;
-      } else { // More than 1 day
+      } else {
+        // More than 1 day
         const days = Math.floor(diffMs / 86400000);
         return `${days}d ago`;
       }
@@ -154,22 +165,24 @@ export function aggregateExceptions(messageField: Field<string>, typeField?: Fie
   };
 }
 
-export function createTimeSeries(timestamps: number[]): Array<{time: number, count: number}> {
-  if (!timestamps.length) {return [];}
-  
+export function createTimeSeries(timestamps: number[]): Array<{ time: number; count: number }> {
+  if (!timestamps.length) {
+    return [];
+  }
+
   timestamps.sort((a, b) => a - b);
-  
+
   const timeRangeMs = timestamps[timestamps.length - 1] - timestamps[0];
   const timeRangeSeconds = timeRangeMs / 1000;
   const bucketSizeSeconds = calculateBucketSize(timeRangeSeconds, 50);
   const bucketSizeMs = bucketSizeSeconds * 1000; // Convert back to milliseconds
   const buckets = new Map<number, number>();
-  
+
   for (const timestamp of timestamps) {
     const bucketKey = Math.floor(timestamp / bucketSizeMs) * bucketSizeMs;
     buckets.set(bucketKey, (buckets.get(bucketKey) || 0) + 1);
   }
-  
+
   // Convert to array and sort by time
   return Array.from(buckets.entries())
     .map(([time, count]) => ({ time, count }))
@@ -177,7 +190,9 @@ export function createTimeSeries(timestamps: number[]): Array<{time: number, cou
 }
 
 export function normalizeExceptionMessage(message: string): string {
-  if (!message) { return '' }
+  if (!message) {
+    return '';
+  }
   let normalized = normalizeRawExceptionMessage(message);
   for (const pattern of PLACEHOLDER_PATTERNS) {
     if (pattern.token === '<id>') {
@@ -265,9 +280,7 @@ export function normalizedExceptionMessageToTraceQLRegexPattern(normalizedMessag
 }
 
 function escapeRegexLiteral(value: string): string {
-  return value
-    .replace(/[\\^$.*+?()[\]{}|]/g, '\\$&')
-    .replace(/\s+/g, '\\s+');
+  return value.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&').replace(/\s+/g, '\\s+');
 }
 
 export function getDatasourceUidOrThrow(scene: SceneObject) {

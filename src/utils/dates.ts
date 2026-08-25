@@ -65,7 +65,7 @@ export const formatDuration = (duration: number): string => {
 
   const secondaryUnitString = `${secondaryValue}${secondaryUnit.unit}`;
   return `${primaryUnitString} ${secondaryUnitString}`;
-}
+};
 
 /**
  * Calculate bucket size based on time range and desired number of data points
@@ -85,4 +85,4 @@ export const getStepForTimeRange = (scene: SceneObject, dataPoints?: number) => 
   const rangeSeconds = to - from;
   const bucketSizeSeconds = calculateBucketSize(rangeSeconds, dataPoints);
   return `${bucketSizeSeconds}s`;
-}
+};

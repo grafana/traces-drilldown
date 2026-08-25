@@ -84,7 +84,15 @@ export function buildNormalLayout(
           children: [],
         }),
         groupBy: true,
-        getLayoutChild: getLayoutChild(scene, panels, getLabelValue, variable, metric, actionsFn, onBreakdownCreateAlert),
+        getLayoutChild: getLayoutChild(
+          scene,
+          panels,
+          getLabelValue,
+          variable,
+          metric,
+          actionsFn,
+          onBreakdownCreateAlert
+        ),
       }),
       new ByFrameRepeater({
         body: new SceneCSSGridLayout({
@@ -94,7 +102,15 @@ export function buildNormalLayout(
           children: [],
         }),
         groupBy: true,
-        getLayoutChild: getLayoutChild(scene, panels, getLabelValue, variable, metric, actionsFn, onBreakdownCreateAlert),
+        getLayoutChild: getLayoutChild(
+          scene,
+          panels,
+          getLabelValue,
+          variable,
+          metric,
+          actionsFn,
+          onBreakdownCreateAlert
+        ),
       }),
     ],
   });

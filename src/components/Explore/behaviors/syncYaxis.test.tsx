@@ -51,10 +51,7 @@ describe('syncYAxis', () => {
 
     root.publishEvent(
       new EventTimeseriesDataReceived({
-        series: [
-          timeseriesFrame('A', 'high', [100, 80]),
-          timeseriesFrame('A', 'low', [2, 3]),
-        ],
+        series: [timeseriesFrame('A', 'high', [100, 80]), timeseriesFrame('A', 'low', [2, 3])],
       }),
       true
     );

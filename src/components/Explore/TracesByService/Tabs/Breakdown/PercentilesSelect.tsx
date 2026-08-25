@@ -12,7 +12,11 @@ export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable
   const options = [
     { label: t('percentiles-select.p50', 'p50'), value: '0.5' },
     { label: t('percentiles-select.p75', 'p75'), value: '0.75' },
-    { label: t('percentiles-select.p90', 'p90'), value: '0.9', description: t('percentiles-select.default', 'Default') },
+    {
+      label: t('percentiles-select.p90', 'p90'),
+      value: '0.9',
+      description: t('percentiles-select.default', 'Default'),
+    },
     { label: t('percentiles-select.p95', 'p95'), value: '0.95' },
     { label: t('percentiles-select.p99', 'p99'), value: '0.99' },
   ];
@@ -25,7 +29,9 @@ export const PercentilesSelect = ({ percentilesVariable }: { percentilesVariable
 
   return (
     <Stack>
-      <Label className={styles.label}><Trans i18nKey="percentiles-select.label">Percentiles</Trans></Label>
+      <Label className={styles.label}>
+        <Trans i18nKey="percentiles-select.label">Percentiles</Trans>
+      </Label>
       <MultiCombobox<string>
         width={'auto'}
         minWidth={20}

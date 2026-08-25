@@ -60,9 +60,9 @@ describe('getPanelData', () => {
       state: { value: mockRange },
     } as unknown as ReturnType<typeof sceneGraph.getTimeRange>);
 
-    jest.spyOn(sceneGraph, 'interpolate').mockImplementation((_scene, value) =>
-      typeof value === 'string' ? `[interp:${value}]` : String(value ?? '')
-    );
+    jest
+      .spyOn(sceneGraph, 'interpolate')
+      .mockImplementation((_scene, value) => (typeof value === 'string' ? `[interp:${value}]` : String(value ?? '')));
 
     jest.spyOn(sceneGraph, 'findDescendents').mockReturnValue([]);
   });

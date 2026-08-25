@@ -51,7 +51,11 @@ export class DurationComparisonControl extends SceneObjectBase<ComparisonControl
           onClick={model.startInvestigation}
           tooltip={tooltip}
         >
-          {isDisabled ? <Trans i18nKey="duration-comparison-control.slowest-traces-selected">Slowest traces selected</Trans> : <Trans i18nKey="duration-comparison-control.select-slowest-traces">Select slowest traces</Trans>}
+          {isDisabled ? (
+            <Trans i18nKey="duration-comparison-control.slowest-traces-selected">Slowest traces selected</Trans>
+          ) : (
+            <Trans i18nKey="duration-comparison-control.select-slowest-traces">Select slowest traces</Trans>
+          )}
         </Button>
       </div>
     );

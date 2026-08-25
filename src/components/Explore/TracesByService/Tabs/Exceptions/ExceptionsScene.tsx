@@ -175,7 +175,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
     ) => {
       const filtersVariable = getFiltersVariable(model);
       addToFilters(filtersVariable, key, value, operator, append);
-      
+
       // Navigate to the errored traces tab
       const traceByServiceScene = getTraceByServiceScene(model);
       traceByServiceScene.setActionView('traceList');
@@ -185,7 +185,9 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.description}>
-            <Trans i18nKey="exceptions-scene.description">View exception details from errored traces for the current set of filters.</Trans>
+            <Trans i18nKey="exceptions-scene.description">
+              View exception details from errored traces for the current set of filters.
+            </Trans>
           </div>
         </div>
         <div className={styles.content}>

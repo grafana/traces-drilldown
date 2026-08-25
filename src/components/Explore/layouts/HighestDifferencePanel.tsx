@@ -96,7 +96,9 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
           {maxDifference !== undefined && maxDifferenceIndex !== undefined && (
             <>
               <Stack gap={1} justifyContent={'space-between'} alignItems={'center'}>
-                <div className={styles.title}><Trans i18nKey="highest-difference-panel.title">Highest difference</Trans></div>
+                <div className={styles.title}>
+                  <Trans i18nKey="highest-difference-panel.title">Highest difference</Trans>
+                </div>
                 <IncludeExcludeButtons
                   onInclude={() => model.onIncludeClick()}
                   onExclude={() => model.onExcludeClick()}

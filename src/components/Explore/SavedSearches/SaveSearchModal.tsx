@@ -26,10 +26,7 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
 
   const traceExploration = useMemo(() => getTraceExplorationScene(sceneRef), [sceneRef]);
   const { filters } = getFiltersVariable(traceExploration).useState();
-  const query = useMemo(
-    () => renderTraceQLLabelFilters(filters),
-    [filters]
-  );
+  const query = useMemo(() => renderTraceQLLabelFilters(filters), [filters]);
 
   const { saveSearch } = useSavedSearches(dsUid);
   const existingSearch = useCheckForExistingSearch(dsUid, query);
@@ -72,7 +69,9 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
   return (
     <Modal title={t('save-search-modal.title', 'Save current search')} isOpen={true} onDismiss={onClose}>
       <Alert title="" severity="info">
-        <Trans i18nKey="save-search-modal.info-alert">Saved searches are stored locally in your browser and will only be available on this device.</Trans>
+        <Trans i18nKey="save-search-modal.info-alert">
+          Saved searches are stored locally in your browser and will only be available on this device.
+        </Trans>
       </Alert>
       <Box marginBottom={2}>
         <code className={styles.query}>{query}</code>
@@ -83,7 +82,9 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
             <Box flex={1} marginBottom={2}>
               {existingSearch && (
                 <Alert title="" severity="warning">
-                  <Trans i18nKey="save-search-modal.existing-search-warning">There is a previously saved search with the same query: {{ title: existingSearch.title }}</Trans>
+                  <Trans i18nKey="save-search-modal.existing-search-warning">
+                    There is a previously saved search with the same query: {{ title: existingSearch.title }}
+                  </Trans>
                 </Alert>
               )}
               <Field label={t('save-search-modal.field.title', 'Title')} noMargin htmlFor="save-search-title">
@@ -97,7 +98,11 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
               </Field>
             </Box>
             <Box flex={1} marginBottom={2}>
-              <Field label={t('save-search-modal.field.description', 'Description')} noMargin htmlFor="save-search-description">
+              <Field
+                label={t('save-search-modal.field.description', 'Description')}
+                noMargin
+                htmlFor="save-search-description"
+              >
                 <Input
                   id="save-search-description"
                   value={description}

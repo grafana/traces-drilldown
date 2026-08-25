@@ -1,12 +1,6 @@
 import React, { memo } from 'react';
 
-import {
-  SceneComponentProps,
-  SceneFlexItem,
-  SceneObjectBase,
-  SceneObjectState,
-  sceneGraph,
-} from '@grafana/scenes';
+import { SceneComponentProps, SceneFlexItem, SceneObjectBase, SceneObjectState, sceneGraph } from '@grafana/scenes';
 import { t } from '@grafana/i18n';
 import { useStyles2, LoadingPlaceholder } from '@grafana/ui';
 import { css } from '@emotion/css';
@@ -75,13 +69,7 @@ export class AdaptiveTracesScene extends SceneObjectBase<AdaptiveTracesSceneStat
       return null;
     }
 
-    return (
-      <SpanLatencyWrapper
-        SpanLatencyComponent={SpanLatencyComponent}
-        policyId={policyId}
-        timeRange={timeRange}
-      />
-    );
+    return <SpanLatencyWrapper SpanLatencyComponent={SpanLatencyComponent} policyId={policyId} timeRange={timeRange} />;
   };
 }
 
@@ -102,4 +90,3 @@ function getStyles() {
     }),
   };
 }
-

@@ -145,7 +145,9 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
     /** True after terminal outcome (Done or Error) for this query; streaming can emit many times before that. */
     let batchCompleted = false;
 
-    const processQueryState = (state: { data?: { state: LoadingState; series: DataFrame[]; errors?: Array<{ message?: string }> } }) => {
+    const processQueryState = (state: {
+      data?: { state: LoadingState; series: DataFrame[]; errors?: Array<{ message?: string }> };
+    }) => {
       if (batchCompleted) {
         return;
       }
@@ -416,7 +418,9 @@ export class TimeSeekerScene extends SceneObjectBase<TimeSeekerSceneState> {
 
     const wrapSeekerRow = (body: React.ReactNode) => (
       <div className={styles.seekerRow}>
-        <div className={styles.seekerLabel}><Trans i18nKey="time-seeker-scene.seeker-label">Seeker</Trans></div>
+        <div className={styles.seekerLabel}>
+          <Trans i18nKey="time-seeker-scene.seeker-label">Seeker</Trans>
+        </div>
         <div className={styles.container} ref={containerRef}>
           {body}
         </div>

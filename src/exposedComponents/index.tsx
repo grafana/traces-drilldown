@@ -26,7 +26,13 @@ export function SuspendedOpenInExploreTracesButton(props: OpenInExploreTracesBut
 
 export function SuspendedEmbeddedTraceExploration(props: EmbeddedTraceExplorationState) {
   return (
-    <Suspense fallback={<div><Trans i18nKey="exposed-components.loading">Loading...</Trans></div>}>
+    <Suspense
+      fallback={
+        <div>
+          <Trans i18nKey="exposed-components.loading">Loading...</Trans>
+        </div>
+      }
+    >
       <OpenFeaturePluginScope>
         <EmbeddedTraceExploration {...props} />
       </OpenFeaturePluginScope>

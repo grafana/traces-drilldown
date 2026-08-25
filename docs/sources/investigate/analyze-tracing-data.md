@@ -140,8 +140,7 @@ If you notice a rise in the Errors metric, you can use the **Exceptions** tab to
 4. Click the message to jump to the **Errored traces** tab pre-filtered by that exception.
 5. Sort by Duration to find the most impacted requests, then open a trace to inspect retries and upstream dependencies.
 
-
-## Use the Adaptive Traces tab 
+## Use the Adaptive Traces tab
 
 The **Adaptive Traces** tab appears when both of the following conditions are met:
 
@@ -151,6 +150,7 @@ The **Adaptive Traces** tab appears when both of the following conditions are me
 When these conditions are met, the tab displays span latency data for the selected tail-sampling policy, helping you understand how the policy affects trace collection and latency distribution within the current time range.
 
 If Adaptive Traces isn't enabled or no tail-sampling policy filter is applied, the tab doesn't appear.
+
 ## Use the trace list tab
 
 Each RED metric has its own trace list tab:

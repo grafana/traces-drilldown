@@ -1,6 +1,6 @@
 import { DataFrame } from '@grafana/data';
 import { computeHighestDifference, getDefaultSelectionForMetric } from './comparison';
-import { MetricFunction } from './shared'; 
+import { MetricFunction } from './shared';
 
 describe('computeHighestDifference', () => {
   it('should return the correct max difference and index', () => {
@@ -9,7 +9,7 @@ describe('computeHighestDifference', () => {
         { name: 'Baseline', values: [10, 20, 15] },
         { name: 'Selection', values: [15, 25, 10] },
       ],
-    } as any; 
+    } as any;
 
     const result = computeHighestDifference(frame);
     expect(result).toEqual({ maxDifference: 5, maxDifferenceIndex: 0 });
