@@ -1,5 +1,67 @@
 # Changelog
 
+## [2.2.0](https://github.com/grafana/traces-drilldown/compare/v2.1.0...v2.2.0) (2026-08-24)
+
+
+### 🎉 Features
+
+* Add Faro instrumentation ([#869](https://github.com/grafana/traces-drilldown/issues/869)) ([2edd9c9](https://github.com/grafana/traces-drilldown/commit/2edd9c93c8730e7e47475995e9e2976f8e8b0ac4))
+* **breakdown:** reserve green for success, use blue for neutral rate ([#814](https://github.com/grafana/traces-drilldown/issues/814)) ([5486fe6](https://github.com/grafana/traces-drilldown/commit/5486fe668baf6fb49a3db885e54fa5205baf9472))
+
+
+### 🐛 Bug Fixes
+
+* always show panel menus and use secondary Include/Exclude buttons ([#873](https://github.com/grafana/traces-drilldown/issues/873)) ([d355e5b](https://github.com/grafana/traces-drilldown/commit/d355e5b00df716aad9dbe6df980497d0b2b2a417))
+* dataframe for root cause latency could also be SearchResponse ([#752](https://github.com/grafana/traces-drilldown/issues/752)) ([957e4f7](https://github.com/grafana/traces-drilldown/commit/957e4f77dc0769e037cde4e4dc968f098ec29f1e))
+* **deps:** bump pnpm overrides for CVE remediation ([#826](https://github.com/grafana/traces-drilldown/issues/826)) ([1e5bc09](https://github.com/grafana/traces-drilldown/commit/1e5bc099a2ee525049d9ab4d15957b346c7b961c))
+* **deps:** bump pnpm overrides for CVE remediation ([#852](https://github.com/grafana/traces-drilldown/issues/852)) ([ab6a1a9](https://github.com/grafana/traces-drilldown/commit/ab6a1a9d8fbe1da79676dd7d8289e7dda5e2505e))
+* **deps:** bump pnpm overrides for CVE remediation ([#857](https://github.com/grafana/traces-drilldown/issues/857)) ([968b017](https://github.com/grafana/traces-drilldown/commit/968b017f92c71aaae70d53c6e0487281622e92e3))
+* **deps:** resolve pnpm audit vulnerabilities ([#819](https://github.com/grafana/traces-drilldown/issues/819)) ([5b51dab](https://github.com/grafana/traces-drilldown/commit/5b51dab256e755a4cac29f727b27960b2ba0588b))
+* ignore attribute changes that are not human ([#853](https://github.com/grafana/traces-drilldown/issues/853)) ([a948c9b](https://github.com/grafana/traces-drilldown/commit/a948c9b62de3d0d87677247fd84c9602dcad1d53))
+* preserve tab browser history ([#866](https://github.com/grafana/traces-drilldown/issues/866)) ([6270205](https://github.com/grafana/traces-drilldown/commit/62702058ba3aab4e56c0649d0b448ddd66b2a221))
+* **release-please:** Update release-please action to version 2.0.2 ([#860](https://github.com/grafana/traces-drilldown/issues/860)) ([ec1266b](https://github.com/grafana/traces-drilldown/commit/ec1266bd4c9756b9ddcc8245710174b8f61e0afd))
+* respect appSubUrl in trace-to-logs data links ([#785](https://github.com/grafana/traces-drilldown/issues/785)) ([b013dc7](https://github.com/grafana/traces-drilldown/commit/b013dc7f76dcd83e0a47c55d77a964c86b34541d))
+* Scroll to trace in structure tab ([#827](https://github.com/grafana/traces-drilldown/issues/827)) ([66ecf28](https://github.com/grafana/traces-drilldown/commit/66ecf288993ae40eb8a11cf177f17fc59b0e06b9))
+* **security/high/:** update pnpm to v11.8.0 [security] ([#804](https://github.com/grafana/traces-drilldown/issues/804)) ([31dd2a8](https://github.com/grafana/traces-drilldown/commit/31dd2a83881a286fbe1da194adad1a3f11e41f36))
+* **security/medium/:** update dependency protobufjs to v7.6.5 [security] ([#817](https://github.com/grafana/traces-drilldown/issues/817)) ([c5bba01](https://github.com/grafana/traces-drilldown/commit/c5bba01320eac4c962f1033c9dbd998aaeda1290))
+* **security/medium/:** update dependency react-router-dom to v6.30.5 [security] ([#859](https://github.com/grafana/traces-drilldown/issues/859)) ([fa64f59](https://github.com/grafana/traces-drilldown/commit/fa64f5905dd17700b9b702610065cb372495d8ff))
+* **seeker:** keep relative range on refresh ([#834](https://github.com/grafana/traces-drilldown/issues/834)) ([81a1ad6](https://github.com/grafana/traces-drilldown/commit/81a1ad6bc7f31816f816f87cb8fab3e377098b53))
+* **seeker:** keep resize handles updating range ([#846](https://github.com/grafana/traces-drilldown/issues/846)) ([5143690](https://github.com/grafana/traces-drilldown/commit/5143690e288770ceda199fd67abdc5bb99baa21e))
+* stop duplicate history entries on load ([#849](https://github.com/grafana/traces-drilldown/issues/849)) ([f3c99d7](https://github.com/grafana/traces-drilldown/commit/f3c99d7cb495e144a3332b341e27552d7734a501))
+
+
+### 📝 Documentation
+
+* Add GenAI policy, contributor guide updates and issue templates ([#811](https://github.com/grafana/traces-drilldown/issues/811)) ([89a2a90](https://github.com/grafana/traces-drilldown/commit/89a2a90d8f5b7e9736104cf66711b22be3ccd4de))
+* sync Traces Drilldown docs with v2.0.3 UI ([#828](https://github.com/grafana/traces-drilldown/issues/828)) ([2584b28](https://github.com/grafana/traces-drilldown/commit/2584b289d661e1bb78cb1e551355fed1e274b603))
+
+
+### 🧪 Tests
+
+* suppress i18next support notice ([#835](https://github.com/grafana/traces-drilldown/issues/835)) ([bcc1b79](https://github.com/grafana/traces-drilldown/commit/bcc1b798ed2ddab3453af328cf8628ffeff8325f))
+
+
+### 🧹 Chore
+
+* add CODEOWNERS file ([#851](https://github.com/grafana/traces-drilldown/issues/851)) ([a416a4b](https://github.com/grafana/traces-drilldown/commit/a416a4b11e079a7a2205df647b0b2ea77ed055d0))
+* add cp-update workflow, bump action pins ([#868](https://github.com/grafana/traces-drilldown/issues/868)) ([78888f9](https://github.com/grafana/traces-drilldown/commit/78888f9059071aa7ae75463ee9e15380ceb728ab))
+* add warnOnConflicts to i18next config ([#803](https://github.com/grafana/traces-drilldown/issues/803)) ([2788a81](https://github.com/grafana/traces-drilldown/commit/2788a81003374dc5bfd6387338e8f6a0bbe42210))
+* **ci:** bump create-plugin-update to v2.0.3 ([#876](https://github.com/grafana/traces-drilldown/issues/876)) ([96ea43c](https://github.com/grafana/traces-drilldown/commit/96ea43c392d2afcbfabaaa5937af405b1039e441))
+* **ci:** pass correct node version to Create Plugin Update ([#874](https://github.com/grafana/traces-drilldown/issues/874)) ([06aed90](https://github.com/grafana/traces-drilldown/commit/06aed9019c95d08dabdc4ab5234e8b4fae7124f5))
+* **colors:** centralise metric colors and clean up overrides ([#836](https://github.com/grafana/traces-drilldown/issues/836)) ([9a4d455](https://github.com/grafana/traces-drilldown/commit/9a4d4555ffa23a802622606f7cccd4af61d08c73))
+* **deps:** pin dependencies ([#808](https://github.com/grafana/traces-drilldown/issues/808)) ([e7866f8](https://github.com/grafana/traces-drilldown/commit/e7866f8e397470235f63eef39a4806e778294410))
+* **deps:** update ghcr.io/grafana/xk6-client-tracing:latest docker digest to 94c45fd ([#809](https://github.com/grafana/traces-drilldown/issues/809)) ([a069efa](https://github.com/grafana/traces-drilldown/commit/a069efa3f40e79314a28b7dfab295eea6a1a228e))
+* **deps:** update rabbitmq:management docker digest to 4e628d3 ([#832](https://github.com/grafana/traces-drilldown/issues/832)) ([5d1221f](https://github.com/grafana/traces-drilldown/commit/5d1221f5b26fa15d09c1ace99ba04d85e2bc4205))
+* **deps:** update rabbitmq:management docker digest to 76412b1 ([#810](https://github.com/grafana/traces-drilldown/issues/810)) ([755e1eb](https://github.com/grafana/traces-drilldown/commit/755e1eb0dca8c22b3a926154ed1d5acd90b91e19))
+* **e2e:** introduce proper tracesExplore fixture ([#855](https://github.com/grafana/traces-drilldown/issues/855)) ([0b8a8ee](https://github.com/grafana/traces-drilldown/commit/0b8a8ee79c9b1027986ae37cc3e4c93c4353b91a))
+* **header:** use ToolbarButton for the plugin info button ([#824](https://github.com/grafana/traces-drilldown/issues/824)) ([efa4dc5](https://github.com/grafana/traces-drilldown/commit/efa4dc5e91289775e94f59c5e49f0527aef9d84f))
+* Remove homepage ([#789](https://github.com/grafana/traces-drilldown/issues/789)) ([f27321f](https://github.com/grafana/traces-drilldown/commit/f27321f79835cd632aaf853df9c47d300a70089c))
+* remove Inisights timeline widget ([#843](https://github.com/grafana/traces-drilldown/issues/843)) ([59ffbea](https://github.com/grafana/traces-drilldown/commit/59ffbeadf62323b14255be40e2628e4f28179138))
+* Remove unused dependencies ([#830](https://github.com/grafana/traces-drilldown/issues/830)) ([d445639](https://github.com/grafana/traces-drilldown/commit/d4456391e7da4a67f794bcccf08442bf34478094))
+* Update brace expansion ([#829](https://github.com/grafana/traces-drilldown/issues/829)) ([9ac3037](https://github.com/grafana/traces-drilldown/commit/9ac30374836121214d114525afd177443c226fb1))
+* update dependencies ([#838](https://github.com/grafana/traces-drilldown/issues/838)) ([36055b4](https://github.com/grafana/traces-drilldown/commit/36055b4d9ca7171dffad181f11c8e80a3f5efc59))
+* Wrap RED toggles in small screen ([#805](https://github.com/grafana/traces-drilldown/issues/805)) ([a2a3226](https://github.com/grafana/traces-drilldown/commit/a2a32269218574f4b3ec647493da54eb7cf786ca))
+
 ## [2.1.0](https://github.com/grafana/traces-drilldown/compare/v2.0.4...v2.1.0) (2026-06-30)
 
 
