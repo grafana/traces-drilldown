@@ -18,13 +18,7 @@ describe('IncludeExcludeButtons', () => {
   });
 
   it('should hide buttons when requested', () => {
-    render(
-      <IncludeExcludeButtons
-        onInclude={jest.fn()}
-        onExclude={jest.fn()}
-        showInclude={false}
-      />
-    );
+    render(<IncludeExcludeButtons onInclude={jest.fn()} onExclude={jest.fn()} showInclude={false} />);
 
     expect(screen.queryByRole('button', { name: 'Include' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Exclude' })).toBeInTheDocument();

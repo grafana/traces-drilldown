@@ -1,10 +1,6 @@
 import { GrafanaTheme2 } from '@grafana/data';
 
-import {
-  applyMetricSeriesColorOverrides,
-  getMetricColor,
-  getMetricColorName,
-} from './getMetricColor';
+import { applyMetricSeriesColorOverrides, getMetricColor, getMetricColorName } from './getMetricColor';
 
 describe('getMetricColorName', () => {
   it('maps metrics to palette names (rate is blue, not green)', () => {

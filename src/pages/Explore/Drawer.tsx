@@ -276,7 +276,7 @@ const getStyles = (theme: GrafanaTheme2) => {
     mask: css({
       // The !important here is to override the default .rc-drawer-mask styles
       backgroundColor: 'transparent !important',
-       
+
       position: 'absolute !important' as 'absolute',
 
       '&:before': {

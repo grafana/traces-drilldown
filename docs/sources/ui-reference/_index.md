@@ -70,11 +70,11 @@ For details on workflows, refer to [Analyze tracing data](../investigate/analyze
    Refer to [Save and load queries](../investigate/save-load-queries/) for more information.
 
 1. **Attributes sidebar**:
-    Use the **Attributes** sidebar to select and manage attributes across views. Search attributes with regular expressions. Press **Escape** or click **Clear** to reset the search.
+   Use the **Attributes** sidebar to select and manage attributes across views. Search attributes with regular expressions. Press **Escape** or click **Clear** to reset the search.
 
-    Click the star icon to add or remove a favorite. Drag and drop favorites to reorder them. Switch between scopes: **Favorites**, **All**, **Resource**, **Span**. A filter icon marks attributes already applied in the **Filters** bar.
+   Click the star icon to add or remove a favorite. Drag and drop favorites to reorder them. Switch between scopes: **Favorites**, **All**, **Resource**, **Span**. A filter icon marks attributes already applied in the **Filters** bar.
 
-    In **Breakdown** and **Comparison** views, selecting an attribute sets the current **Group by** attribute. In the trace list view, select multiple attributes to add or remove table columns. The app saves favorites in your browser.
+   In **Breakdown** and **Comparison** views, selecting an attribute sets the current **Group by** attribute. In the trace list view, select multiple attributes to add or remove table columns. The app saves favorites in your browser.
 
 ## Share your investigation
 

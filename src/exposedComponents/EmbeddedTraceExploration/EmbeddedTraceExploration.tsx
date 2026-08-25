@@ -23,12 +23,12 @@ function buildTraceExplorationFromState({
     }
   });
 
-  const exploration = new TraceExploration({ 
-    $timeRange, 
-    embedded: true, 
-    initialMetric: state.initialMetric ?? 'rate', 
+  const exploration = new TraceExploration({
+    $timeRange,
+    embedded: true,
+    initialMetric: state.initialMetric ?? 'rate',
     queryRangeHours,
-    ...state 
+    ...state,
   });
 
   // Otherwise, we'll sync with the URL when in embedded mini mode,
@@ -46,14 +46,16 @@ export default function EmbeddedTraceExploration(props: EmbeddedTraceExploration
   // Get plugin configuration following Grafana's recommended approach
   // See: https://grafana.com/developers/plugin-tools/tutorials/build-an-app-plugin#configuration-page
   const jsonData = usePluginJsonData();
-  const [exploration] = useState(buildTraceExplorationFromState({ ...props, queryRangeHours: jsonData.queryRangeHours }));
+  const [exploration] = useState(
+    buildTraceExplorationFromState({ ...props, queryRangeHours: jsonData.queryRangeHours })
+  );
 
   if (!props.urlSync) {
     return <exploration.Component model={exploration} />;
   }
 
   return (
-    <UrlSyncContextProvider namespace='td' scene={exploration} updateUrlOnInit={false} createBrowserHistorySteps={true}>
+    <UrlSyncContextProvider namespace="td" scene={exploration} updateUrlOnInit={false} createBrowserHistorySteps={true}>
       <exploration.Component model={exploration} />
     </UrlSyncContextProvider>
   );
