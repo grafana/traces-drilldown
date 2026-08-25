@@ -26,10 +26,8 @@ export class TracesExplorePage extends GrafanaPage {
     await expect(loading).toHaveCount(0);
   }
 
-  /** Wait for the explore view to be ready (header with Data source or Filters visible). */
-  async waitForExploreReady(timeoutMs = 10000) {
-    const headerOrFilters = this.page.getByText('Data source').or(this.page.getByText('Filters', { exact: true }));
-    await expect(headerOrFilters.first()).toBeVisible({ timeout: timeoutMs });
+  async waitForExploreReady(timeoutMs = 30000) {
+    await expect(this.page.locator('#trace-exploration')).toBeVisible({ timeout: timeoutMs });
   }
 
   async assertMissingData() {

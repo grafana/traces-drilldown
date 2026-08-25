@@ -25,13 +25,12 @@ test.describe('components', () => {
     ).toBeVisible({
       timeout: 20000,
     });
-    await expect(
-      tracesExplorePage
-        .getByGrafanaSelector(selectors.components.Panels.Panel.title('Histogram by duration'))
-        .locator('canvas')
-    ).toBeVisible({
-      timeout: 20000,
-    });
+    // Duration mini-panel is an empty-state image until Tempo has histogram data (cold mythical stack).
+    const durationHistogram = tracesExplorePage.getByGrafanaSelector(
+      selectors.components.Panels.Panel.title('Histogram by duration')
+    );
+    await expect(durationHistogram).toBeVisible({ timeout: 30000 });
+    await expect(durationHistogram.locator('canvas')).toBeVisible();
   });
 
   test('for tabs are visible', async ({ tracesExplorePage, selectors }) => {
