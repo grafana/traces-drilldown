@@ -165,7 +165,7 @@ describe('AddToFiltersAction with useFlagUseValueTypeFiltering', () => {
     onClick = jest.fn();
     mockGetFiltersVariable.mockReturnValue(variable);
     mockUseFlagUseValueTypeFiltering.mockReturnValue(true);
-    mockGetLabelValueType.mockReturnValue('string');
+    mockGetLabelValueType.mockReturnValue('quoted');
     mockGetRawLabelValue.mockReturnValue('value1');
     jest.spyOn(console, 'warn').mockRestore();
   });
@@ -183,7 +183,7 @@ describe('AddToFiltersAction with useFlagUseValueTypeFiltering', () => {
     action.newOnIncludeClick();
 
     expect(variable.setState).toHaveBeenCalledWith({
-      filters: [{ key: 'label1', operator: '=', value: 'value1', meta: { valueType: 'string' } }],
+      filters: [{ key: 'label1', operator: '=', value: 'value1', meta: { valueType: 'quoted' } }],
     });
     expect(onClick).toHaveBeenCalledWith({ labelName: 'label1' });
   });
@@ -193,7 +193,7 @@ describe('AddToFiltersAction with useFlagUseValueTypeFiltering', () => {
     action.newOnExcludeClick();
 
     expect(variable.setState).toHaveBeenCalledWith({
-      filters: [{ key: 'label1', operator: '!=', value: 'value1', meta: { valueType: 'string' } }],
+      filters: [{ key: 'label1', operator: '!=', value: 'value1', meta: { valueType: 'quoted' } }],
     });
     expect(onClick).toHaveBeenCalledWith({ labelName: 'label1' });
   });
@@ -224,7 +224,7 @@ describe('AddToFiltersAction with useFlagUseValueTypeFiltering', () => {
     action.newOnIncludeClick();
 
     expect(variable.setState).toHaveBeenCalledWith({
-      filters: [{ key: 'label1', operator: '=', value: 'value1', meta: { valueType: 'string' } }],
+      filters: [{ key: 'label1', operator: '=', value: 'value1', meta: { valueType: 'quoted' } }],
     });
     expect(onClick).toHaveBeenCalledWith({ labelName: 'label1' });
   });
@@ -235,7 +235,7 @@ describe('AddToFiltersAction with useFlagUseValueTypeFiltering', () => {
     action.newOnExcludeClick();
 
     expect(variable.setState).toHaveBeenCalledWith({
-      filters: [{ key: 'label1', operator: '!=', value: 'value1', meta: { valueType: 'string' } }],
+      filters: [{ key: 'label1', operator: '!=', value: 'value1', meta: { valueType: 'quoted' } }],
     });
     expect(onClick).toHaveBeenCalledWith({ labelName: 'label1' });
   });

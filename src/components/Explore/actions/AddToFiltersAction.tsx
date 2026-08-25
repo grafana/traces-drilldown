@@ -89,7 +89,7 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
 
     if (!this.state.labelKey && Object.keys(labels).length !== 1) {
       console.warn(
-        `TracesDrilldown: We coulndn't find the label in the data response, ${operator === '=' ? 'include' : 'exclude'} click ignored`
+        `TracesDrilldown: We couldn't find the label in the data response, ${operator === '=' ? 'include' : 'exclude'} click ignored`
       );
       return;
     }
