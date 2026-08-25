@@ -6,6 +6,7 @@ import { css } from '@emotion/css';
 import { SparklineCell } from './SparklineCell';
 import { ExceptionAccordionContent } from './accordion/ExceptionAccordion';
 import { SceneObject } from '@grafana/scenes';
+import { IncludeExcludeButtons } from 'components/Explore/actions/IncludeExcludeButtons';
 
 import { ExceptionMessageFilterOperator, getExceptionMessageFilter } from './ExceptionUtils';
 
@@ -264,22 +265,12 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                             )}
                           </div>
                         </div>
-                        <div className={styles.filterButtonsContainer}>
-                          <button
-                            className={styles.filterButton}
-                            onClick={(e) => handleMessageFilterClick(row.message, 'include', e)}
-                            aria-label={t('exceptions-table.include-aria-label', 'Include exception message')}
-                          >
-                            <Trans i18nKey="exceptions-table.include">Include</Trans>
-                          </button>
-                          <button
-                            className={styles.filterButton}
-                            onClick={(e) => handleMessageFilterClick(row.message, 'exclude', e)}
-                            aria-label={t('exceptions-table.exclude-aria-label', 'Exclude exception message')}
-                          >
-                            <Trans i18nKey="exceptions-table.exclude">Exclude</Trans>
-                          </button>
-                        </div>
+                        <IncludeExcludeButtons
+                          onInclude={(e) => handleMessageFilterClick(row.message, 'include', e)}
+                          onExclude={(e) => handleMessageFilterClick(row.message, 'exclude', e)}
+                          includeAriaLabel={t('exceptions-table.include-aria-label', 'Include exception message')}
+                          excludeAriaLabel={t('exceptions-table.exclude-aria-label', 'Exclude exception message')}
+                        />
                       </div>
                     </div>
                   </td>
@@ -400,34 +391,6 @@ const getStyles = (theme: GrafanaTheme2) => {
       flexDirection: 'column',
       flex: 1,
       minWidth: 0, // Allows flex item to shrink below content size
-    }),
-    filterButtonsContainer: css({
-      display: 'flex',
-      border: `1px solid ${theme.colors.border.medium}`,
-      borderRadius: '4px',
-      overflow: 'hidden',
-    }),
-    filterButton: css({
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: `${theme.spacing(0.25)} ${theme.spacing(1)}`,
-      background: 'transparent',
-      border: 'none',
-      cursor: 'pointer',
-      color: theme.colors.text.primary,
-      fontSize: theme.typography.bodySmall.fontSize,
-      transition: 'background 0.2s ease-in-out, color 0.2s ease-in-out',
-      whiteSpace: 'nowrap',
-      '&:hover': {
-        background: theme.colors.background.primary,
-      },
-      '&:active': {
-        transform: 'scale(0.95)',
-      },
-      '&:not(:last-child)': {
-        borderRight: `1px solid ${theme.colors.border.medium}`,
-      },
     }),
     exceptionType: css({
       fontWeight: theme.typography.fontWeightMedium,
