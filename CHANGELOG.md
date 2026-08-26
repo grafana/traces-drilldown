@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.2.1](https://github.com/grafana/traces-drilldown/compare/v2.2.0...v2.2.1) (2026-08-26)
+
+
+### 🐛 Bug Fixes
+
+* Fixes for new visual refresh theme ([#871](https://github.com/grafana/traces-drilldown/issues/871)) ([9a5a373](https://github.com/grafana/traces-drilldown/commit/9a5a37385eaefbbea1c6331b55085224345a910c))
+
+
+### 🧹 Chore
+
+* add Prettier pre-commit hook ([#867](https://github.com/grafana/traces-drilldown/issues/867)) ([0c6f709](https://github.com/grafana/traces-drilldown/commit/0c6f709ddf4a3fc46f50f0518a40ecfc803288fe))
+* **ci:** bump create-plugin-update to v2.0.4 ([#878](https://github.com/grafana/traces-drilldown/issues/878)) ([90e485a](https://github.com/grafana/traces-drilldown/commit/90e485ac0fe66f5c6d0c874eb0489b00474bb418))
+* **deps:** bump @grafana/scenes to 8.16.0 ([#865](https://github.com/grafana/traces-drilldown/issues/865)) ([54872e1](https://github.com/grafana/traces-drilldown/commit/54872e12e7b18fd35bcf81ebdfb527cf4295b91f))
+* Update packages ([#881](https://github.com/grafana/traces-drilldown/issues/881)) ([d054d63](https://github.com/grafana/traces-drilldown/commit/d054d63cb0588184d6e676667828029fbbf7351b))
+
 ## [2.2.0](https://github.com/grafana/traces-drilldown/compare/v2.1.0...v2.2.0) (2026-08-24)
 
 
