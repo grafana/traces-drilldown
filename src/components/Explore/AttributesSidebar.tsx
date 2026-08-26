@@ -560,14 +560,14 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     attributeItemSelected: css({
       //@ts-expect-error remove after grafana/ui update
-      backgroundColor: theme.colors.accent.background,
+      backgroundColor: theme.colors.accent ? theme.colors.accent.background : theme.colors.primary.transparent,
       color: theme.colors.text.primary,
-      border: `1px solid ${theme.colors.accent.border}`,
+      border: `1px solid ${theme.colors.accent ? theme.colors.accent.border : theme.colors.primary.border}`,
       '&:hover': {
         //@ts-expect-error remove after grafana/ui update
-        backgroundColor: theme.colors.accent.background,
+        backgroundColor: theme.colors.accent ? theme.colors.accent.background : theme.colors.primary.transparent,
         //@ts-expect-error remove after grafana/ui update
-        border: `1px solid ${theme.colors.accent.borderEmphasis}`,
+        border: `1px solid ${theme.colors.accent ? theme.colors.accent.borderEmphasis : theme.colors.primary.border}`,
       },
     }),
     checkbox: css({

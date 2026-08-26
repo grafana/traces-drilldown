@@ -23,7 +23,7 @@ export default defineConfig<PluginOptions>({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.BASE_URL ?? 'http://localhost:3030',
-    
+
     // Record trace only when retrying a test for the first time.
     screenshot: 'only-on-failure',
     // Record video only when retrying a test for the first time.
@@ -36,8 +36,6 @@ export default defineConfig<PluginOptions>({
     //   mode: 'on',
     // }
   },
-  /* Default 30s is consumed by tracesExplorePage setup (goto + 30s ready wait). */
-  timeout: 90_000,
   expect: { timeout: 15000 },
 
   /* Configure projects for major browsers */
