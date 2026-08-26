@@ -19,7 +19,7 @@ jobs:
         with:
           github_app: grafana-plugins-platform-bot
 
-      - uses: grafana/plugin-actions/create-plugin-update@143b102daefed8b8dff14becfdd7eabcdbfa0ec7 # create-plugin-update/v2.0.3 (2026-08-20)
+      - uses: grafana/plugin-actions/create-plugin-update@18c6da61002740639bf0322e1a756366d98f5b81 # create-plugin-update/v2.0.4 (2026-08-25)
         with:
           token: ${{ steps.get-github-token.outputs.token }}
           node-version: '22'
