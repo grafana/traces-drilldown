@@ -87,7 +87,9 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
 }
 
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
-  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['traceId', 'spanId'] });
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, {
+    keys: ['traceId', 'spanId'],
+  });
   private _kgInitialized = false;
 
   public constructor(state: Partial<TraceExplorationState>) {
@@ -133,7 +135,10 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
     this._subs.add(
       this.subscribeToEvent(EventTraceOpened, (event) => {
-        this.setState({ traceId: event.payload.traceId, spanId: event.payload.spanId });
+        this.setState({
+          traceId: event.payload.traceId,
+          spanId: event.payload.spanId,
+        });
       })
     );
 
@@ -494,7 +499,9 @@ function getTopScene(state: TraceExplorationState) {
     return new TracesByServiceScene({});
   }
 
-  return new TracesByServiceScene({ actionView: requestedView as ActionViewType });
+  return new TracesByServiceScene({
+    actionView: requestedView as ActionViewType,
+  });
 }
 
 function getVariableSet(state: TraceExplorationState) {
@@ -596,7 +603,6 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean, embeddedMini?: bool
     }),
     headerContainer: css({
       label: 'headerContainer',
-      backgroundColor: embedded ? theme.colors.background.primary : theme.colors.background.canvas,
       display: embeddedMini ? 'none' : 'flex',
       flexDirection: 'column',
       position: 'sticky',

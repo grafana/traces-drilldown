@@ -550,19 +550,24 @@ function getStyles(theme: GrafanaTheme2) {
       padding: theme.spacing(0.5),
       borderRadius: theme.shape.radius.default,
       cursor: 'pointer',
+      color: theme.colors.text.secondary,
       border: `1px solid transparent`,
       transition: 'all 0.2s ease-in-out',
       '&:hover': {
-        backgroundColor: theme.colors.background.secondary,
+        backgroundColor: theme.colors.action.hover,
         border: `1px solid ${theme.colors.border.medium}`,
       },
     }),
     attributeItemSelected: css({
-      backgroundColor: theme.colors.primary.transparent,
-      border: `1px solid ${theme.colors.primary.border}`,
+      //@ts-expect-error remove after grafana/ui update
+      backgroundColor: theme.colors.accent ? theme.colors.accent.background : theme.colors.primary.transparent,
+      color: theme.colors.text.primary,
+      border: `1px solid ${theme.colors.accent ? theme.colors.accent.border : theme.colors.primary.border}`,
       '&:hover': {
-        backgroundColor: theme.colors.primary.transparent,
-        border: `1px solid ${theme.colors.primary.border}`,
+        //@ts-expect-error remove after grafana/ui update
+        backgroundColor: theme.colors.accent ? theme.colors.accent.background : theme.colors.primary.transparent,
+        //@ts-expect-error remove after grafana/ui update
+        border: `1px solid ${theme.colors.accent ? theme.colors.accent.borderEmphasis : theme.colors.primary.border}`,
       },
     }),
     checkbox: css({
@@ -579,7 +584,6 @@ function getStyles(theme: GrafanaTheme2) {
     attributeLabel: css({
       fontSize: theme.typography.bodySmall.fontSize,
       fontWeight: theme.typography.fontWeightMedium,
-      color: theme.colors.text.primary,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
