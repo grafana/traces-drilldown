@@ -19,11 +19,11 @@ import VirtualModulesPlugin from 'webpack-virtual-modules';
 import { BuildModeWebpackPlugin } from './BuildModeWebpackPlugin.ts';
 import { DIST_DIR, SOURCE_DIR } from './constants.ts';
 import { getCPConfigVersion, getEntries, getPackageJson, getPluginJson, hasReadme, isWSL } from './utils.ts';
-
 import { externals } from '../bundler/externals.ts';
 
 const pluginJson = getPluginJson();
 const cpVersion = getCPConfigVersion();
+const pluginVersion = getPackageJson().version;
 
 const virtualPublicPath = new VirtualModulesPlugin({
   'node_modules/grafana-public-path.js': `
@@ -128,6 +128,11 @@ const config = async (env: Env): Promise<Configuration> => {
       minimize: Boolean(env.production),
       minimizer: [
         new TerserPlugin({
+          extractComments: {
+            banner: false,
+            filename: 'LICENSE.txt',
+          },
+
           terserOptions: {
             format: {
               comments: (_, { type, value }) => type === 'comment2' && value.trim().startsWith('[create-plugin]'),
@@ -160,7 +165,8 @@ const config = async (env: Env): Promise<Configuration> => {
       virtualPublicPath,
       // Insert create plugin version information into the bundle
       new webpack.BannerPlugin({
-        banner: '/* [create-plugin] version: ' + cpVersion + ' */',
+        banner: `/* [create-plugin] version: ${cpVersion} */
+          /* [create-plugin] plugin: ${pluginJson.id}@${pluginVersion} */`,
         raw: true,
         entryOnly: true,
       }),
@@ -186,11 +192,12 @@ const config = async (env: Env): Promise<Configuration> => {
       new ReplaceInFileWebpackPlugin([
         {
           dir: DIST_DIR,
-          files: ['plugin.json', 'README.md'],
+          test: [/(^|\/)plugin\.json$/, /(^|\/)README\.md$/],
+
           rules: [
             {
               search: /\%VERSION\%/g,
-              replace: getPackageJson().version,
+              replace: pluginVersion,
             },
             {
               search: /\%TODAY\%/g,
