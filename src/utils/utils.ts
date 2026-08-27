@@ -39,6 +39,7 @@ import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesB
 import { PrimarySignalVariable } from 'pages/Explore/PrimarySignalVariable';
 import { ActionViewType } from 'exposedComponents/types';
 import { ExceptionsScene } from 'components/Explore/TracesByService/Tabs/Exceptions/ExceptionsScene';
+import { escapeTraceQlStringLiteral } from './filters-renderer';
 
 export function getTraceExplorationScene(model: SceneObject): TraceExploration {
   return sceneGraph.getAncestor(model, TraceExploration);
@@ -347,4 +348,16 @@ export function toLabelValueType(valueType?: unknown, value?: unknown): LabelVal
   }
 
   return 'unknown';
+}
+
+export function stripOuterQuotes(value: string) {
+  return value.replace(/^['"]|['"]$/g, '');
+}
+
+export function toEscapedValue(valueType: LabelValueType, value: string): string {
+  if (valueType === 'quoted' || valueType === 'unknown') {
+    return `"${escapeTraceQlStringLiteral(value)}"`;
+  }
+
+  return value;
 }

@@ -6,7 +6,6 @@ import { isUseValueTypeFilteringEnabled } from '../../featureFlags/featureFlags'
 import { explorationDS } from 'utils/shared';
 
 jest.mock('../../featureFlags/featureFlags', () => ({
-  ...jest.requireActual('../../featureFlags/featureFlags'),
   isUseValueTypeFilteringEnabled: jest.fn(),
 }));
 
@@ -64,38 +63,49 @@ describe('AttributeFiltersVariable', () => {
       expect(mockedDataSourceApi.getTagValues).toHaveBeenCalledWith({ filters: [filter], key: filter.key });
     });
 
-    it('should append meta object with valueType on all values that include valueType in properties', async () => {
+    it('should append value and valueLabels on all values that include valueType in properties', async () => {
       const variable = new AdHocFiltersVariable({ name: 'test-filter' });
       const filter = { key: 'span.name', operator: '=', value: 'internal' };
       (mockedDataSourceApi.getTagValues as jest.Mock).mockResolvedValue([
-        { text: 'no-properties', value: '' },
-        { text: 'no-valueType', value: '', properties: {} },
-        { text: 'valueType-int', value: '123', properties: { valueType: 'int' } },
-        { text: 'valueType-float', value: '123.45', properties: { valueType: 'float' } },
-        { text: 'valueType-bool', value: 'false', properties: { valueType: 'bool' } },
-        { text: 'valueType-duration', value: '10ms', properties: { valueType: 'duration' } },
-        { text: 'valueType-keyword', value: 'unset', properties: { valueType: 'keyword' } },
-        { text: 'valueType-string', value: 'span', properties: { valueType: 'string' } },
-        { text: 'valueType-unknown-empty', value: '', properties: { valueType: '' } },
-        { text: 'valueType-unknown-null', value: '', properties: { valueType: null } },
-        { text: 'valueType-unknown-undefined', value: '', properties: { valueType: undefined } },
+        { text: '123', properties: { valueType: 'int' } },
+        { text: '123.45', properties: { valueType: 'float' } },
+        { text: 'false', properties: { valueType: 'bool' } },
+        { text: '10ms', properties: { valueType: 'duration' } },
+        { text: 'unset', properties: { valueType: 'keyword' } },
+        { text: '1.1', properties: { valueType: 'string' } },
+        { text: '"foo"', properties: { valueType: 'string' } },
+        { text: '""', properties: { valueType: 'string' } },
+        {},
+        { text: '' },
+        { text: 'prod' },
+        { text: '"prod"' },
+        { text: '', properties: {} },
+        { text: '', properties: { valueType: '' } },
+        { text: '', properties: { valueType: null } },
+        { text: '', properties: { valueType: undefined } },
       ]);
+
       const result = await getTagValuesProvider(variable, filter);
 
       expect(result).toEqual({
         replace: true,
         values: [
-          { text: 'no-properties', value: '', meta: { valueType: 'unknown' } },
-          { text: 'no-valueType', value: '', meta: { valueType: 'unknown' } },
-          { text: 'valueType-int', value: '123', meta: { valueType: 'bare' } },
-          { text: 'valueType-float', value: '123.45', meta: { valueType: 'bare' } },
-          { text: 'valueType-bool', value: 'false', meta: { valueType: 'bare' } },
-          { text: 'valueType-duration', value: '10ms', meta: { valueType: 'bare' } },
-          { text: 'valueType-keyword', value: 'unset', meta: { valueType: 'bare' } },
-          { text: 'valueType-string', value: 'span', meta: { valueType: 'quoted' } },
-          { text: 'valueType-unknown-empty', value: '', meta: { valueType: 'unknown' } },
-          { text: 'valueType-unknown-null', value: '', meta: { valueType: 'unknown' } },
-          { text: 'valueType-unknown-undefined', value: '', meta: { valueType: 'unknown' } },
+          { text: '123', value: '123', valueLabels: ['123'] },
+          { text: '123.45', value: '123.45', valueLabels: ['123.45'] },
+          { text: 'false', value: 'false', valueLabels: ['false'] },
+          { text: '10ms', value: '10ms', valueLabels: ['10ms'] },
+          { text: 'unset', value: 'unset', valueLabels: ['unset'] },
+          { text: '1.1', value: '"1.1"', valueLabels: ['1.1'] },
+          { text: '"foo"', value: '"foo"', valueLabels: ['foo'] },
+          { text: '""', value: '""', valueLabels: [''] },
+          { text: '' },
+          { text: '' },
+          { text: 'prod' },
+          { text: '"prod"' },
+          { text: '' },
+          { text: '' },
+          { text: '' },
+          { text: '' },
         ],
       });
     });

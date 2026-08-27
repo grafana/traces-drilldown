@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { OpenFeatureProvider } from '@openfeature/react-sdk';
 import { OFREPWebProvider } from '@openfeature/ofrep-web-provider';
 import { StandardResolutionReasons } from '@openfeature/core';
@@ -106,10 +106,17 @@ export function ensureOpenFeaturePluginInitialized(): Promise<void> {
  */
 export function OpenFeaturePluginScope({ children }: { children: React.ReactNode }) {
   ensureDefaultOnlyProviderRegistered();
+  const [flagsResolved, setFlagsResolved] = useState(false);
 
   useEffect(() => {
-    void ensureOpenFeaturePluginInitialized();
+    // calling isUseValueTypeFilteringEnabled() before finished ensureOpenFeaturePluginInitialized would return the default value, i.e. false
+    void ensureOpenFeaturePluginInitialized().finally(() => setFlagsResolved(true));
   }, []);
+
+  if (!flagsResolved) {
+    // return null until OFREP is initialized so we make sure that isUseValueTypeFilteringEnabled() will return actual value
+    return null;
+  }
 
   return <OpenFeatureProvider domain={PLUGIN_OPEN_FEATURE_DOMAIN}>{children}</OpenFeatureProvider>;
 }

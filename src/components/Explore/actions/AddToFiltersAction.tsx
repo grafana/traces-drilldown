@@ -2,11 +2,19 @@ import React from 'react';
 
 import { DataFrame } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, AdHocFiltersVariable } from '@grafana/scenes';
-import { getFiltersVariable, getLabelValue, getLabelValueType, getRawLabelValue } from '../../../utils/utils';
+import {
+  getFiltersVariable,
+  getLabelValue,
+  getLabelValueType,
+  getRawLabelValue,
+  stripOuterQuotes,
+  toEscapedValue,
+} from '../../../utils/utils';
 import { DATABASE_CALLS_KEY } from 'pages/Explore/primary-signals';
 import { IncludeExcludeButtons } from './IncludeExcludeButtons';
 import { useFlagUseValueTypeFiltering } from 'featureFlags/featureFlags';
 import { AdHocFilterWithValueType } from 'utils/shared';
+import { logWarning } from '@grafana/runtime';
 
 interface AddToFiltersActionState extends SceneObjectState {
   frame: DataFrame;
@@ -80,32 +88,32 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
     const variable = getFiltersVariable(this);
 
     const labels = this.state.frame.fields.find((f) => f.labels)?.labels ?? {};
+    const clickOperator = operator === '=' ? 'include' : 'exclude';
     if (this.state.labelKey && !labels[this.state.labelKey]) {
-      console.warn(
-        `TracesDrilldown: There were no labels matching ${this.state.labelKey}, ${operator === '=' ? 'include' : 'exclude'} click ignored`
-      );
+      logWarning(`There were no labels matching ${this.state.labelKey}, ${clickOperator} click ignored`);
       return;
     }
 
     if (!this.state.labelKey && Object.keys(labels).length !== 1) {
-      console.warn(
-        `TracesDrilldown: We couldn't find the label in the data response, ${operator === '=' ? 'include' : 'exclude'} click ignored`
-      );
+      logWarning(`TracesDrilldown: We couldn't find the label in the data response, ${clickOperator} click ignored`);
       return;
     }
 
     const labelName = this.state.labelKey ?? Object.keys(labels)[0];
     const rawValue = getRawLabelValue(this.state.frame, this.state.labelKey);
     if (rawValue === null) {
-      console.warn(
-        `TracesDrilldown: No value found for ${labelName}, ${operator === '=' ? 'include' : 'exclude'} click ignored`
-      );
+      logWarning(`TracesDrilldown: No value found for ${labelName}, ${clickOperator} click ignored`);
       return;
     }
 
     const valueType = getLabelValueType(rawValue, labelName);
-    const value = rawValue.replace(/"/g, '');
-    const filter = { key: labelName, value, operator, meta: { valueType } };
+    const bareValue = stripOuterQuotes(rawValue);
+
+    // value carries its own type; valueLabels drives the pill text and must exist for newRenderFilter to work correctly
+    const value = toEscapedValue(valueType, bareValue);
+    const valueLabels = [bareValue];
+
+    const filter = { key: labelName, value, valueLabels, operator };
 
     newAddToFilters(variable, filter);
 

@@ -5,7 +5,7 @@ import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { VariableHide } from '@grafana/schema';
 import { isUseValueTypeFilteringEnabled } from 'featureFlags/featureFlags';
 import { getDataSourceSrv } from '@grafana/runtime';
-import { toLabelValueType } from 'utils/utils';
+import { stripOuterQuotes, toLabelValueType, toEscapedValue } from 'utils/utils';
 
 export interface AttributeFiltersVariableProps {
   initialFilters?: AdHocVariableFilter[];
@@ -43,11 +43,24 @@ export async function getTagValuesProvider(
     const response = (await ds.getTagValues?.({ filters, key: filter.key })) ?? [];
     const data = Array.isArray(response) ? response : response.data;
     const values = data.filter(Boolean).map((d) => {
-      const { text, expandable, group, value } = d;
+      if ('text' in d === false) {
+        return { text: '' };
+      }
+
+      const { text } = d;
       // see https://github.com/grafana/grafana-tempo-datasource/pull/239
-      // and https://github.com/grafana/scenes/pull/1613
-      const valueType = toLabelValueType(d.properties?.valueType, value);
-      return { text, value, expandable, group, meta: { valueType } };
+      if (!d.properties?.valueType) {
+        return { text };
+      }
+
+      const valueType = toLabelValueType(d.properties?.valueType, text);
+      const bareValue = stripOuterQuotes(text);
+
+      // value carries its own type; valueLabels drives the pill text and must exist for newRenderFilter to work correctly
+      const value = toEscapedValue(valueType, bareValue);
+      const valueLabels = [bareValue];
+
+      return { text, value, valueLabels };
     });
 
     return { replace: true, values };

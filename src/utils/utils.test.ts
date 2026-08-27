@@ -1,4 +1,12 @@
-import { getLabelValueType, isBooleanValue, isNumberValue, isQuotedValue, toLabelValueType } from './utils';
+import {
+  getLabelValueType,
+  isBooleanValue,
+  isNumberValue,
+  isQuotedValue,
+  stripOuterQuotes,
+  toEscapedValue,
+  toLabelValueType,
+} from './utils';
 
 describe('utils', () => {
   describe('isNumberValue', () => {
@@ -168,6 +176,8 @@ describe('utils', () => {
       expect(getLabelValueType('')).toBe('unknown');
       expect(getLabelValueType('Infinity')).toBe('unknown');
       expect(getLabelValueType('-Infinity')).toBe('unknown');
+      expect(getLabelValueType('notakeyword', 'status')).toBe('unknown');
+      expect(getLabelValueType('notaduration', 'duration')).toBe('unknown');
     });
   });
 
@@ -185,6 +195,10 @@ describe('utils', () => {
       expect(toLabelValueType('int', '1.1')).toBe('bare');
     });
 
+    it('should return "unknown" for a value that is "int" but not numeric', () => {
+      expect(toLabelValueType('int', 'abc')).toBe('unknown');
+    });
+
     it('should return "bare" for a value that is "float"', () => {
       expect(toLabelValueType('float', 0)).toBe('bare');
       expect(toLabelValueType('float', 1)).toBe('bare');
@@ -194,11 +208,19 @@ describe('utils', () => {
       expect(toLabelValueType('float', '1.1')).toBe('bare');
     });
 
+    it('should return "unknown" for a value that is "float" but not numeric', () => {
+      expect(toLabelValueType('float', 'abc')).toBe('unknown');
+    });
+
     it('should return "bare" for a value that is "bool"', () => {
       expect(toLabelValueType('bool', false)).toBe('bare');
       expect(toLabelValueType('bool', true)).toBe('bare');
       expect(toLabelValueType('bool', 'false')).toBe('bare');
       expect(toLabelValueType('bool', 'true')).toBe('bare');
+    });
+
+    it('should return "unknown" for a value that is "bool" but not boolean', () => {
+      expect(toLabelValueType('bool', 'abc')).toBe('unknown');
     });
 
     it('should return "bare" for a value that is "duration"', () => {
@@ -217,6 +239,10 @@ describe('utils', () => {
       expect(toLabelValueType('duration', '1y')).toBe('bare');
     });
 
+    it('should return "unknown" for a value that is "duration" but not a duration', () => {
+      expect(toLabelValueType('duration', 'abc')).toBe('unknown');
+    });
+
     it('should return "bare" for a value that is "keyword"', () => {
       expect(toLabelValueType('keyword', 'ok')).toBe('bare');
       expect(toLabelValueType('keyword', 'error')).toBe('bare');
@@ -229,6 +255,10 @@ describe('utils', () => {
       expect(toLabelValueType('keyword', 'consumer')).toBe('bare');
     });
 
+    it('should return "unknown" for a value that is "keyword" but not a keyword', () => {
+      expect(toLabelValueType('keyword', 'abc')).toBe('unknown');
+    });
+
     it('should return "unknown" for everything else', () => {
       expect(toLabelValueType(null)).toBe('unknown');
       expect(toLabelValueType(undefined)).toBe('unknown');
@@ -236,6 +266,64 @@ describe('utils', () => {
       expect(toLabelValueType({})).toBe('unknown');
       expect(toLabelValueType(() => {})).toBe('unknown');
       expect(toLabelValueType('')).toBe('unknown');
+    });
+  });
+
+  describe('stripOuterQuotes', () => {
+    it(`should only remove the outer double quotes of a string`, () => {
+      expect(stripOuterQuotes(`value`)).toEqual(`value`);
+      expect(stripOuterQuotes(`""value""`)).toEqual(`"value"`);
+      expect(stripOuterQuotes(`"'value'"`)).toEqual(`'value'`);
+      expect(stripOuterQuotes(`"'"value"'"`)).toEqual(`'"value"'`);
+      expect(stripOuterQuotes(`"say "hi""`)).toEqual(`say "hi"`);
+    });
+
+    it(`should only remove the outer single quotes of a string`, () => {
+      expect(stripOuterQuotes(`''value''`)).toEqual(`'value'`);
+      expect(stripOuterQuotes(`'"value"'`)).toEqual(`"value"`);
+      expect(stripOuterQuotes(`'"'value'"'`)).toEqual(`"'value'"`);
+      expect(stripOuterQuotes(`'say 'hi''`)).toEqual(`say 'hi'`);
+    });
+  });
+
+  describe('toEscapedValue', () => {
+    it(`should escape values when the valueType is "quoted"`, () => {
+      expect(toEscapedValue('quoted', '0')).toEqual('"0"');
+      expect(toEscapedValue('quoted', '1')).toEqual('"1"');
+      expect(toEscapedValue('quoted', '123')).toEqual('"123"');
+      expect(toEscapedValue('quoted', '-123')).toEqual('"-123"');
+      expect(toEscapedValue('quoted', '123.45')).toEqual('"123.45"');
+      expect(toEscapedValue('quoted', '-123.45')).toEqual('"-123.45"');
+      expect(toEscapedValue('quoted', 'false')).toEqual('"false"');
+      expect(toEscapedValue('quoted', 'prod')).toEqual('"prod"');
+      expect(toEscapedValue('quoted', 'say "hi"')).toEqual(`"say \\"hi\\""`);
+      expect(toEscapedValue('quoted', 'a\nb')).toEqual(`"a\\nb"`);
+    });
+
+    it(`should escape values when the valueType is "unknown"`, () => {
+      expect(toEscapedValue('unknown', '0')).toEqual('"0"');
+      expect(toEscapedValue('unknown', '1')).toEqual('"1"');
+      expect(toEscapedValue('unknown', '123')).toEqual('"123"');
+      expect(toEscapedValue('unknown', '-123')).toEqual('"-123"');
+      expect(toEscapedValue('unknown', '123.45')).toEqual('"123.45"');
+      expect(toEscapedValue('unknown', '-123.45')).toEqual('"-123.45"');
+      expect(toEscapedValue('unknown', 'false')).toEqual('"false"');
+      expect(toEscapedValue('unknown', 'prod')).toEqual('"prod"');
+      expect(toEscapedValue('unknown', 'say "hi"')).toEqual(`"say \\"hi\\""`);
+      expect(toEscapedValue('unknown', 'a\nb')).toEqual(`"a\\nb"`);
+    });
+
+    it(`should not escape values when the valueType is "bare"`, () => {
+      expect(toEscapedValue('bare', '0')).toEqual('0');
+      expect(toEscapedValue('bare', '1')).toEqual('1');
+      expect(toEscapedValue('bare', '123')).toEqual('123');
+      expect(toEscapedValue('bare', '-123')).toEqual('-123');
+      expect(toEscapedValue('bare', '123.45')).toEqual('123.45');
+      expect(toEscapedValue('bare', '-123.45')).toEqual('-123.45');
+      expect(toEscapedValue('bare', 'false')).toEqual('false');
+      expect(toEscapedValue('bare', 'prod')).toEqual('prod');
+      expect(toEscapedValue('bare', 'say "hi"')).toEqual(`say \"hi\"`);
+      expect(toEscapedValue('bare', 'a\nb')).toEqual(`a\nb`);
     });
   });
 });

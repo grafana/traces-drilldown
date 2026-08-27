@@ -67,19 +67,11 @@ function renderFilter(filter: AdHocVariableFilter) {
 }
 
 export function newRenderFilter(filter: AdHocFilterWithValueType, fallback: (filter: AdHocVariableFilter) => string) {
-  if (!filter.meta?.valueType) {
-    return fallback(filter);
+  if (filter.valueLabels?.length) {
+    return `${filter.key}${filter.operator}${filter.value}`;
   }
 
-  if (filter.meta.valueType === 'unknown') {
-    return fallback(filter);
-  }
-
-  if (filter.meta.valueType === 'quoted') {
-    return `${filter.key}${filter.operator}"${escapeTraceQlStringLiteral(filter.value)}"`;
-  }
-
-  return `${filter.key}${filter.operator}${filter.value}`;
+  return fallback(filter);
 }
 
 function isNumber(value?: string | number): boolean {
