@@ -1,7 +1,19 @@
 import { AdHocVariableFilter } from '@grafana/data';
-import { renderTraceQLAdHocFilters, renderTraceQLLabelFilters } from './filters-renderer';
+import { newRenderFilter, renderTraceQLAdHocFilters, renderTraceQLLabelFilters } from './filters-renderer';
+import { isUseValueTypeFilteringEnabled } from '../featureFlags/featureFlags';
 
-describe('filters-renderer', () => {
+jest.mock('../featureFlags/featureFlags', () => ({
+  isUseValueTypeFilteringEnabled: jest.fn(),
+}));
+
+const mockIsUseValueTypeFilteringEnabled = jest.mocked(isUseValueTypeFilteringEnabled);
+
+describe('filters-renderer (without feature flag)', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockIsUseValueTypeFilteringEnabled.mockReturnValue(false);
+  });
+
   describe('renderTraceQLLabelFilters', () => {
     it('should render a single filter correctly', () => {
       const filters: AdHocVariableFilter[] = [{ key: 'service.name', operator: '=', value: 'test' }];
@@ -157,5 +169,71 @@ describe('filters-renderer', () => {
       ];
       expect(renderTraceQLAdHocFilters(filters, '&&')).toBe('service.name="a"&&kind=server');
     });
+  });
+});
+
+describe('filters-renderer (with feature flag)', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockIsUseValueTypeFilteringEnabled.mockReturnValue(true);
+  });
+
+  describe('renderTraceQLLabelFilters', () => {
+    it('should render a filter with a quoted value correctly', () => {
+      const filters = [{ key: 'service.name', operator: '=', value: '"114"', valueLabels: ['114'] }];
+      expect(renderTraceQLLabelFilters(filters)).toBe('service.name="114"');
+    });
+
+    it('should render a filter with a bare value correctly', () => {
+      const filters = [{ key: 'service.name', operator: '=', value: '116', valueLabels: ['116'] }];
+      expect(renderTraceQLLabelFilters(filters)).toBe('service.name=116');
+    });
+
+    it('should render a filter without valueLabels correctly', () => {
+      const filters = [{ key: 'service.name', operator: '=', value: '"114"' }];
+      expect(renderTraceQLLabelFilters(filters)).toBe('service.name="114"');
+    });
+  });
+
+  describe('renderTraceQLAdHocFilters', () => {
+    it('joins with ||', () => {
+      const filters = [
+        { key: 'service.name', operator: '=', value: '"114"', valueLabels: ['114'] },
+        { key: 'service.name', operator: '=', value: '116', valueLabels: ['116'] },
+      ];
+      expect(renderTraceQLAdHocFilters(filters, '||')).toBe('service.name="114"||service.name=116');
+    });
+
+    it('joins with &&', () => {
+      const filters = [
+        { key: 'service.name', operator: '=', value: '"114"', valueLabels: ['114'] },
+        { key: 'service.name', operator: '=', value: '116', valueLabels: ['116'] },
+      ];
+      expect(renderTraceQLAdHocFilters(filters, '&&')).toBe('service.name="114"&&service.name=116');
+    });
+  });
+});
+
+describe('newRenderFilter', () => {
+  const fallback = () => 'result from fallback';
+
+  it('should fallback to renderFilter when valueLabels property is missing', () => {
+    const filter = { key: 'span.debug', operator: '=', value: 'false' };
+    expect(newRenderFilter(filter, fallback)).toEqual('result from fallback');
+  });
+
+  it('should fallback to renderFilter when valueLabels property is empty', () => {
+    const filter = { key: 'span.debug', operator: '=', value: 'false', valueLabels: [] };
+    expect(newRenderFilter(filter, fallback)).toEqual('result from fallback');
+  });
+
+  it('should render key operator value as is when valueLabels property contains a quoted value', () => {
+    const filter = { key: 'span.debug', operator: '=', value: '"false"', valueLabels: ['false'] };
+    expect(newRenderFilter(filter, fallback)).toEqual('span.debug="false"');
+  });
+
+  it('should render key operator value as is when valueLabels property contains a bare value', () => {
+    const filter = { key: 'duration', operator: '>', value: '123', valueLabels: ['123'] };
+    expect(newRenderFilter(filter, fallback)).toEqual('duration>123');
   });
 });

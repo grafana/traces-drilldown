@@ -6,7 +6,7 @@ services:
     environment:
       - GF_PLUGINS_PREINSTALL_DISABLED=true
       # Time seeker (grafana/grafana#121650). Requires Grafana 13+ where the toggle is registered.
-      - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker,localizationForPlugins
+      - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker,localizationForPlugins,tracesDrilldown.useValueTypeFiltering
       # Match the dev Dockerfile defaults so unsigned plugins load in CI without a custom image build.
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_ANONYMOUS_ENABLED=true

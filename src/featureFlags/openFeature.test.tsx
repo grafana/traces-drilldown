@@ -1,10 +1,16 @@
 import React from 'react';
 import { render, renderHook, screen, waitFor } from '@testing-library/react';
 import { OpenFeatureTestProvider } from '@openfeature/react-sdk';
-import { OpenFeature } from '@openfeature/web-sdk';
+import { TypedInMemoryProvider, OpenFeature } from '@openfeature/web-sdk';
 import { logWarning } from '@grafana/runtime';
 
-import { TIME_SEEKER_FEATURE_FLAG_KEY, useFlagTracesDrilldownTimeSeeker } from './featureFlags';
+import {
+  isUseValueTypeFilteringEnabled,
+  TIME_SEEKER_FEATURE_FLAG_KEY,
+  TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER,
+  useFlagTracesDrilldownTimeSeeker,
+  useFlagUseValueTypeFiltering,
+} from './featureFlags';
 import {
   ensureOpenFeaturePluginInitialized,
   OpenFeaturePluginScope,
@@ -63,12 +69,20 @@ describe('openFeature', () => {
   });
 
   describe('OpenFeaturePluginScope', () => {
-    it('renders children', () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+
+    it('renders children after OFREP is done loading', async () => {
       render(
         <OpenFeaturePluginScope>
           <span data-testid="child">inside</span>
         </OpenFeaturePluginScope>
       );
+
+      expect(screen.queryByTestId('child')).not.toBeInTheDocument();
+
+      await jest.advanceTimersToNextTimerAsync();
+
       expect(screen.getByTestId('child')).toHaveTextContent('inside');
     });
   });
@@ -123,6 +137,59 @@ describe('openFeature', () => {
       expect(a).toBe(b);
       await a;
       expect(setProviderAndWaitSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER', () => {
+    it('matches Grafana core registry (featuremgmt)', () => {
+      expect(TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER).toBe('tracesDrilldown.useValueTypeFiltering');
+    });
+  });
+
+  describe('isUseValueTypeFilteringEnabled', () => {
+    it('should return default when the flag is unset in the test provider', () => {
+      expect(isUseValueTypeFilteringEnabled()).toBe(false);
+    });
+
+    it('should return true when the core-domain provider maps the flag on', async () => {
+      setProviderAndWaitSpy.mockRestore();
+      await OpenFeature.setProviderAndWait(
+        PLUGIN_OPEN_FEATURE_DOMAIN,
+        new TypedInMemoryProvider({
+          [TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER]: {
+            disabled: false,
+            variants: { on: true, off: false },
+            defaultVariant: 'on',
+          },
+        })
+      );
+
+      expect(isUseValueTypeFilteringEnabled()).toBe(true);
+    });
+  });
+
+  describe('useFlagUseValueTypeFiltering', () => {
+    it('returns the hook default when the flag is unset in the test provider', () => {
+      const { result } = renderHook(() => useFlagUseValueTypeFiltering(), {
+        wrapper: ({ children }) => (
+          <OpenFeatureTestProvider domain={PLUGIN_OPEN_FEATURE_DOMAIN}>{children}</OpenFeatureTestProvider>
+        ),
+      });
+      expect(result.current).toBe(false);
+    });
+
+    it('returns true when the test provider maps the Grafana registry flag on', () => {
+      const { result } = renderHook(() => useFlagUseValueTypeFiltering(), {
+        wrapper: ({ children }) => (
+          <OpenFeatureTestProvider
+            domain={PLUGIN_OPEN_FEATURE_DOMAIN}
+            flagValueMap={{ [TRACES_DRILLDOWN_USE_VALUE_TYPE_FILTER]: true }}
+          >
+            {children}
+          </OpenFeatureTestProvider>
+        ),
+      });
+      expect(result.current).toBe(true);
     });
   });
 });

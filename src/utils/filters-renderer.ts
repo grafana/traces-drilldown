@@ -1,4 +1,6 @@
 import { AdHocVariableFilter } from '@grafana/data';
+import { isUseValueTypeFilteringEnabled } from '../featureFlags/featureFlags';
+import { AdHocFilterWithValueType } from './shared';
 
 /**
  * Escapes a value for use inside TraceQL double-quoted string literals.
@@ -23,7 +25,13 @@ export type TraceQLAdHocJoin = '&&' | '||';
 export function renderTraceQLAdHocFilters(filters: AdHocVariableFilter[], joinWith: TraceQLAdHocJoin): string {
   const expr = filters
     .filter((f) => f.key && f.operator && f.value)
-    .map((filter) => renderFilter(filter))
+    .map((filter) => {
+      if (!isUseValueTypeFilteringEnabled()) {
+        return renderFilter(filter);
+      }
+
+      return newRenderFilter(filter, renderFilter);
+    })
     .join(joinWith);
   return expr.length ? expr : 'true';
 }
@@ -56,6 +64,14 @@ function renderFilter(filter: AdHocVariableFilter) {
   }
 
   return `${filter.key}${filter.operator}${val}`;
+}
+
+export function newRenderFilter(filter: AdHocFilterWithValueType, fallback: (filter: AdHocVariableFilter) => string) {
+  if (filter.valueLabels?.length) {
+    return `${filter.key}${filter.operator}${filter.value}`;
+  }
+
+  return fallback(filter);
 }
 
 function isNumber(value?: string | number): boolean {
