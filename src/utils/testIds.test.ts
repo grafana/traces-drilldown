@@ -20,27 +20,27 @@ describe('getTestIdFromMetric', () => {
 
   it('should return correct testid for unknown metric', () => {
     const metric: VariableValue = 'log';
-    expect(getTestIdFromMetric(metric)).toEqual('data-testid unknown-panel');
+    expect(getTestIdFromMetric(metric)).toEqual('unknown-panel');
   });
 
   it('should return correct testid for no metric', () => {
-    expect(getTestIdFromMetric('')).toEqual('data-testid unknown-panel');
+    expect(getTestIdFromMetric('')).toEqual('unknown-panel');
   });
 });
 
 describe('getTestIdFromAttribute', () => {
   it('should return correct testid for attribute', () => {
     const attribute: AttributeItem = { label: 'name', scope: 'Span', value: 'name' };
-    expect(getTestIdFromAttribute(attribute)).toEqual('data-testid name-attribute-item');
+    expect(getTestIdFromAttribute(attribute)).toEqual('grafana-exploretraces-app name-attribute-item');
   });
 
   it('should return correct testid for attribute without value', () => {
     const attribute: AttributeItem = { label: 'name', scope: 'Span', value: '' };
-    expect(getTestIdFromAttribute(attribute)).toEqual('data-testid unknown-attribute-item');
+    expect(getTestIdFromAttribute(attribute)).toEqual('grafana-exploretraces-app unknown-attribute-item');
   });
 
   it('should return correct testid for undefined attribute', () => {
     const attribute = undefined as unknown as AttributeItem;
-    expect(getTestIdFromAttribute(attribute)).toEqual('data-testid unknown-attribute-item');
+    expect(getTestIdFromAttribute(attribute)).toEqual('grafana-exploretraces-app unknown-attribute-item');
   });
 });
