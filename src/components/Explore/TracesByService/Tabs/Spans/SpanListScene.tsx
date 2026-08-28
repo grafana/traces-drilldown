@@ -10,8 +10,7 @@ import {
   SceneObjectBase,
   SceneObjectState,
 } from '@grafana/scenes';
-import { DataFrame, GrafanaTheme2, LoadingState, PanelData, toURLRange, urlUtil, toOption } from '@grafana/data';
-import { config } from '@grafana/runtime';
+import { DataFrame, GrafanaTheme2, LoadingState, PanelData, locationUtil, toURLRange, urlUtil, toOption } from '@grafana/data';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { css } from '@emotion/css';
@@ -146,8 +145,10 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
         datasource,
       },
     });
-    const subUrl = config.appSubUrl ?? '';
-    return urlUtil.renderUrl(`${subUrl}/explore`, { panes: exploreState, schemaVersion: 1 });
+    return urlUtil.renderUrl(locationUtil.assureBaseUrl('/explore'), {
+      panes: exploreState,
+      schemaVersion: 1,
+    });
   };
 
   private updatePanel(data?: PanelData) {
