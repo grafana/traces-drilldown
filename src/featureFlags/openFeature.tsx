@@ -15,9 +15,12 @@ function getFeaturesOfrepBaseUrl(): string | undefined {
   if (typeof window === 'undefined') {
     return undefined;
   }
-  const pathname = locationUtil.assureBaseUrl(
-    `/apis/features.grafana.app/v0alpha1/namespaces/${encodeURIComponent(config.namespace)}`
-  );
+  const pathname = locationUtil
+    .assureBaseUrl(
+      `/apis/features.grafana.app/v0alpha1/namespaces/${encodeURIComponent(config.namespace)}`
+    )
+    // Match the previous appSubUrl.replace(/\/$/, '') join so `/grafana/` does not become `//apis`.
+    .replace(/\/{2,}/g, '/');
   return new URL(pathname, window.location.origin).toString();
 }
 
