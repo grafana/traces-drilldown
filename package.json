@@ -65,7 +65,7 @@
     "jest": "30.4.2",
     "jest-environment-jsdom": "30.4.1",
     "knip": "5.88.1",
-    "lefthook": "2.1.10",
+    "lefthook": "2.1.12",
     "prettier": "3.9.6",
     "replace-in-file-webpack-plugin": "1.0.6",
     "sass": "1.103.1",
