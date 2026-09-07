@@ -124,8 +124,6 @@ describe('AttributeFiltersVariable', () => {
     });
 
     it('should return "replace: false" and no values when an error is thrown', async () => {
-      const consoleErrorMock = jest.fn();
-      jest.spyOn(console, 'error').mockImplementation(consoleErrorMock);
       const variable = new AdHocFiltersVariable({ name: 'test-filter' });
       const filter = { key: 'span.name', operator: '=', value: 'internal' };
       (mockedDataSourceApi.getTagValues as jest.Mock).mockRejectedValue(new Error('failed to fetch tag values'));
@@ -133,10 +131,6 @@ describe('AttributeFiltersVariable', () => {
       const result = await getTagValuesProvider(variable, filter);
 
       expect(result).toEqual({ replace: false, values: [] });
-      expect(consoleErrorMock).toHaveBeenCalledWith(
-        'TracesDrilldown: failed to retrieve tag values for filter with key:"span.name", operator:"=" and value:"internal"',
-        new Error('failed to fetch tag values')
-      );
     });
   });
 });

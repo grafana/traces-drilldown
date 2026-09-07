@@ -4,7 +4,7 @@ import { MetricFindValueWithMeta, VAR_FILTERS, explorationDS } from 'utils/share
 import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { VariableHide } from '@grafana/schema';
 import { isUseValueTypeFilteringEnabled } from 'featureFlags/featureFlags';
-import { getDataSourceSrv } from '@grafana/runtime';
+import { getDataSourceSrv, logError } from '@grafana/runtime';
 import { stripOuterQuotes, toLabelValueType, toEscapedValue } from 'utils/utils';
 
 export interface AttributeFiltersVariableProps {
@@ -65,10 +65,8 @@ export async function getTagValuesProvider(
 
     return { replace: true, values };
   } catch (error) {
-    console.error(
-      `TracesDrilldown: failed to retrieve tag values for filter with key:"${filter.key}", operator:"${filter.operator}" and value:"${filter.value}"`,
-      error
-    );
+    const errorMessage = `TracesDrilldown: failed to retrieve tag values for filter with key:"${filter.key}", operator:"${filter.operator}" and value:"${filter.value}"`;
+    logError(error instanceof Error ? error : new Error(String(error)), { errorMessage });
   }
 
   return { replace: false, values: [] };
