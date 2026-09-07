@@ -4,6 +4,7 @@ import { OFREPWebProvider } from '@openfeature/ofrep-web-provider';
 import { StandardResolutionReasons } from '@openfeature/core';
 import { OpenFeature, type Provider, type ResolutionDetails } from '@openfeature/web-sdk';
 
+import { locationUtil } from '@grafana/data';
 import { config, logWarning } from '@grafana/runtime';
 
 /** OpenFeature domain for this plugin’s evaluations (OFREP to Grafana’s feature API). */
@@ -14,9 +15,12 @@ function getFeaturesOfrepBaseUrl(): string | undefined {
   if (typeof window === 'undefined') {
     return undefined;
   }
-  const sub = (config.appSubUrl ?? '').replace(/\/$/, '');
-  const path = `${sub}/apis/features.grafana.app/v0alpha1/namespaces/${encodeURIComponent(config.namespace)}`;
-  const pathname = path.startsWith('/') ? path : `/${path}`;
+  const pathname = locationUtil
+    .assureBaseUrl(
+      `/apis/features.grafana.app/v0alpha1/namespaces/${encodeURIComponent(config.namespace)}`
+    )
+    // Match the previous appSubUrl.replace(/\/$/, '') join so `/grafana/` does not become `//apis`.
+    .replace(/\/{2,}/g, '/');
   return new URL(pathname, window.location.origin).toString();
 }
 
