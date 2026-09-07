@@ -115,19 +115,19 @@ importers:
         specifier: 13.1.0
         version: 13.1.0
       '@grafana/eslint-config':
-        specifier: ^8.2.0
+        specifier: 8.2.0
         version: 8.2.0(@stylistic/eslint-plugin-ts@4.4.1(eslint@9.39.4(jiti@2.7.0))(typescript@5.8.3))(@typescript-eslint/eslint-plugin@8.67.0(@typescript-eslint/parser@8.67.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.8.3))(eslint@9.39.4(jiti@2.7.0))(typescript@5.8.3))(@typescript-eslint/parser@8.67.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.8.3))(eslint-config-prettier@10.1.8(eslint@9.39.4(jiti@2.7.0)))(eslint-plugin-jsdoc@62.8.1(eslint@9.39.4(jiti@2.7.0)))(eslint-plugin-react-hooks@5.2.0(eslint@9.39.4(jiti@2.7.0)))(eslint-plugin-react@7.37.5(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(typescript@5.8.3)
       '@grafana/plugin-e2e':
-        specifier: ^2.2.0
-        version: 2.2.3(@playwright/test@1.59.1)
+        specifier: 2.2.0
+        version: 2.2.0(@playwright/test@1.59.1)
       '@grafana/plugin-types':
         specifier: 0.0.39
         version: 0.0.39
       '@grafana/sign-plugin':
-        specifier: ^3.2.2
-        version: 3.3.3
+        specifier: 3.2.2
+        version: 3.2.2
       '@grafana/tsconfig':
-        specifier: ^2.0.0
+        specifier: 2.0.0
         version: 2.0.0
       '@playwright/test':
         specifier: 1.59.1
@@ -211,13 +211,13 @@ importers:
         specifier: 13.0.6
         version: 13.0.6
       i18next-cli:
-        specifier: ^1.71.0
+        specifier: 1.71.0
         version: 1.71.0(@swc/helpers@0.5.23)(@types/node@24.10.1)(react-dom@18.3.1(react@18.3.1))(typescript@5.8.3)
       identity-obj-proxy:
         specifier: 3.0.0
         version: 3.0.0
       imports-loader:
-        specifier: ^5.0.0
+        specifier: 5.0.0
         version: 5.0.0(webpack@5.109.2)
       jest:
         specifier: 30.4.2
@@ -759,8 +759,8 @@ packages:
     peerDependencies:
       '@lezer/lr': ^1.4.2
 
-  '@grafana/plugin-e2e@2.2.3':
-    resolution: {integrity: sha512-32EHUKOPOs8E+moMewuiDWuvGLOgYdT5ykvziIUrMrl+b5qMmmY4h81D0vLAAL5IiayRFugLpsfo8CB/T7hsBg==}
+  '@grafana/plugin-e2e@2.2.0':
+    resolution: {integrity: sha512-naw55M2UCJCKNZuZPzcAUPyRhQ7VEm+JLT6y7yuixMg3lhJKNnuHwE6pIOcvUdWsVPByOipixK84OJd5ODpaow==}
     engines: {node: '>=18 <=22'}
     peerDependencies:
       '@playwright/test': ^1.52.0
@@ -797,8 +797,8 @@ packages:
   '@grafana/schema@13.1.0':
     resolution: {integrity: sha512-7SPiD1sKQanTtmeZXcJ0FMcqyOvPLrXWNeWmlInE0fW+g0TSGjx05CH00hviPCEyBzG6MoW7izTWCKrgpy9iaA==}
 
-  '@grafana/sign-plugin@3.3.3':
-    resolution: {integrity: sha512-bCdRRCYB8NccQbEnmDcLqZrODLP1R4nhYwOzYGtQMTh7xISf7ddj2HlpPN4DeX1aPhV9yCNxcCyLZm3N6zjATQ==}
+  '@grafana/sign-plugin@3.2.2':
+    resolution: {integrity: sha512-nZ+y56RJkrcH7hZTdEnY3WVEh5mCy4RZclUosOLr1Em1yLMXmlicGZkDsCGr2UmkruJlxOQXM6EBOILQAzQynQ==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -3156,6 +3156,10 @@ packages:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
 
+  find-up@8.0.0:
+    resolution: {integrity: sha512-JGG8pvDi2C+JxidYdIwQDyS/CgcrIdh18cvgxcBge3wSHRQOrooMD3GlFBcmMJAN9M42SAZjDp5zv1dglJjwww==}
+    engines: {node: '>=20'}
+
   flat-cache@4.0.1:
     resolution: {integrity: sha512-f7ccFPK3SXFHpx15UIGyRJ/FJQctuKZ0zVuN3frBo4HnK3cay9VEW0R6yPYFHC0AgqhukPzKjq22t5DmAyqGyw==}
     engines: {node: '>=16'}
@@ -4033,6 +4037,10 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
+  locate-path@8.0.0:
+    resolution: {integrity: sha512-XT9ewWAC43tiAV7xDAPflMkG0qOPn2QjHqlgX8FOqmWa/rxnyYDulF9T0F7tRy1u+TVTmK/M//6VIOye+2zDXg==}
+    engines: {node: '>=20'}
+
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
@@ -4341,6 +4349,10 @@ packages:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
 
+  p-limit@4.0.0:
+    resolution: {integrity: sha512-5b0R4txpzjPWVw/cXXUResoD4hb6U/x9BH08L7nw+GN1sezDzPdxeRvpc9c433fZhBan/wusjbCsqwqm4EIBIQ==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   p-locate@4.1.0:
     resolution: {integrity: sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A==}
     engines: {node: '>=8'}
@@ -4348,6 +4360,10 @@ packages:
   p-locate@5.0.0:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
+
+  p-locate@6.0.0:
+    resolution: {integrity: sha512-wPrq66Llhl7/4AGC6I+cqxT07LhXvWL08LNXz1fENOw0Ap4sRZZ/gZpTTJ5jpurzzzfS2W/Ge9BY3LgLjCShcw==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
@@ -5800,6 +5816,10 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  yocto-queue@1.2.2:
+    resolution: {integrity: sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ==}
+    engines: {node: '>=12.20'}
+
   yoctocolors@2.2.0:
     resolution: {integrity: sha512-xYqdZFUK/VYazNl/oCDYN+3WloWQwMfZxBoiNt6qNyk+xfOdi598muWE42rNZFp1kNOiqW936q5RhUdnpqElSg==}
     engines: {node: '>=18'}
@@ -6491,7 +6511,7 @@ snapshots:
     dependencies:
       '@lezer/lr': 1.4.10
 
-  '@grafana/plugin-e2e@2.2.3(@playwright/test@1.59.1)':
+  '@grafana/plugin-e2e@2.2.0(@playwright/test@1.59.1)':
     dependencies:
       '@grafana/e2e-selectors': 12.4.9
       '@playwright/test': 1.59.1
@@ -6573,8 +6593,9 @@ snapshots:
 
   '@grafana/schema@13.1.0': {}
 
-  '@grafana/sign-plugin@3.3.3':
+  '@grafana/sign-plugin@3.2.2':
     dependencies:
+      find-up: 8.0.0
       minimist: 1.2.8
       proxy-agent: 8.0.1
     transitivePeerDependencies:
@@ -9236,6 +9257,11 @@ snapshots:
       locate-path: 6.0.0
       path-exists: 4.0.0
 
+  find-up@8.0.0:
+    dependencies:
+      locate-path: 8.0.0
+      unicorn-magic: 0.3.0
+
   flat-cache@4.0.1:
     dependencies:
       flatted: 3.4.4
@@ -10366,6 +10392,10 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
+  locate-path@8.0.0:
+    dependencies:
+      p-locate: 6.0.0
+
   lodash.merge@4.6.2: {}
 
   lodash@4.18.1: {}
@@ -10650,6 +10680,10 @@ snapshots:
     dependencies:
       yocto-queue: 0.1.0
 
+  p-limit@4.0.0:
+    dependencies:
+      yocto-queue: 1.2.2
+
   p-locate@4.1.0:
     dependencies:
       p-limit: 2.3.0
@@ -10657,6 +10691,10 @@ snapshots:
   p-locate@5.0.0:
     dependencies:
       p-limit: 3.1.0
+
+  p-locate@6.0.0:
+    dependencies:
+      p-limit: 4.0.0
 
   p-try@2.2.0: {}
 
@@ -12200,6 +12238,8 @@ snapshots:
   yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  yocto-queue@1.2.2: {}
 
   yoctocolors@2.2.0: {}
 
