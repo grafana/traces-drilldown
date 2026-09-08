@@ -7,7 +7,7 @@
   "autoEnabled": true,
   "languages": ["en-US"],
   "info": {
-    "keywords": ["app", "tempo", "traces", "explore"],
+    "keywords": ["app", "tempo", "traces", "explore", "drilldown", "drill", "down", "drill-down"],
     "description": "Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate errors within complex distributed systems.",
     "author": {
       "name": "Grafana"
@@ -46,7 +46,7 @@
   "includes": [
     {
       "type": "page",
-      "name": "Explore",
+      "name": "Grafana Traces Drilldown",
       "path": "/a/%PLUGIN_ID%/",
       "action": "datasources:explore",
       "addToNav": true,
