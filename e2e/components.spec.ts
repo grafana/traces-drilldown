@@ -1,4 +1,6 @@
+import { testIds } from '../src/utils/testIds';
 import { expect, test } from './index';
+import { gte } from 'semver';
 
 test.describe('components', () => {
   test('in header are visible', async ({ tracesExplorePage, selectors }) => {
@@ -66,5 +68,19 @@ test.describe('components', () => {
     ).toBeVisible({
       timeout: 20000,
     });
+  });
+
+  test('pathfinder test ids are available', async ({ tracesExplorePage, grafanaVersion, selectors }) => {
+    // https://github.com/grafana/grafana/pull/131243
+    if (!gte(grafanaVersion, '13.3.0-32698776838')) {
+      return;
+    }
+
+    // https://github.com/grafana/traces-drilldown/issues/844
+    await expect(tracesExplorePage.page.getByTestId(testIds.primarySignalOptionRootSpans)).toBeVisible();
+    await expect(tracesExplorePage.page.getByTestId(testIds.primarySignalOptionAllSpans)).toBeVisible();
+    await expect(tracesExplorePage.page.getByTestId(testIds.primarySignalOptionServerSpans)).not.toBeVisible();
+    await expect(tracesExplorePage.page.getByTestId(testIds.primarySignalOptionConsumerSpans)).not.toBeVisible();
+    await expect(tracesExplorePage.page.getByTestId(testIds.primarySignalOptionDatbaseCalls)).not.toBeVisible();
   });
 });
