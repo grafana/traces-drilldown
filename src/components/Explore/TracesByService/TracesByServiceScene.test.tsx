@@ -45,7 +45,7 @@ describe('TracesByServiceScene', () => {
 
   describe('buildQuery', () => {
     it('should build basic query with no selection', () => {
-      const query = buildQuery('rate', '');
+      const query = buildQuery('rate', '', '');
       expect(query).toEqual({
         refId: 'A',
         query: '{${primarySignal} && ${filters}}',
@@ -58,12 +58,17 @@ describe('TracesByServiceScene', () => {
     });
 
     it('should add error status for error type', () => {
-      const query = buildQuery('errors', '');
+      const query = buildQuery('errors', '', '');
       expect(query.query).toBe('{${primarySignal} && ${filters} && status = error}');
     });
 
-    it('should add latency threshold for duration type with no selection', () => {
-      const query = buildQuery('duration', '');
+    it('should not add latency threshold for duration type without latency and with no selection', () => {
+      const query = buildQuery('duration', '', '');
+      expect(query.query).toBe('{${primarySignal} && ${filters}}');
+    });
+
+    it('should add latency threshold for duration type with latency and with no selection', () => {
+      const query = buildQuery('duration', '', '4ms');
       expect(query.query).toBe('{${primarySignal} && ${filters}&& duration > ${latencyThreshold}}');
     });
 
@@ -75,7 +80,7 @@ describe('TracesByServiceScene', () => {
           to: '500ms',
         },
       };
-      const query = buildQuery('duration', '', selection);
+      const query = buildQuery('duration', '', '', selection);
       expect(query.query).toBe('{${primarySignal} && ${filters}&& duration >= 100ms && duration <= 500ms}');
     });
 
@@ -87,7 +92,7 @@ describe('TracesByServiceScene', () => {
           to: '',
         },
       };
-      const query = buildQuery('duration', '', selection);
+      const query = buildQuery('duration', '', '', selection);
       expect(query.query).toBe('{${primarySignal} && ${filters}&& duration >= 100ms}');
     });
 
@@ -99,12 +104,12 @@ describe('TracesByServiceScene', () => {
           to: '500ms',
         },
       };
-      const query = buildQuery('duration', '', selection);
+      const query = buildQuery('duration', '', '', selection);
       expect(query.query).toBe('{${primarySignal} && ${filters}&& duration <= 500ms}');
     });
 
     it('should add select columns when provided', () => {
-      const query = buildQuery('rate', 'duration,service.name');
+      const query = buildQuery('rate', 'duration,service.name', '');
       expect(query.query).toBe('{${primarySignal} && ${filters}} | select(duration,service.name)');
     });
   });

@@ -42,6 +42,7 @@ import { isEqual } from 'lodash';
 import {
   getDatasourceVariable,
   getGroupByVariable,
+  getLatencyThresholdVariable,
   getSpanListColumnsVariable,
   getTraceExplorationScene,
 } from 'utils/utils';
@@ -284,12 +285,13 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   private updateQueryRunner(metric: MetricFunction) {
     const selection = this.state.selection;
     const columns = getSpanListColumnsVariable(this).getValue()?.toString() ?? '';
+    const latency = getLatencyThresholdVariable(this).getValue()?.toString() ?? '';
 
     this.setState({
       $data: new SceneDataTransformer({
         $data: new SceneQueryRunner({
           datasource: explorationDS,
-          queries: [buildQuery(metric, columns, selection)],
+          queries: [buildQuery(metric, columns, latency, selection)],
           $timeRange: timeRangeFromSelection(selection),
         }),
         transformations: [...filterStreamingProgressTransformations, ...spanListTransformations],
@@ -426,7 +428,7 @@ function getStyles(theme: GrafanaTheme2) {
 const MAIN_PANEL_HEIGHT = 240;
 export const MINI_PANEL_HEIGHT = (MAIN_PANEL_HEIGHT - 8) / 2;
 
-export function buildQuery(type: MetricFunction, columns: string, selection?: ComparisonSelection) {
+export function buildQuery(type: MetricFunction, columns: string, latency: string, selection?: ComparisonSelection) {
   const selectQuery = columns !== '' ? ` | select(${columns})` : '';
   let typeQuery = '';
   switch (type) {
@@ -446,7 +448,7 @@ export function buildQuery(type: MetricFunction, columns: string, selection?: Co
           typeQuery += '&& ' + duration.join(' && ');
         }
       }
-      if (!typeQuery.length) {
+      if (!typeQuery.length && latency) {
         typeQuery = `&& duration > ${VAR_LATENCY_THRESHOLD_EXPR}`;
       }
       break;
