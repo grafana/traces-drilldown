@@ -310,7 +310,8 @@ export function getLabelValueType(value?: unknown, key = ''): LabelValueType {
   }
 
   if (ALWAYS_KEYWORD_KEYS.has(key)) {
-    return KEYWORD_STATUS_VALUES.has(String(value)) || KEYWORD_KIND_VALUES.has(String(value)) ? 'bare' : 'unknown';
+    const bareValue = stripOuterQuotes(String(value));
+    return KEYWORD_STATUS_VALUES.has(bareValue) || KEYWORD_KIND_VALUES.has(bareValue) ? 'bare' : 'unknown';
   }
 
   if (ALWAYS_DURATION_KEYS.has(key)) {

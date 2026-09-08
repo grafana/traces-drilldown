@@ -112,14 +112,18 @@ describe('utils', () => {
       expect(getLabelValueType(0, 'span.network.protocol.version')).toBe('quoted');
     });
 
-    it('should return "bare" for keys that should always be keywords no matter what the value is', () => {
-      expect(getLabelValueType('unset', 'status')).toBe('bare');
-      expect(getLabelValueType('internal', 'kind')).toBe('bare');
+    it('should return "bare" for keys that should always be keywords', () => {
+      expect(getLabelValueType('"ok"', 'status')).toBe('bare');
+      expect(getLabelValueType('"ok"', 'span:status')).toBe('bare');
+      expect(getLabelValueType('ok', 'status')).toBe('bare');
       expect(getLabelValueType('ok', 'span:status')).toBe('bare');
+      expect(getLabelValueType('"internal"', 'kind')).toBe('bare');
+      expect(getLabelValueType('"producer"', 'span:kind')).toBe('bare');
+      expect(getLabelValueType('internal', 'kind')).toBe('bare');
       expect(getLabelValueType('producer', 'span:kind')).toBe('bare');
     });
 
-    it('should return "bare" for keys that should always be durations no matter what the value is', () => {
+    it('should return "bare" for keys that should always be durations', () => {
       expect(getLabelValueType('10ms', 'duration')).toBe('bare');
       expect(getLabelValueType('1s', 'span:duration')).toBe('bare');
       expect(getLabelValueType('1m', 'trace:duration')).toBe('bare');
@@ -176,8 +180,12 @@ describe('utils', () => {
       expect(getLabelValueType('')).toBe('unknown');
       expect(getLabelValueType('Infinity')).toBe('unknown');
       expect(getLabelValueType('-Infinity')).toBe('unknown');
-      expect(getLabelValueType('notakeyword', 'status')).toBe('unknown');
-      expect(getLabelValueType('notaduration', 'duration')).toBe('unknown');
+      expect(getLabelValueType('nostatus', 'status')).toBe('unknown');
+      expect(getLabelValueType('', 'status')).toBe('unknown');
+      expect(getLabelValueType('nokind', 'kind')).toBe('unknown');
+      expect(getLabelValueType('', 'kind')).toBe('unknown');
+      expect(getLabelValueType('noduration', 'duration')).toBe('unknown');
+      expect(getLabelValueType('', 'duration')).toBe('unknown');
     });
   });
 
