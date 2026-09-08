@@ -6,6 +6,8 @@ import { VariableHide } from '@grafana/schema';
 import { isUseValueTypeFilteringEnabled } from 'featureFlags/featureFlags';
 import { getDataSourceSrv, logError } from '@grafana/runtime';
 import { stripOuterQuotes, toLabelValueType, toEscapedValue } from 'utils/utils';
+import { ProviderEvents } from '@openfeature/web-sdk';
+import { getOpenFeatureClient } from 'featureFlags/openFeature';
 
 export interface AttributeFiltersVariableProps {
   initialFilters?: AdHocVariableFilter[];
@@ -24,6 +26,23 @@ export class AttributeFiltersVariable extends AdHocFiltersVariable {
       expressionBuilder: renderTraceQLLabelFilters,
       getTagValuesProvider,
     });
+
+    this.handleOpenFeatureFlagsReady = this.handleOpenFeatureFlagsReady.bind(this);
+
+    this.addActivationHandler(() => {
+      getOpenFeatureClient().addHandler(ProviderEvents.Ready, this.handleOpenFeatureFlagsReady);
+      return () => getOpenFeatureClient().removeHandler(ProviderEvents.Ready, this.handleOpenFeatureFlagsReady); // cleanup
+    });
+  }
+
+  private handleOpenFeatureFlagsReady() {
+    if (!isUseValueTypeFilteringEnabled()) {
+      // when feature flag is off we don't want to call setState
+      return;
+    }
+
+    // this will re issue a call to renderTraceQLLabelFilters with isUseValueTypeFilteringEnabled set
+    this.setState({ filters: [...this.state.filters] });
   }
 }
 

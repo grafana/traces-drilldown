@@ -88,17 +88,12 @@ describe('openFeature', () => {
     beforeEach(() => jest.useFakeTimers());
     afterEach(() => jest.useRealTimers());
 
-    it('renders children after OFREP is done loading', async () => {
+    it('renders children', () => {
       render(
         <OpenFeaturePluginScope>
           <span data-testid="child">inside</span>
         </OpenFeaturePluginScope>
       );
-
-      expect(screen.queryByTestId('child')).not.toBeInTheDocument();
-
-      await jest.advanceTimersToNextTimerAsync();
-
       expect(screen.getByTestId('child')).toHaveTextContent('inside');
     });
   });
