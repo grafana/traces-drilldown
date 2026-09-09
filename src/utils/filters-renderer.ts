@@ -31,7 +31,7 @@ export function renderTraceQLAdHocFilters(filters: AdHocVariableFilter[], joinWi
         return renderFilter(filter);
       }
 
-      return newRenderFilter(filter, renderFilter);
+      return newRenderFilter(filter);
     })
     .join(joinWith);
   return expr.length ? expr : 'true';
@@ -41,7 +41,7 @@ export function renderTraceQLLabelFilters(filters: AdHocVariableFilter[]) {
   return renderTraceQLAdHocFilters(filters, '&&');
 }
 
-export function maybeEscapeValue(filter: AdHocVariableFilter): string {
+function renderFilter(filter: AdHocVariableFilter) {
   let val = filter.value;
   if (
     ['span.messaging.destination.partition.id', 'span.network.protocol.version'].includes(filter.key) ||
@@ -64,25 +64,19 @@ export function maybeEscapeValue(filter: AdHocVariableFilter): string {
     }
   }
 
-  return val;
-}
-
-function renderFilter(filter: AdHocVariableFilter) {
-  let val = maybeEscapeValue(filter);
-
   return `${filter.key}${filter.operator}${val}`;
 }
 
-export function newRenderFilter(filter: AdHocFilterWithValueType, fallback: (filter: AdHocVariableFilter) => string) {
-  if (filter.valueLabels?.length) {
-    return `${filter.key}${filter.operator}${filter.value}`;
+export function newRenderFilter(filter: AdHocFilterWithValueType) {
+  if (!filter.valueLabels?.length) {
+    // this shouldn't happen when the feature flag is on, so let's log an error
+    const error = new Error(`TracesDrilldown: valueLabels are missing for filter which should never happen`);
+    const context = { filter: JSON.stringify(filter) };
+    logError(error, context);
+    return '';
   }
 
-  // this shouldn't happen when the feature flag is on, so let's log an error
-  const error = new Error(`TracesDrilldown: valueLabels are missing for filter which should never happen`);
-  const context = { filter: JSON.stringify(filter) };
-  logError(error, context);
-  return fallback(filter);
+  return `${filter.key}${filter.operator}${filter.value}`;
 }
 
 function isNumber(value?: string | number): boolean {

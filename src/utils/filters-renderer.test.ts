@@ -1,12 +1,19 @@
 import { AdHocVariableFilter } from '@grafana/data';
 import { newRenderFilter, renderTraceQLAdHocFilters, renderTraceQLLabelFilters } from './filters-renderer';
 import { isUseValueTypeFilteringEnabled } from '../featureFlags/featureFlags';
+import { logError } from '@grafana/runtime';
 
 jest.mock('../featureFlags/featureFlags', () => ({
   isUseValueTypeFilteringEnabled: jest.fn(),
 }));
 
+jest.mock('@grafana/runtime', () => ({
+  ...jest.requireActual('@grafana/runtime'),
+  logError: jest.fn(),
+}));
+
 const mockIsUseValueTypeFilteringEnabled = jest.mocked(isUseValueTypeFilteringEnabled);
+const mockLogError = jest.mocked(logError);
 
 describe('filters-renderer (without feature flag)', () => {
   beforeEach(() => {
@@ -191,7 +198,7 @@ describe('filters-renderer (with feature flag)', () => {
 
     it('should render a filter without valueLabels correctly', () => {
       const filters = [{ key: 'service.name', operator: '=', value: '"114"' }];
-      expect(renderTraceQLLabelFilters(filters)).toBe('service.name="114"');
+      expect(renderTraceQLLabelFilters(filters)).toBe('true');
     });
   });
 
@@ -215,25 +222,36 @@ describe('filters-renderer (with feature flag)', () => {
 });
 
 describe('newRenderFilter', () => {
-  const fallback = () => 'result from fallback';
-
-  it('should fallback to renderFilter when valueLabels property is missing', () => {
-    const filter = { key: 'span.debug', operator: '=', value: 'false' };
-    expect(newRenderFilter(filter, fallback)).toEqual('result from fallback');
+  beforeEach(() => {
+    jest.resetAllMocks();
+    mockLogError.mockReturnValue();
   });
 
-  it('should fallback to renderFilter when valueLabels property is empty', () => {
+  it('should log an error when valueLabels property is missing', () => {
+    const filter = { key: 'span.debug', operator: '=', value: 'false' };
+
+    expect(newRenderFilter(filter)).toEqual('');
+    expect(mockLogError).toHaveBeenCalled();
+  });
+
+  it('should log an error when valueLabels property is empty', () => {
     const filter = { key: 'span.debug', operator: '=', value: 'false', valueLabels: [] };
-    expect(newRenderFilter(filter, fallback)).toEqual('result from fallback');
+
+    expect(newRenderFilter(filter)).toEqual('');
+    expect(mockLogError).toHaveBeenCalled();
   });
 
   it('should render key operator value as is when valueLabels property contains a quoted value', () => {
     const filter = { key: 'span.debug', operator: '=', value: '"false"', valueLabels: ['false'] };
-    expect(newRenderFilter(filter, fallback)).toEqual('span.debug="false"');
+
+    expect(newRenderFilter(filter)).toEqual('span.debug="false"');
+    expect(mockLogError).not.toHaveBeenCalled();
   });
 
   it('should render key operator value as is when valueLabels property contains a bare value', () => {
     const filter = { key: 'duration', operator: '>', value: '123', valueLabels: ['123'] };
-    expect(newRenderFilter(filter, fallback)).toEqual('duration>123');
+
+    expect(newRenderFilter(filter)).toEqual('duration>123');
+    expect(mockLogError).not.toHaveBeenCalled();
   });
 });
