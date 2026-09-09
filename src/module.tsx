@@ -5,6 +5,7 @@ import { EmbeddedTraceExplorationState, OpenInExploreTracesButtonProps } from 'e
 import { SuspendedEmbeddedTraceExploration, SuspendedOpenInExploreTracesButton } from 'exposedComponents';
 import { initPluginI18n } from './i18n/initPluginI18n';
 import { linkConfigs } from 'utils/links';
+import { makeTraceResourceAttributeLink, TRACE_RESOURCE_ATTRIBUTE_LINKS } from 'utils/resourceAttributes';
 import { JsonData } from './components/AppConfig/AppConfig';
 
 const App = lazy(async () => {
@@ -39,4 +40,8 @@ export const plugin = new AppPlugin<JsonData>()
 
 for (const linkConfig of linkConfigs) {
   plugin.addLink(linkConfig);
+}
+
+for (const config of TRACE_RESOURCE_ATTRIBUTE_LINKS) {
+  plugin.addLink(makeTraceResourceAttributeLink(config));
 }

@@ -106,6 +106,11 @@
         "targets": ["grafana-assistant-app/navigateToDrilldown/v1"],
         "title": "Grafana assistant link",
         "description": "Create a link to the Traces Drilldown app"
+      },
+      {
+        "targets": ["grafana/traceview/resource-attributes"],
+        "title": "Traces Drilldown",
+        "description": "Traces Drilldown"
       }
     ],
     "extensionPoints": [
