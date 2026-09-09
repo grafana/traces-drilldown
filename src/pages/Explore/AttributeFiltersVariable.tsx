@@ -1,7 +1,7 @@
 import { AdHocFiltersVariable, AdHocFilterWithLabels } from '@grafana/scenes';
 import { AdHocVariableFilter } from '@grafana/data';
 import { MetricFindValueWithMeta, VAR_FILTERS, explorationDS } from 'utils/shared';
-import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
+import { maybeEscapeValue, renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { VariableHide } from '@grafana/schema';
 import { isUseValueTypeFilteringEnabled } from 'featureFlags/featureFlags';
 import { getDataSourceSrv, logError } from '@grafana/runtime';
@@ -67,9 +67,11 @@ export async function getTagValuesProvider(
       }
 
       const { text } = d;
-      // see https://github.com/grafana/grafana-tempo-datasource/pull/239
       if (!d.properties?.valueType) {
-        return { text };
+        // see https://github.com/grafana/grafana-tempo-datasource/pull/239
+        // someone is running the new feature flag with a tempo datasource version < 13.2.0
+        // so we need to escape the value so it works with the newRenderFilter function
+        return { text, value: maybeEscapeValue({ key: filter.key, operator: filter.operator, value: text }) };
       }
 
       const valueType = toLabelValueType(d.properties?.valueType, text);
