@@ -23,19 +23,21 @@
     "server:ci:down": "docker compose -f ./devenv/docker-compose.e2e.yaml down",
     "server:react19": "GRAFANA_VERSION=dev-preview-react19 GRAFANA_IMAGE=grafana-enterprise GF_FEATURE_TOGGLES_ENABLE=react19 docker compose -f ./devenv/docker-compose.yaml up --build",
     "start": "pnpm install --frozen-lockfile --ignore-scripts && pnpm dev",
-    "sign": "pnpm dlx @grafana/sign-plugin@latest"
+    "sign": "sign-plugin"
   },
   "author": "Grafana",
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@grafana/e2e-selectors": "13.1.0",
-    "@grafana/eslint-config": "8.1.0",
-    "@grafana/plugin-e2e": "2.1.8",
+    "@grafana/eslint-config": "8.2.0",
+    "@grafana/plugin-e2e": "2.2.0",
     "@grafana/plugin-types": "0.0.39",
+    "@grafana/sign-plugin": "3.2.2",
     "@grafana/tsconfig": "2.0.0",
     "@playwright/test": "1.59.1",
     "@stylistic/eslint-plugin-ts": "4.4.1",
     "@swc/core": "1.16.1",
+    "@swc/helpers": "0.5.23",
     "@swc/jest": "0.2.39",
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "6.9.1",
@@ -59,7 +61,7 @@
     "eslint-webpack-plugin": "5.0.3",
     "fork-ts-checker-webpack-plugin": "9.1.0",
     "glob": "13.0.6",
-    "i18next-cli": "^1.71.0",
+    "i18next-cli": "1.71.0",
     "identity-obj-proxy": "3.0.0",
     "imports-loader": "5.0.0",
     "jest": "30.4.2",
@@ -114,5 +116,5 @@
     "rxjs": "7.8.2",
     "uplot": "^1.6.32"
   },
-  "packageManager": "pnpm@11.8.0+sha512.c1f5e7c4cb241c8f174b743851d82f42b802324afc8b0f116b96adb15aa06664948dde36960a3ba1079ba5b4b29dd0140135b94b5b5f5263592249d68e555f26"
+  "packageManager": "pnpm@11.11.0+sha512.4463f65fd80ed80d69bc1d4bf163ee94f605c7380fc318bb5b2ebe15f8cd12d49c51a4d59e951b401e764d3b6ca751cbf51bc50ed7001a6bcb4935e684c34882"
 }

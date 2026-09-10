@@ -2,13 +2,17 @@ import { Trans } from '@grafana/i18n';
 import { LinkButton } from '@grafana/ui';
 import { OpenFeaturePluginScope } from 'featureFlags/openFeature';
 import { OpenInExploreTracesButtonProps, EmbeddedTraceExplorationState } from 'exposedComponents/types';
+import { initPluginI18n } from 'i18n/initPluginI18n';
 import React, { lazy, Suspense } from 'react';
-const OpenInExploreTracesButton = lazy(
-  () => import('exposedComponents/OpenInExploreTracesButton/OpenInExploreTracesButton')
-);
-const EmbeddedTraceExploration = lazy(
-  () => import('exposedComponents/EmbeddedTraceExploration/EmbeddedTraceExploration')
-);
+
+const OpenInExploreTracesButton = lazy(async () => {
+  await initPluginI18n();
+  return import('exposedComponents/OpenInExploreTracesButton/OpenInExploreTracesButton');
+});
+const EmbeddedTraceExploration = lazy(async () => {
+  await initPluginI18n();
+  return import('exposedComponents/EmbeddedTraceExploration/EmbeddedTraceExploration');
+});
 
 export function SuspendedOpenInExploreTracesButton(props: OpenInExploreTracesButtonProps) {
   return (
