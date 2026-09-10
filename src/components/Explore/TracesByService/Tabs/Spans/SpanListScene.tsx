@@ -10,7 +10,16 @@ import {
   SceneObjectBase,
   SceneObjectState,
 } from '@grafana/scenes';
-import { DataFrame, GrafanaTheme2, LoadingState, PanelData, locationUtil, toURLRange, urlUtil, toOption } from '@grafana/data';
+import {
+  DataFrame,
+  GrafanaTheme2,
+  LoadingState,
+  PanelData,
+  locationUtil,
+  toURLRange,
+  urlUtil,
+  toOption,
+} from '@grafana/data';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { css } from '@emotion/css';

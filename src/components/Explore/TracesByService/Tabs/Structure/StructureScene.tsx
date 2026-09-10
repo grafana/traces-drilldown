@@ -30,7 +30,12 @@ import { t, Trans } from '@grafana/i18n';
 import Skeleton from 'react-loading-skeleton';
 import { EmptyState } from '../../../../states/EmptyState/EmptyState';
 import { css } from '@emotion/css';
-import { getOpenTrace, getTraceExplorationScene } from 'utils/utils';
+import {
+  getLatencyPartialThresholdVariable,
+  getLatencyThresholdVariable,
+  getOpenTrace,
+  getTraceExplorationScene,
+} from 'utils/utils';
 import { structureDisplayName } from '../TabsBarScene';
 import { testIds } from 'utils/testIds';
 
@@ -45,22 +50,27 @@ const ROOT_SPAN_ID = '0000000000000000';
 
 export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
   constructor(state: Partial<ServicesTabSceneState>) {
-    super({
-      $data: new SceneDataTransformer({
-        $data: new SceneQueryRunner({
-          datasource: explorationDS,
-          queries: [buildQuery(state.metric as MetricFunction)],
-        }),
-        transformations: filterStreamingProgressTransformations,
-      }),
-      loading: true,
-      ...state,
-    });
+    super({ ...state });
 
     this.addActivationHandler(this._onActivate.bind(this));
   }
 
   public _onActivate() {
+    const partialLatency = getLatencyPartialThresholdVariable(this).getValue()?.toString() ?? '';
+    const latency = getLatencyThresholdVariable(this).getValue()?.toString() ?? '';
+
+    this.setState({
+      $data: new SceneDataTransformer({
+        $data: new SceneQueryRunner({
+          datasource: explorationDS,
+          queries: [buildQuery(this.state.metric as MetricFunction, partialLatency, latency)],
+        }),
+        transformations: filterStreamingProgressTransformations,
+      }),
+      ...this.state,
+      loading: true,
+    });
+
     this._subs.add(
       this.state.$data?.subscribeToState((state) => {
         if (state.data?.state === LoadingState.Loading || state.data?.state === LoadingState.Streaming) {
@@ -381,7 +391,7 @@ export function parseTraces(frame: string): TraceSearchMetadata[] {
   return Array.isArray(parsed) ? parsed : (parsed?.traces ?? []);
 }
 
-function buildQuery(metric: MetricFunction) {
+export function buildQuery(metric: MetricFunction, partialLatency: string, latency: string) {
   let metricQuery;
   let selectionQuery = '';
   switch (metric) {
@@ -390,8 +400,8 @@ function buildQuery(metric: MetricFunction) {
       selectionQuery = 'status = error';
       break;
     case 'duration':
-      metricQuery = `duration > ${VAR_LATENCY_PARTIAL_THRESHOLD_EXPR}`;
-      selectionQuery = `duration > ${VAR_LATENCY_THRESHOLD_EXPR}`;
+      metricQuery = partialLatency ? `duration > ${VAR_LATENCY_PARTIAL_THRESHOLD_EXPR}` : 'true';
+      selectionQuery = latency ? `duration > ${VAR_LATENCY_THRESHOLD_EXPR}` : '';
       break;
     default:
       metricQuery = 'kind = server';
