@@ -3,7 +3,6 @@
     "loading": ""
   },
   "add-to-filters-action": {
-    "aria-label": "",
     "exclude": "",
     "include": ""
   },
@@ -29,9 +28,6 @@
     "layout-grid": "",
     "layout-rows": "",
     "layout-single": ""
-  },
-  "attribute-panel-rows": {
-    "no-series-data": ""
   },
   "attributes-breakdown-scene": {
     "error-label": "",
@@ -65,19 +61,6 @@
     "selected-count_one": "",
     "selected-count_other": ""
   },
-  "bookmark-icon": {
-    "bookmark": "",
-    "remove-bookmark": ""
-  },
-  "bookmark-item": {
-    "description": ""
-  },
-  "bookmarks": {
-    "loading": "",
-    "no-bookmarks": "",
-    "or-view-bookmarks": "",
-    "remove-bookmark": ""
-  },
   "by-frame-repeater": {
     "no-data-for-search": ""
   },
@@ -98,8 +81,10 @@
     "description": ""
   },
   "exceptions-table": {
-    "exclude": "",
     "exclude-aria-label": "",
+    "grouped-messages-aria-label": "",
+    "grouped-messages-common-prefix": "",
+    "grouped-messages-title": "",
     "header": {
       "exception-details": "",
       "exception-details-tooltip": "",
@@ -108,11 +93,7 @@
       "occurrences": "",
       "occurrences-tooltip": ""
     },
-    "include": "",
-    "include-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": ""
+    "include-aria-label": ""
   },
   "exemplars": {
     "view-trace": ""
@@ -126,25 +107,8 @@
       "close": ""
     }
   },
-  "header-scene": {
-    "data-source": "",
-    "filter": "",
-    "lets-start": "",
-    "quick-start": "",
-    "read-documentation": "",
-    "subtitle": "",
-    "title": ""
-  },
   "highest-difference-panel": {
-    "exclude": "",
-    "include": "",
     "title": ""
-  },
-  "home": {
-    "data-source-label": "",
-    "errored-services": "",
-    "slow-services": "",
-    "slow-traces": ""
   },
   "inspect-attribute-action": {
     "inspect": ""
@@ -172,6 +136,7 @@
     "label": ""
   },
   "panel-menu": {
+    "add-to-dashboard": "",
     "create-alert": "",
     "explore": "",
     "navigation": ""
@@ -184,6 +149,25 @@
     "p90": "",
     "p95": "",
     "p99": ""
+  },
+  "plugin-info": {
+    "button": {
+      "title": "",
+      "tooltip": ""
+    },
+    "header": {
+      "last-update": "",
+      "title": ""
+    },
+    "menu": {
+      "changelog": "",
+      "commit-sha": "",
+      "contribute": "",
+      "documentation": "",
+      "give-feedback": "",
+      "grafana-version": "",
+      "report-issue": ""
+    }
   },
   "primary-signal-variable": {
     "primary-signal": "",
@@ -265,21 +249,12 @@
     "header": {
       "data-source": "",
       "filters": "",
-      "need-help": "",
       "trace-id": "",
       "trace-id-placeholder": ""
-    },
-    "menu": {
-      "documentation": "",
-      "give-feedback": ""
     },
     "variable": {
       "data-source": "",
       "duration-percentiles": ""
-    },
-    "version-header": {
-      "last-update": "",
-      "title": ""
     }
   },
   "traceql-issue-detector": {
