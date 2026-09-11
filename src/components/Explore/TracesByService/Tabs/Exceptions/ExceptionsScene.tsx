@@ -22,12 +22,15 @@ import {
   EMPTY_STATE_ERROR_REMEDY_MESSAGE,
   explorationDS,
   filterStreamingProgressTransformations,
+  IncludeExcludeOperator,
 } from '../../../../../utils/shared';
 import { buildExceptionsQuery } from 'components/Explore/queries/exceptions';
 import { aggregateExceptions, ExceptionMessageFilterOperator } from './ExceptionUtils';
 import { ExceptionsTable, ExceptionRow } from './ExceptionsTable';
 import { getFiltersVariable, getTraceByServiceScene } from 'utils/utils';
 import { addToFilters } from 'components/Explore/actions/AddToFiltersAction';
+import { useFlagUseValueTypeFiltering } from 'featureFlags/featureFlags';
+import { addToVariableFilters, toVariableFilter } from 'utils/filters';
 
 export interface ExceptionsSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -162,10 +165,21 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
     return this.state.exceptionsCount || 0;
   }
 
+  public newHandleFilterClick = (key: string, value: string, operator: IncludeExcludeOperator = '=') => {
+    const filtersVariable = getFiltersVariable(this);
+    const filter = toVariableFilter({ key, operator, rawValue: value });
+    addToVariableFilters(filtersVariable, filter);
+
+    // Navigate to the errored traces tab
+    const traceByServiceScene = getTraceByServiceScene(this);
+    traceByServiceScene.setActionView('traceList');
+  };
+
   public static Component = ({ model }: SceneComponentProps<ExceptionsScene>) => {
     const styles = useStyles2(getStyles);
     const theme = useTheme2();
     const { dataState, exceptionRows } = model.useState();
+    const useValueFiltering = useFlagUseValueTypeFiltering();
 
     const handleFilterClick = (
       key: string,
@@ -203,7 +217,12 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
           )}
           {dataState === 'done' && exceptionRows && exceptionRows.length > 0 && (
             <div className={styles.tableWrapper}>
-              <ExceptionsTable rows={exceptionRows} theme={theme} scene={model} onFilterClick={handleFilterClick} />
+              <ExceptionsTable
+                rows={exceptionRows}
+                theme={theme}
+                scene={model}
+                onFilterClick={useValueFiltering ? model.newHandleFilterClick : handleFilterClick}
+              />
             </div>
           )}
           {dataState === 'empty' && (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { AddToFiltersAction, addToFilters, newAddToFilters } from './AddToFiltersAction';
+import { AddToFiltersAction, addToFilters } from './AddToFiltersAction';
 import { DataFrame, FieldType } from '@grafana/data';
 import { AdHocFiltersVariable } from '@grafana/scenes';
 import { useFlagUseValueTypeFiltering } from '../../../featureFlags/featureFlags';
@@ -427,76 +427,6 @@ describe('addToFilters', () => {
 
   it('should add regex include filter with =~ operator', () => {
     addToFilters(variable, 'event.exception.message', '^https?://\\\\S+$', '=~');
-
-    expect(variable.setState).toHaveBeenCalledWith({
-      filters: [
-        { key: 'otherKey', operator: '=', value: 'value2' },
-        { key: 'event.exception.message', operator: '=~', value: '^https?://\\\\S+$' },
-      ],
-    });
-  });
-});
-
-describe('newAddToFilters', () => {
-  let variable: AdHocFiltersVariable;
-
-  beforeEach(() => {
-    variable = {
-      state: { filters: [{ key: 'otherKey', operator: '=', value: 'value2' }] },
-      setState: jest.fn(),
-    } as unknown as AdHocFiltersVariable;
-  });
-
-  it('should add new filter and remove existing filter for the same key', () => {
-    newAddToFilters(variable, { key: 'newKey', value: 'newValue', operator: '=' });
-
-    expect(variable.setState).toHaveBeenCalledWith({
-      filters: [
-        { key: 'otherKey', operator: '=', value: 'value2' },
-        { key: 'newKey', operator: '=', value: 'newValue' },
-      ],
-    });
-  });
-
-  it('should keep span.db.system.name filter intact', () => {
-    variable.state.filters.push({ key: 'span.db.system.name', operator: '=', value: 'value3' });
-    newAddToFilters(variable, { key: 'newKey', value: 'newValue', operator: '=' });
-
-    expect(variable.setState).toHaveBeenCalledWith({
-      filters: [
-        { key: 'otherKey', operator: '=', value: 'value2' },
-        { key: 'span.db.system.name', operator: '=', value: 'value3' },
-        { key: 'newKey', operator: '=', value: 'newValue' },
-      ],
-    });
-  });
-
-  it('should append filter when append is true', () => {
-    variable.state.filters = [{ key: 'existingKey', operator: '=', value: 'existingValue' }];
-
-    newAddToFilters(variable, { key: 'existingKey', value: 'newValue', operator: '=' }, true);
-
-    expect(variable.setState).toHaveBeenCalledWith({
-      filters: [
-        { key: 'existingKey', operator: '=', value: 'existingValue' },
-        { key: 'existingKey', operator: '=', value: 'newValue' },
-      ],
-    });
-  });
-
-  it('should add exclude filter with != operator', () => {
-    newAddToFilters(variable, { key: 'newKey', value: 'excludeValue', operator: '!=' });
-
-    expect(variable.setState).toHaveBeenCalledWith({
-      filters: [
-        { key: 'otherKey', operator: '=', value: 'value2' },
-        { key: 'newKey', operator: '!=', value: 'excludeValue' },
-      ],
-    });
-  });
-
-  it('should add regex include filter with =~ operator', () => {
-    newAddToFilters(variable, { key: 'event.exception.message', value: '^https?://\\\\S+$', operator: '=~' });
 
     expect(variable.setState).toHaveBeenCalledWith({
       filters: [

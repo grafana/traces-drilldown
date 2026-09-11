@@ -2,19 +2,12 @@ import React from 'react';
 
 import { DataFrame } from '@grafana/data';
 import { SceneObjectState, SceneObjectBase, SceneComponentProps, AdHocFiltersVariable } from '@grafana/scenes';
-import {
-  getFiltersVariable,
-  getLabelValue,
-  getLabelValueType,
-  getRawLabelValue,
-  stripOuterQuotes,
-  toEscapedValue,
-} from '../../../utils/utils';
+import { getFiltersVariable, getLabelValue, getRawLabelValue } from '../../../utils/utils';
 import { DATABASE_CALLS_KEY } from 'pages/Explore/primary-signals';
 import { IncludeExcludeButtons } from './IncludeExcludeButtons';
 import { useFlagUseValueTypeFiltering } from 'featureFlags/featureFlags';
-import { AdHocFilterWithValueType } from 'utils/shared';
 import { logWarning } from '@grafana/runtime';
+import { addToVariableFilters, toVariableFilter } from 'utils/filters';
 
 interface AddToFiltersActionState extends SceneObjectState {
   frame: DataFrame;
@@ -106,16 +99,8 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
       return;
     }
 
-    const valueType = getLabelValueType(rawValue, labelName);
-    const bareValue = stripOuterQuotes(rawValue);
-
-    // value carries its own type; valueLabels drives the pill text and must exist for newRenderFilter to work correctly
-    const value = toEscapedValue(valueType, bareValue);
-    const valueLabels = [bareValue];
-
-    const filter = { key: labelName, value, valueLabels, operator };
-
-    newAddToFilters(variable, filter);
+    const filter = toVariableFilter({ key: labelName, operator, rawValue });
+    addToVariableFilters(variable, filter);
 
     this.state.onClick({ labelName });
   };
@@ -148,22 +133,5 @@ export const addToFilters = (
         value: value,
       },
     ],
-  });
-};
-
-export const newAddToFilters = (variable: AdHocFiltersVariable, filter: AdHocFilterWithValueType, append = false) => {
-  // TODO: Replace it with new API introduced in https://github.com/grafana/scenes/issues/1103
-  // At the moment AdHocFiltersVariable doesn't support pushing new history entry on change
-  history.pushState(null, '');
-
-  let baseFilters;
-  if (append) {
-    baseFilters = variable.state.filters;
-  } else {
-    baseFilters = variable.state.filters.filter((f) => f.key === DATABASE_CALLS_KEY || f.key !== filter.key);
-  }
-
-  variable.setState({
-    filters: [...baseFilters, { ...filter }],
   });
 };

@@ -157,3 +157,5 @@ export const KEYWORD_KIND_VALUES: ReadonlySet<string> = new Set([
   'producer',
   'consumer',
 ]);
+
+export type IncludeExcludeOperator = '=' | '!=' | '=~' | '!~';
