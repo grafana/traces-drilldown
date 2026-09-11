@@ -30,7 +30,7 @@ jobs:
           repo_secrets: |
             CROWDIN_TOKEN=grafana-frontend-crowdin-token:access_token
       - name: Download from Crowdin
-        uses: grafana/grafana-github-actions/crowdin-download@3c62d35c5a66e730186a338e45aeb8fa784e2d56 # commit 3c62d35 (no release tag, 2026-05-21)
+        uses: grafana/grafana-github-actions/crowdin-download@26e65a1da9ffdf35d3e8cc6dbeffbccf16022d88 # commit 26e65a1 (no release tag, 2026-07-31)
         with:
           crowdin_token: ${{ fromJSON(steps.vault-secrets.outputs.secrets).CROWDIN_TOKEN }}
           crowdin_project_id: 50
