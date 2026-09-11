@@ -1,5 +1,37 @@
 # Changelog
 
+## [2.2.1](https://github.com/grafana/traces-drilldown/compare/v2.2.0...v2.2.1) (2026-09-11)
+
+
+### 🐛 Bug Fixes
+
+* **deps:** bump pnpm overrides for CVE remediation ([#893](https://github.com/grafana/traces-drilldown/issues/893)) ([05cb858](https://github.com/grafana/traces-drilldown/commit/05cb858db20b975ef51a84b7c838d30690a25182))
+* Fixes for new visual refresh theme ([#871](https://github.com/grafana/traces-drilldown/issues/871)) ([9a5a373](https://github.com/grafana/traces-drilldown/commit/9a5a37385eaefbbea1c6331b55085224345a910c))
+* initialize i18n before embedded Trace Exploration mounts ([#892](https://github.com/grafana/traces-drilldown/issues/892)) ([611ba38](https://github.com/grafana/traces-drilldown/commit/611ba38169b02c2f458d90f7c254a82a4a9916d2))
+* **security/high/:** update pnpm to v11.11.0 [security] ([#888](https://github.com/grafana/traces-drilldown/issues/888)) ([2ecf4b6](https://github.com/grafana/traces-drilldown/commit/2ecf4b66ce35f7f7178122c71eb135adcee1014e))
+* skip duration filter without latency ([#890](https://github.com/grafana/traces-drilldown/issues/890)) ([22edd49](https://github.com/grafana/traces-drilldown/commit/22edd498f65daaa65b7202baca683b55019c0550))
+* use locationUtil.assureBaseUrl for subpath URLs ([#875](https://github.com/grafana/traces-drilldown/issues/875)) ([9694c86](https://github.com/grafana/traces-drilldown/commit/9694c86a003d97ad90ba8682f9728d2b91cffd38))
+
+
+### 🧪 Tests
+
+* add primary signal option test ids ([#883](https://github.com/grafana/traces-drilldown/issues/883)) ([5983f7a](https://github.com/grafana/traces-drilldown/commit/5983f7aeddfc850677e3e1ee50beb5370d550d6f))
+
+
+### 🧹 Chore
+
+* add Prettier pre-commit hook ([#867](https://github.com/grafana/traces-drilldown/issues/867)) ([0c6f709](https://github.com/grafana/traces-drilldown/commit/0c6f709ddf4a3fc46f50f0518a40ecfc803288fe))
+* bump @grafana/create-plugin configuration to 7.10.0 ([#879](https://github.com/grafana/traces-drilldown/issues/879)) ([ec5bc06](https://github.com/grafana/traces-drilldown/commit/ec5bc06418302629751642d19eb5834ed63f1c08))
+* **ci:** bump create-plugin-update to v2.0.4 ([#878](https://github.com/grafana/traces-drilldown/issues/878)) ([90e485a](https://github.com/grafana/traces-drilldown/commit/90e485ac0fe66f5c6d0c874eb0489b00474bb418))
+* **deps:** bump @grafana/scenes to 8.16.0 ([#865](https://github.com/grafana/traces-drilldown/issues/865)) ([54872e1](https://github.com/grafana/traces-drilldown/commit/54872e12e7b18fd35bcf81ebdfb527cf4295b91f))
+* **deps:** update dependency @types/react to v18.3.31 ([#885](https://github.com/grafana/traces-drilldown/issues/885)) ([7f85491](https://github.com/grafana/traces-drilldown/commit/7f85491ca06047eaab6c1bf2fd915008c760bfb9))
+* **deps:** update dependency lefthook to v2.1.12 ([#887](https://github.com/grafana/traces-drilldown/issues/887)) ([c5f8ee1](https://github.com/grafana/traces-drilldown/commit/c5f8ee1d6ee8e0b6e11c83d38c444b79b1c209ad))
+* **i18n:** update crowdin action ([#899](https://github.com/grafana/traces-drilldown/issues/899)) ([22d5bdf](https://github.com/grafana/traces-drilldown/commit/22d5bdffbaea70153eaf1cb90f13c31fe4f08a86))
+* move codeowners to whole drilldown squad ([#897](https://github.com/grafana/traces-drilldown/issues/897)) ([8d88a37](https://github.com/grafana/traces-drilldown/commit/8d88a376ca522f15d7a92df44b260147d9e707ef))
+* Update packages ([#881](https://github.com/grafana/traces-drilldown/issues/881)) ([d054d63](https://github.com/grafana/traces-drilldown/commit/d054d63cb0588184d6e676667828029fbbf7351b))
+* updates keywords and navigation name in plugin.json ([#891](https://github.com/grafana/traces-drilldown/issues/891)) ([74b8d91](https://github.com/grafana/traces-drilldown/commit/74b8d91b5da04dd6f9ce3ab372f9015370cc931c))
+* Upgrade workspace overrides ([#895](https://github.com/grafana/traces-drilldown/issues/895)) ([ebeb3f2](https://github.com/grafana/traces-drilldown/commit/ebeb3f2cb01dd7cf75b23eead53354307e9f67c0))
+
 ## [2.2.0](https://github.com/grafana/traces-drilldown/compare/v2.1.0...v2.2.0) (2026-08-24)
 
 
