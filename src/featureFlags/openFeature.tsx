@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { OpenFeatureProvider } from '@openfeature/react-sdk';
 import { OFREPWebProvider } from '@openfeature/ofrep-web-provider';
 import { StandardResolutionReasons } from '@openfeature/core';
-import { OpenFeature, type Provider, type ResolutionDetails } from '@openfeature/web-sdk';
+import { Client, OpenFeature, type Provider, type ResolutionDetails } from '@openfeature/web-sdk';
 
 import { locationUtil } from '@grafana/data';
 import { config, logWarning } from '@grafana/runtime';
@@ -117,3 +117,7 @@ export function OpenFeaturePluginScope({ children }: { children: React.ReactNode
 }
 
 ensureDefaultOnlyProviderRegistered();
+
+export function getOpenFeatureClient(): Client {
+  return OpenFeature.getClient(PLUGIN_OPEN_FEATURE_DOMAIN);
+}
