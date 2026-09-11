@@ -3,7 +3,14 @@ import React, { useMemo } from 'react';
 import { css } from '@emotion/css';
 import { DataFrame, GrafanaTheme2, LoadingState } from '@grafana/data';
 import { t } from '@grafana/i18n';
-import { SceneComponentProps, sceneGraph, SceneObject, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
+import {
+  SceneComponentProps,
+  sceneGraph,
+  SceneObject,
+  SceneObjectBase,
+  SceneObjectState,
+  SceneQueryRunner,
+} from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
 
 import { getTraceByServiceScene } from 'utils/utils';
@@ -92,7 +99,7 @@ class ExceptionDistributionPanel extends SceneObjectBase<ExceptionDistributionPa
     const placeholder =
       loadingState === LoadingState.Loading || loadingState === LoadingState.NotStarted
         ? 'Loading…'
-        : error ?? (!items || items.length === 0 ? 'No values' : null);
+        : (error ?? (!items || items.length === 0 ? 'No values' : null));
 
     return (
       <div className={styles.panel}>
@@ -116,7 +123,10 @@ class ExceptionDistributionPanel extends SceneObjectBase<ExceptionDistributionPa
                   <div className={styles.barWrap} aria-hidden={true}>
                     <div className={styles.barFill} style={{ width: barWidth }} />
                   </div>
-                  <div className={styles.meta} title={t('exception-comparison.percent-title', '{{percent}}%', { percent })}>
+                  <div
+                    className={styles.meta}
+                    title={t('exception-comparison.percent-title', '{{percent}}%', { percent })}
+                  >
                     <span className={styles.pct}>{percent}%</span>
                   </div>
                 </div>

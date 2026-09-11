@@ -1,12 +1,12 @@
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { AdHocVariableFilter, TimeRange } from '@grafana/data';
-import type { 
-  EntityAssertionsWidgetProps, 
+import type {
+  EntityAssertionsWidgetProps,
   EntityFilterPropertyMatcher,
   EntityPropertyTypes,
-  StringRules
-} from "@grafana/plugin-types/grafana-asserts-app"
+  StringRules,
+} from '@grafana/plugin-types/grafana-asserts-app';
 import { usePluginComponent } from '@grafana/runtime';
 import { sceneGraph, SceneObject } from '@grafana/scenes';
 import { getFiltersVariable } from 'utils/utils';
@@ -70,8 +70,8 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
 
   return (
     <EntityAssertionsWidgetExternal
-      size='md'
-      source='Traces Drilldown'
+      size="md"
+      source="Traces Drilldown"
       query={{
         start: timeRange.from.valueOf(),
         end: timeRange.to.valueOf(),
@@ -87,7 +87,7 @@ export function EntityAssertionsWidget({ serviceName, model }: Props) {
 
 /**
  * Maps TraceQL operator strings to StringRules enum values.
- * 
+ *
  * Note: We use string literals with type assertions instead of importing StringRules as a value
  * because @grafana/plugin-types only exports types (no runtime code). The package.json exports
  * field only includes "types", not "import" or "default", so webpack cannot resolve runtime

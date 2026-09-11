@@ -11,10 +11,10 @@ Tracing is best used for analyzing the performance of your system, identifying b
 Traces Drilldown helps you make sense of your tracing data so you can automatically visualize insights from your Tempo traces data.
 Using the app, you can:
 
-* Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate issues
-* Uncover related issues and monitor changes over time
-* Browse automatic visualizations of your data based on its characteristics
-* Do all of this without writing TraceQL queries
+- Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate issues
+- Uncover related issues and monitor changes over time
+- Browse automatic visualizations of your data based on its characteristics
+- Do all of this without writing TraceQL queries
 
 ![Root cause latency using Duration metrics](https://grafana.com/media/docs/explore-traces/explore-traces-rate-comparison.png)
 
@@ -60,7 +60,6 @@ If your issue is a bug, please open one [here](https://github.com/grafana/traces
 
 We do not have a formal proposal process for changes or feature requests. If you have a change you would like to see in
 Traces Drilldown, please [file an issue](https://github.com/grafana/traces-drilldown/issues/new) with the necessary details.
-
 
 <!-- To help maximize the impact of your README and improve usability for users, we propose the following loose structure:
 

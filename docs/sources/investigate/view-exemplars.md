@@ -6,7 +6,7 @@ keywords:
   - Investigate
 title: View exemplars
 menuTitle: View exemplars
-weight: 600
+weight: 800
 ---
 
 # View exemplars
@@ -28,13 +28,16 @@ For more information, refer to [Introduction to exemplars](/docs/grafana/<GRAFAN
 In Traces Drilldown, exemplar data is represented by a small diamond next to the bar graphs.
 You can view the exemplar information by hovering the cursor over the small diamond.
 
-As you view metrics in the **Breakdown**, **Service structure**, or other investigation tabs, look for small diamond icons next to the bar chart metrics.
+Exemplars appear on the **Rate** and **Errors** bar charts, including the per-attribute charts in the **Breakdown** tab.
+The **Duration** heat map doesn't display exemplars.
+
+As you view **Rate** or **Errors** metrics in the **Breakdown**, **Service structure**, or other investigation tabs, look for small diamond icons next to the bar chart metrics.
 
 When you hover your cursor over a diamond, a tooltip appears showing:
 
-* Exemplar details
-* Trace information
-* Timestamp and metadata
+- Exemplar details
+- Trace information
+- Timestamp and metadata
 
 ![A small diamond next to the bar graph indicates that exemplar data is available.](/media/docs/explore-traces/explore-traces-exemplar-v2.4.png)
 
@@ -44,11 +47,9 @@ Not seeing exemplars? Refer to [Exemplars in Grafana Cloud](https://grafana.com/
 
 Select **View trace** to open a slide-out trace panel that displays:
 
-* The full trace that the exemplar represents
-* All spans within that trace
-* Timing and performance details
-* Service relationships
+- The full trace that the exemplar represents
+- All spans within that trace
+- Timing and performance details
+- Service relationships
 
 ![Selecting View trace reveals a slide-out panel with the full trace information.](/media/docs/explore-traces/explore-traces-exemplars-trace-v2.4.png)
-
-

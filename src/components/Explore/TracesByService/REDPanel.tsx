@@ -40,11 +40,10 @@ import { buildHistogramQuery } from '../queries/histogram';
 import { isEqual } from 'lodash';
 import { DurationComparisonControl } from './DurationComparisonControl';
 import { exemplarsTransformations, removeExemplarsTransformation } from '../../../utils/exemplars';
-import { useServiceName } from 'pages/Explore/TraceExploration';
 import { locationService } from '@grafana/runtime';
-import { InsightsTimelineWidget } from 'addedComponents/InsightsTimelineWidget/InsightsTimelineWidget';
 import { TIME_SEEKER_FEATURE_FLAG_KEY, useFlagTracesDrilldownTimeSeeker } from 'featureFlags/featureFlags';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from 'utils/analytics';
+import { getTestIdFromMetric } from 'utils/testIds';
 
 export interface RateMetricsPanelState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -220,10 +219,7 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     if (type === 'rate') {
       panel.setCustomFieldConfig('axisLabel', 'span/s');
     } else if (type === 'errors') {
-      panel.setCustomFieldConfig('axisLabel', 'error/s').setColor({
-        fixedColor: 'semi-dark-red',
-        mode: 'fixed',
-      });
+      panel.setCustomFieldConfig('axisLabel', 'error/s');
     }
     return new SceneFlexLayout({
       direction: 'row',
@@ -273,8 +269,6 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     const { value: metric } = getMetricVariable(model).useState();
     const traceExploration = getTraceExplorationScene(model);
     const styles = useStyles2(getStyles);
-    const serviceName = useServiceName(model);
-    const timeRange = sceneGraph.getTimeRange(model).useState();
     const { timeSeekerScene } = traceExploration.useState();
     const timeSeekerEnabled = useFlagTracesDrilldownTimeSeeker();
     const embedded = traceExploration.state.embedded === true;
@@ -330,7 +324,11 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
     };
 
     return (
-      <div className={styles.container} onClick={() => selectMetric(embeddedMini)}>
+      <div
+        className={styles.container}
+        onClick={() => selectMetric(embeddedMini)}
+        data-testid={getTestIdFromMetric(metric)}
+      >
         {!embeddedMini && (
           <div className={styles.headerContainer}>
             <div className={styles.titleContainer}>
@@ -354,14 +352,6 @@ export class REDPanel extends SceneObjectBase<RateMetricsPanelState> {
         )}
         {showTimeSeeker && timeSeekerScene != null && <timeSeekerScene.Component model={timeSeekerScene} />}
         <panel.Component model={panel} />
-        {!embeddedMini && serviceName && (
-          <InsightsTimelineWidget
-            serviceName={serviceName}
-            metric={metric as MetricFunction}
-            startTime={String(timeRange.value.from.valueOf())}
-            endTime={String(timeRange.value.to.valueOf())}
-          />
-        )}
       </div>
     );
   };
@@ -411,6 +401,7 @@ function getStyles(theme: GrafanaTheme2) {
       width: '100%',
       display: 'flex',
       flexDirection: 'row',
+      flexWrap: 'wrap',
       padding: '8px 8px 0 8px',
       gap: '8px',
       justifyContent: 'space-between',

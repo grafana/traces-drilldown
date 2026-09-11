@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-use';
 
-import { ToolbarButton } from '@grafana/ui';
+import { Button } from '@grafana/ui';
 
 import { TraceExploration } from '../../../pages/Explore';
 import { getUrlForExploration } from '../../../utils/utils';
@@ -24,5 +24,5 @@ export const ShareExplorationAction = ({ exploration }: ShareExplorationActionSt
     }
   };
 
-  return <ToolbarButton variant={'canvas'} icon={'share-alt'} tooltip={tooltip} onClick={onShare} />;
+  return <Button size="sm" variant={'secondary'} icon={'share-alt'} tooltip={tooltip} onClick={onShare} />;
 };

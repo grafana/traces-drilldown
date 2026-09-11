@@ -13,7 +13,11 @@ interface SparklineCellProps {
 export const SparklineCell = ({ seriesData, theme }: SparklineCellProps) => {
   const styles = useStyles2(getStyles);
   if (!seriesData || !seriesData.length) {
-    return <div className={styles.message}><Trans i18nKey="sparkline-cell.no-data">No data</Trans></div>;
+    return (
+      <div className={styles.message}>
+        <Trans i18nKey="sparkline-cell.no-data">No data</Trans>
+      </div>
+    );
   }
 
   const countValues = seriesData.map((point) => point.count);
@@ -23,7 +27,11 @@ export const SparklineCell = ({ seriesData, theme }: SparklineCellProps) => {
   const validTimeValues = timeValues.filter((v) => isFinite(v) && !isNaN(v));
 
   if (validCountValues.length < 2 || validTimeValues.length < 2) {
-    return <div className={styles.message}><Trans i18nKey="sparkline-cell.not-enough-data">Not enough data</Trans></div>;
+    return (
+      <div className={styles.message}>
+        <Trans i18nKey="sparkline-cell.not-enough-data">Not enough data</Trans>
+      </div>
+    );
   }
 
   const minCount = Math.min(...validCountValues);
@@ -103,4 +111,3 @@ const getStyles = (theme: GrafanaTheme2) => {
     }),
   };
 };
-

@@ -3,7 +3,7 @@ name: Crowdin Download Action
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 0 * * *'
 
 jobs:
   download-sources-from-crowdin:
@@ -18,17 +18,17 @@ jobs:
           persist-credentials: false
       - name: Get GitHub App token
         id: get-github-app-token
-        uses: grafana/shared-workflows/actions/create-github-app-token@259ba21cb3ff07724f331e26d926d655d24b317b # create-github-app-token/v0.2.3 (2026-05-05)
+        uses: grafana/shared-workflows/actions/create-github-app-token@46f48da11e78ebdba7a8747ae456b11062fac83e # create-github-app-token/v0.3.1 (2026-08-19)
         with:
           github_app: grafana-pr-automation
       - name: 'Get vault secrets'
         id: vault-secrets
         uses: grafana/shared-workflows/actions/get-vault-secrets@a53fc80bc30b0a16a262520465db899fa3af08b7 # get-vault-secrets/v1.3.2 (2026-05-04)
         with:
-            # Vault secret paths:
-            # - ci/repo/grafana/traces-drilldown/grafana-frontend-crowdin-token
-            repo_secrets: |
-                CROWDIN_TOKEN=grafana-frontend-crowdin-token:access_token
+          # Vault secret paths:
+          # - ci/repo/grafana/traces-drilldown/grafana-frontend-crowdin-token
+          repo_secrets: |
+            CROWDIN_TOKEN=grafana-frontend-crowdin-token:access_token
       - name: Download from Crowdin
         uses: grafana/grafana-github-actions/crowdin-download@3c62d35c5a66e730186a338e45aeb8fa784e2d56 # commit 3c62d35 (no release tag, 2026-05-21)
         with:

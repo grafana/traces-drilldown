@@ -273,9 +273,7 @@ describe('traceqlFiltersToAdHoc', () => {
   });
 
   it('should use tag-only key for intrinsic scope so saved query format is preserved (e.g. kind=server)', () => {
-    const filters: TraceqlFilter[] = [
-      { scope: 'intrinsic', tag: 'kind', operator: '=', value: 'server' },
-    ];
+    const filters: TraceqlFilter[] = [{ scope: 'intrinsic', tag: 'kind', operator: '=', value: 'server' }];
     const result = traceqlFiltersToAdHoc(filters);
     expect(result).toEqual([{ key: 'kind', operator: '=', value: 'server' }]);
   });
@@ -300,9 +298,7 @@ describe('traceqlFiltersToAdHoc', () => {
       { scope: 'resource', tag: 'service.name', operator: '=~', value: ['api', 'web'] },
     ];
     const result = traceqlFiltersToAdHoc(filters);
-    expect(result).toEqual([
-      { key: 'resource.service.name', operator: '=~', value: 'api|web' },
-    ]);
+    expect(result).toEqual([{ key: 'resource.service.name', operator: '=~', value: 'api|web' }]);
   });
 
   it('should return empty array for empty input', () => {
@@ -310,9 +306,7 @@ describe('traceqlFiltersToAdHoc', () => {
   });
 
   it('should exclude filters missing operator', () => {
-    const filters: TraceqlFilter[] = [
-      { scope: 'resource', tag: 'service.name', value: 'svc' },
-    ];
+    const filters: TraceqlFilter[] = [{ scope: 'resource', tag: 'service.name', value: 'svc' }];
     const result = traceqlFiltersToAdHoc(filters);
     expect(result).toHaveLength(0);
   });
@@ -331,7 +325,9 @@ describe('traceqlFiltersToAdHoc', () => {
 });
 
 const createMockContext = (
-  targets: Array<{ datasource: { type: string; uid?: string }; filters?: TraceqlFilter[]; query?: string }> = [{ datasource: { type: 'tempo' }, filters: [] }]
+  targets: Array<{ datasource: { type: string; uid?: string }; filters?: TraceqlFilter[]; query?: string }> = [
+    { datasource: { type: 'tempo' }, filters: [] },
+  ]
 ): PluginExtensionPanelContext => {
   return {
     pluginId: 'test-plugin',

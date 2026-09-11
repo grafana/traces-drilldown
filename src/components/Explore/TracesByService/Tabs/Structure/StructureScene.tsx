@@ -21,7 +21,7 @@ import {
   VAR_LATENCY_PARTIAL_THRESHOLD_EXPR,
   VAR_LATENCY_THRESHOLD_EXPR,
 } from '../../../../../utils/shared';
-import { TraceSearchMetadata } from '../../../../../types';
+import { SearchResponse, TraceSearchMetadata } from '../../../../../types';
 import { mergeTraces } from '../../../../../utils/trace-merge/merge';
 import { createDataFrame, Field, FieldType, GrafanaTheme2, LinkModel, LoadingState } from '@grafana/data';
 import { TreeNode } from '../../../../../utils/trace-merge/tree-node';
@@ -30,8 +30,14 @@ import { t, Trans } from '@grafana/i18n';
 import Skeleton from 'react-loading-skeleton';
 import { EmptyState } from '../../../../states/EmptyState/EmptyState';
 import { css } from '@emotion/css';
-import { getOpenTrace, getTraceExplorationScene } from 'utils/utils';
+import {
+  getLatencyPartialThresholdVariable,
+  getLatencyThresholdVariable,
+  getOpenTrace,
+  getTraceExplorationScene,
+} from 'utils/utils';
 import { structureDisplayName } from '../TabsBarScene';
+import { testIds } from 'utils/testIds';
 
 export interface ServicesTabSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -44,22 +50,27 @@ const ROOT_SPAN_ID = '0000000000000000';
 
 export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
   constructor(state: Partial<ServicesTabSceneState>) {
-    super({
-      $data: new SceneDataTransformer({
-        $data: new SceneQueryRunner({
-          datasource: explorationDS,
-          queries: [buildQuery(state.metric as MetricFunction)],
-        }),
-        transformations: filterStreamingProgressTransformations,
-      }),
-      loading: true,
-      ...state,
-    });
+    super({ ...state });
 
     this.addActivationHandler(this._onActivate.bind(this));
   }
 
   public _onActivate() {
+    const partialLatency = getLatencyPartialThresholdVariable(this).getValue()?.toString() ?? '';
+    const latency = getLatencyThresholdVariable(this).getValue()?.toString() ?? '';
+
+    this.setState({
+      $data: new SceneDataTransformer({
+        $data: new SceneQueryRunner({
+          datasource: explorationDS,
+          queries: [buildQuery(this.state.metric as MetricFunction, partialLatency, latency)],
+        }),
+        transformations: filterStreamingProgressTransformations,
+      }),
+      ...this.state,
+      loading: true,
+    });
+
     this._subs.add(
       this.state.$data?.subscribeToState((state) => {
         if (state.data?.state === LoadingState.Loading || state.data?.state === LoadingState.Streaming) {
@@ -70,8 +81,8 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         if (state.data?.state === LoadingState.Done && state.data?.series.length) {
           const frame = state.data?.series[0].fields[0].values[0];
           if (frame) {
-            const response = JSON.parse(frame) as TraceSearchMetadata[];
-            const tree = mergeTraces(response);
+            const traces = parseTraces(frame);
+            const tree = mergeTraces(traces);
             tree.children.sort((a, b) => countSpans(b) - countSpans(a));
 
             this.setState({
@@ -255,8 +266,16 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       case 'rate':
         description = (
           <>
-            <div><Trans i18nKey="structure-scene.rate-description">Analyse the service structure of the traces that match the current filters.</Trans></div>
-            <div><Trans i18nKey="structure-scene.rate-panel-info">Each panel represents an aggregate view compiled using spans from multiple traces.</Trans></div>
+            <div>
+              <Trans i18nKey="structure-scene.rate-description">
+                Analyse the service structure of the traces that match the current filters.
+              </Trans>
+            </div>
+            <div>
+              <Trans i18nKey="structure-scene.rate-panel-info">
+                Each panel represents an aggregate view compiled using spans from multiple traces.
+              </Trans>
+            </div>
           </>
         );
         emptyMsg = 'server';
@@ -264,8 +283,16 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       case 'errors':
         description = (
           <>
-            <div><Trans i18nKey="structure-scene.errors-description">Analyse the errors structure of the traces that match the current filters.</Trans></div>
-            <div><Trans i18nKey="structure-scene.errors-panel-info">Each panel represents an aggregate view compiled using spans from multiple traces.</Trans></div>
+            <div>
+              <Trans i18nKey="structure-scene.errors-description">
+                Analyse the errors structure of the traces that match the current filters.
+              </Trans>
+            </div>
+            <div>
+              <Trans i18nKey="structure-scene.errors-panel-info">
+                Each panel represents an aggregate view compiled using spans from multiple traces.
+              </Trans>
+            </div>
           </>
         );
         emptyMsg = 'error';
@@ -273,8 +300,16 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
       case 'duration':
         description = (
           <>
-            <div><Trans i18nKey="structure-scene.duration-description">Analyse the structure of slow spans from the traces that match the current filters.</Trans></div>
-            <div><Trans i18nKey="structure-scene.duration-panel-info">Each panel represents an aggregate view compiled using spans from multiple traces.</Trans></div>
+            <div>
+              <Trans i18nKey="structure-scene.duration-description">
+                Analyse the structure of slow spans from the traces that match the current filters.
+              </Trans>
+            </div>
+            <div>
+              <Trans i18nKey="structure-scene.duration-panel-info">
+                Each panel represents an aggregate view compiled using spans from multiple traces.
+              </Trans>
+            </div>
           </>
         );
         emptyMsg = 'slow';
@@ -290,7 +325,10 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
         </Text>
         <Text textAlignment={'center'} variant="body">
           <div className={styles.longText}>
-            <Trans i18nKey="structure-scene.no-data-message">The structure tab shows {{ emptyMsg }} spans beneath what you are currently investigating. Currently, there are no descendant {{ emptyMsg }} spans beneath the spans you are investigating.</Trans>
+            <Trans i18nKey="structure-scene.no-data-message">
+              The structure tab shows {{ emptyMsg }} spans beneath what you are currently investigating. Currently,
+              there are no descendant {{ emptyMsg }} spans beneath the spans you are investigating.
+            </Trans>
           </div>
         </Text>
         <Stack gap={0.5} alignItems={'center'}>
@@ -320,7 +358,7 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
     );
 
     return (
-      <Stack direction={'column'} gap={1}>
+      <Stack direction={'column'} gap={1} data-testid={testIds.serviceStructureContainer}>
         <div className={styles.description}>{description}</div>
         {isLoading && (
           <Stack direction={'column'} gap={2}>
@@ -345,7 +383,15 @@ export class StructureTabScene extends SceneObjectBase<ServicesTabSceneState> {
   };
 }
 
-function buildQuery(metric: MetricFunction) {
+// The query result frame can be either a raw array of traces (TraceSearchMetadata[])
+// or a full SearchResponse object with a `traces` field, depending on the Tempo API
+// endpoint that served it. Normalise both shapes to a plain array of traces.
+export function parseTraces(frame: string): TraceSearchMetadata[] {
+  const parsed = JSON.parse(frame) as SearchResponse | TraceSearchMetadata[] | null;
+  return Array.isArray(parsed) ? parsed : (parsed?.traces ?? []);
+}
+
+export function buildQuery(metric: MetricFunction, partialLatency: string, latency: string) {
   let metricQuery;
   let selectionQuery = '';
   switch (metric) {
@@ -354,17 +400,15 @@ function buildQuery(metric: MetricFunction) {
       selectionQuery = 'status = error';
       break;
     case 'duration':
-      metricQuery = `duration > ${VAR_LATENCY_PARTIAL_THRESHOLD_EXPR}`;
-      selectionQuery = `duration > ${VAR_LATENCY_THRESHOLD_EXPR}`;
+      metricQuery = partialLatency ? `duration > ${VAR_LATENCY_PARTIAL_THRESHOLD_EXPR}` : 'true';
+      selectionQuery = latency ? `duration > ${VAR_LATENCY_THRESHOLD_EXPR}` : '';
       break;
     default:
       metricQuery = 'kind = server';
       break;
   }
 
-  const rootSelectors = `${VAR_FILTERS_EXPR} ${
-    selectionQuery.length ? `&& ${selectionQuery}` : ''
-  }`;
+  const rootSelectors = `${VAR_FILTERS_EXPR} ${selectionQuery.length ? `&& ${selectionQuery}` : ''}`;
 
   // ({${rootSelectors}} &>> { ${metricQuery} }) # finds trees of spans in error or with high duration
   //    || ({${rootSelectors}})                  # finds single spans in error or with high duration

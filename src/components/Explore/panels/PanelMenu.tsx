@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
-import { PanelMenuItem, toURLRange, urlUtil } from '@grafana/data';
-import { config, usePluginComponent } from '@grafana/runtime';
+import { PanelMenuItem, locationUtil, toURLRange, urlUtil } from '@grafana/data';
+import { usePluginComponent } from '@grafana/runtime';
 import { t } from '@grafana/i18n';
 import {
   SceneObjectBase,
@@ -114,8 +114,10 @@ const getExploreHref = (model: SceneObject<PanelMenuState>) => {
       queries: [{ refId: 'A', datasource, query: model.state.query, step }],
     },
   });
-  const subUrl = config.appSubUrl ?? '';
-  const exploreUrl = urlUtil.renderUrl(`${subUrl}/explore`, { panes: exploreState, schemaVersion: 1 });
+  const exploreUrl = urlUtil.renderUrl(locationUtil.assureBaseUrl('/explore'), {
+    panes: exploreState,
+    schemaVersion: 1,
+  });
   return exploreUrl;
 };
 
@@ -123,10 +125,7 @@ const onExploreClick = () => {
   reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.open_in_explore_clicked);
 };
 
-function buildPanelMenuItems(
-  model: SceneObject<PanelMenuState>,
-  isCreateAlertAvailable: boolean
-): PanelMenuItem[] {
+function buildPanelMenuItems(model: SceneObject<PanelMenuState>, isCreateAlertAvailable: boolean): PanelMenuItem[] {
   const items: PanelMenuItem[] = [
     {
       text: t('panel-menu.navigation', 'Navigation'),

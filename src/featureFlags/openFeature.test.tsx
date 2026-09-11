@@ -2,6 +2,7 @@ import React from 'react';
 import { render, renderHook, screen, waitFor } from '@testing-library/react';
 import { OpenFeatureTestProvider } from '@openfeature/react-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
+import { GrafanaConfig, locationUtil } from '@grafana/data';
 import { logWarning } from '@grafana/runtime';
 
 import { TIME_SEEKER_FEATURE_FLAG_KEY, useFlagTracesDrilldownTimeSeeker } from './featureFlags';
@@ -26,13 +27,26 @@ jest.mock('@grafana/runtime', () => {
   };
 });
 
+let ofrepBaseUrl: string | undefined;
+
 /** Real OFREP constructs `OFREPApi` in the constructor (needs fetch); that runs before `setProviderAndWait` is invoked. */
 jest.mock('@openfeature/ofrep-web-provider', () => ({
   OFREPWebProvider: class MockOFREPWebProvider {
     metadata = { name: 'mock-ofrep' };
     runsOn = 'client';
+    constructor(options: { baseUrl?: string }) {
+      ofrepBaseUrl = options.baseUrl;
+    }
   },
 }));
+
+function initLocationUtil(appSubUrl: string) {
+  locationUtil.initialize({
+    config: { appSubUrl } as GrafanaConfig,
+    getTimeRangeForUrl: () => ({ from: 'now-1h', to: 'now' }),
+    getVariablesUrlParams: () => ({}),
+  });
+}
 
 describe('openFeature', () => {
   let setProviderAndWaitSpy: jest.SpiedFunction<(typeof OpenFeature)['setProviderAndWait']>;
@@ -40,6 +54,8 @@ describe('openFeature', () => {
   beforeEach(async () => {
     resetOpenFeaturePluginStateForTesting();
     jest.clearAllMocks();
+    ofrepBaseUrl = undefined;
+    initLocationUtil('');
     await OpenFeature.clearProviders();
     setProviderAndWaitSpy = jest.spyOn(OpenFeature, 'setProviderAndWait').mockResolvedValue(undefined);
   });
@@ -123,6 +139,20 @@ describe('openFeature', () => {
       expect(a).toBe(b);
       await a;
       expect(setProviderAndWaitSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('prefixes the OFREP path with appSubUrl and strips a trailing slash', async () => {
+      const expectedPath = `/grafana/apis/features.grafana.app/v0alpha1/namespaces/${encodeURIComponent('test-ns')}`;
+
+      initLocationUtil('/grafana');
+      await ensureOpenFeaturePluginInitialized();
+      expect(ofrepBaseUrl).toBe(new URL(expectedPath, window.location.origin).toString());
+
+      resetOpenFeaturePluginStateForTesting();
+      ofrepBaseUrl = undefined;
+      initLocationUtil('/grafana/');
+      await ensureOpenFeaturePluginInitialized();
+      expect(ofrepBaseUrl).toBe(new URL(expectedPath, window.location.origin).toString());
     });
   });
 });

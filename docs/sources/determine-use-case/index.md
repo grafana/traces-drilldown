@@ -37,6 +37,7 @@ Traces Drilldown adapts its interface based on your selected metric. When you ch
 Use this when you know requests are failing or you've seen error alerts.
 
 You might have noticed:
+
 - Error alerts from your monitoring system
 - Failed requests in your application logs
 - User reports of errors or failed operations
@@ -55,19 +56,22 @@ You might have noticed:
 
 ### Example scenarios
 
-**You know a service is failing but not why**: 
+**You know a service is failing but not why**:
+
 1. Select **Errors** metric and **Root spans**.
 2. Filter by the service name.
 3. Use **Comparison** to see which attributes differ between successful and failed requests.
 4. Use **Root cause errors** to see the error chain structure.
 
-**You see error alerts but don't know the source**: 
+**You see error alerts but don't know the source**:
+
 1. Select **Errors** metric and **Root spans**.
 2. Use **Breakdown** to see which services have the most errors.
 3. Drill into the problematic service using filters.
 4. Use **Comparison** to identify what's different about the failing requests.
 
-**You need to find internal errors**: 
+**You need to find internal errors**:
+
 1. Start with **Errors** metric and **Root spans** to see service-level patterns.
 2. If errors don't appear at the root level, switch to **All spans**.
 3. This reveals database errors, downstream service failures, or internal operation errors.
@@ -78,6 +82,7 @@ You might have noticed:
 Use this when you want to identify slow operations, latency bottlenecks, or optimize response times.
 
 You might be investigating:
+
 - Slow response times reported by users
 - High latency alerts
 - Performance degradation over time
@@ -97,19 +102,22 @@ You might be investigating:
 
 ### Example scenarios
 
-**Users report slow responses**: 
+**Users report slow responses**:
+
 1. Select **Duration** metric and **Root spans**.
 2. Look at the heatmap for latency spikes.
 3. Use **Root cause latency** to see which service operations are causing delays.
 4. Use **Slow traces** to examine individual slow requests.
 
-**You want to optimize a specific endpoint**: 
+**You want to optimize a specific endpoint**:
+
 1. Select **Duration** metric and **Root spans**.
 2. Add filters for the endpoint.
 3. Use **Breakdown** to see duration by different attributes like service, environment, or region.
 4. Select appropriate percentiles (p90, p95, p99) based on your optimization goals.
 
-**You need to find slow database queries**: 
+**You need to find slow database queries**:
+
 1. Select **Duration** metric and **All spans** (database queries appear as child spans).
 2. Filter by database-related attributes.
 3. Use **Breakdown** to see which queries are slowest.
@@ -120,6 +128,7 @@ You might be investigating:
 Use this when you want to understand service communication patterns, request flows, or overall system activity.
 
 You might want to:
+
 - Understand how services communicate
 - Monitor request rates and patterns
 - Identify unusual activity spikes
@@ -138,19 +147,22 @@ You might want to:
 
 ### Example scenarios
 
-**You want to understand service dependencies**: 
+**You want to understand service dependencies**:
+
 1. Select **Rate** metric and **Root spans**.
 2. Use **Service structure** to see how services call each other.
 3. Identify the communication patterns and dependencies.
 4. Use **Traces** to examine individual request flows.
 
-**You notice unusual activity spikes**: 
+**You notice unusual activity spikes**:
+
 1. Select **Rate** metric and **Root spans**.
 2. Use **Breakdown** to see which services or operations have increased rates.
 3. Use **Comparison** to compare against normal baseline behavior.
 4. Switch to **Errors** or **Duration** if the spike indicates problems.
 
-**You're doing capacity planning**: 
+**You're doing capacity planning**:
+
 1. Select **Rate** metric and **Root spans**.
 2. Use **Breakdown** by service, environment, or region.
 3. Understand request distribution patterns.
@@ -160,17 +172,20 @@ You might want to:
 
 Your starting point depends on what you already know:
 
-**You know what's wrong**: 
+**You know what's wrong**:
+
 - Errors present → Start with **Errors** metric and **Root spans**.
 - Performance issues → Start with **Duration** metric and **Root spans**.
 - Specific service affected → Add a filter for that service first, then select the appropriate metric.
 
-**You need to explore**: 
+**You need to explore**:
+
 - Start with **Rate** metric and **Root spans** to get an overview.
 - Look for unusual patterns in the graphs.
 - Switch to **Errors** or **Duration** based on what you find.
 
-**You're doing proactive analysis**: 
+**You're doing proactive analysis**:
+
 - Start with **Rate** metric and **Root spans** to understand normal patterns.
 - Use **Comparison** to identify deviations from baseline.
 - Switch to **Errors** or **Duration** when you find areas of concern.

@@ -20,4 +20,3 @@ export const createFrame = (fields: Field[]): DataFrame =>
     fields,
     length: fields[0]?.values?.length ?? 0,
   }) as unknown as DataFrame;
-

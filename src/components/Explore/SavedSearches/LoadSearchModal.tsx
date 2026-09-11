@@ -28,7 +28,9 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
     const selected = searches.find((search: SavedSearch) => search === selectedSearch);
     if (!selected && searches.length) {
       setSelectedSearch(
-        selectedSearch ? searches.find((search: SavedSearch) => search.uid === selectedSearch.uid) ?? searches[0] : searches[0]
+        selectedSearch
+          ? (searches.find((search: SavedSearch) => search.uid === selectedSearch.uid) ?? searches[0])
+          : searches[0]
       );
     }
   }, [selectedSearch, searches]);
@@ -68,7 +70,9 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
     <Modal title={t('load-search-modal.title', 'Load a previously saved search')} isOpen={true} onDismiss={onClose}>
       {!isLoading && searches.length === 0 && (
         <Box backgroundColor="secondary" padding={1.5} marginBottom={2}>
-          <Text variant="body"><Trans i18nKey="load-search-modal.no-saved-searches">No saved searches to display.</Trans></Text>
+          <Text variant="body">
+            <Trans i18nKey="load-search-modal.no-saved-searches">No saved searches to display.</Trans>
+          </Text>
         </Box>
       )}
       {searches.length > 0 && (
@@ -77,7 +81,12 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
             <ScrollContainer>
               <Stack direction="column" gap={0} flex={1} minWidth={0} role="radiogroup">
                 {searches.map((search) => (
-                  <SavedSearchItem key={search.uid} search={search} selected={search === selectedSearch} onSelect={onSelect} />
+                  <SavedSearchItem
+                    key={search.uid}
+                    search={search}
+                    selected={search === selectedSearch}
+                    onSelect={onSelect}
+                  />
                 ))}
               </Stack>
             </ScrollContainer>

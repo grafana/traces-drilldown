@@ -64,7 +64,7 @@ For example, you want to uncover the source of errors in your spans. You need to
 To identify the trouble spot, you want to use raw tracing data instead of only the root span, which is the first span of every trace.
 Select **All spans** in the Filters, then choose the **Errors** metric.
 
-![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/traces-drilldown-allspans-errors-red-v1.2.png 'Select All spans to view all raw span data and Errors as your metric')
+![Select All spans to view all raw span data and Errors as your metric](/media/docs/explore-traces/2.0/screenshot-grafana-traces-drilldown-allspans-errors-v2.0.3.png 'Select All spans to view all raw span data and Errors as your metric')
 
 ### Handle errors
 
@@ -84,10 +84,10 @@ Use the **Comparison** tab to correlate attributes values with errors. The resul
 you see what's causing the errors immediately.
 The **Comparison** tab analyzes the difference between two sets of traces:
 
-- Green bars (Baseline): Normal/healthy trace behavior
+- Blue bars (Baseline): Normal/healthy trace behavior
 - Red bars (Selection): Current selection with status = error filter
 
-The view compares your selection (red) to the baseline (green) and ranks attributes by the largest difference.
+The view compares your selection (red) to the baseline (blue) and ranks attributes by the largest difference.
 This indicates a significant spike in `HTTP 500` (Internal Server Error) responses during your selected time range.
 The visualization highlights that:
 

@@ -7,9 +7,7 @@ import { createTheme, GrafanaTheme2 } from '@grafana/data';
 jest.mock('@grafana/ui', () => ({
   ...jest.requireActual('@grafana/ui'),
   Sparkline: ({ sparkline }: any) => (
-    <div data-testid="sparkline-mock">
-      Sparkline with {sparkline.y.values.length} points
-    </div>
+    <div data-testid="sparkline-mock">Sparkline with {sparkline.y.values.length} points</div>
   ),
   useStyles2: (fn: (theme: GrafanaTheme2) => any) => fn(createTheme()),
 }));
@@ -128,4 +126,3 @@ describe('SparklineCell', () => {
     expect(screen.getByTestId('sparkline-mock')).toBeInTheDocument();
   });
 });
-

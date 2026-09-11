@@ -54,34 +54,34 @@ describe('ShareExplorationAction', () => {
 
   it('updates the tooltip text when URL is copied', async () => {
     jest.useFakeTimers();
-    
+
     render(<ShareExplorationAction exploration={mockExploration} />);
-    
+
     const button = screen.getByRole('button');
-    
+
     // Initial state
     expect(button).toHaveAttribute('aria-label', 'Copy url');
-    
+
     // Click button to copy URL
     await act(async () => {
       fireEvent.click(button);
     });
-    
+
     // Check if tooltip changes after click
     await waitFor(() => {
       expect(button).toHaveAttribute('aria-label', 'Copied!');
     });
-    
+
     // Fast-forward time to simulate timeout
     await act(async () => {
       jest.advanceTimersByTime(2000);
     });
-    
+
     // Check if tooltip resets after 2 seconds
     await waitFor(() => {
       expect(button).toHaveAttribute('aria-label', 'Copy url');
     });
-    
+
     jest.useRealTimers();
   });
 });

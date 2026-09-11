@@ -41,9 +41,13 @@ export function useHasSavedSearches(dsUid: string) {
  * segment so each becomes one filter in the filters bar (e.g. span:status=error&&resource.service.name="x" → two filters).
  */
 function parseSavedQueryToFilters(query: string) {
-  const segments = query.trim().split('&&').map((s) => s.trim()).filter(Boolean);
+  const segments = query
+    .trim()
+    .split('&&')
+    .map((s) => s.trim())
+    .filter(Boolean);
   const allFilters: TraceqlFilter[] = [];
-  
+
   for (const segment of segments) {
     const result = parseTraceQLQuery(`{${segment}}`);
     if (result?.filters.length) {

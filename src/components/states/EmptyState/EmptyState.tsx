@@ -21,8 +21,12 @@ export const EmptyState = ({ message, remedyMessage, imgWidth, padding }: Props)
     <div className={styles.container} data-testid={testIds.emptyState}>
       <Stack direction="column" alignItems="center" gap={3}>
         <GrotNotFound width={imgWidth ?? 300} />
-        {typeof message === 'string' &&  <Text textAlignment={'center'} variant="h5">{message}</Text>}
-        {typeof message !== 'string' &&  message}
+        {typeof message === 'string' && (
+          <Text textAlignment={'center'} variant="h5">
+            {message}
+          </Text>
+        )}
+        {typeof message !== 'string' && message}
 
         {remedyMessage && (
           <div className={styles.remedy}>
@@ -52,6 +56,6 @@ function getStyles(theme: GrafanaTheme2, padding?: string) {
     }),
     remedy: css({
       marginBottom: theme.spacing(4),
-    })
+    }),
   };
 }

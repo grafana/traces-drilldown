@@ -2,10 +2,7 @@ import { BusEventWithPayload, type TimeRange } from '@grafana/data';
 import { sceneGraph, SceneQueryRunner, type SceneObject, type VizPanel } from '@grafana/scenes';
 import { type Panel } from '@grafana/schema';
 
-import {
-  getPanelDataForAlert,
-  type AlertPanelTarget,
-} from './createAlert/getPanelDataForAlert';
+import { getPanelDataForAlert, type AlertPanelTarget } from './createAlert/getPanelDataForAlert';
 import { getDataSource, getDatasourceVariable, getTraceExplorationScene } from 'utils/utils';
 
 export const ADD_TO_DASHBOARD_COMPONENT_ID = 'grafana/add-to-dashboard-form/v1';
@@ -100,9 +97,7 @@ export function getPanelData(
   let maxDataPoints: number | undefined;
 
   if (found) {
-    targets = (found.state.queries ?? []).map((q: Record<string, unknown>) =>
-      interpolateTraceQueryTarget(vizPanel, q)
-    );
+    targets = (found.state.queries ?? []).map((q: Record<string, unknown>) => interpolateTraceQueryTarget(vizPanel, q));
     maxDataPoints = found.state.maxDataPoints;
   }
 

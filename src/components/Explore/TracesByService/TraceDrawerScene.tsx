@@ -56,7 +56,7 @@ export class TraceDrawerScene extends SceneObjectBase<DetailsSceneState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<TraceDrawerScene>) => {
-    const { body } = model.useState();   
+    const { body } = model.useState();
     return body && <body.Component model={body} />;
   };
 }

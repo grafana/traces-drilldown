@@ -22,7 +22,9 @@ export class LayoutSwitcher extends SceneObjectBase<LayoutSwitcherState> {
 
     return (
       <Stack>
-        <Label className={styles.label}><Trans i18nKey="layout-switcher.view-label">View</Trans></Label>
+        <Label className={styles.label}>
+          <Trans i18nKey="layout-switcher.view-label">View</Trans>
+        </Label>
         <RadioButtonGroup options={options} value={active} onChange={model.onLayoutChange} />
       </Stack>
     );

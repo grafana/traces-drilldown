@@ -23,7 +23,7 @@ export default defineConfig<PluginOptions>({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.BASE_URL ?? 'http://localhost:3030',
-    
+
     // Record trace only when retrying a test for the first time.
     screenshot: 'only-on-failure',
     // Record video only when retrying a test for the first time.

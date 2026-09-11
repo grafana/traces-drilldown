@@ -225,6 +225,21 @@ describe('AttributesSidebar', () => {
 
       expect(mockOnAttributeChange).toHaveBeenCalledWith(undefined);
     });
+
+    it('should auto-advance to next attribute with ignore=true when selected attribute becomes filtered', () => {
+      mockFiltersVariable.useState = createMockUseState([{ key: 'resource.cluster', operator: '=', value: 'foo' }]);
+
+      render(
+        <AttributesSidebar
+          options={sampleOptions}
+          selected="resource.cluster"
+          onAttributeChange={mockOnAttributeChange}
+          model={mockModel}
+        />
+      );
+
+      expect(mockOnAttributeChange).toHaveBeenCalledWith('span.db.system', true);
+    });
   });
 
   describe('Multi Selection Mode', () => {

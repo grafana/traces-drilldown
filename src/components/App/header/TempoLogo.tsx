@@ -5,9 +5,7 @@ import React from 'react';
 
 function TempoLogoComponent() {
   const styles = useStyles2(getStyles);
-  return (
-    <img alt="" className={styles.logo} src="public/plugins/grafana-exploretraces-app/img/logo.svg" />
-  );
+  return <img alt="" className={styles.logo} src="public/plugins/grafana-exploretraces-app/img/logo.svg" />;
 }
 
 export const TempoLogo = React.memo(TempoLogoComponent);

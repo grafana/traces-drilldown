@@ -17,13 +17,21 @@ import {
 import { t } from '@grafana/i18n';
 import { Checkbox, getTheme, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 
-import { VAR_FILTERS, VAR_PRIMARY_SIGNAL, explorationDS, VAR_FILTERS_EXPR, ALL, MIN_PANEL_HEIGHT } from '../../../../../utils/shared';
+import {
+  VAR_FILTERS,
+  VAR_PRIMARY_SIGNAL,
+  explorationDS,
+  VAR_FILTERS_EXPR,
+  ALL,
+  MIN_PANEL_HEIGHT,
+} from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import { AddToFiltersAction } from '../../../actions/AddToFiltersAction';
 import { map, Observable } from 'rxjs';
 import { BaselineColor, buildAllComparisonLayout, SelectionColor } from '../../../layouts/allComparison';
-// eslint-disable-next-line no-restricted-imports
+import { getMetricColorName } from '../../../seeker/getMetricColor';
+
 import { comparisonQuery } from '../../../queries/comparisonQuery';
 import { buildAttributeComparison } from '../../../layouts/attributeComparison';
 import {
@@ -40,6 +48,7 @@ import { formatUnixRangeDurationSeconds } from '../../../../../utils/dates';
 import { AttributesDescription } from '../Breakdown/AttributesDescription';
 import { isEqual } from 'lodash';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
+import { testIds } from 'utils/testIds';
 
 const HIDE_BASELINE_ONLY_LS_KEY = 'grafana.drilldown.traces.hideBaselineOnly';
 
@@ -203,11 +212,13 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     const variable = getGroupByVariable(this);
     variable.changeValueTo(value, undefined, !ignore);
 
-    reportAppInteraction(
-      USER_EVENTS_PAGES.analyse_traces,
-      USER_EVENTS_ACTIONS.analyse_traces.select_attribute_in_comparison_clicked,
-      { value }
-    );
+    if (!ignore) {
+      reportAppInteraction(
+        USER_EVENTS_PAGES.analyse_traces,
+        USER_EVENTS_ACTIONS.analyse_traces.select_attribute_in_comparison_clicked,
+        { value }
+      );
+    }
   };
 
   public static Component = ({ model }: SceneComponentProps<AttributesComparisonScene>) => {
@@ -218,7 +229,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
     const styles = useStyles2(getStyles);
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid={testIds.comparisonContainer}>
         <div className={styles.controls}>
           <AttributesDescription
             description={t(
@@ -228,17 +239,14 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
             tags={[
               {
                 label: t('attributes-comparison-scene.baseline-label', 'Baseline'),
-                color:
-                  traceExploration.getMetricFunction() === 'duration'
-                    ? BaselineColor
-                    : getTheme().visualization.getColorByName('semi-dark-green'),
+                color: BaselineColor,
               },
               {
                 label: t('attributes-comparison-scene.selection-label', 'Selection'),
                 color:
                   traceExploration.getMetricFunction() === 'duration'
                     ? SelectionColor
-                    : getTheme().visualization.getColorByName('semi-dark-red'),
+                    : getTheme().visualization.getColorByName(getMetricColorName('errors')),
               },
             ]}
           />
@@ -266,7 +274,7 @@ export class AttributesComparisonScene extends SceneObjectBase<AttributesCompari
             <AttributesSidebar
               options={getAttributesAsOptions(attributes ?? [])}
               selected={variable.getValueText()}
-              onAttributeChange={(attribute) => model.onChange(attribute ?? '')}
+              onAttributeChange={(attribute, ignore) => model.onChange(attribute ?? '', ignore)}
               model={model}
               showFavorites={true}
               allowAllOption={true}

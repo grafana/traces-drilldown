@@ -118,5 +118,4 @@ describe('LoadSearchModal', () => {
 
     expect(mockDeleteSearch).toHaveBeenCalledWith('1');
   });
-
 });

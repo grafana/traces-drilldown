@@ -32,7 +32,7 @@ The list of filters expands as you investigate and explore your tracing data usi
 1. Choose filters to focus on problem areas. Each selected filter is added to the **Filters** bar at the top of the page. You can select filters on the **Comparison** and **Breakdown** tabs in the following ways:
    - Select **Include** to add a matching filter (`=`) or **Exclude** to add a negating filter (`!=`).
    - Use the **Filters** bar near the top.
-   - Attributes shown with a filter icon in the **Attributes** sidebar are already applied in your current **Filters**. The **Attributes** sidebar helps you pick and favorite attributes used for grouping, comparison, and **Trace list** columns. Refer to the [UI reference](../../ui-reference/).
+   - Attributes shown with a filter icon in the **Attributes** sidebar are already applied in your current **Filters**. The **Attributes** sidebar helps you pick and favorite attributes used for grouping, comparison, and trace list columns. Refer to the [UI reference](../../ui-reference/).
 
 ![Change filters for your investigation](/media/docs/explore-traces/2.0/add-filters-span-duration-gt-200ms.png)
 
@@ -65,9 +65,7 @@ To remove a filter, select **Remove filter** (**X**) at the end of the filter yo
 
 Use the time picker at the top right to modify the data shown in Traces Drilldown.
 
-You can select a time range of up to 24 hours in duration.
-By default, this time range can be any 24-hour period in your configured trace data retention period.
-The default retention period is 30 days.
-Your configuration may vary from these values.
+The time range you can query depends on your Tempo data source configuration, including your trace retention period and the range allowed for TraceQL metrics.
+Longer time ranges scan more data and can take longer to return results.
 
 For more information about the time range picker, refer to [Use dashboards](ref:use-dashboards).

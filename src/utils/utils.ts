@@ -20,7 +20,6 @@ import {
   VAR_DATASOURCE_EXPR,
   VAR_FILTERS,
   VAR_GROUPBY,
-  VAR_HOME_FILTER,
   VAR_LATENCY_PARTIAL_THRESHOLD,
   VAR_LATENCY_THRESHOLD,
   VAR_METRIC,
@@ -29,17 +28,12 @@ import {
   VAR_DURATION_PERCENTILES,
 } from './shared';
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
-import { Home } from 'pages/Home/Home';
 import { PrimarySignalVariable } from 'pages/Explore/PrimarySignalVariable';
 import { ActionViewType } from 'exposedComponents/types';
 import { ExceptionsScene } from 'components/Explore/TracesByService/Tabs/Exceptions/ExceptionsScene';
 
 export function getTraceExplorationScene(model: SceneObject): TraceExploration {
   return sceneGraph.getAncestor(model, TraceExploration);
-}
-
-export function getHomeScene(model: SceneObject): Home {
-  return sceneGraph.getAncestor(model, Home);
 }
 
 export function getTraceByServiceScene(model: SceneObject): TracesByServiceScene {
@@ -61,14 +55,6 @@ export function newTracesExploration(
     initialFilters: initialFilters ?? [],
     $timeRange: new SceneTimeRange({ from: 'now-30m', to: 'now' }),
     queryRangeHours,
-  });
-}
-
-export function newHome(initialFilters: AdHocVariableFilter[], initialDS?: string): Home {
-  return new Home({
-    initialDS,
-    initialFilters,
-    $timeRange: new SceneTimeRange({ from: 'now-30m', to: 'now' }),
   });
 }
 
@@ -191,14 +177,6 @@ export function getPrimarySignalVariable(scene: SceneObject): PrimarySignalVaria
   const variable = sceneGraph.lookupVariable(VAR_PRIMARY_SIGNAL, scene);
   if (!(variable instanceof PrimarySignalVariable)) {
     throw new Error('Primary signal variable not found');
-  }
-  return variable;
-}
-
-export function getHomeFilterVariable(scene: SceneObject): AdHocFiltersVariable {
-  const variable = sceneGraph.lookupVariable(VAR_HOME_FILTER, scene);
-  if (!(variable instanceof AdHocFiltersVariable)) {
-    throw new Error('Home filter variable not found');
   }
   return variable;
 }

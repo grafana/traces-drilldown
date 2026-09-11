@@ -1,23 +1,31 @@
 import { sceneGraph, SceneObject } from '@grafana/scenes';
-import { formatDuration, getStepForTimeRange, ONE_DAY, ONE_HOUR, ONE_MILLISECOND, ONE_MINUTE, ONE_SECOND } from './dates';
+import {
+  formatDuration,
+  getStepForTimeRange,
+  ONE_DAY,
+  ONE_HOUR,
+  ONE_MILLISECOND,
+  ONE_MINUTE,
+  ONE_SECOND,
+} from './dates';
 
 jest.mock('@grafana/scenes');
 
 describe('formatDuration', () => {
   it('formats durations less than a second correctly', () => {
-    expect(formatDuration(500)).toBe('500μs');      // 500 microseconds
-    expect(formatDuration(5000)).toBe('5ms');       // 5000 microseconds
-    expect(formatDuration(1_000_000)).toBe('1s');   // 1,000,000 microseconds
+    expect(formatDuration(500)).toBe('500μs'); // 500 microseconds
+    expect(formatDuration(5000)).toBe('5ms'); // 5000 microseconds
+    expect(formatDuration(1_000_000)).toBe('1s'); // 1,000,000 microseconds
   });
 
   it('formats durations in seconds and minutes', () => {
-    expect(formatDuration(1_500_000)).toBe('1.5s');    // 1,500,000 microseconds
+    expect(formatDuration(1_500_000)).toBe('1.5s'); // 1,500,000 microseconds
     expect(formatDuration(90_000_000)).toBe('1m 30s'); // 90,000,000 microseconds
   });
 
   it('formats durations with primary and secondary units', () => {
     expect(formatDuration(183_840_000_000)).toBe('2d 3h'); // 183,840,000,000 microseconds
-    expect(formatDuration(3_661_000_000)).toBe('1h 1m');   // 3,661,000,000 microseconds
+    expect(formatDuration(3_661_000_000)).toBe('1h 1m'); // 3,661,000,000 microseconds
   });
 
   it('handles exact day, hour, minute, second, and millisecond values', () => {

@@ -20,15 +20,15 @@ describe('mergeTraces', () => {
 
     expect(treeDump).toMatch(
       'root 0\n' +
-      '  Service-A:HTTP POST 11\n' +
-      '    Service-B:cardinality_estimation 1\n' +
-      '      Service-B:querysharding 1\n' +
-      '    Service-B:step_align 1\n' +
-      '      Service-B:split_by_interval_and_results_cache 1\n' +
-      '  Service-C:HTTP GET 37\n' +
-      '  Service-D:Span-name-PQR 106\n' +
-      '  Service-E:Span-name-XYZ 3\n' +
-      '  Service-F:HTTP Outgoing Request 1\n'
+        '  Service-A:HTTP POST 11\n' +
+        '    Service-B:cardinality_estimation 1\n' +
+        '      Service-B:querysharding 1\n' +
+        '    Service-B:step_align 1\n' +
+        '      Service-B:split_by_interval_and_results_cache 1\n' +
+        '  Service-C:HTTP GET 37\n' +
+        '  Service-D:Span-name-PQR 106\n' +
+        '  Service-E:Span-name-XYZ 3\n' +
+        '  Service-F:HTTP Outgoing Request 1\n'
     );
   });
 });

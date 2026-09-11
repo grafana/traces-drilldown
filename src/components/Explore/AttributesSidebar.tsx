@@ -8,8 +8,8 @@ import { MIN_PANEL_HEIGHT, RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'u
 import { getFiltersVariable } from 'utils/utils';
 import { SceneObject } from '@grafana/scenes';
 import { useFavoriteAttributes } from 'hooks';
-
-type ScopeType = 'All' | 'Resource' | 'Span' | 'Favorites';
+import { AttributeItem, ScopeType } from '../../types';
+import { getTestIdFromAttribute } from 'utils/testIds';
 
 interface BaseAttributesSidebarProps {
   /** Array of available attribute options */
@@ -27,7 +27,7 @@ interface SingleAttributesSidebarProps extends BaseAttributesSidebarProps {
   /** Currently selected attribute value(s) - string for single mode, string[] for multi mode */
   selected?: string;
   /** Callback when attribute selection changes - receives string | undefined for single mode, string[] for multi mode */
-  onAttributeChange: (attribute: string | undefined) => void;
+  onAttributeChange: (attribute: string | undefined, ignore?: boolean) => void;
 
   isMulti?: false;
 }
@@ -36,15 +36,9 @@ interface MultiAttributesSidebarProps extends BaseAttributesSidebarProps {
   /** Currently selected attribute value(s) - string for single mode, string[] for multi mode */
   selected?: string[];
   /** Callback when attribute selection changes - receives string | undefined for single mode, string[] for multi mode */
-  onAttributeChange: (attribute: string[] | undefined) => void;
+  onAttributeChange: (attribute: string[] | undefined, ignore?: boolean) => void;
 
   isMulti: true;
-}
-
-interface AttributeItem {
-  label: string;
-  value: string;
-  scope: ScopeType;
 }
 
 export function AttributesSidebar({
@@ -182,7 +176,7 @@ export function AttributesSidebar({
       const nextIndex = currentIndex + 1;
 
       if (nextIndex < filteredAttributes.length) {
-        onAttributeChange(filteredAttributes[nextIndex].value);
+        onAttributeChange(filteredAttributes[nextIndex].value, true);
         return;
       }
     }
@@ -428,6 +422,8 @@ export function AttributesSidebar({
                   onDragOver={(e) => handleDragOver(e, index)}
                   onDragLeave={handleItemDragLeave}
                   onDrop={() => handleDrop(index)}
+                  data-testid={getTestIdFromAttribute(attribute)}
+                  data-selected={isSelected}
                 >
                   {isMulti && (
                     <Checkbox
@@ -554,19 +550,24 @@ function getStyles(theme: GrafanaTheme2) {
       padding: theme.spacing(0.5),
       borderRadius: theme.shape.radius.default,
       cursor: 'pointer',
+      color: theme.colors.text.secondary,
       border: `1px solid transparent`,
       transition: 'all 0.2s ease-in-out',
       '&:hover': {
-        backgroundColor: theme.colors.background.secondary,
+        backgroundColor: theme.colors.action.hover,
         border: `1px solid ${theme.colors.border.medium}`,
       },
     }),
     attributeItemSelected: css({
-      backgroundColor: theme.colors.primary.transparent,
-      border: `1px solid ${theme.colors.primary.border}`,
+      //@ts-expect-error remove after grafana/ui update
+      backgroundColor: theme.colors.accent ? theme.colors.accent.background : theme.colors.primary.transparent,
+      color: theme.colors.text.primary,
+      border: `1px solid ${theme.colors.accent ? theme.colors.accent.border : theme.colors.primary.border}`,
       '&:hover': {
-        backgroundColor: theme.colors.primary.transparent,
-        border: `1px solid ${theme.colors.primary.border}`,
+        //@ts-expect-error remove after grafana/ui update
+        backgroundColor: theme.colors.accent ? theme.colors.accent.background : theme.colors.primary.transparent,
+        //@ts-expect-error remove after grafana/ui update
+        border: `1px solid ${theme.colors.accent ? theme.colors.accent.borderEmphasis : theme.colors.primary.border}`,
       },
     }),
     checkbox: css({
@@ -583,7 +584,6 @@ function getStyles(theme: GrafanaTheme2) {
     attributeLabel: css({
       fontSize: theme.typography.bodySmall.fontSize,
       fontWeight: theme.typography.fontWeightMedium,
-      color: theme.colors.text.primary,
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',

@@ -10,8 +10,16 @@ import {
   SceneObjectBase,
   SceneObjectState,
 } from '@grafana/scenes';
-import { DataFrame, GrafanaTheme2, LoadingState, PanelData, toURLRange, urlUtil, toOption } from '@grafana/data';
-import { config } from '@grafana/runtime';
+import {
+  DataFrame,
+  GrafanaTheme2,
+  LoadingState,
+  PanelData,
+  locationUtil,
+  toURLRange,
+  urlUtil,
+  toOption,
+} from '@grafana/data';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
 import { css } from '@emotion/css';
@@ -33,6 +41,7 @@ import {
 } from '../../../../../utils/shared';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
+import { testIds } from 'utils/testIds';
 
 export interface SpanListSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -145,8 +154,10 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
         datasource,
       },
     });
-    const subUrl = config.appSubUrl ?? '';
-    return urlUtil.renderUrl(`${subUrl}/explore`, { panes: exploreState, schemaVersion: 1 });
+    return urlUtil.renderUrl(locationUtil.assureBaseUrl('/explore'), {
+      panes: exploreState,
+      schemaVersion: 1,
+    });
   };
 
   private updatePanel(data?: PanelData) {
@@ -242,7 +253,7 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
     }
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid={testIds.tracesContainer}>
         <div className={styles.header}>
           <div className={styles.description}>
             <Trans i18nKey="span-list-scene.description">View a list of spans for the current set of filters.</Trans>

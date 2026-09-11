@@ -1,6 +1,7 @@
 import {
   DataLinkPostProcessor,
   DataLinksContext,
+  locationUtil,
   PluginExtensionLink,
   TimeRange,
   useDataLinksContext,
@@ -40,9 +41,7 @@ export function DataLinksCustomContext(props: Props) {
 
   const logsDrilldownExtension = extensions?.functions?.[0] ?? undefined;
   const logsDrilldownFn =
-    logsDrilldownExtension && typeof logsDrilldownExtension.fn === 'function'
-      ? logsDrilldownExtension.fn
-      : undefined;
+    logsDrilldownExtension && typeof logsDrilldownExtension.fn === 'function' ? logsDrilldownExtension.fn : undefined;
 
   // Use refs to keep stable callback identity regardless of whether upstream hooks return new references
   const dataLinksContextRef = useRef(dataLinksContext);
@@ -81,7 +80,7 @@ export function DataLinksCustomContext(props: Props) {
       });
 
       if (extensionLink?.path) {
-        linkModel.href = extensionLink.path;
+        linkModel.href = locationUtil.assureBaseUrl(extensionLink.path);
       }
     }
 

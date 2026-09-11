@@ -11,7 +11,12 @@ import { ToolbarButton, useStyles2 } from '@grafana/ui';
 import { LoadSearchModal } from './LoadSearchModal';
 import { getDatasourceVariable, getTraceExplorationScene } from '../../../utils/utils';
 import { DataQuery } from '@grafana/schema';
-import { OpenQueryLibraryComponentProps, useHasSavedSearches, useQueryLibrarySupported, applySavedSearchToScene } from './saveSearch';
+import {
+  OpenQueryLibraryComponentProps,
+  useHasSavedSearches,
+  useQueryLibrarySupported,
+  applySavedSearchToScene,
+} from './saveSearch';
 
 export interface LoadSearchSceneState extends SceneObjectState {
   dsName: string;
@@ -79,7 +84,9 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
             onClick={model.toggleOpen}
             className={styles.button}
             tooltip={
-              hasSavedSearches ? t('load-search-scene.load-saved-search', 'Load saved search') : t('load-search-scene.no-saved-searches', 'No saved searches to load')
+              hasSavedSearches
+                ? t('load-search-scene.load-saved-search', 'Load saved search')
+                : t('load-search-scene.no-saved-searches', 'No saved searches to load')
             }
           />
           {isOpen && <LoadSearchModal sceneRef={model} onClose={model.toggleClosed} />}

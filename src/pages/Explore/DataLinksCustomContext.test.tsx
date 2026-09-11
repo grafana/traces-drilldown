@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { render, screen } from '@testing-library/react';
 
 import { DataLinksCustomContext } from './DataLinksCustomContext';
-import { DataLinksContext, useDataLinksContext } from '@grafana/data';
+import { DataLinksContext, GrafanaConfig, locationUtil, useDataLinksContext } from '@grafana/data';
 import { getDataSourceSrv, usePluginFunctions } from '@grafana/runtime';
 
 // --- Mocks ---
@@ -83,6 +83,11 @@ beforeEach(() => {
   jest.clearAllMocks();
   capturedContext = null;
   setupAllConditionsMet();
+  locationUtil.initialize({
+    config: { appSubUrl: '/grafana' } as GrafanaConfig,
+    getTimeRangeForUrl: () => ({ from: 'now-1h', to: 'now' }),
+    getVariablesUrlParams: () => ({}),
+  });
 });
 
 // --- Tests ---
@@ -179,7 +184,7 @@ describe('DataLinksCustomContext', () => {
       const linkModel = createMockLinkModel();
       const result = capturedContext.dataLinkPostProcessor({ linkModel });
 
-      expect(result.href).toBe(mockPath);
+      expect(result.href).toBe(`/grafana${mockPath}`);
       expect(mockExtensionFn).toHaveBeenCalledWith(
         expect.objectContaining({
           targets: expect.arrayContaining([

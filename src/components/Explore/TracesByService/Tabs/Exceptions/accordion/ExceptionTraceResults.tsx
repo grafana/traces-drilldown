@@ -20,7 +20,7 @@ export const ExceptionTraceResults = ({
   const panel = useMemo(() => {
     const timeRange = sceneGraph.getTimeRange(scene);
     const selectQuery = buildSelectQuery(selectedAttributes);
-    
+
     let datasourceUid: string;
     try {
       datasourceUid = getDatasourceUidOrThrow(scene);
@@ -47,9 +47,7 @@ export const ExceptionTraceResults = ({
 
     const spanListTransformations = [
       () => (source: Observable<DataFrame[]>) => {
-        return source.pipe(
-          map((data: DataFrame[]) => data.map(filterSpanListFields))
-        );
+        return source.pipe(map((data: DataFrame[]) => data.map(filterSpanListFields)));
       },
       {
         id: 'organize',
@@ -64,9 +62,7 @@ export const ExceptionTraceResults = ({
         },
       },
       () => (source: Observable<DataFrame[]>) => {
-        return source.pipe(
-          map((data: DataFrame[]) => data.map((df) => decorateTraceTableFields(df, scene)))
-        );
+        return source.pipe(map((data: DataFrame[]) => data.map((df) => decorateTraceTableFields(df, scene))));
       },
     ];
 
@@ -75,10 +71,7 @@ export const ExceptionTraceResults = ({
       transformations: [...filterStreamingProgressTransformations, ...spanListTransformations],
     });
 
-    return PanelBuilders.table()
-      .setHoverHeader(true)
-      .setData(dataTransformer)
-      .build();
+    return PanelBuilders.table().setHoverHeader(true).setData(dataTransformer).build();
   }, [baseFilter, selectedAttributes, scene]);
 
   if (!panel) {
@@ -95,7 +88,9 @@ export function buildSelectQuery(selectedAttributes: string[]) {
 export function filterSpanListFields(df: DataFrame) {
   return {
     ...df,
-    fields: df.fields.filter((f) => !f.name.startsWith('nestedSet') && f.name !== 'status' && f.name !== 'exception.message'),
+    fields: df.fields.filter(
+      (f) => !f.name.startsWith('nestedSet') && f.name !== 'status' && f.name !== 'exception.message'
+    ),
   };
 }
 

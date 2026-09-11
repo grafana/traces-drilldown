@@ -41,14 +41,14 @@ const renderWithProvider = (loadingRanges?: Array<{ from: number; to: number }>)
 describe('TimeSeekerLoadingOverlay', () => {
   it('returns null when loadingRanges is undefined', () => {
     const { container } = renderWithProvider(undefined);
-    
+
     const overlays = container.querySelectorAll('.loading-overlay-class');
     expect(overlays.length).toBe(0);
   });
 
   it('returns null when loadingRanges is empty', () => {
     const { container } = renderWithProvider([]);
-    
+
     const overlays = container.querySelectorAll('.loading-overlay-class');
     expect(overlays.length).toBe(0);
   });
@@ -60,7 +60,7 @@ describe('TimeSeekerLoadingOverlay', () => {
       { from: 100, to: 200 },
       { from: 300, to: 400 },
     ]);
-    
+
     // Without uplot ref, it won't render actual overlays
     // This tests that the component handles the case gracefully
     expect(container).toBeTruthy();

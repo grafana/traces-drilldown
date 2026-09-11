@@ -38,7 +38,7 @@ describe('LayoutSwitcher', () => {
 
   it('renders the Selector with correct options and active state', () => {
     render(<layoutSwitcher.Selector model={layoutSwitcher} />);
-    
+
     expect(screen.getByText('Single')).toBeInTheDocument();
     expect(screen.getByText('Grid')).toBeInTheDocument();
     expect(screen.getByText('Rows')).toBeInTheDocument();
@@ -46,7 +46,7 @@ describe('LayoutSwitcher', () => {
 
   it('changes layout on layout change and reports interaction', () => {
     render(<layoutSwitcher.Selector model={layoutSwitcher} />);
-    
+
     fireEvent.click(screen.getByText('Grid'));
 
     expect(layoutSwitcher.state.active).toBe('grid');

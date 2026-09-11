@@ -39,7 +39,9 @@ export const ExceptionAccordionContent = ({ row, scene }: ExceptionAccordionProp
         <div className={styles.message}>
           {row.message && (
             <div>
-              <span className={styles.errorLabel}><Trans i18nKey="exception-accordion.error-label">Error:</Trans></span>{' '}
+              <span className={styles.errorLabel}>
+                <Trans i18nKey="exception-accordion.error-label">Error:</Trans>
+              </span>{' '}
               {(() => {
                 const highlight = getMessageHighlight(row.message);
                 if (!highlight) {
@@ -74,16 +76,8 @@ export const ExceptionAccordionContent = ({ row, scene }: ExceptionAccordionProp
           />
 
           <div className={styles.comparisonAndResultsContainer}>
-            <ExceptionComparison
-              selectedAttributes={selectedAttributes}
-              baseFilter={baseFilter}
-              scene={scene}
-            />
-            <ExceptionTraceResults
-              selectedAttributes={selectedAttributes}
-              baseFilter={baseFilter}
-              scene={scene}
-            />
+            <ExceptionComparison selectedAttributes={selectedAttributes} baseFilter={baseFilter} scene={scene} />
+            <ExceptionTraceResults selectedAttributes={selectedAttributes} baseFilter={baseFilter} scene={scene} />
           </div>
         </Stack>
       </div>
@@ -135,7 +129,10 @@ export const buildExceptionFilterExpr = ({
   const primarySignalExpr = (getPrimarySignalVariable(scene).state.value as string) || 'true';
   const filtersExpr = renderTraceQLLabelFilters(getFiltersVariable(scene).state.filters);
 
-  const typeFilter = exceptionType && exceptionType !== 'Unknown' ? ` && event.exception.type = "${escapeTraceQlStringLiteral(exceptionType)}"` : '';
+  const typeFilter =
+    exceptionType && exceptionType !== 'Unknown'
+      ? ` && event.exception.type = "${escapeTraceQlStringLiteral(exceptionType)}"`
+      : '';
 
   return `{${primarySignalExpr} && ${filtersExpr} && status = error && ${formatExceptionMessageTraceQLFilter(exceptionMessage)}${typeFilter}}`;
 };

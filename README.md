@@ -8,7 +8,7 @@ Tracing is best used for analyzing the performance of your system, identifying b
 Grafana Traces Drilldown helps you make sense of your tracing data so you can automatically visualize insights from your Tempo traces data.
 Before this app, you would use [TraceQL](https://grafana.com/docs/tempo/latest/traceql/), the query language for tracing, to [construct a query](https://grafana.com/docs/grafana-cloud/send-data/traces/traces-query-editor/) in Grafana.
 
-Note: The Explore Traces app is now called Traces Drilldown. To learn more, read [Grafana Drilldown apps: the improved queryless experience known as the Explore apps](https://grafana.com/blog/2025/02/20/grafana-drilldown-apps-the-improved-queryless-experience-formerly-known-as-the-explore-apps/). 
+Note: The Explore Traces app is now called Traces Drilldown. To learn more, read [Grafana Drilldown apps: the improved queryless experience known as the Explore apps](https://grafana.com/blog/2025/02/20/grafana-drilldown-apps-the-improved-queryless-experience-formerly-known-as-the-explore-apps/).
 
 ![Traces Drilldown](docs/sources/explore-traces-homescreen.png)
 
@@ -24,8 +24,8 @@ To use Traces Drilldown with self-managed Grafana, you need to install the Trace
 
 To use Traces Drilldown, you need:
 
-* A Grafana Cloud account
-* A Grafana stack in Grafana Cloud with a configured Tempo data source receiving tracing data
+- A Grafana Cloud account
+- A Grafana stack in Grafana Cloud with a configured Tempo data source receiving tracing data
 
 To access Traces Drilldown:
 
@@ -79,4 +79,4 @@ To learn more about Traces Drilldown, refer to our documentation in [the reposit
 
 ## Contribute
 
-Want to help with the project? Read the [Contributor's guidelines](CONTRIBUTING.md) to learn more. 
+Want to help with the project? Read the [Contributor's guidelines](CONTRIBUTING.md) to learn more.

@@ -71,6 +71,7 @@ export function buildNormalLayout(
         children: [
           new SceneFlexItem({
             minHeight: 300,
+            // No fixed metric color — default palette keeps multi-series distinguishable.
             body: (metric === 'duration' ? linesPanelConfig().setUnit('s') : linesPanelConfig()).build(),
           }),
         ],
@@ -83,7 +84,15 @@ export function buildNormalLayout(
           children: [],
         }),
         groupBy: true,
-        getLayoutChild: getLayoutChild(scene, panels, getLabelValue, variable, metric, actionsFn, onBreakdownCreateAlert),
+        getLayoutChild: getLayoutChild(
+          scene,
+          panels,
+          getLabelValue,
+          variable,
+          metric,
+          actionsFn,
+          onBreakdownCreateAlert
+        ),
       }),
       new ByFrameRepeater({
         body: new SceneCSSGridLayout({
@@ -93,7 +102,15 @@ export function buildNormalLayout(
           children: [],
         }),
         groupBy: true,
-        getLayoutChild: getLayoutChild(scene, panels, getLabelValue, variable, metric, actionsFn, onBreakdownCreateAlert),
+        getLayoutChild: getLayoutChild(
+          scene,
+          panels,
+          getLabelValue,
+          variable,
+          metric,
+          actionsFn,
+          onBreakdownCreateAlert
+        ),
       }),
     ],
   });
@@ -145,7 +162,7 @@ export function getLayoutChild(
       },
     ];
 
-    const panel = (metric === 'duration' ? linesPanelConfig().setUnit('s') : barsPanelConfig(metric))
+    const panel = (metric === 'duration' ? linesPanelConfig(metric).setUnit('s') : barsPanelConfig(metric))
       .setTitle(getTitle(frame, variable.getValueText()))
       .setMenu(
         new PanelMenu({
@@ -154,6 +171,7 @@ export function getLayoutChild(
           onBreakdownCreateAlert,
         })
       )
+      .setShowMenuAlways(true)
       .setData(dataNode);
 
     const actions = actionsFn(frame);

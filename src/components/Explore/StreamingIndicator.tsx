@@ -9,10 +9,7 @@ interface StreamingIndicatorProps {
   iconSize?: number;
 }
 
-export const StreamingIndicator = ({ 
-  isStreaming, 
-  iconSize = 14,
-}: StreamingIndicatorProps) => {
+export const StreamingIndicator = ({ isStreaming, iconSize = 14 }: StreamingIndicatorProps) => {
   const styles = useStyles2(getStyles, iconSize);
 
   if (!isStreaming) {
@@ -37,4 +34,4 @@ const getStyles = (theme: GrafanaTheme2, iconSize: number) => {
       display: 'inline-block',
     }),
   };
-}; 
+};

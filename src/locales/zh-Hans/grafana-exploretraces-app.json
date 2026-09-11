@@ -145,9 +145,6 @@
     "slow-services": "",
     "slow-traces": ""
   },
-  "insights-timeline-widget": {
-    "label": ""
-  },
   "inspect-attribute-action": {
     "inspect": ""
   },

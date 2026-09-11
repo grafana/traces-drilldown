@@ -12,7 +12,8 @@ import {
   VizPanel,
 } from '@grafana/scenes';
 import { t } from '@grafana/i18n';
-import { Stack, useStyles2 } from '@grafana/ui';
+import { Stack, useStyles2, useTheme2 } from '@grafana/ui';
+import { getMetricColor } from '../../../seeker/getMetricColor';
 
 import { MetricFunction, MIN_PANEL_HEIGHT } from '../../../../../utils/shared';
 
@@ -37,6 +38,7 @@ import { AttributesDescription } from './AttributesDescription';
 import { PercentilesSelect } from './PercentilesSelect';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 import { useFavoriteAttributes } from 'hooks/useFavoriteAttributes';
+import { testIds } from 'utils/testIds';
 
 const CREATE_ALERT_FROM_PANEL_PLUGIN_ID = 'grafana/alerting/create-alert-from-panel/v1';
 
@@ -120,9 +122,13 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
   public onChange = (value: string, ignore?: boolean) => {
     const variable = getGroupByVariable(this);
-    if (variable.getValueText() !== value) {
-      variable.changeValueTo(value, undefined, !ignore);
+    if (variable.getValueText() === value) {
+      return;
+    }
 
+    variable.changeValueTo(value, undefined, !ignore);
+
+    if (!ignore) {
       reportAppInteraction(
         USER_EVENTS_PAGES.analyse_traces,
         USER_EVENTS_ACTIONS.analyse_traces.breakdown_group_by_changed,
@@ -140,6 +146,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
     const groupBy = groupByValue as string;
     const { body, createAlertPayload } = model.useState();
     const styles = useStyles2(getStyles);
+    const theme = useTheme2();
 
     const { attributes } = getTraceByServiceScene(model).useState();
     const { favoriteAttributes } = useFavoriteAttributes({ scene: model });
@@ -162,13 +169,13 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
 
     useEffect(() => {
       if (!groupBy || groupBy === 'All' || groupBy === '') {
-        model.onChange(favoriteAttributes[0]);
+        model.onChange(favoriteAttributes[0], true);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupBy]);
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid={testIds.breakdownContainer}>
         <BreakdownCreateAlertModalBridge payload={createAlertPayload} scene={model} />
         <div className={styles.controls}>
           <AttributesDescription
@@ -176,10 +183,19 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
             tags={
               metric === 'duration'
                 ? []
-                : [
-                    { label: t('attributes-breakdown-scene.rate-label', 'Rate'), color: 'green' },
-                    { label: t('attributes-breakdown-scene.error-label', 'Error'), color: 'red' },
-                  ]
+                : metric === 'errors'
+                  ? [
+                      {
+                        label: t('attributes-breakdown-scene.error-label', 'Error'),
+                        color: getMetricColor(theme, 'errors'),
+                      },
+                    ]
+                  : [
+                      {
+                        label: t('attributes-breakdown-scene.rate-label', 'Rate'),
+                        color: getMetricColor(theme, 'rate'),
+                      },
+                    ]
             }
           />
           {body instanceof LayoutSwitcher && (
@@ -198,7 +214,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
             <AttributesSidebar
               options={getAttributesAsOptions(attributes ?? [])}
               selected={groupBy}
-              onAttributeChange={(attribute) => model.onChange(attribute ?? '')}
+              onAttributeChange={(attribute, ignore) => model.onChange(attribute ?? '', ignore)}
               model={model}
               showFavorites={true}
             />
@@ -236,11 +252,7 @@ function BreakdownCreateAlertModalBridge({
   }
 
   return (
-    <ModalComponent
-      panel={payload.panel}
-      range={payload.range}
-      onDismiss={() => scene.clearBreakdownCreateAlert()}
-    />
+    <ModalComponent panel={payload.panel} range={payload.range} onDismiss={() => scene.clearBreakdownCreateAlert()} />
   );
 }
 

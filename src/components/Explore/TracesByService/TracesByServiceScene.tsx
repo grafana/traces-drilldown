@@ -42,6 +42,7 @@ import { isEqual } from 'lodash';
 import {
   getDatasourceVariable,
   getGroupByVariable,
+  getLatencyThresholdVariable,
   getSpanListColumnsVariable,
   getTraceExplorationScene,
 } from 'utils/utils';
@@ -161,14 +162,14 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     }
   }
 
-    private updateExceptionsScene(metric: MetricFunction) {
+  private updateExceptionsScene(metric: MetricFunction) {
     if (metric === 'errors') {
       if (!this.state.exceptionsScene) {
         const exceptionsScene = new ExceptionsScene({});
         this.setState({
-          exceptionsScene
+          exceptionsScene,
         });
-        
+
         // Activate the scene after it's been set in state to ensure it starts fetching data
         setTimeout(() => {
           exceptionsScene.activate();
@@ -178,7 +179,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
       // Remove exceptions scene if metric is not errors
       if (this.state.exceptionsScene) {
         this.setState({
-          exceptionsScene: undefined
+          exceptionsScene: undefined,
         });
       }
     }
@@ -194,7 +195,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     const timeRange = sceneGraph.getTimeRange(this);
     const options = {
       timeRange: timeRange.state.value,
-      filters: []
+      filters: [],
     };
 
     ds.getTagKeys?.(options).then((tagKeys: GetTagResponse | MetricFindValue[]) => {
@@ -244,6 +245,12 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     });
   }
 
+  public onUserSetActionView(actionView: ActionViewType) {
+    this._urlSync.performBrowserHistoryAction(() => {
+      this.setActionView(actionView);
+    });
+  }
+
   public setActionView(actionView?: ActionViewType) {
     const { body } = this.state;
     const actionViewDef = actionViewsDefinitions.find((v) => v.value === actionView);
@@ -251,39 +258,40 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
     const metric = traceExploration.getMetricVariable().getValue();
     const prefixLen = getActionViewPrefixLen(traceExploration.state.hideRedPanels);
 
-    if (body.state.children.length > prefixLen - 1) {
-      if (actionViewDef) {
-        let scene: SceneObject;
-        if (actionView === 'exceptions' && this.state.exceptionsScene) {
-          // Use the persistent exceptions scene to maintain data subscription
-          scene = new SceneFlexItem({
-            body: this.state.exceptionsScene,
-          });
-        } else {
-          scene = actionViewDef.getScene(metric as MetricFunction);
-        }
-        
-        body.setState({
-          children: [...body.state.children.slice(0, prefixLen), scene],
-        });
-        reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.action_view_changed, {
-          oldAction: this.state.actionView,
-          newAction: actionView,
-        });
-        this.setState({ actionView: actionViewDef.value });
-      }
+    if (body.state.children.length <= prefixLen - 1 || !actionViewDef) {
+      return;
     }
+
+    let scene: SceneObject;
+    if (actionView === 'exceptions' && this.state.exceptionsScene) {
+      // Use the persistent exceptions scene to maintain data subscription
+      scene = new SceneFlexItem({
+        body: this.state.exceptionsScene,
+      });
+    } else {
+      scene = actionViewDef.getScene(metric as MetricFunction);
+    }
+
+    body.setState({
+      children: [...body.state.children.slice(0, prefixLen), scene],
+    });
+    reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.action_view_changed, {
+      oldAction: this.state.actionView,
+      newAction: actionView,
+    });
+    this.setState({ actionView: actionViewDef.value });
   }
 
   private updateQueryRunner(metric: MetricFunction) {
     const selection = this.state.selection;
     const columns = getSpanListColumnsVariable(this).getValue()?.toString() ?? '';
+    const latency = getLatencyThresholdVariable(this).getValue()?.toString() ?? '';
 
     this.setState({
       $data: new SceneDataTransformer({
         $data: new SceneQueryRunner({
           datasource: explorationDS,
-          queries: [buildQuery(metric, columns, selection)],
+          queries: [buildQuery(metric, columns, latency, selection)],
           $timeRange: timeRangeFromSelection(selection),
         }),
         transformations: [...filterStreamingProgressTransformations, ...spanListTransformations],
@@ -320,19 +328,38 @@ const MetricTypeTooltip = () => {
 
   return (
     <Stack direction={'column'} gap={1}>
-      <div className={styles.tooltip.title}><Trans i18nKey="traces-by-service.tooltip.title">RED metrics for traces</Trans></div>
+      <div className={styles.tooltip.title}>
+        <Trans i18nKey="traces-by-service.tooltip.title">RED metrics for traces</Trans>
+      </div>
       <span className={styles.tooltip.subtitle}>
-        <Trans i18nKey="traces-by-service.tooltip.subtitle">Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.</Trans>
+        <Trans i18nKey="traces-by-service.tooltip.subtitle">
+          Explore rate, errors, and duration (RED) metrics generated from traces by Tempo.
+        </Trans>
       </span>
       <div className={styles.tooltip.text}>
         <div>
-          <span className={styles.tooltip.emphasize}><Trans i18nKey="traces-by-service.tooltip.rate-label">Rate</Trans></span> <Trans i18nKey="traces-by-service.tooltip.rate-description">- Spans per second that match your filter, useful to find unusual spikes in activity</Trans>
+          <span className={styles.tooltip.emphasize}>
+            <Trans i18nKey="traces-by-service.tooltip.rate-label">Rate</Trans>
+          </span>{' '}
+          <Trans i18nKey="traces-by-service.tooltip.rate-description">
+            - Spans per second that match your filter, useful to find unusual spikes in activity
+          </Trans>
         </div>
         <div>
-          <span className={styles.tooltip.emphasize}><Trans i18nKey="traces-by-service.tooltip.errors-label">Errors</Trans></span> <Trans i18nKey="traces-by-service.tooltip.errors-description">-Spans that are failing, overall issues in tracing ecosystem</Trans>
+          <span className={styles.tooltip.emphasize}>
+            <Trans i18nKey="traces-by-service.tooltip.errors-label">Errors</Trans>
+          </span>{' '}
+          <Trans i18nKey="traces-by-service.tooltip.errors-description">
+            -Spans that are failing, overall issues in tracing ecosystem
+          </Trans>
         </div>
         <div>
-          <span className={styles.tooltip.emphasize}><Trans i18nKey="traces-by-service.tooltip.duration-label">Duration</Trans></span> <Trans i18nKey="traces-by-service.tooltip.duration-description">- Amount of time those spans take, represented as a heat map (responds time, latency)</Trans>
+          <span className={styles.tooltip.emphasize}>
+            <Trans i18nKey="traces-by-service.tooltip.duration-label">Duration</Trans>
+          </span>{' '}
+          <Trans i18nKey="traces-by-service.tooltip.duration-description">
+            - Amount of time those spans take, represented as a heat map (responds time, latency)
+          </Trans>
         </div>
       </div>
 
@@ -401,7 +428,7 @@ function getStyles(theme: GrafanaTheme2) {
 const MAIN_PANEL_HEIGHT = 240;
 export const MINI_PANEL_HEIGHT = (MAIN_PANEL_HEIGHT - 8) / 2;
 
-export function buildQuery(type: MetricFunction, columns: string, selection?: ComparisonSelection) {
+export function buildQuery(type: MetricFunction, columns: string, latency: string, selection?: ComparisonSelection) {
   const selectQuery = columns !== '' ? ` | select(${columns})` : '';
   let typeQuery = '';
   switch (type) {
@@ -421,7 +448,7 @@ export function buildQuery(type: MetricFunction, columns: string, selection?: Co
           typeQuery += '&& ' + duration.join(' && ');
         }
       }
-      if (!typeQuery.length) {
+      if (!typeQuery.length && latency) {
         typeQuery = `&& duration > ${VAR_LATENCY_THRESHOLD_EXPR}`;
       }
       break;
@@ -477,25 +504,25 @@ function buildGraphScene(
         ? new MiniREDPanel({ embeddedMini, metric: 'errors' })
         : new MiniREDPanel({ embeddedMini, metric: 'duration' });
 
-    // All three panels are stacked vertically (one per row)
-    // Layout direction adjusts based on screen size
-    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 700;
-
     sceneChildren.push(
       new SceneFlexLayout({
-        direction: !embeddedMini ? 'row' : isSmallScreen ? 'row' : 'column',
+        direction: embeddedMini ? 'column' : 'row',
+        minHeight: embeddedMini ? undefined : MAIN_PANEL_HEIGHT,
+        ...(embeddedMini ? { md: { direction: 'row' } } : {}),
         ySizing: 'content',
         children: [
           new SceneFlexItem({
             minHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
             maxHeight: embeddedMini ? MINI_PANEL_HEIGHT : MAIN_PANEL_HEIGHT,
             width: embeddedMini ? undefined : '60%',
+            ...(embeddedMini ? {} : { md: { width: '100%' } }),
             body: new REDPanel({ embeddedMini }),
           }),
           new SceneFlexLayout({
             direction: 'column',
             minHeight: MAIN_PANEL_HEIGHT,
             maxHeight: MAIN_PANEL_HEIGHT,
+            ...(embeddedMini ? {} : { width: '40%', md: { width: '100%' } }),
             children: [
               new SceneFlexItem({
                 minHeight: MINI_PANEL_HEIGHT,
