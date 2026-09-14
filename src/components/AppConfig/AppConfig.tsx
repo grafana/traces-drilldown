@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Button, Field, useStyles2, FieldSet, Combobox } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
 import { PluginConfigPageProps, AppPluginMeta, PluginMeta, GrafanaTheme2 } from '@grafana/data';
-import { FetchResponse, getBackendSrv, locationService } from '@grafana/runtime';
+import { locationService } from '@grafana/runtime';
 import { css } from '@emotion/css';
-import { lastValueFrom, Observable } from 'rxjs';
 import { DEFAULT_QUERY_RANGE_HOURS } from 'utils/shared';
+import { updatePluginSettings } from 'apis/updatePluginSettings';
 
 export type JsonData = {
   queryRangeHours?: number;
@@ -142,7 +142,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
 const updatePluginAndReload = async (pluginId: string, data: Partial<PluginMeta<JsonData>>) => {
   try {
-    await updatePlugin(pluginId, data);
+    await updatePluginSettings(pluginId, data);
 
     // Reloading the page as the changes made here wouldn't be propagated to the actual plugin otherwise.
     // This is not ideal, however unfortunately currently there is no supported way for updating the plugin state.
@@ -158,23 +158,6 @@ const testIds = {
     queryRange: 'data-testid ac-query-range',
     submit: 'data-testid ac-submit-form',
   },
-};
-
-/**
- * Save plugin settings to Grafana backend.
- * Follows the recommended approach from:
- * https://grafana.com/developers/plugin-tools/tutorials/build-an-app-plugin#configuration-page
- */
-export const updatePlugin = async (pluginId: string, data: Partial<PluginMeta>) => {
-  const response = getBackendSrv().fetch({
-    url: `/api/plugins/${pluginId}/settings`,
-    method: 'POST',
-    data,
-  }) as unknown as Observable<FetchResponse>;
-
-  const dataResponse = await lastValueFrom(response);
-
-  return dataResponse.data;
 };
 
 export default AppConfig;
