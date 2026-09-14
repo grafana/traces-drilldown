@@ -6,10 +6,12 @@ import {
   SceneComponentProps,
   PanelBuilders,
   SceneQueryRunner,
+  SceneDataTransformer,
   sceneGraph,
   SceneObject,
+  VizPanel,
 } from '@grafana/scenes';
-import { LoadingState, GrafanaTheme2, dateTimeFormat, DataQueryError } from '@grafana/data';
+import { DataFrame, LoadingState, GrafanaTheme2, dateTimeFormat, DataQueryError } from '@grafana/data';
 import { getDataSourceSrv } from '@grafana/runtime';
 import { explorationDS } from 'utils/shared';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
@@ -19,11 +21,27 @@ import Skeleton from 'react-loading-skeleton';
 import { useStyles2 } from '@grafana/ui';
 import { getDataSource, getTraceExplorationScene } from 'utils/utils';
 import { TempoDatasource } from 'types';
+import { TraceLogsActions } from 'tracesToLogs/TraceLogsActions';
+import { getTraceServiceNames, getTraceTimeBoundsMs } from 'tracesToLogs/frames';
+import { resolveTraceLogsTarget } from 'tracesToLogs/resolveTraceLogsTarget';
+import { addTraceLogsLinksTransformation, attachSpanLogsLinks } from 'tracesToLogs/transformations';
+import { TimeBoundsMs, TraceLogsTarget } from 'tracesToLogs/types';
+
+const TRACE_BY_ID_QUERY_REF_ID = 'traceById';
+
+/** How long the trace view waits for the logs lookup before rendering without span links. */
+const LOGS_RESOLUTION_PANEL_CAP_MS = 2500;
 
 interface TracePanelState extends SceneObjectState {
   panel?: SceneObject;
   traceId: string;
   spanId?: string;
+  /** Resolved by the layered trace to logs lookup once trace data has arrived. */
+  logsTarget?: TraceLogsTarget;
+  logsBounds?: TimeBoundsMs;
+  logsServiceNames?: string[];
+  logsTempoDatasourceUid?: string;
+  logsResolution?: 'resolving' | 'done';
 }
 
 export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
@@ -68,24 +86,36 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
 
     return errorMessage || 'An error occurred while loading the trace.';
   }
+  /** Guards against re-resolving on every data emission. */
+  private logsResolutionStarted = false;
+
+  /** True once the logs lookup has finished, failed, or run out of time. */
+  private logsResolutionSettled = false;
+
   constructor(state: TracePanelState) {
     super({
-      $data: new SceneQueryRunner({
-        datasource: explorationDS,
-        queries: [{ refId: 'A', query: state.traceId, queryType: 'traceql' }],
+      $data: new SceneDataTransformer({
+        $data: new SceneQueryRunner({
+          datasource: explorationDS,
+          queries: [{ refId: TRACE_BY_ID_QUERY_REF_ID, query: state.traceId, queryType: 'traceql' }],
+        }),
+        transformations: [addTraceLogsLinksTransformation(() => this.state.logsTarget, state.traceId)],
       }),
       ...state,
     });
 
     this.addActivationHandler(() => {
+      // Needed by both transformations and by the write back action, and only resolvable once the
+      // object is part of the scene tree.
+      this.setState({ logsTempoDatasourceUid: getDataSource(getTraceExplorationScene(this)) });
+
       const data = sceneGraph.getData(this);
 
       this._subs.add(
         data.subscribeToState((data) => {
           if (data.data?.state === LoadingState.Done) {
-            this.setState({
-              panel: this.getVizPanel().build(),
-            });
+            this.resolveLogsTarget(data.data.series ?? []);
+            this.buildPanelOnce();
           } else if (data.data?.state === LoadingState.Loading) {
             this.setState({
               panel: new LoadingStateScene({
@@ -115,6 +145,83 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
     });
   }
 
+  /**
+   * Held back until resolution settles so the span links are on the frames for the first render.
+   * Emitting data afterwards would close every open span detail (useDetailState.ts).
+   */
+  private buildPanelOnce() {
+    if (this.state.panel instanceof VizPanel || !this.logsResolutionSettled) {
+      return;
+    }
+
+    this.setState({ panel: this.getVizPanel().build() });
+  }
+
+  /** Runs once per trace; the result is cached. */
+  private resolveLogsTarget(frames: DataFrame[]) {
+    const tempoDatasourceUid = this.state.logsTempoDatasourceUid;
+
+    if (this.logsResolutionStarted) {
+      return;
+    }
+
+    if (!tempoDatasourceUid || !frames.length) {
+      // Nothing to resolve against, so never hold the trace view back.
+      this.logsResolutionSettled = true;
+      return;
+    }
+
+    const serviceNames = getTraceServiceNames(frames);
+
+    if (!serviceNames.length) {
+      // Nothing to resolve against, so never hold the trace view back.
+      this.logsResolutionSettled = true;
+      return;
+    }
+
+    this.logsResolutionStarted = true;
+
+    // The trace view is the main content and must not wait on a slow logs backend. If probing runs
+    // long, render without span links; the trace wide action still appears once resolution lands.
+    const cap = setTimeout(() => {
+      this.logsResolutionSettled = true;
+      this.buildPanelOnce();
+    }, LOGS_RESOLUTION_PANEL_CAP_MS);
+
+    const timeRange = sceneGraph.getTimeRange(this).state.value;
+    const bounds = getTraceTimeBoundsMs(frames, {
+      fromMs: timeRange.from.valueOf(),
+      toMs: timeRange.to.valueOf(),
+    });
+
+    this.setState({ logsServiceNames: serviceNames, logsBounds: bounds, logsResolution: 'resolving' });
+
+    resolveTraceLogsTarget({
+      tempoDatasourceUid,
+      traceId: this.state.traceId,
+      serviceNames,
+      bounds,
+    })
+      .then((logsTarget) => {
+        clearTimeout(cap);
+        this.setState({ logsTarget, logsResolution: 'done' });
+
+        // Decorate the frames we hold rather than re-running the pipeline, which would replace
+        // the frame objects. Only safe while the panel does not exist yet.
+        if (logsTarget?.ownsSpanLinks && !(this.state.panel instanceof VizPanel)) {
+          attachSpanLogsLinks(frames, logsTarget, this.state.traceId);
+        }
+      })
+      .catch((error) => {
+        console.warn('Failed to resolve a logs target for the trace', error);
+      })
+      .finally(() => {
+        clearTimeout(cap);
+        this.logsResolutionSettled = true;
+        this.buildPanelOnce();
+      });
+  }
+
   private getVizPanel() {
     const panel = PanelBuilders.traces().setHoverHeader(true);
     if (this.state.spanId) {
@@ -132,8 +239,14 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
     }
 
     return (
-      <div className={styles.panelContainer}>
-        <panel.Component model={panel} />
+      <div className={styles.traceView}>
+        {/* Not a panel header action: the hover header would hide it, disabled state included. */}
+        <div className={styles.actions}>
+          <TraceLogsActions model={model} />
+        </div>
+        <div className={styles.panelContainer}>
+          <panel.Component model={panel} />
+        </div>
       </div>
     );
   };
@@ -208,9 +321,21 @@ const SkeletonComponent = () => {
 
 function getStyles(theme: GrafanaTheme2) {
   return {
+    traceView: css({
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      minHeight: 0,
+    }),
+    actions: css({
+      display: 'flex',
+      justifyContent: 'flex-end',
+      paddingBottom: theme.spacing(1),
+    }),
     panelContainer: css({
       display: 'flex',
-      height: '100%',
+      flex: 1,
+      minHeight: 0,
 
       '& [data-testid="data-testid panel content"] > div': {
         overflow: 'auto',

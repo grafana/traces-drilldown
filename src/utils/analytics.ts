@@ -42,6 +42,7 @@ export const USER_EVENTS_ACTIONS = {
     span_list_columns_changed: 'span_list_columns_changed',
     primary_signal_changed: 'primary_signal_changed',
     exception_message_clicked: 'exception_message_clicked',
+    trace_logs_clicked: 'trace_logs_clicked',
   },
   [USER_EVENTS_PAGES.common]: {
     metric_changed: 'metric_changed',
