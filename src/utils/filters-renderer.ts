@@ -1,4 +1,7 @@
 import { AdHocVariableFilter } from '@grafana/data';
+import { isUseValueTypeFilteringEnabled } from '../featureFlags/featureFlags';
+import { AdHocFilterWithValueType } from './shared';
+import { logError } from '@grafana/runtime';
 
 /**
  * Escapes a value for use inside TraceQL double-quoted string literals.
@@ -23,7 +26,13 @@ export type TraceQLAdHocJoin = '&&' | '||';
 export function renderTraceQLAdHocFilters(filters: AdHocVariableFilter[], joinWith: TraceQLAdHocJoin): string {
   const expr = filters
     .filter((f) => f.key && f.operator && f.value)
-    .map((filter) => renderFilter(filter))
+    .map((filter) => {
+      if (!isUseValueTypeFilteringEnabled()) {
+        return renderFilter(filter);
+      }
+
+      return newRenderFilter(filter);
+    })
     .join(joinWith);
   return expr.length ? expr : 'true';
 }
@@ -56,6 +65,18 @@ function renderFilter(filter: AdHocVariableFilter) {
   }
 
   return `${filter.key}${filter.operator}${val}`;
+}
+
+export function newRenderFilter(filter: AdHocFilterWithValueType) {
+  if (!filter.valueLabels?.length) {
+    // this shouldn't happen when the feature flag is on, so let's log an error
+    const error = new Error(`TracesDrilldown: valueLabels are missing for filter which should never happen`);
+    const context = { filter: JSON.stringify(filter) };
+    logError(error, context);
+    return '';
+  }
+
+  return `${filter.key}${filter.operator}${filter.value}`;
 }
 
 function isNumber(value?: string | number): boolean {

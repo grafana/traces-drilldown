@@ -8,6 +8,9 @@ import { getFiltersVariable } from '../../../utils/utils';
 import { addToFilters } from '../actions/AddToFiltersAction';
 import { IncludeExcludeButtons } from '../actions/IncludeExcludeButtons';
 import { computeHighestDifference } from '../../../utils/comparison';
+import { useFlagUseValueTypeFiltering } from 'featureFlags/featureFlags';
+import { IncludeExcludeOperator } from 'utils/shared';
+import { addToVariableFilters, toVariableFilter } from 'utils/filters';
 
 interface HighestDifferencePanelState extends SceneObjectState {
   frame: DataFrame;
@@ -73,8 +76,29 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
     }
   };
 
+  private newOnIncludeClick = () => {
+    this.newHandleFilterAction('=');
+  };
+
+  private newOnExcludeClick = () => {
+    this.newHandleFilterAction('!=');
+  };
+
+  private newHandleFilterAction = (operator: IncludeExcludeOperator) => {
+    const attribute = this.getAttribute();
+    if (!attribute) {
+      return;
+    }
+
+    const variable = getFiltersVariable(this);
+    const rawValue = this.getValue();
+    const filter = toVariableFilter({ key: attribute, operator, rawValue });
+    addToVariableFilters(variable, filter);
+  };
+
   public static Component = ({ model }: SceneComponentProps<HighestDifferencePanel>) => {
     const { maxDifference, maxDifferenceIndex, panel } = model.useState();
+    const useValueFiltering = useFlagUseValueTypeFiltering();
     const styles = useStyles2(getStyles);
     const value = model.getValue();
     const normalizedFilterValue = model.getNormalizedFilterValue();
@@ -100,8 +124,20 @@ export class HighestDifferencePanel extends SceneObjectBase<HighestDifferencePan
                   <Trans i18nKey="highest-difference-panel.title">Highest difference</Trans>
                 </div>
                 <IncludeExcludeButtons
-                  onInclude={() => model.onIncludeClick()}
-                  onExclude={() => model.onExcludeClick()}
+                  onInclude={() => {
+                    if (!useValueFiltering) {
+                      model.onIncludeClick();
+                      return;
+                    }
+                    model.newOnIncludeClick();
+                  }}
+                  onExclude={() => {
+                    if (!useValueFiltering) {
+                      model.onExcludeClick();
+                      return;
+                    }
+                    model.newOnExcludeClick();
+                  }}
                   showInclude={!includeFilterExists}
                   showExclude={!excludeFilterExists}
                 />
