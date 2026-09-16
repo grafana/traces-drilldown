@@ -624,9 +624,9 @@ function getStyles(theme: GrafanaTheme2) {
       justifyContent: 'center',
       height: theme.spacing(4),
       margin: theme.spacing(0.25, 0),
-      border: `2px dashed ${theme.colors.primary.main}`,
+      border: `2px dashed ${theme.colors.accent?.main ?? theme.colors.primary.main}`,
       borderRadius: theme.shape.radius.default,
-      backgroundColor: theme.colors.primary.transparent,
+      backgroundColor: theme.colors.accent?.transparent ?? theme.colors.primary.transparent,
       animation: 'pulse 1s ease-in-out infinite alternate',
       '@keyframes pulse': {
         from: { opacity: 0.6 },
@@ -635,7 +635,7 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     ghostContent: css({
       fontSize: theme.typography.bodySmall.fontSize,
-      color: theme.colors.primary.text,
+      color: theme.colors.accent?.text ?? theme.colors.primary.text,
       fontWeight: theme.typography.fontWeightMedium,
       textAlign: 'center',
     }),

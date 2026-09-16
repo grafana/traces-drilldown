@@ -205,7 +205,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
     ':has(:focus-visible)': css({
       backgroundColor: theme.colors.action.hover,
-      outline: `2px solid ${theme.colors.primary.main}`,
+      outline: `2px solid ${theme.colors.accent?.main ?? theme.colors.primary.main}`,
       outlineOffset: '-2px',
     }),
   }),
