@@ -285,7 +285,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
         height: handleHeight,
         cursor: 'ew-resize',
         background: theme.colors.text.secondary,
-        borderRadius: 2,
+        borderRadius: theme.shape.radius.sm ?? theme.shape.radius.default,
         zIndex: 2,
       },
       rightHandleStyle: {
@@ -296,7 +296,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
         height: handleHeight,
         cursor: 'ew-resize',
         background: theme.colors.text.secondary,
-        borderRadius: 2,
+        borderRadius: theme.shape.radius.sm ?? theme.shape.radius.default,
         zIndex: 2,
       },
     });
