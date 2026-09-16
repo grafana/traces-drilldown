@@ -169,7 +169,7 @@ const getControlStyles = (theme: GrafanaTheme2) => ({
     gap: 4,
     background: theme.colors.background.primary,
     border: `1px solid ${theme.colors.border.weak}`,
-    borderRadius: 4,
+    borderRadius: theme.shape.radius.md ?? theme.shape.radius.default,
     padding: 2,
     zIndex: 3,
     opacity: 0.3,
@@ -184,8 +184,8 @@ const getControlStyles = (theme: GrafanaTheme2) => ({
   popoverContent: css({
     backgroundColor: theme.colors.background.primary,
     padding: 8,
-    borderRadius: 4,
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+    borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
+    boxShadow: theme.shadows.z3,
   }),
   buttonWrapper: css({
     position: 'relative',

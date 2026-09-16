@@ -226,6 +226,7 @@ function getStyles(theme: GrafanaTheme2) {
       position: 'absolute',
       backgroundColor: theme.colors.background.primary,
       border: `1px solid ${theme.colors.border.weak}`,
+      borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
       padding: '5px',
     }),
     header: css({

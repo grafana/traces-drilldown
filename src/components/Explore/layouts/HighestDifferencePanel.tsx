@@ -177,6 +177,7 @@ function getStyles(theme: GrafanaTheme2) {
       flexShrink: 0,
       border: `1px solid ${theme.colors.secondary.border}`,
       background: theme.colors.background.primary,
+      borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
       padding: theme.spacing(2),
       marginBottom: theme.spacing(2),
       fontSize: theme.typography.bodySmall.fontSize,

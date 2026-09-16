@@ -261,6 +261,7 @@ function getSkeletonStyles(theme: GrafanaTheme2) {
     itemContainer: css({
       backgroundColor: theme.colors.background.primary,
       border: `1px solid ${theme.colors.background.secondary}`,
+      borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
       padding: '5px',
     }),
     header: css({
