@@ -383,7 +383,7 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       flexDirection: 'column',
       border: `1px solid ${theme.colors.border.weak}`,
-      borderRadius: '2px',
+      borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
       background: theme.colors.background.primary,
       overflow: 'hidden',
 
