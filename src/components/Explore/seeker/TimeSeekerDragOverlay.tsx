@@ -2,9 +2,10 @@ import React from 'react';
 import { useStyles2 } from '@grafana/ui';
 import { useTimeSeeker } from './TimeSeekerContext';
 import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 
 export const TimeSeekerDragOverlay: React.FC = () => {
-  const styles = useStyles2(() => getDragOverlayStyles());
+  const styles = useStyles2(getDragOverlayStyles);
 
   const { dragStyles, wheelListenerRef, handleDrag } = useTimeSeeker();
 
@@ -39,20 +40,19 @@ export const TimeSeekerDragOverlay: React.FC = () => {
   );
 };
 
-const getDragOverlayStyles = () => ({
+const getDragOverlayStyles = (theme: GrafanaTheme2) => ({
   resizeHandle: css({
     position: 'absolute',
     top: 0,
     width: '4px',
     height: '100%',
-    background: 'linear-gradient(to right, rgba(0, 123, 255, 0.4), rgba(0, 123, 255, 0.2))',
-    border: '1px solid rgba(0, 123, 255, 0.8)',
+    background: theme.colors.text.secondary,
+    border: 'none',
     cursor: 'ew-resize',
     zIndex: 2,
-    boxShadow: '0 0 4px rgba(0, 123, 255, 0.5)',
     transition: 'background 0.2s',
     '&:hover': {
-      background: 'rgba(0, 123, 255, 0.6)',
+      background: theme.colors.text.primary,
     },
   }),
 });

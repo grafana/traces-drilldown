@@ -235,8 +235,11 @@ function getStyles(theme: GrafanaTheme2) {
       ':hover': {
         background: theme.colors.background.secondary,
         input: {
-          backgroundColor: '#ffffff',
-          border: '5px solid #3D71D9',
+          // Match Grafana RadioButtonDot checked styles.
+          backgroundColor: theme.colors.accent
+            ? theme.colors.accent.contrastText
+            : theme.colors.primary.contrastText,
+          border: `5px solid ${theme.colors.accent ? theme.colors.accent.main : theme.colors.primary.main}`,
           cursor: 'pointer',
         },
       },
