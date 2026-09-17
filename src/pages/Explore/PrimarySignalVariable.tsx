@@ -120,11 +120,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
       opacity: 0 !important;
     }
 
-    border-radius: 0 2px 2px 0;
+    border-radius: 0 ${theme.shape.radius.default} ${theme.shape.radius.default} 0;
     border-left: none;
   `,
   buttonGroup: css`
-    border-radius: 2px 0 0 2px;
+    border-radius: ${theme.shape.radius.default} 0 0 ${theme.shape.radius.default};
   `,
   customMenu: css`
     width: 230px;

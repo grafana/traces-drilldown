@@ -10,7 +10,7 @@ import {
   SceneObjectBase,
   SceneObjectState,
 } from '@grafana/scenes';
-import { arrayToDataFrame, DataFrame, GrafanaTheme2, LoadingState, DataTopic } from '@grafana/data';
+import { arrayToDataFrame, colorManipulator, DataFrame, GrafanaTheme2, LoadingState, DataTopic } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { ComparisonSelection, EMPTY_STATE_ERROR_MESSAGE, explorationDS, MetricFunction } from 'utils/shared';
 import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
@@ -383,7 +383,7 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       flexDirection: 'column',
       border: `1px solid ${theme.colors.border.weak}`,
-      borderRadius: '2px',
+      borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
       background: theme.colors.background.primary,
       overflow: 'hidden',
 
@@ -394,7 +394,9 @@ function getStyles(theme: GrafanaTheme2) {
         borderColor: 'transparent',
       },
       '& .u-select': {
-        border: '1px solid #ffffff75',
+        background: colorManipulator.alpha(theme.colors.text.primary, 0.2),
+        border: 'none',
+        boxShadow: `inset 0 0 0 1px ${theme.colors.text.secondary}`,
       },
     }),
     headerContainer: css({

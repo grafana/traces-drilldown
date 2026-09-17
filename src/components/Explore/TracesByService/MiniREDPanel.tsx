@@ -203,7 +203,7 @@ function getStyles(theme: GrafanaTheme2) {
       display: 'flex',
       flexDirection: 'column',
       border: `1px solid ${theme.colors.border.weak}`,
-      borderRadius: '2px',
+      borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
       background: theme.colors.background.primary,
       paddingTop: '8px',
 
@@ -235,8 +235,8 @@ function getStyles(theme: GrafanaTheme2) {
       ':hover': {
         background: theme.colors.background.secondary,
         input: {
-          backgroundColor: '#ffffff',
-          border: '5px solid #3D71D9',
+          backgroundColor: theme.colors.accent?.contrastText ?? theme.colors.primary.contrastText,
+          border: `5px solid ${theme.colors.accent?.main ?? theme.colors.primary.main}`,
           cursor: 'pointer',
         },
       },

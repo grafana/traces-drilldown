@@ -86,7 +86,7 @@ export const SparklineCell = ({ seriesData, theme }: SparklineCellProps) => {
             drawStyle: GraphDrawStyle.Line,
             fillOpacity: 5,
             fillColor: theme.colors.background.secondary,
-            lineColor: theme.colors.primary.main,
+            lineColor: theme.colors.accent?.main ?? theme.colors.primary.main,
             lineWidth: 1,
             showPoints: VisibilityMode.Never,
           },

@@ -9,7 +9,7 @@ import React, {
   Dispatch,
   SetStateAction,
 } from 'react';
-import { AbsoluteTimeRange, durationToMilliseconds, parseDuration, PanelData } from '@grafana/data';
+import { AbsoluteTimeRange, colorManipulator, durationToMilliseconds, parseDuration, PanelData } from '@grafana/data';
 import { UPlotConfigBuilder, useTheme2 } from '@grafana/ui';
 import { MetricFunction } from 'utils/shared';
 import { DragStyles } from './types';
@@ -274,7 +274,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
         width: right - left,
         height: u.bbox.height,
         cursor: 'grab',
-        background: 'rgba(0, 123, 255, 0.1)',
+        background: colorManipulator.alpha(theme.colors.text.primary, 0.2),
         zIndex: 1,
       },
       leftHandleStyle: {
@@ -284,8 +284,8 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
         width: HANDLE_WIDTH_PX,
         height: handleHeight,
         cursor: 'ew-resize',
-        background: 'rgba(0, 123, 255, 0.6)',
-        borderRadius: 2,
+        background: theme.colors.text.secondary,
+        borderRadius: theme.shape.radius.sm ?? theme.shape.radius.default,
         zIndex: 2,
       },
       rightHandleStyle: {
@@ -295,12 +295,12 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
         width: HANDLE_WIDTH_PX,
         height: handleHeight,
         cursor: 'ew-resize',
-        background: 'rgba(0, 123, 255, 0.6)',
-        borderRadius: 2,
+        background: theme.colors.text.secondary,
+        borderRadius: theme.shape.radius.sm ?? theme.shape.radius.default,
         zIndex: 2,
       },
     });
-  }, [timelineRange.from, timelineRange.to]);
+  }, [theme, timelineRange.from, timelineRange.to]);
 
   // -------------------------------------------------------------------------
   // Pan start handler (for axis dragging)

@@ -555,6 +555,20 @@ function getVariableSet(state: TraceExplorationState) {
   });
 }
 
+function isVisualDesignRefreshEnabled(theme: GrafanaTheme2): boolean {
+  return Boolean((theme as GrafanaTheme2 & { flags?: { visualDesignRefresh?: boolean } }).flags?.visualDesignRefresh);
+}
+
+function stickyHeaderBackground(theme: GrafanaTheme2, embedded?: boolean): string {
+  if (isVisualDesignRefreshEnabled(theme)) {
+    const page = (theme.colors.background as { page?: string }).page;
+    if (page) {
+      return page;
+    }
+  }
+  return embedded ? theme.colors.background.primary : theme.colors.background.canvas;
+}
+
 function getStyles(theme: GrafanaTheme2, embedded?: boolean, embeddedMini?: boolean) {
   return {
     bodyContainer: css({
@@ -603,6 +617,7 @@ function getStyles(theme: GrafanaTheme2, embedded?: boolean, embeddedMini?: bool
     }),
     headerContainer: css({
       label: 'headerContainer',
+      backgroundColor: stickyHeaderBackground(theme, embedded),
       display: embeddedMini ? 'none' : 'flex',
       flexDirection: 'column',
       position: 'sticky',

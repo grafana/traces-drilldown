@@ -49,8 +49,8 @@ const getLoadingOverlayStyles = (theme: GrafanaTheme2) => ({
     top: 0,
     background: `repeating-linear-gradient(
       -45deg,
-      ${theme.colors.primary.shade},
-      ${theme.colors.primary.shade} 4px,
+      ${theme.colors.text.secondary},
+      ${theme.colors.text.secondary} 4px,
       transparent 4px,
       transparent 8px
     )`,
