@@ -486,7 +486,7 @@ function getStyles(theme: GrafanaTheme2) {
       minWidth: '300px',
       minHeight: MIN_PANEL_HEIGHT,
       border: `1px solid ${theme.colors.border.weak}`,
-      borderRadius: theme.shape.radius.default,
+      borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
       alignSelf: 'stretch',
       overflow: 'hidden',
     }),

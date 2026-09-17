@@ -262,6 +262,10 @@ const getStyles = (theme: GrafanaTheme2) => {
       flexDirection: 'column',
       minHeight: 0,
       height: 'calc(100vh - 550px)',
+      border: `1px solid ${theme.colors.border.weak}`,
+      borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
+      background: theme.colors.background.primary,
+      overflow: 'hidden',
     }),
     loadingContainer: css({
       padding: theme.spacing(2),
