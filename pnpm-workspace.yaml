@@ -23,7 +23,10 @@ overrides:
   semver: ^7.8.5
   ua-parser-js: 2.0.10
   lodash: ^4.18.0
-  react-router: ^6.30.6
+  # Grafana externalizes React Router v6 until https://github.com/grafana/grafana/issues/129933 lands.
+  # v6.30.6 has no package fix for GHSA-wrjc-x8rr-h8h6; this browser plugin only uses static internal routes.
+  # GHSA-337j-9hxr-rhxg affects SSR hydration, which this browser plugin does not use.
+  'react-router@^6': ^6.30.6
   serialize-javascript: ^7.1.0
   immutable: ^5.1.8
   dompurify: ^3.4.14
