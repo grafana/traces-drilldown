@@ -13,6 +13,9 @@ const additionalESModules = [
   'memoize',
   'mimic-function',
   '@wojtekmaj/date-utils',
+  '@react-hookz/web',
+  '@ver0/deep-equal',
+  '@marcbachmann/cel-js',
 ];
 
 module.exports = {
