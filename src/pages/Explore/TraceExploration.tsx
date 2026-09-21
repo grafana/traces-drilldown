@@ -560,13 +560,16 @@ function isVisualDesignRefreshEnabled(theme: GrafanaTheme2): boolean {
 }
 
 function stickyHeaderBackground(theme: GrafanaTheme2, embedded?: boolean): string {
+  if (embedded) {
+    return theme.colors.background.primary;
+  }
   if (isVisualDesignRefreshEnabled(theme)) {
     const page = (theme.colors.background as { page?: string }).page;
     if (page) {
       return page;
     }
   }
-  return embedded ? theme.colors.background.primary : theme.colors.background.canvas;
+  return theme.colors.background.canvas;
 }
 
 function getStyles(theme: GrafanaTheme2, embedded?: boolean, embeddedMini?: boolean) {
