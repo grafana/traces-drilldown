@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import { useDialog } from '@react-aria/dialog';
 import { useOverlay } from '@react-aria/overlays';
 import RcDrawer from 'rc-drawer';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import * as React from 'react';
 
 import { GrafanaTheme2 } from '@grafana/data';
@@ -56,6 +56,7 @@ export function Drawer({
   tabs,
 }: Props) {
   const [drawerWidth, onMouseDown, onTouchStart] = useResizebleDrawer();
+  const rightOffset = useSidebarOffset();
 
   const styles = useStyles2(getStyles);
   const wrapperStyles = useStyles2(getWrapperStyles, size);
@@ -88,6 +89,9 @@ export function Drawer({
       getContainer={() => document.body}
       className={styles.drawerContent}
       rootClassName={styles.drawer}
+      // Keep the drawer (and its mask) out of the extension sidebar, which Grafana docks to the
+      // right of <main> at a lower z-index, so panels like Assistant stay visible and clickable.
+      rootStyle={{ right: rightOffset }}
       classNames={{
         wrapper: wrapperStyles,
       }}
@@ -206,6 +210,32 @@ function useResizebleDrawer(): [
   }
 
   return [drawerWidth, onMouseDown, onTouchStart];
+}
+
+/**
+ * Grafana shrinks <main> by the width of the docked extension sidebar (Assistant and friends), so
+ * measuring it tells us how much room to leave on the right for whatever is docked there.
+ */
+function useSidebarOffset(): number {
+  const [rightOffset, setRightOffset] = useState(0);
+
+  // Layout effect so an already-open sidebar is measured before the drawer's first paint
+  useLayoutEffect(() => {
+    const main = document.querySelector('main');
+    if (!main) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      const { right } = main.getBoundingClientRect();
+      setRightOffset(Math.max(0, Math.round(document.documentElement.clientWidth - right)));
+    });
+    observer.observe(main);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return rightOffset;
 }
 
 function getCustomDrawerWidth(clientX: number) {
