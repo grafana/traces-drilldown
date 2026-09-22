@@ -1,279 +1,279 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Adaptive traces worden geladen..."
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Uitsluiten",
+    "include": "Opnemen"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Traces Drilldown"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Plugin deactiveren",
+    "enable-plugin": "Plugin inschakelen",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Query-bereik",
+      "query-range-description": "Het tijdsbereik voor elke in de cache opgeslagen batch in 'Time Seeker'. Hogere waarden betekenen minder query's, maar meer gegevens per query."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Inschakelen/uitschakelen",
+      "time-seeker-settings": "Instellingen van 'Time Seeker'"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "De plugin is momenteel ingeschakeld.",
+    "plugin-not-enabled": "De plugin is momenteel niet ingeschakeld.",
+    "save-settings": "Instellingen opslaan"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Raster",
+    "layout-rows": "Rijen",
+    "layout-single": "Enkel"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Fout",
+    "rate-label": "Percentage"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Uitgangswaarden (basis)",
+    "description": "Attributen worden gerangschikt op basis van het verschil tussen de uitgangs- en selectiewaarden voor elke waarde.",
+    "hide-baseline-only-label": "Alleen uitgangswaarden verbergen",
+    "hide-baseline-only-tooltip": "Panelen verbergen die alleen een basispercentage hebben en geen selectie",
+    "selection-label": "Selectie"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Aan favorieten toevoegen",
+    "all-button": "Alle",
+    "clear-search": "Zoekopdracht wissen",
+    "drop-here": "Hier neerzetten",
+    "drop-here-below": "Hier neerzetten",
+    "no-available": "Geen attributen beschikbaar",
+    "no-match": "Geen attributen komen overeen met uw criteria",
+    "none": "Geen",
+    "remove-from-favorites": "Uit favorieten verwijderen",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Alle",
+      "favorites": "Favorieten",
+      "resource": "Bron",
+      "span": "Span (bereik)"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_one": "",
-    "selected-count_other": ""
+    "search-placeholder": "Kenmerken doorzoeken",
+    "selected": "Geselecteerd",
+    "selected-count_one": "Geselecteerd ({{count}}):",
+    "selected-count_other": "Geselecteerd ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": ""
+    "no-data-for-search": "Geen gegevens voor zoekterm"
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "Selecteer langzaamste traces",
+    "slowest-traces-selected": "Langzaamste traces geselecteerd"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Query-fout"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Fout:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}}%"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Bekijk uitzonderingsdetails van traces met fouten voor de huidige filterset."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "Uitzonderingsbericht uitsluiten",
+    "grouped-messages-aria-label": "Gegroepeerde uitzonderingsberichten weergeven",
+    "grouped-messages-common-prefix": "Gemeenschappelijk",
+    "grouped-messages-title": "Gegroepeerde berichten",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "Uitzonderingsdetails",
+      "exception-details-tooltip": "Uitzonderingstype, bericht, service en 'laatst gezien'-tijdstempel. Gebruik de knoppen 'opnemen/uitsluiten' om uitzonderingsberichten op te nemen of uit te sluiten, of klik op type of bericht om te filteren.",
+      "frequency": "Frequentie",
+      "frequency-tooltip": "Visuele weergave van de frequentie van uitzonderingen in de loop van de tijd",
+      "occurrences": "Gebeurtenissen",
+      "occurrences-tooltip": "Totaal aantal keren dat deze uitzondering zich heeft voorgedaan"
     },
-    "include-aria-label": ""
+    "include-aria-label": "Uitzonderingsbericht opnemen"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "Trace weergeven"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "Laden...",
+    "open-in-traces-drilldown": "'Traces Drilldown' openen"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Sluiten"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "Grootste verschil"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "Inspecteren"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "Inzichten",
+    "description": "Statusniveaus (kritiek, waarschuwing, info) uit de 'Knowledge Graph' over de tijdreekspanelen weergeven.",
+    "label": "Inzichten"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Bekijken"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Geen opgeslagen zoekopdrachten om weer te geven.",
+    "remove-tooltip": "Verwijderen",
+    "select-button": "Selecteren",
+    "title": "Een eerder opgeslagen zoekopdracht laden"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Opgeslagen query laden",
+    "load-saved-search": "Opgeslagen zoekopdracht laden",
+    "no-saved-searches": "Geen opgeslagen zoekopdrachten om te laden"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "'Traces Drilldown' openen"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Toevoegen aan dashboard",
+    "create-alert": "Waarschuwing aanmaken",
+    "explore": "Verkennen",
+    "navigation": "Navigatie"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "Standaard",
+    "label": "Percentielen",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "Plugin-informatie",
+      "tooltip": "Plugin-informatie"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Meest recente update: {{updated}}",
+      "title": "Grafana Traces Drilldown v{{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Logboek van wijzigingen",
+      "commit-sha": "Commit-SHA: {{sha}} ",
+      "contribute": "Bijdragen",
+      "documentation": "Documentatie",
+      "give-feedback": "Feedback geven",
+      "grafana-version": "Grafana  {{edition}} ({{env}})",
+      "report-issue": "Een probleem melden"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Primaire signaal",
+    "primary-signal-label": "Primaire signaal"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Vergelijkingsselectie"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "Opslaan in 'Opgeslagen queries'",
+    "save-search": "Zoekopdracht opslaan"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "existing-search-warning": "Er is al een eerder opgeslagen zoekopdracht met dezelfde zoekterm: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Beschrijving",
+      "title": "Titel"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "Opgeslagen zoekopdrachten worden lokaal in je browser bewaard en zijn alleen op dit apparaat beschikbaar.",
+    "save": "Opslaan",
+    "success-message": "Zoekopdracht is opgeslagen.",
+    "success-title": "Succes",
+    "title": "Huidige zoekopdracht opslaan"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Zoeken"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Terug naar alle traces"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Bekijk een lijst met spans voor de huidige filterset.",
+    "open-in-new-tab": "In een nieuw tabblad openen"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Geen gegevens",
+    "not-enough-data": "Niet genoeg gegevens."
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Streamen"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Analyseer de structuur van langzame spans uit de traces die overeenkomen met de huidige filters.",
+    "duration-panel-info": "Elk paneel vertegenwoordigt een gezamenlijke weergave die is samengesteld met behulp van spans van meerdere traces.",
+    "errors-description": "Analyseer de foutenstructuur van de traces die overeenkomen met de huidige filters.",
+    "errors-panel-info": "Elk paneel vertegenwoordigt een gezamenlijke weergave die is samengesteld met behulp van spans van meerdere traces.",
+    "no-data-message": "Het tabblad 'Structuur' toont {{emptyMsg}} spans onder wat je momenteel onderzoekt. Momenteel zijn er geen onderliggende {{emptyMsg}} spans onder de spans die je onderzoekt.",
+    "open-trace": "Trace openen",
+    "rate-description": "Analyseer de foutenstructuur van de traces die overeenkomen met de huidige filters.",
+    "rate-panel-info": "Elk paneel vertegenwoordigt een gezamenlijke weergave die is samengesteld met behulp van spans van meerdere traces.",
+    "read-more": "Lees meer over",
+    "works-best": "Het tabblad 'Structuur' werkt het beste met volledige traces."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Selectie focussen",
+    "large-batch-warning": "De 'Time Seeker' moet een grote hoeveelheid gegevens laden. De prestaties kunnen worden beïnvloed.",
+    "pan-left": "Naar links",
+    "pan-right": "Naar rechts",
+    "set-range": "Bereik instellen",
+    "zoom-in": "Inzoomen op context",
+    "zoom-out": "Uitzoomen op context"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "'Time Seeker' aan het laden…",
+    "seeker-label": "'Seeker'"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "Geen trace geselecteerd"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "Trace weergeven {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Traces Drilldown"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Gegevensbron",
+      "filters": "Filters",
+      "trace-id": "Trace ID",
+      "trace-id-placeholder": "Voer een ID in en druk op enter"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Gegevensbron",
+      "duration-percentiles": "Percentielen van de tijdsduur"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Lees documentatie",
+    "warning-message": "We hebben een fout gevonden bij het uitvoeren van een TraceQL-metrische query: 'localblocks-processor niet gevonden'. Dit betekent meestal dat de processor 'local-blocks' niet is geconfigureerd in 'Tempo', wat vereist is om 'Grafana Traces Drilldown' te laten werken.",
+    "warning-title": "'TraceQL-metrics' niet geconfigureerd"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Selecteer een maatstaf",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- Hoeveelheid tijd die die spans in beslag nemen, weergegeven als een heatmap (responstijd, vertraging)",
+      "duration-label": "Tijdsduur",
+      "errors-description": "- Spans die mislukken, algemene problemen in het tracing-ecosysteem",
+      "errors-label": "Fouten",
+      "rate-description": "- Spans per seconde die overeenkomen met je filter, handig om ongebruikelijke pieken in activiteit te vinden",
+      "rate-label": "Percentage",
+      "read-documentation": "Lees documentatie",
+      "subtitle": "Bekijk de statistieken voor snelheid, fouten en tijdsduur (RED) die door 'Tempo' uit traces worden gegenereerd.",
+      "title": "'RED'-maatstaven voor traces"
     }
   }
 }

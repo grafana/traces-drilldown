@@ -1,278 +1,278 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "적응형 트레이스 로딩 중..."
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "제외",
+    "include": "포함"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Traces Drilldown"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "플러그인 비활성화",
+    "enable-plugin": "플러그인 활성화",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "쿼리 범위",
+      "query-range-description": "시간 탐색기에서 캐시된 각 배치에 대한 시간 범위입니다. 값이 클수록 쿼리 수는 줄어들지만 쿼리당 데이터는 늘어납니다."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "활성화/비활성화",
+      "time-seeker-settings": "시간 탐색기 설정"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "현재 플러그인이 활성화되어 있습니다.",
+    "plugin-not-enabled": "현재 플러그인이 활성화되어 있지 않습니다.",
+    "save-settings": "설정 저장"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "그리드",
+    "layout-rows": "행",
+    "layout-single": "단일"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "오류",
+    "rate-label": "비율"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "기준",
+    "description": "속성은 각 값에 대한 기준 값과 선택 값의 차이를 기준으로 정렬됩니다.",
+    "hide-baseline-only-label": "기준에만 있는 항목 숨기기",
+    "hide-baseline-only-tooltip": "기준 백분율만 있고 선택 값이 없는 패널 숨기기",
+    "selection-label": "선택"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "즐겨찾기에 추가",
+    "all-button": "전체",
+    "clear-search": "검색 초기화",
+    "drop-here": "여기에 놓기",
+    "drop-here-below": "여기에 놓기",
+    "no-available": "사용 가능한 속성 없음",
+    "no-match": "기준과 일치하는 속성 없음",
+    "none": "없음",
+    "remove-from-favorites": "즐겨찾기에서 제거",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "전체",
+      "favorites": "즐겨찾기",
+      "resource": "리소스",
+      "span": "스팬"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_other": ""
+    "search-placeholder": "속성 검색...",
+    "selected": "선택됨:",
+    "selected-count_other": "선택됨({{count}}개):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": ""
+    "no-data-for-search": "검색어에 대한 데이터가 없습니다."
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "가장 느린 트레이스 선택",
+    "slowest-traces-selected": "가장 느린 트레이스가 선택됨"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "쿼리 오류"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "오류:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}}%"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "현재 필터 설정에 대해 오류가 발생한 트레이스에서 예외 세부 정보를 확인합니다."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "예외 메시지 제외",
+    "grouped-messages-aria-label": "그룹화된 예외 메시지 표시",
+    "grouped-messages-common-prefix": "공통",
+    "grouped-messages-title": "그룹화된 메시지",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "예외 세부 정보",
+      "exception-details-tooltip": "예외 유형, 메시지, 서비스 및 마지막으로 확인된 타임스탬프. 포함/제외 버튼을 사용하여 예외 메시지를 포함 또는 제외하거나, 유형 또는 메시지를 클릭하여 필터링합니다.",
+      "frequency": "빈도",
+      "frequency-tooltip": "시간 경과에 따른 예외 빈도의 시각적 표현",
+      "occurrences": "발생 횟수",
+      "occurrences-tooltip": "이 예외가 발생한 총횟수"
     },
-    "include-aria-label": ""
+    "include-aria-label": "예외 메시지 포함"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "트레이스 보기"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "로딩 중...",
+    "open-in-traces-drilldown": "Traces Drilldown 열기"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "닫기"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "최대 차이"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "검사"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "인사이트",
+    "description": "시계열 패널에 Knowledge Graph의 상태(심각, 경고, 정보)를 오버레이합니다",
+    "label": "인사이트"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "보기"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "표시할 저장된 검색이 없습니다.",
+    "remove-tooltip": "제거",
+    "select-button": "선택",
+    "title": "이전에 저장된 검색 불러오기"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "저장된 쿼리 불러오기",
+    "load-saved-search": "저장된 검색 불러오기",
+    "no-saved-searches": "불러올 저장된 검색이 없습니다."
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "Traces Drilldown 열기"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "대시보드에 추가",
+    "create-alert": "경고 생성",
+    "explore": "탐색",
+    "navigation": "내비게이션"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "기본값",
+    "label": "백분위수",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "플러그인 정보",
+      "tooltip": "플러그인 정보"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "마지막 업데이트: {{updated}}",
+      "title": "Grafana Traces Drilldown v{{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "변경 로그",
+      "commit-sha": "SHA 커밋: {{sha}}",
+      "contribute": "기여",
+      "documentation": "문서",
+      "give-feedback": "피드백 제출하기",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "문제 보고"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "기본 신호",
+    "primary-signal-label": "기본 신호"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "비교 선택"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "저장된 쿼리에 저장",
+    "save-search": "검색 저장"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "취소",
+    "close": "닫기",
+    "existing-search-warning": "동일한 쿼리로 이전에 저장된 검색이 있음: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "설명",
+      "title": "제목"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "저장된 검색은 브라우저에 로컬로 저장되며 이 기기에서만 사용할 수 있습니다.",
+    "save": "저장",
+    "success-message": "검색이 성공적으로 저장되었습니다.",
+    "success-title": "성공",
+    "title": "현재 검색 저장"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "검색"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "모든 트레이스로 돌아가기"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "현재 필터 설정에 대한 스팬 목록을 확인합니다.",
+    "open-in-new-tab": "새 탭에서 열기"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "데이터 없음",
+    "not-enough-data": "데이터가 충분하지 않음"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "스트리밍"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "현재 필터와 일치하는 트레이스에서 느린 스팬의 구조를 분석합니다.",
+    "duration-panel-info": "각 패널은 여러 트레이스의 스팬을 사용하여 구성된 집계 보기를 나타냅니다.",
+    "errors-description": "현재 필터와 일치하는 트레이스의 오류 구조를 분석합니다.",
+    "errors-panel-info": "각 패널은 여러 트레이스의 스팬을 사용하여 구성된 집계 보기를 나타냅니다.",
+    "no-data-message": "구조 탭에는 현재 조사 중인 항목 아래에 있는 {{emptyMsg}} 스팬이 표시됩니다. 현재 조사 중인 스팬 아래에는 하위 {{emptyMsg}} 스팬이 없습니다.",
+    "open-trace": "트레이스 열기",
+    "rate-description": "현재 필터와 일치하는 트레이스의 서비스 구조를 분석합니다.",
+    "rate-panel-info": "각 패널은 여러 트레이스의 스팬을 사용하여 구성된 집계 보기를 나타냅니다.",
+    "read-more": "더 자세히 알아볼 내용:",
+    "works-best": "구조 탭은 전체 트레이스에서 가장 효과적으로 작동합니다."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "선택 항목에 집중",
+    "large-batch-warning": "시간 탐색기는 대량의 데이터를 불러와야 합니다. 성능에 영향을 미칠 수 있습니다.",
+    "pan-left": "왼쪽으로 이동",
+    "pan-right": "오른쪽으로 이동",
+    "set-range": "범위 설정",
+    "zoom-in": "콘텍스트 확대",
+    "zoom-out": "콘텍스트 축소"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "시간 탐색기 로딩 중…",
+    "seeker-label": "탐색기"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "선택한 트레이스 없음"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "트레이스 {{traceId}} 보기"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Traces Drilldown"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "데이터 소스",
+      "filters": "필터",
+      "trace-id": "트레이스 ID",
+      "trace-id-placeholder": "ID 입력 후 Enter 키 누르기"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "데이터 소스",
+      "duration-percentiles": "지속 시간 백분위수"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "문서 읽기",
+    "warning-message": "TraceQL 메트릭 쿼리를 실행하는 중 오류가 발생했습니다. \"localblocks processor not found\" 이는 일반적으로 Grafana Traces Drilldown이 작동하는 데 필요한 \"local-blocks\" 프로세서가 Tempo에 구성되지 않았음을 의미합니다.",
+    "warning-title": "TraceQL 메트릭이 구성되지 않음"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "메트릭 유형 선택",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- 히트 맵으로 표시되는 해당 스팬의 소요 시간(응답 시간, 지연 시간)",
+      "duration-label": "지속 시간",
+      "errors-description": "-오류 발생 스팬, 트레이싱 생태계의 전반적인 문제",
+      "errors-label": "오류 수",
+      "rate-description": "- 필터와 일치하는 초당 스팬 수로, 활동량의 비정상적인 급증을 파악하기에 유용함",
+      "rate-label": "요청률",
+      "read-documentation": "문서 읽기",
+      "subtitle": "Tempo에서 트레이스를 통해 생성된 요청률, 오류 수 및 지속 시간(RED) 지표를 살펴보세요.",
+      "title": "트레이스에 대한 RED 메트릭"
     }
   }
 }

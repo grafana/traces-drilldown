@@ -1,281 +1,281 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Загрузка адаптивных трассировок..."
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Исключить",
+    "include": "Включить"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Traces Drilldown"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Отключить плагин",
+    "enable-plugin": "Включить плагин",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Диапазон запросов",
+      "query-range-description": "Временной диапазон для каждого кэшированного пакета в Time Seeker. Чем выше значение, тем меньше запросов, при этом в каждом из них больше данных."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Включить/отключить",
+      "time-seeker-settings": "Настройки Time Seeker"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "Плагин включен.",
+    "plugin-not-enabled": "Плагин отключен.",
+    "save-settings": "Сохранить настройки"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Сетка",
+    "layout-rows": "Строки",
+    "layout-single": "Один"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Ошибка",
+    "rate-label": "Частота"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Базовый уровень",
+    "description": "Атрибуты упорядочиваются по разнице между значениями базового уровня и выборки для каждого значения.",
+    "hide-baseline-only-label": "Скрыть только базовые",
+    "hide-baseline-only-tooltip": "Скройте панели, содержащие только процентный показатель базового уровня (без данных выборки).",
+    "selection-label": "Выборка"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Добавить в избранное",
+    "all-button": "Все",
+    "clear-search": "Очистить поиск",
+    "drop-here": "Перетащите сюда",
+    "drop-here-below": "Перетащите сюда",
+    "no-available": "Нет доступных атрибутов",
+    "no-match": "Нет атрибутов, соответствующих выбранным критериям",
+    "none": "Отсутствуют",
+    "remove-from-favorites": "Удалить из избранного",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Все",
+      "favorites": "Избранное",
+      "resource": "Ресурс",
+      "span": "Спан"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_one": "",
-    "selected-count_few": "",
-    "selected-count_many": "",
-    "selected-count_other": ""
+    "search-placeholder": "Поиск атрибутов...",
+    "selected": "Выбрано:",
+    "selected-count_one": "Выбрано ({{count}}):",
+    "selected-count_few": "Выбрано ({{count}}):",
+    "selected-count_many": "Выбрано ({{count}}):",
+    "selected-count_other": "Выбрано ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": ""
+    "no-data-for-search": "Нет данных по поисковому запросу"
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "Выбрать самые медленные трассировки",
+    "slowest-traces-selected": "Выбраны самые медленные трассировки"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Ошибка запроса"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Ошибка:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}}%"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Ознакомьтесь со сведениями об исключениях из трассировок с ошибками для текущего набора фильтров."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "Исключить сообщение об исключении",
+    "grouped-messages-aria-label": "Показать сгруппированные сообщения об исключениях",
+    "grouped-messages-common-prefix": "Общие",
+    "grouped-messages-title": "Сгруппированные сообщения",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "Сведения об исключении",
+      "exception-details-tooltip": "Тип исключения, сообщение, сервис и метка времени последнего просмотра. Используйте кнопки «Включить/Исключить», чтобы добавлять или убирать сообщения об исключениях, или нажмите на тип или сообщение, чтобы отфильтровать их.",
+      "frequency": "Частота",
+      "frequency-tooltip": "Визуальное представление частоты исключений с течением времени",
+      "occurrences": "Количество случаев",
+      "occurrences-tooltip": "Общее число раз, когда возникало это исключение"
     },
-    "include-aria-label": ""
+    "include-aria-label": "Включить сообщение об исключении"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "Просмотр трассировки"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "Загрузка…",
+    "open-in-traces-drilldown": "Открыть в Traces Drilldown"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Закрыть"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "Наибольшая разница"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "Проверить"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "Аналитика",
+    "description": "Наложение состояний (критическое, предупреждение, информация) из графа знаний на панели временных рядов.",
+    "label": "Аналитика"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Просмотр"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Нет сохраненных поисковых запросов для отображения.",
+    "remove-tooltip": "Удалить",
+    "select-button": "Выбрать",
+    "title": "Загрузить ранее сохраненный поисковый запрос"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Загрузить сохраненный запрос",
+    "load-saved-search": "Загрузить сохраненный поисковый запрос",
+    "no-saved-searches": "Нет сохраненных поисковых запросов для загрузки"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "Открыть в Traces Drilldown"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Добавить на дашборд",
+    "create-alert": "Создать оповещение",
+    "explore": "Explore",
+    "navigation": "Навигация"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "По умолчанию",
+    "label": "Процентили",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "О плагине",
+      "tooltip": "О плагине"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Последнее обновление: {{updated}}",
+      "title": "Grafana Traces Drilldown, версия {{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Журнал изменений",
+      "commit-sha": "Выполнить SHA-хеширование: {{sha}}",
+      "contribute": "Внести вклад",
+      "documentation": "Документация",
+      "give-feedback": "Оставить отзыв",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "Сообщить о проблеме"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Основной сигнал",
+    "primary-signal-label": "Основной сигнал"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Выборка для сравнения"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "Сохранить в сохраненных запросах",
+    "save-search": "Сохранить поисковой запрос"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "Отменить",
+    "close": "Закрыть",
+    "existing-search-warning": "Ранее был сохранен поисковый запрос с таким же содержимым: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Описание",
+      "title": "Заголовок"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "Сохраненные поисковые запросы хранятся локально в вашем браузере и будут доступны только на этом устройстве.",
+    "save": "Сохранить",
+    "success-message": "Поисковый запрос сохранен.",
+    "success-title": "Выполнено",
+    "title": "Сохранить текущий поисковой запрос"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Поиск"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Назад ко всем трассировкам"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Ознакомьтесь со списком спанов для текущего набора фильтров.",
+    "open-in-new-tab": "Открыть в новой вкладке"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Нет данных",
+    "not-enough-data": "Недостаточно данных"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Потоковая передача"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Проанализируйте структуру медленных спанов из трассировок, соответствующих текущим фильтрам.",
+    "duration-panel-info": "Каждая панель отображает агрегированное представление, сформированное на основе спанов из нескольких трассировок.",
+    "errors-description": "Проанализируйте структуру ошибок трассировок, соответствующих текущим фильтрам.",
+    "errors-panel-info": "Каждая панель отображает агрегированное представление, сформированное на основе спанов из нескольких трассировок.",
+    "no-data-message": "На вкладке «Структура» отображаются спаны ({{emptyMsg}}), вложенные в исследуемый элемент. В настоящее время в исследуемых спанах нет вложенных спанов ({{emptyMsg}}).",
+    "open-trace": "Открыть трассировку",
+    "rate-description": "Проанализируйте структуру сервиса трассировок, соответствующих текущим фильтрам.",
+    "rate-panel-info": "Каждая панель отображает агрегированное представление, сформированное на основе спанов из нескольких трассировок.",
+    "read-more": "Подробнее",
+    "works-best": "Вкладка «Структура» лучше всего работает с полными трассировками."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Сфокусироваться на выбранном",
+    "large-batch-warning": "Необходимо загрузить большой объем данных в Time Seeker. Это может повлиять на производительность.",
+    "pan-left": "Сдвиг влево",
+    "pan-right": "Сдвиг вправо",
+    "set-range": "Настройка диапазона",
+    "zoom-in": "Увеличить",
+    "zoom-out": "Уменьшить"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "Загрузка Time Seeker…",
+    "seeker-label": "Seeker"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "Трассировка не выбрана"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "Просмотр трассировки {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Traces Drilldown"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Источник данных",
+      "filters": "Фильтры",
+      "trace-id": "Идентификатор трассировки",
+      "trace-id-placeholder": "Введите идентификатор и нажмите Enter"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Источник данных",
+      "duration-percentiles": "Процентили длительности"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Читать документацию",
+    "warning-message": "При выполнении запроса метрик TraceQL произошла ошибка: «Процессор localblocks не найден». Обычно это означает, что в Tempo не настроен процессор local-blocks, необходимый для работы Grafana Traces Drilldown.",
+    "warning-title": "Метрики TraceQL не настроены"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Выберите тип метрики",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- Количество времени, которое занимают эти спаны, в виде тепловой карты (время отклика, задержка).",
+      "duration-label": "Длительность",
+      "errors-description": "- Спаны с ошибками и общие проблемы в экосистеме трассировки.",
+      "errors-label": "Ошибки",
+      "rate-description": "- Количество спанов в секунду, соответствующих вашему фильтру. Полезно для обнаружения необычных всплесков активности.",
+      "rate-label": "Частота",
+      "read-documentation": "Читать документацию",
+      "subtitle": "Исследуйте метрики RED (частота, ошибки и длительность), генерируемые из трассировок с помощью Tempo.",
+      "title": "Метрики RED для трассировок"
     }
   }
 }

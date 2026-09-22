@@ -1,278 +1,278 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "正在載入自適應追蹤…"
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "排除",
+    "include": "包含"
   },
   "app": {
-    "page-title": ""
+    "page-title": "追蹤深入分析"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "停用外掛程式",
+    "enable-plugin": "啟用外掛程式",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "查詢範圍",
+      "query-range-description": "時間搜尋器中每個已快取批次的時間範圍。數值越大，表示查詢次數越少，但每次查詢的資料量越多。"
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "啟用 / 停用",
+      "time-seeker-settings": "時間搜尋器設定"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "外掛程式目前已啟用。",
+    "plugin-not-enabled": "外掛程式目前未啟用。",
+    "save-settings": "儲存設定"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "網格",
+    "layout-rows": "列",
+    "layout-single": "單一"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "錯誤",
+    "rate-label": "取樣率"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "基準",
+    "description": "屬性是依據每個值的基準值與選取值之間的差異來排序。",
+    "hide-baseline-only-label": "僅隱藏基準",
+    "hide-baseline-only-tooltip": "隱藏只有基準百分比且沒有選擇的面板",
+    "selection-label": "選擇"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "新增至收藏夾",
+    "all-button": "全部",
+    "clear-search": "清除搜尋",
+    "drop-here": "放置在此處",
+    "drop-here-below": "放置在此處",
+    "no-available": "無屬性可用",
+    "no-match": "無屬性符合您的條件",
+    "none": "無",
+    "remove-from-favorites": "從收藏夾中移除",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "全部",
+      "favorites": "我的最愛",
+      "resource": "資源",
+      "span": "區段"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_other": ""
+    "search-placeholder": "搜尋屬性…",
+    "selected": "已選取：",
+    "selected-count_other": "已選取（{{count}} 個）："
   },
   "by-frame-repeater": {
-    "no-data-for-search": ""
+    "no-data-for-search": "沒有搜尋內容說明的資料"
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "選取最慢的追蹤",
+    "slowest-traces-selected": "已選取最慢的追蹤"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "查詢錯誤"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "錯誤："
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}}%"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "從目前篩選條件的錯誤追蹤中檢視例外詳細資訊。"
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "排除例外訊息",
+    "grouped-messages-aria-label": "顯示分組的例外訊息",
+    "grouped-messages-common-prefix": "普通",
+    "grouped-messages-title": "已分組的訊息",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "異常狀況詳細資訊",
+      "exception-details-tooltip": "異常類型、訊息、服務和上次看到的時間戳記。使用「包含／排除」按鈕以包含或排除異常訊息，或點選類型或訊息以進行篩選。",
+      "frequency": "頻率",
+      "frequency-tooltip": "隨時間推移的例外頻率可視化呈現",
+      "occurrences": "出現次數",
+      "occurrences-tooltip": "此例外發生的總次數"
     },
-    "include-aria-label": ""
+    "include-aria-label": "包含例外訊息"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "檢視追蹤"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "正在載入…",
+    "open-in-traces-drilldown": "在「追蹤深入分析」中開啟"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "關閉"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "最大差異"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "檢測"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "深入分析",
+    "description": "在時間序列面板上疊加來自知識圖譜的健康狀態（嚴重、警告、資訊）",
+    "label": "深入分析"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "檢視"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "沒有要顯示的已儲存搜尋結果。",
+    "remove-tooltip": "移除",
+    "select-button": "選取",
+    "title": "載入先前已儲存的搜尋"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "載入已儲存的查詢",
+    "load-saved-search": "載入已儲存的搜尋",
+    "no-saved-searches": "沒有要載入的已儲存搜尋結果"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "在「追蹤深入分析」中開啟"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "新增至儀表板",
+    "create-alert": "建立警示",
+    "explore": "探索",
+    "navigation": "導覽"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "預設",
+    "label": "百分位數",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "P95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "外掛程式資訊",
+      "tooltip": "外掛程式資訊"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "上次更新：{{updated}}",
+      "title": "Grafana 追蹤深入分析 v{{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "變更記錄",
+      "commit-sha": "提交 SHA：{{sha}}",
+      "contribute": "貢獻",
+      "documentation": "文件",
+      "give-feedback": "提供意見回饋",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "回報問題"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "主要訊號",
+    "primary-signal-label": "主要訊號"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "比較選擇"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "儲存在「已儲存的查詢」中查詢",
+    "save-search": "儲存搜尋結果"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "取消",
+    "close": "關閉",
+    "existing-search-warning": "之前已儲存了一個具有相同查詢的搜尋：{{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "描述",
+      "title": "標題"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "已儲存的搜尋會儲存在瀏覽器的本機資料中，且僅能在此裝置上使用。",
+    "save": "儲存",
+    "success-message": "搜尋已成功儲存。",
+    "success-title": "成功",
+    "title": "儲存目前的搜尋結果"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "搜尋"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "返回所有追蹤"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "檢視目前篩選條件的範圍清單。",
+    "open-in-new-tab": "在新分頁中開啟"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "無資料",
+    "not-enough-data": "沒有足夠的資料"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "串流"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "分析符合目前篩選條件的追蹤中緩慢區段的結構。",
+    "duration-panel-info": "每個面板都代表使用多個追蹤的區段彙整而成的彙總檢視。",
+    "errors-description": "分析符合目前篩選條件的追蹤中錯誤的結構。",
+    "errors-panel-info": "每個面板都代表使用多個追蹤的區段彙整而成的彙總檢視。",
+    "no-data-message": "「結構」分頁會在您目前調查的內容下方顯示 {{emptyMsg}} 區段。目前，您正在調查的區段下方沒有 {{emptyMsg}} 子系區段。",
+    "open-trace": "開啟追蹤",
+    "rate-description": "分析符合目前篩選條件的追蹤中服務的結構。",
+    "rate-panel-info": "每個面板都代表使用多個追蹤的區段彙整而成的彙總檢視。",
+    "read-more": "閱讀更多相關資訊",
+    "works-best": "結構標籤最適合用於完整追蹤。"
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "焦點選擇",
+    "large-batch-warning": "時間搜尋器需要載入大量資料。效能可能會受影響。",
+    "pan-left": "向左平移",
+    "pan-right": "向右平移",
+    "set-range": "設定範圍",
+    "zoom-in": "放大內容",
+    "zoom-out": "縮小內容"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "正在載入時間搜尋器…",
+    "seeker-label": "搜尋器"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "未選取任何追蹤"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "檢視追蹤 {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "追蹤深入分析"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "資料來源",
+      "filters": "篩選條件",
+      "trace-id": "追蹤 ID",
+      "trace-id-placeholder": "輸入 ID，然後按 Enter"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "資料來源",
+      "duration-percentiles": "持續時間百分位數"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "閱讀文件",
+    "warning-message": "我們在執行 TraceQL 指標查詢時發現錯誤：「找不到 localblocks 處理器」。這通常表示 Tempo 中未設定「local-blocks」處理器，而這是 Grafana 追蹤深入分析正常運作所必需的。",
+    "warning-title": "未設定 TraceQL 指標"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "選擇指標類型",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- 這些區段所花費的時間量，以熱點圖表示（回應時間、延遲）",
+      "duration-label": "持續時間",
+      "errors-description": "- 失敗的區段、追蹤生態系統中的整體問題",
+      "errors-label": "錯誤",
+      "rate-description": "- 每秒符合篩選條件的區段數，可用於尋找活動中異常的尖峰",
+      "rate-label": "取樣率",
+      "read-documentation": "閱讀文件",
+      "subtitle": "探索 Tempo 從追蹤產生的速率、錯誤和持續時間 (RED) 指標。",
+      "title": "追蹤的 RED 指標"
     }
   }
 }
