@@ -1,278 +1,278 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Memuat Adaptive Traces..."
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Kecualikan",
+    "include": "Sertakan"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Traces Drilldown"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Nonaktifkan plugin",
+    "enable-plugin": "Aktifkan plugin",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Rentang Kueri",
+      "query-range-description": "Rentang waktu untuk setiap batch yang di-cache di Time Seeker. Nilai yang lebih besar berarti lebih sedikit kueri, tetapi lebih banyak data per kueri."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Aktifkan/Nonaktifkan",
+      "time-seeker-settings": "Pengaturan Time Seeker"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "Plugin sedang aktif.",
+    "plugin-not-enabled": "Plugin sedang tidak aktif.",
+    "save-settings": "Simpan pengaturan"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Grid",
+    "layout-rows": "Baris",
+    "layout-single": "Tunggal"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Kesalahan",
+    "rate-label": "Rate"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Baseline",
+    "description": "Atribut diurutkan berdasarkan perbedaan antara nilai baseline dan nilai pemilihan untuk setiap nilai.",
+    "hide-baseline-only-label": "Sembunyikan baseline saja",
+    "hide-baseline-only-tooltip": "Sembunyikan panel yang hanya memiliki persentase baseline dan tidak ada pemilihan",
+    "selection-label": "Pemilihan"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Tambahkan ke favorit",
+    "all-button": "Semua",
+    "clear-search": "Hapus pencarian",
+    "drop-here": "Lepas di sini",
+    "drop-here-below": "Lepas di sini",
+    "no-available": "Tidak ada atribut yang tersedia",
+    "no-match": "Tidak ada atribut yang sesuai dengan kriteria",
+    "none": "Tidak ada",
+    "remove-from-favorites": "Hapus dari favorit",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Semua",
+      "favorites": "Favorit",
+      "resource": "Sumber Daya",
+      "span": "Rentang"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_other": ""
+    "search-placeholder": "Cari atribut...",
+    "selected": "Dipilih:",
+    "selected-count_other": "Dipilih ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": ""
+    "no-data-for-search": "Tidak ada data untuk kata kunci"
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "Pilih trace paling lambat",
+    "slowest-traces-selected": "Trace paling lambat dipilih"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Kesalahan kueri"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Kesalahan:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}}%"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Lihat detail pengecualian dari trace dengan kesalahan untuk rangkaian filter saat ini."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "Kecualikan pesan pengecualian",
+    "grouped-messages-aria-label": "Tampilkan pesan pengecualian yang dikelompokkan",
+    "grouped-messages-common-prefix": "Umum",
+    "grouped-messages-title": "Pesan yang dikelompokkan",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "Detail Pengecualian",
+      "exception-details-tooltip": "Jenis pengecualian, pesan, layanan, dan stempel waktu yang terakhir dilihat. Gunakan tombol sertakan/kecualikan untuk menyertakan atau mengecualikan pesan pengecualian, atau klik jenis atau pesan untuk memfilter.",
+      "frequency": "Frekuensi",
+      "frequency-tooltip": "Representasi visual frekuensi pengecualian dari waktu ke waktu",
+      "occurrences": "Kejadian",
+      "occurrences-tooltip": "Total jumlah kejadian pengecualian"
     },
-    "include-aria-label": ""
+    "include-aria-label": "Sertakan pesan pengecualian"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "Lihat trace"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "Memuat...",
+    "open-in-traces-drilldown": "Buka di Traces Drilldown"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Tutup"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "Perbedaan tertinggi"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "Periksa"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "Wawasan",
+    "description": "Tampilkan status kesehatan (kritikal, peringatan, info) dari Knowledge Graph pada panel timeseries",
+    "label": "Wawasan"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Lihat"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Tidak ada pencarian tersimpan untuk ditampilkan.",
+    "remove-tooltip": "Hapus",
+    "select-button": "Pilih",
+    "title": "Muat pencarian yang sudah disimpan sebelumnya"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Muat Kueri tersimpan",
+    "load-saved-search": "Muat pencarian tersimpan",
+    "no-saved-searches": "Tidak ada pencarian tersimpan untuk dimuat"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "Buka di Traces Drilldown"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Tambahkan ke dasbor",
+    "create-alert": "Buat peringatan",
+    "explore": "Telusuri",
+    "navigation": "Navigasi"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "Default",
+    "label": "Persentil",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "Info plugin",
+      "tooltip": "Info plugin"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Terakhir diperbarui: {{updated}}",
+      "title": "Grafana Traces Drilldown v{{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Log Perubahan",
+      "commit-sha": "Commit SHA: {{sha}}",
+      "contribute": "Kontribusi",
+      "documentation": "Dokumentasi",
+      "give-feedback": "Berikan umpan balik",
+      "grafana-version": "Grafana  {{edition}} ({{env}})",
+      "report-issue": "Laporkan masalah"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Sinyal utama",
+    "primary-signal-label": "Sinyal utama"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Pilihan perbandingan"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "Simpan di Kueri Kueri Tersimpan",
+    "save-search": "Simpan pencarian"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "Batalkan",
+    "close": "Tutup",
+    "existing-search-warning": "Ada pencarian tersimpan sebelumnya dengan kueri yang sama: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Deskripsi",
+      "title": "Judul"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "Pencarian tersimpan disimpan secara lokal di browser Anda dan hanya akan tersedia di perangkat ini.",
+    "save": "Simpan",
+    "success-message": "Pencarian berhasil disimpan.",
+    "success-title": "Berhasil",
+    "title": "Simpan pencarian saat ini"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Cari"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Kembali ke semua trace"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Lihat daftar span untuk rangkaian filter saat ini.",
+    "open-in-new-tab": "Buka di tab baru"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Tidak ada data",
+    "not-enough-data": "Data tidak cukup"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Streaming"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Analisis struktur span lambat dari trace yang cocok dengan filter saat ini.",
+    "duration-panel-info": "Setiap panel merepresentasikan tampilan agregat yang disusun menggunakan span dari beberapa trace.",
+    "errors-description": "Analisis struktur kesalahan dari trace yang cocok dengan filter saat ini.",
+    "errors-panel-info": "Setiap panel merepresentasikan tampilan agregat yang disusun menggunakan span dari beberapa trace.",
+    "no-data-message": "Tab struktur menampilkan span {{emptyMsg}} di bawah item yang sedang diselidiki. Saat ini, tidak ada span  {{emptyMsg}} turunan di bawah span yang sedang diselidiki.",
+    "open-trace": "Buka trace",
+    "rate-description": "Analisis struktur layanan dari trace yang cocok dengan filter saat ini.",
+    "rate-panel-info": "Setiap panel merepresentasikan tampilan agregat yang disusun menggunakan span dari beberapa trace.",
+    "read-more": "Baca lebih lanjut tentang",
+    "works-best": "Tab struktur paling cocok digunakan dengan trace penuh."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Pemilihan fokus",
+    "large-batch-warning": "Time Seeker perlu memuat data berjumlah besar. Kinerja mungkin akan terpengaruh.",
+    "pan-left": "Geser ke kiri",
+    "pan-right": "Geser ke kanan",
+    "set-range": "Atur rentang",
+    "zoom-in": "Perbesar konteks",
+    "zoom-out": "Perkecil konteks"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "Memuat time seeker...",
+    "seeker-label": "Seeker"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "Tidak ada trace yang dipilih"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "Lihat trace {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Traces Drilldown"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Sumber data",
+      "filters": "Filter",
+      "trace-id": "ID Pelacakan",
+      "trace-id-placeholder": "Masukkan ID dan tekan Enter"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Sumber data",
+      "duration-percentiles": "Persentil Durasi"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Baca dokumentasi",
+    "warning-message": "Kami menemukan kesalahan saat menjalankan kueri metrik TraceQL: \"pemroses localblock tidak ditemukan\". Ini biasanya berarti pemroses \"local-blocks\" tidak dikonfigurasi di Tempo, yang diperlukan untuk menjalankan Grafana Traces Drilldown.",
+    "warning-title": "Metrik TraceQL tidak dikonfigurasi"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Pilih tipe metrik",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- Jumlah waktu yang dibutuhkan oleh span tersebut, ditampilkan sebagai heat map (waktu respons, latensi)",
+      "duration-label": "Durasi",
+      "errors-description": "- Span gagal, masalah secara keseluruhan dalam ekosistem tracing",
+      "errors-label": "Kesalahan",
+      "rate-description": "- Rentang per detik yang cocok dengan filter Anda, berguna untuk menemukan lonjakan aktivitas yang tidak biasa",
+      "rate-label": "Rate",
+      "read-documentation": "Baca dokumentasi",
+      "subtitle": "Lihat metrik rate, kesalahan, dan durasi (rate, error, and duration/RED) yang dibuat dari trace oleh Tempo.",
+      "title": "Metrik RED untuk trace"
     }
   }
 }

@@ -1,279 +1,279 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Adaptive Traces werden geladen …"
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Ausschließen",
+    "include": "Einschließen"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Traces Drilldown"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Plugin deaktivieren",
+    "enable-plugin": "Plugin aktivieren",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Abfragebereich",
+      "query-range-description": "Der Zeitbereich für jeden zwischengespeicherten Batch im Time Seeker. Größere Werte bedeuten weniger Abfragen, aber mehr Daten pro Abfrage."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Aktivieren/deaktivieren",
+      "time-seeker-settings": "Einstellungen für Time Seeker"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "Das Plugin ist zurzeit aktiviert.",
+    "plugin-not-enabled": "Das Plugin ist zurzeit nicht aktiviert.",
+    "save-settings": "Einstellungen speichern"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Raster",
+    "layout-rows": "Zeilen",
+    "layout-single": "Einzeln"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Fehler",
+    "rate-label": "Rate"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Baseline",
+    "description": "Die Attribute werden für jeden Wert nach der Differenz zwischen den Basis- und Auswahlwerten sortiert.",
+    "hide-baseline-only-label": "Nur Baseline ausblenden",
+    "hide-baseline-only-tooltip": "Panels ausblenden, die nur einen Baseline-Prozentsatz und keine Auswahl haben",
+    "selection-label": "Auswahl"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Zu Favoriten hinzufügen",
+    "all-button": "Alles",
+    "clear-search": "Suche löschen",
+    "drop-here": "Hier ablegen",
+    "drop-here-below": "Hier ablegen",
+    "no-available": "Keine Attribute verfügbar",
+    "no-match": "Keine Attribute entsprechen Ihren Kriterien",
+    "none": "Keine",
+    "remove-from-favorites": "Von Favoriten entfernen",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Alles",
+      "favorites": "Favoriten",
+      "resource": "Ressource",
+      "span": "Spanne"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_one": "",
-    "selected-count_other": ""
+    "search-placeholder": "Attribute suchen …",
+    "selected": "Ausgewählt:",
+    "selected-count_one": "Ausgewählt ({{count}}):",
+    "selected-count_other": "Ausgewählt ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": ""
+    "no-data-for-search": "Keine Daten für den Suchbegriff"
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "Langsamste Traces auswählen",
+    "slowest-traces-selected": "Langsamste Traces ausgewählt"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Abfragefehler"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Fehler:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}} %"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Ausnahmedetails von fehlerhaften Traces für die aktuelle Filterreihe anzeigen."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "Ausnahmemeldung ausschließen",
+    "grouped-messages-aria-label": "Gruppierte Ausnahmemeldungen anzeigen",
+    "grouped-messages-common-prefix": "Häufig",
+    "grouped-messages-title": "Gruppierte Nachrichten",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "Ausnahmedetails",
+      "exception-details-tooltip": "Ausnahmetyp, Meldung, Service und Zeitstempel des letztmaligen Auftretens. Nutzen Sie die Schaltflächen „einschließen/ausschließen“, um Ausnahmemeldungen ein- oder auszuschließen, oder klicken Sie zum Filtern auf „Typ“ oder „Meldung“.",
+      "frequency": "Häufigkeit",
+      "frequency-tooltip": "Visuelle Darstellung der Ausnahmehäufigkeit im Zeitverlauf",
+      "occurrences": "Ereignisse",
+      "occurrences-tooltip": "Gesamtzahl der Vorkommnisse dieser Ausnahme"
     },
-    "include-aria-label": ""
+    "include-aria-label": "Ausnahmemeldung einschließen"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "Trace anzeigen"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "Wird geladen …",
+    "open-in-traces-drilldown": "In Traces Drilldown öffnen"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Schließen"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "Größte Differenz"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "Inspizieren"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "Insights",
+    "description": "Überlagern Sie Systemzustände (kritisch, Warnung, Info) aus dem Wissensgraphen über Zeitreihen-Panels",
+    "label": "Insights"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Anzeigen"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Keine gespeicherten Suchen anzuzeigen.",
+    "remove-tooltip": "Entfernen",
+    "select-button": "Auswählen",
+    "title": "Zuvor gespeicherte Suche laden"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Gespeicherte Abfrage laden",
+    "load-saved-search": "Gespeicherte Suche laden",
+    "no-saved-searches": "Keine gespeicherten Suchen zu laden"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "In Traces Drilldown öffnen"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Zu Dashboard hinzufügen",
+    "create-alert": "Warnung erstellen",
+    "explore": "Explore",
+    "navigation": "Navigation"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "Standard",
+    "label": "Perzentile",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "Plugin-Info",
+      "tooltip": "Plugin-Info"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Letztes Update: {{updated}}",
+      "title": "Grafana Traces Drilldown Ver. {{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Changelog",
+      "commit-sha": "Commit SHA: {{sha}}",
+      "contribute": "Beitragen",
+      "documentation": "Dokumentation",
+      "give-feedback": "Feedback geben",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "Problem melden"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Primäres Signal",
+    "primary-signal-label": "Primäres Signal"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Vergleichsauswahl"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "In den Abfragen „Gespeicherte Abfragen“ speichern",
+    "save-search": "Suche speichern"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "existing-search-warning": "Es gibt eine zuvor gespeicherte Suche mit derselben Abfrage: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Beschreibung",
+      "title": "Titel"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "Gespeicherte Suchen werden lokal in Ihrem Browser gespeichert und nur auf diesem Gerät verfügbar sein.",
+    "save": "Speichern",
+    "success-message": "Suche erfolgreich gespeichert.",
+    "success-title": "Erfolg",
+    "title": "Aktuelle Suche speichern"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Suchen"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Zurück zu allen Traces"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Eine Liste der Spannen für die aktuelle Filterreihe anzeigen.",
+    "open-in-new-tab": "In neuem Tab öffnen"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Keine Daten",
+    "not-enough-data": "Nicht genug Daten"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Streaming"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Analysieren Sie die Struktur von langsamen Spannen aus den Traces, die den aktuellen Filtern entsprechen.",
+    "duration-panel-info": "Jedes Panel stellt eine zusammengefasste Ansicht dar, die mithilfe von Spannen aus mehreren Traces zusammengestellt wurde.",
+    "errors-description": "Analysieren Sie die Fehlerstruktur der Traces, die den aktuellen Filtern entsprechen.",
+    "errors-panel-info": "Jedes Panel stellt eine zusammengefasste Ansicht dar, die mithilfe von Spannen aus mehreren Traces zusammengestellt wurde.",
+    "no-data-message": "Der Tab „Struktur“ zeigt {{emptyMsg}} Spannen unterhalb dessen an, was Sie gerade untersuchen. Zurzeit gibt es keine untergeordneten {{emptyMsg}} Spannen unterhalb der von Ihnen untersuchten Spannen.",
+    "open-trace": "Trace öffnen",
+    "rate-description": "Analysieren Sie die Servicestruktur der Traces, die den aktuellen Filtern entsprechen.",
+    "rate-panel-info": "Jedes Panel stellt eine zusammengefasste Ansicht dar, die mithilfe von Spannen aus mehreren Traces zusammengestellt wurde.",
+    "read-more": "Lesen Sie mehr darüber",
+    "works-best": "Der Tab „Struktur“ funktioniert am besten mit vollständigen Traces."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Fokusauswahl",
+    "large-batch-warning": "Der Time Seeker muss eine große Datenmenge laden. Die Leistung kann beeinträchtigt werden.",
+    "pan-left": "Nach links schwenken",
+    "pan-right": "Nach rechts schwenken",
+    "set-range": "Bereich einstellen",
+    "zoom-in": "Kontext vergrößern",
+    "zoom-out": "Kontext verkleinern"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "Time Seeker wird geladen …",
+    "seeker-label": "Seeker"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "Kein Trace ausgewählt"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "Trace {{traceId}} anzeigen"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Traces Drilldown"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Datenquelle",
+      "filters": "Filter",
+      "trace-id": "Trace-ID",
+      "trace-id-placeholder": "Geben Sie eine ID ein und drücken Sie die Eingabetaste"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Datenquelle",
+      "duration-percentiles": "Perzentile der Dauer"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Dokumentation lesen",
+    "warning-message": "Während der Ausführung einer TraceQL-Metrikabfrage haben wir einen Fehler gefunden: „localblocks-Prozessor nicht gefunden“. Dies bedeutet in der Regel, dass der „local-blocks“-Prozessor nicht in Tempo konfiguriert ist, was für die Funktion von Grafana Traces Drilldown notwendig ist.",
+    "warning-title": "TraceQL-Metriken nicht konfiguriert"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Metriktyp auswählen",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- Der Zeitraum, den diese Spannen benötigen, dargestellt als Heatmap (Reaktionszeit, Latenz)",
+      "duration-label": "Dauer",
+      "errors-description": "- Spannen, die fehlschlagen, allgemeine Probleme im Tracing-Ökosystem",
+      "errors-label": "Fehler",
+      "rate-description": "- Spannen pro Sekunde, die Ihrem Filter entsprechen; nützlich zum Auffinden von ungewöhnlichen Aktivitätsspitzen",
+      "rate-label": "Rate",
+      "read-documentation": "Dokumentation lesen",
+      "subtitle": "Untersuchen Sie die Metriken für Rate, Fehler und Dauer (RED), die von Tempo aus Traces generiert werden.",
+      "title": "RED-Metriken für Traces"
     }
   }
 }
