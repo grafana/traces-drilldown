@@ -5,7 +5,7 @@ import { PluginConfigPageProps, AppPluginMeta, PluginMeta, GrafanaTheme2 } from 
 import { locationService } from '@grafana/runtime';
 import { css } from '@emotion/css';
 import { DEFAULT_QUERY_RANGE_HOURS } from 'utils/shared';
-import { updatePluginSettings } from 'apis/updatePluginSettings';
+import { updateAppPluginSettings } from '@grafana/plugin-compat/apps';
 
 export type JsonData = {
   queryRangeHours?: number;
@@ -142,7 +142,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
 const updatePluginAndReload = async (pluginId: string, data: Partial<PluginMeta<JsonData>>) => {
   try {
-    await updatePluginSettings(pluginId, data);
+    await updateAppPluginSettings(pluginId, data);
 
     // Reloading the page as the changes made here wouldn't be propagated to the actual plugin otherwise.
     // This is not ideal, however unfortunately currently there is no supported way for updating the plugin state.
