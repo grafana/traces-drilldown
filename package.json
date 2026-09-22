@@ -94,7 +94,7 @@
     "@grafana/faro-web-sdk": "2.8.0",
     "@grafana/i18n": "13.1.0",
     "@grafana/lezer-traceql": "^0.0.23",
-    "@grafana/plugin-compat": "0.1.0",
+    "@grafana/plugin-compat": "0.2.0",
     "@grafana/runtime": "13.1.0",
     "@grafana/scenes": "8.16.1",
     "@grafana/schema": "13.1.0",
