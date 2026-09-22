@@ -47,3 +47,5 @@ overrides:
 minimumReleaseAgeExclude:
   # Renovate security update: pnpm@11.11.0
   - pnpm@11.11.0
+onlyBuiltDependencies:
+  - lefthook@2.1.12
