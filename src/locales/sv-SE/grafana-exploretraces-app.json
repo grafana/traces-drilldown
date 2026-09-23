@@ -1,279 +1,279 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Läser in adaptiva spår…"
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Exkludera",
+    "include": "Inkludera"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Traces Drilldown"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Inaktivera tillägg",
+    "enable-plugin": "Aktivera tillägg",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Frågeintervall",
+      "query-range-description": "Tidsintervallet för varje cachelagrad batch i Time Seeker. Högre värden innebär färre frågor men mer data per fråga."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Aktivera/Inaktivera",
+      "time-seeker-settings": "Inställningar för Time Seeker"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "Tillägget är för närvarande aktiverat.",
+    "plugin-not-enabled": "Tillägget är för närvarande inte aktiverat.",
+    "save-settings": "Spara inställningar"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Rutnät",
+    "layout-rows": "Rader",
+    "layout-single": "Singel"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Fel",
+    "rate-label": "Frekvens"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Baslinje",
+    "description": "Attributen sorteras efter skillnaden mellan baslinje- och urvalsvärdena för varje enskilt värde.",
+    "hide-baseline-only-label": "Dölj endast baslinje",
+    "hide-baseline-only-tooltip": "Dölj paneler som endast har baslinjeprocentandel och inget val",
+    "selection-label": "Urval"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Lägg till i favoriter",
+    "all-button": "Alla",
+    "clear-search": "Rensa sökning",
+    "drop-here": "Släpp här",
+    "drop-here-below": "Släpp här",
+    "no-available": "Inga attribut tillgängliga",
+    "no-match": "Inga attribut matchar dina kriterier",
+    "none": "Inga",
+    "remove-from-favorites": "Ta bort från favoriter",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Alla",
+      "favorites": "Favoriter",
+      "resource": "Resurs",
+      "span": "Spännvidd"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_one": "",
-    "selected-count_other": ""
+    "search-placeholder": "Sök attribut …",
+    "selected": "Vald:",
+    "selected-count_one": "Vald ({{count}}):",
+    "selected-count_other": "Vald ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": ""
+    "no-data-for-search": "Inga data för söktermen"
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "Välj de långsammaste spåren",
+    "slowest-traces-selected": "De långsammaste spåren har valts"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Frågefel"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Fel: "
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}} %"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Visa undantagsdetaljer från spårningar med fel för den nuvarande uppsättningen filter."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "Exkludera undantagsmeddelande",
+    "grouped-messages-aria-label": "Visa grupperade undantagsmeddelanden",
+    "grouped-messages-common-prefix": "Gemensamma",
+    "grouped-messages-title": "Grupperade meddelanden",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "Undantagsdetaljer",
+      "exception-details-tooltip": "Undantagstyp, meddelande, tjänst och tidsstämpel för senaste förekomst Använd knapparna Inkludera/Exkludera för att inkludera eller exkludera undantagsmeddelanden eller klicka på typ eller meddelande för att filtrera.",
+      "frequency": "Frekvens",
+      "frequency-tooltip": "Visuell representation av undantagsfrekvens över tid",
+      "occurrences": "Förekomster",
+      "occurrences-tooltip": "Totalt antal gånger detta undantag har inträffat"
     },
-    "include-aria-label": ""
+    "include-aria-label": "Inkludera undantagsmeddelande"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": " Visa spår"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": " Läser in...",
+    "open-in-traces-drilldown": "Öppna i Traces Drilldown"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Stäng"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "Största skillnad"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "Inspektera"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "Insikter",
+    "description": "Lägg till hälsotillstånd (kritisk, varning, information) från kunskapsdiagrammet på tidsseriepaneler",
+    "label": "Insikter"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Visa"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Inga sparade sökningar att visa.",
+    "remove-tooltip": "Ta bort",
+    "select-button": "Välj",
+    "title": "Läs in en tidigare sparad sökning"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Läs in sparad fråga",
+    "load-saved-search": "Läs in sparad sökning",
+    "no-saved-searches": "Inga sparade sökningar att läsa in"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "Öppna i Traces Drilldown"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Lägg till i instrumentpanelen",
+    "create-alert": "Skapa larm",
+    "explore": "Utforska",
+    "navigation": "Navigering"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "Standard",
+    "label": "Percentiler",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "Information om tillägg",
+      "tooltip": "Information om tillägg"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Senaste uppdatering: {{updated}}",
+      "title": "Detaljanalys av Traces i Grafana v{{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Ändringslogg",
+      "commit-sha": "Commit-SHA: {{sha}}",
+      "contribute": "Bidra",
+      "documentation": "Dokumentation",
+      "give-feedback": "Ge feedback",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "Rapportera ett problem"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Primär signal",
+    "primary-signal-label": "Primär signal"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Jämförelseval"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "Spara i Sparade frågor",
+    "save-search": "Spara sökning"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "Avbryt",
+    "close": "Stäng",
+    "existing-search-warning": "Det finns en tidigare sparad sökning med samma fråga: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Beskrivning",
+      "title": "Titel"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "Sparade sökningar lagras lokalt i din webbläsare och kommer endast att vara tillgängliga på den här enheten.",
+    "save": "Spara",
+    "success-message": "Sökningen har sparats.",
+    "success-title": "Lyckades",
+    "title": "Spara aktuell sökning"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Sök"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Tillbaka till alla spår"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Visa en lista över intervall för den nuvarande uppsättningen filter.",
+    "open-in-new-tab": "Öppna i ny flik"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Inga data",
+    "not-enough-data": "Inte tillräckligt med data"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Streaming"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Analysera strukturen hos långsamma intervall från de spår som matchar de aktuella filtren.",
+    "duration-panel-info": "Varje panel representerar en aggregerad vy som sammanställts med hjälp av intervall från flera spår.",
+    "errors-description": "Analysera felstrukturen hos de spår som matchar de aktuella filtren.",
+    "errors-panel-info": "Varje panel representerar en aggregerad vy som sammanställts med hjälp av intervall från flera spår.",
+    "no-data-message": "Fliken Struktur visar {{emptyMsg}}-intervall under det du för närvarande undersöker. För närvarande finns det inga underordnade {{emptyMsg}}-intervall under de intervall du undersöker.",
+    "open-trace": "Öppna spår",
+    "rate-description": "Analysera tjänstestrukturen hos de spår som matchar de aktuella filtren.",
+    "rate-panel-info": "Varje panel representerar en aggregerad vy som sammanställts med hjälp av intervall från flera spår.",
+    "read-more": "Läs mer om",
+    "works-best": "Fliken Struktur fungerar bäst med fullständiga spår."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Fokusera på urval",
+    "large-batch-warning": "Time Seeker behöver ladda en stor mängd data. Prestandan kan påverkas.",
+    "pan-left": "Panorera åt vänster",
+    "pan-right": "Panorera åt höger",
+    "set-range": "Ställ in intervall",
+    "zoom-in": "Zooma in sammanhang",
+    "zoom-out": "Zooma ut sammanhang"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "Laddar tidssökare …",
+    "seeker-label": "Sökare"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "Inget spår har valts"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "Visa spår {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Traces Drilldown"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Datakälla",
+      "filters": "Filter",
+      "trace-id": "Spårnings-ID",
+      "trace-id-placeholder": "Ange ett ID och tryck på retur"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Datakälla",
+      "duration-percentiles": "Percentiler för varaktighet"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Läs dokumentationen",
+    "warning-message": "Vi hittade ett fel när vi körde en TraceQL-mätvärdesfråga: ”localblocks-processor hittades inte”. Detta innebär vanligtvis att processorn ”local-blocks” inte har konfigurerats i Tempo, vilket krävs för att detaljanalysen av Traces i Grafana ska fungera.",
+    "warning-title": "TraceQL-mätvärden har inte konfigurerats"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Välj typ av mätvärde",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "– Den tid som dessa intervall tar, representerat genom en värmekarta (svarstid, latens)",
+      "duration-label": "Varaktighet",
+      "errors-description": "– Intervall som misslyckas, övergripande problem i spårningsekosystemet",
+      "errors-label": "Fel",
+      "rate-description": "– Intervall per sekund som matchar ditt filter, användbart för att hitta ovanliga toppar i aktiviteten",
+      "rate-label": "Frekvens",
+      "read-documentation": "Läs dokumentationen",
+      "subtitle": "Utforska mätvärden för frekvens, fel och varaktighet (RED) som genereras från spår av Tempo.",
+      "title": "RED-mätvärden för spår"
     }
   }
 }
