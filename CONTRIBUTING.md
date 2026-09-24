@@ -69,12 +69,12 @@ Human contributions must use **signed commits** so they show as verified on GitH
 
 ### Before you open a pull request
 
-- Fill out the [pull request template](.github/pull_request_template.md). Do not delete sections; include a clear summary and test steps.
+- Fill out the [pull request template](.github/pull_request_template.md) with a clear summary and test steps. For UI changes, put **before/after screenshots** in the How to test section.
 - Sign every commit so it is verified on GitHub (see [Signed commits](#signed-commits)).
 - Use a [conventional commit](https://www.conventionalcommits.org/) style PR title (enforced by CI).
 - Run `pnpm lint`, `pnpm typecheck`, and `pnpm test:ci` locally.
 - Add or update tests when behavior changes. Prefer focused unit tests (Jest) or Playwright E2E when UI flows are affected.
-- If the UI changed, attach **before/after screenshots** in the pull request. If the change is visible on the main Explore / homescreen, update [`docs/sources/explore-traces-homescreen.png`](docs/sources/explore-traces-homescreen.png) in the same PR. If a plugin marketplace screenshot changed, update the matching file under `src/img/` listed in [`src/plugin.json`](src/plugin.json).
+- If the UI changed, attach **before/after screenshots** in the pull request.
 - Do not modify files under `.config/` unless you are following the plugin-tools guidance in `.config/AGENTS/instructions.md`.
 
 ### Internationalization (i18n)
