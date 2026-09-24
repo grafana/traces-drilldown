@@ -29,8 +29,6 @@ export function DataLinksCustomContext(props: Props) {
   const { children, embedded, timeRange } = props;
 
   const dataLinksContext = useDataLinksContext?.();
-  const filters = useMemo<GetDataSourceListFilters>(() => ({ type: 'loki' }), []);
-  const { value: lokiInstances } = useAsync(async () => getDataSourceInstanceList(filters), [filters]);
 
   // @ts-expect-error: TS2774 This condition will always return true since this function is always defined. Did you mean to call it instead?
   // We expect the TS error because the function is not always defined if the DataLinksContext or useDataLinksContext are
@@ -46,6 +44,19 @@ export function DataLinksCustomContext(props: Props) {
   const logsDrilldownExtension = extensions?.functions?.[0] ?? undefined;
   const logsDrilldownFn =
     logsDrilldownExtension && typeof logsDrilldownExtension.fn === 'function' ? logsDrilldownExtension.fn : undefined;
+
+  const isPostProcessingSupported = Boolean(postProcessingSupported);
+  const hasLogsDrilldownFn = Boolean(logsDrilldownFn);
+  const hasTimeRange = Boolean(timeRange);
+  const shouldRenderContext = !embedded && isPostProcessingSupported && hasLogsDrilldownFn && hasTimeRange;
+  const filters = useMemo<GetDataSourceListFilters>(() => ({ type: 'loki' }), []);
+  const { value: lokiInstances } = useAsync(async () => {
+    if (!shouldRenderContext) {
+      return undefined;
+    }
+
+    return getDataSourceInstanceList(filters);
+  }, [filters, shouldRenderContext]);
 
   // Use refs to keep stable callback identity regardless of whether upstream hooks return new references
   const dataLinksContextRef = useRef(dataLinksContext);
@@ -97,7 +108,7 @@ export function DataLinksCustomContext(props: Props) {
 
   const contextValue = useMemo(() => ({ dataLinkPostProcessor }), [dataLinkPostProcessor]);
 
-  if (embedded || !postProcessingSupported || !logsDrilldownFn || !timeRange) {
+  if (!shouldRenderContext) {
     return <>{children}</>;
   }
 
