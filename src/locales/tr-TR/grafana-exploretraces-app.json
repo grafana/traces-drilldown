@@ -1,279 +1,279 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Uyarlanabilir izler yükleniyor..."
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Hariç tut",
+    "include": "Dâhil et"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Traces Drilldown"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Eklentiyi devre dışı bırak",
+    "enable-plugin": "Eklentiyi etkinleştir",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Sorgu Aralığı",
+      "query-range-description": "Time Seeker'daki önbelleğe alınmış her parti için zaman aralığı. Daha büyük değerler, daha az sorgu ancak sorgu başına daha fazla veri anlamına gelir."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Etkinleştir/Devre Dışı Bırak",
+      "time-seeker-settings": "Time Seeker Ayarları"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "Eklenti şu anda etkin.",
+    "plugin-not-enabled": "Eklenti şu anda etkin değil.",
+    "save-settings": "Ayarları kaydet"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Izgara",
+    "layout-rows": "Satırlar",
+    "layout-single": "Tek"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Hata",
+    "rate-label": "Oran"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Referans",
+    "description": "Öznitelikler, her bir değer için referans ile seçim değerleri arasındaki farka göre sıralanır.",
+    "hide-baseline-only-label": "Yalnızca referans olanları gizle",
+    "hide-baseline-only-tooltip": "Yalnızca referans yüzdesi olup seçimi olmayan panelleri gizler",
+    "selection-label": "Seçim"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Favorilere ekle",
+    "all-button": "Tümü",
+    "clear-search": "Aramayı temizle",
+    "drop-here": "Buraya bırakın",
+    "drop-here-below": "Buraya bırakın",
+    "no-available": "Öznitelik yok",
+    "no-match": "Kriterlerinize uyan öznitelik yok",
+    "none": "Yok",
+    "remove-from-favorites": "Favorilerden çıkar",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Tümü",
+      "favorites": "Favoriler",
+      "resource": "Kaynak",
+      "span": "İz parçası"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_one": "",
-    "selected-count_other": ""
+    "search-placeholder": "Özniteliklerde ara...",
+    "selected": "Seçilen:",
+    "selected-count_one": "Seçilen ({{count}}):",
+    "selected-count_other": "Seçilen ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": ""
+    "no-data-for-search": "Arama terimi için veri yok"
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "En yavaş izleri seçin",
+    "slowest-traces-selected": "En yavaş izler seçildi"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Sorgu hatası"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Hata:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "%{{percent}}"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Mevcut filtre seti için hatalı izlere ait istisna detaylarını görüntüleyin."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "İstisna mesajını hariç tut",
+    "grouped-messages-aria-label": "Gruplandırılmış istisna mesajlarını göster",
+    "grouped-messages-common-prefix": "Ortak",
+    "grouped-messages-title": "Gruplandırılmış mesajlar",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "İstisna Ayrıntıları",
+      "exception-details-tooltip": "İstisna türü, mesajı, servis ve son görülme zaman damgası. İstisna mesajlarını dâhil etmek veya hariç tutmak için ilgili düğmeleri kullanın; filtrelemek için türe veya mesaja tıklayın.",
+      "frequency": "Sıklık",
+      "frequency-tooltip": "İstisna sıklığının zaman içindeki görsel temsili",
+      "occurrences": "Oluşum Sayısı",
+      "occurrences-tooltip": "Bu istisnanın toplam gerçekleşme sayısı"
     },
-    "include-aria-label": ""
+    "include-aria-label": "İstisna mesajını dâhil et"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "İzi göster"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "Yükleniyor...",
+    "open-in-traces-drilldown": "Traces Drilldown'da aç"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Kapat"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "En yüksek fark"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "İncele"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "İçgörüler",
+    "description": "Bilgi Grafiği'nden alınan sağlık durumlarını (kritik, uyarı, bilgi) zaman serisi panelleri üzerinde gösterin",
+    "label": "İçgörüler"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Göster"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Gösterilecek kayıtlı arama yok.",
+    "remove-tooltip": "Kaldır",
+    "select-button": "Seçin",
+    "title": "Önceden kaydedilmiş bir aramayı yükleyin"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Kayıtlı sorguyu yükle",
+    "load-saved-search": "Kayıtlı aramayı yükle",
+    "no-saved-searches": "Yüklenecek kayıtlı arama yok"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "Traces Drilldown'da aç"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Panoya ekle",
+    "create-alert": "Uyarı oluştur",
+    "explore": "Keşfet",
+    "navigation": "Gezinme"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "Varsayılan",
+    "label": "Yüzdelik Dilimler",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "Eklenti bilgileri",
+      "tooltip": "Eklenti bilgileri"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Son güncelleme: {{updated}}",
+      "title": "Grafana Traces Drilldown {{version}} sürümü"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Değişiklik günlüğü",
+      "commit-sha": "SHA'yı işle: {{sha}}",
+      "contribute": "Katkıda bulunun",
+      "documentation": "Belgeler",
+      "give-feedback": "Geri bildirim gönder",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "Sorun bildir"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Birincil sinyal",
+    "primary-signal-label": "Birincil sinyal"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Karşılaştırma seçimi"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "Kayıtlı Sorgular'a kaydet",
+    "save-search": "Aramayı kaydet"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "İptal et",
+    "close": "Kapat",
+    "existing-search-warning": "Aynı sorguya sahip, daha önceden kaydedilmiş bir arama var: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Açıklama",
+      "title": "Başlık"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "Kayıtlı aramalar tarayıcınızda yerel olarak depolanır ve yalnızca bu cihazda kullanılabilir.",
+    "save": "Kaydet",
+    "success-message": "Arama başarıyla kaydedildi.",
+    "success-title": "Başarılı",
+    "title": "Mevcut aramayı kaydet"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Ara"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Tüm izlere dön"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Mevcut filtre seti için iz parçası listesini görüntüleyin.",
+    "open-in-new-tab": "Yeni sekmede aç"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Veri yok",
+    "not-enough-data": "Yeterli veri yok"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Akış"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Mevcut filtrelerle eşleşen izlerdeki yavaş iz parçalarının yapısını analiz edin.",
+    "duration-panel-info": "Her panel, birden fazla izden gelen iz parçaları kullanılarak derlenmiş toplu bir görünümü temsil eder.",
+    "errors-description": "Mevcut filtrelerle eşleşen izlerin hata yapısını analiz edin.",
+    "errors-panel-info": "Her panel, birden fazla izden gelen iz parçaları kullanılarak derlenmiş toplu bir görünümü temsil eder.",
+    "no-data-message": "Yapı sekmesi, şu anda incelemekte olduğunuz iz parçalarının altındaki {{emptyMsg}} iz parçasını gösterir. Şu anda, incelediğiniz iz parçalarının altında alt {{emptyMsg}} iz parçası bulunmamaktadır.",
+    "open-trace": "İzi aç",
+    "rate-description": "Mevcut filtrelerle eşleşen izlerin servis yapısını analiz edin.",
+    "rate-panel-info": "Her panel, birden fazla izden gelen iz parçaları kullanılarak derlenmiş toplu bir görünümü temsil eder.",
+    "read-more": "Şunun hakkında daha fazla bilgi edinin:",
+    "works-best": "Yapı sekmesi en iyi tam izlerle çalışır."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Seçime odaklan",
+    "large-batch-warning": "Time Seeker'ın büyük miktarda veri yüklemesi gerekiyor. Performans etkilenebilir.",
+    "pan-left": "Sola kaydır",
+    "pan-right": "Sağa kaydır",
+    "set-range": "Aralık belirle",
+    "zoom-in": "Bağlamı yakınlaştır",
+    "zoom-out": "Bağlamı uzaklaştır"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "Time Seeker yükleniyor…",
+    "seeker-label": "Seeker"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "İz seçilmedi"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "{{traceId}} izini göster"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Traces Drilldown"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Veri kaynağı",
+      "filters": "Filtreler",
+      "trace-id": "İz kimliği",
+      "trace-id-placeholder": "Bir kimlik girin ve Enter'a basın"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Veri kaynağı",
+      "duration-percentiles": "Süre Yüzdelik Dilimleri"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Belgeleri okuyun",
+    "warning-message": "TraceQL metrikleri sorgusu çalıştırılırken bir hata saptandı: \"localblocks işlemcisi bulunamadı\". Bu genellikle Grafana Traces Drilldown'un çalışması için gerekli olan \"local-blocks\" işlemcisinin Tempo'da yapılandırılmadığı anlamına gelir.",
+    "warning-title": "TraceQL metrikleri yapılandırılmamış"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Metrik türünü seçin",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- Bu iz parçalarının aldığı süre; bir ısı haritası olarak gösterilir (yanıt süresi, gecikme)",
+      "duration-label": "Süre",
+      "errors-description": "- Başarısız olan iz parçaları, izleme ekosistemindeki genel sorunlar",
+      "errors-label": "Hatalar",
+      "rate-description": "- Filtrenizle eşleşen saniye başına iz parçası sayısı; etkinlikteki olağan dışı sıçramaları bulmak için kullanışlıdır",
+      "rate-label": "Oran",
+      "read-documentation": "Belgeleri okuyun",
+      "subtitle": "Tempo tarafından izlerden oluşturulan oran, hatalar ve süre (RED) metriklerini keşfedin.",
+      "title": "İzler için RED metrikleri"
     }
   }
 }
