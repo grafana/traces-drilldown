@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.2.2](https://github.com/grafana/traces-drilldown/compare/v2.2.1...v2.2.2) (2026-09-25)
+
+
+### 📝 Documentation
+
+* require signed commits in CONTRIBUTING and UI screenshots ([#922](https://github.com/grafana/traces-drilldown/issues/922)) ([ccf394b](https://github.com/grafana/traces-drilldown/commit/ccf394b5d43d1ecf40b18814085f079e70e84a44))
+
+
+### 🤖 Continuous Integrations
+
+* bump bundle-types to v1.0.4 for signed commits ([#912](https://github.com/grafana/traces-drilldown/issues/912)) ([156b994](https://github.com/grafana/traces-drilldown/commit/156b9940ac80a3881a0860e7b61d4214a76f2da3))
+
+
+### 🧹 Chore
+
+* **deps:** add and use @grafana/plugin-compat ([#911](https://github.com/grafana/traces-drilldown/issues/911)) ([c7c156c](https://github.com/grafana/traces-drilldown/commit/c7c156c00d35e9d769ef05f0a5915925911f0563))
+* **deps:** lock file maintenance ([#901](https://github.com/grafana/traces-drilldown/issues/901)) ([0d6cd3e](https://github.com/grafana/traces-drilldown/commit/0d6cd3e5064ca6120d0d0bbac60f60b25198426f))
+* Fix pnpm-lock ([#921](https://github.com/grafana/traces-drilldown/issues/921)) ([6153cf4](https://github.com/grafana/traces-drilldown/commit/6153cf4861254e1da9f48fdcc2c5e0f627416a8b))
+* **i18n:** expose all supported languages ([#918](https://github.com/grafana/traces-drilldown/issues/918)) ([5585c24](https://github.com/grafana/traces-drilldown/commit/5585c2438315ee98dfa221afb580067cd50dfacd))
+
 ## [2.2.1](https://github.com/grafana/traces-drilldown/compare/v2.2.0...v2.2.1) (2026-09-22)
 
 
