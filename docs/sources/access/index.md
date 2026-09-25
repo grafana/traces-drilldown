@@ -36,7 +36,7 @@ To use Traces Drilldown with Grafana Cloud, you need the following:
 
 To use Traces Drilldown with self-managed Grafana open source or Grafana Enterprise, you need:
 
-- Your own Grafana instance running 11.6 or later
+- Your own Grafana instance running 13.1.0 or later
 - Tempo 2.6 or later with [TraceQL metrics configured](https://grafana.com/docs/tempo/<TEMPO_VERSION>/operations/traceql-metrics/)
 - Configured [Tempo data source](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/) receiving tracing data
 
@@ -45,7 +45,7 @@ Next, [access Traces Drilldown](#access-traces-drilldown).
 ### Install the Traces Drilldown plugin
 
 {{< admonition type="note" >}}
-Grafana v12 and later includes all Drilldown apps, including Traces Drilldown. No separate installation is required. Go to [Access Traces Drilldown](#access-traces-drilldown).
+Grafana 13.1.0 and later includes all Drilldown apps, including Traces Drilldown. No separate installation is required. Go to [Access Traces Drilldown](#access-traces-drilldown).
 {{< /admonition >}}
 
 Traces Drilldown is distributed as a Grafana plugin.
