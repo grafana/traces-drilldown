@@ -7,7 +7,7 @@ services:
       context: ../.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana}
-        grafana_version: ${GRAFANA_VERSION:-12.3.0@sha256:70d9599b186ce287be0d2c5ba9a78acb2e86c1a68c9c41449454d0fc3eeb84e8}
+        grafana_version: ${GRAFANA_VERSION:-13.1.0@sha256:121a7a9ece6dc10b969f1f96eed64b4f07dfac0d0b8abc070f7cb83bbde86f63}
     environment:
       - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-localizationForPlugins,tracesDrilldown.useValueTypeFiltering}
     ports:
