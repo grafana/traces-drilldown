@@ -10,7 +10,7 @@ import {
   SceneObject,
 } from '@grafana/scenes';
 import { LoadingState, GrafanaTheme2, dateTimeFormat, DataQueryError } from '@grafana/data';
-import { getDataSourceSrv } from '@grafana/runtime';
+import { getDataSourceInstance } from '@grafana/plugin-compat/datasources';
 import { explorationDS } from 'utils/shared';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
 import { ErrorStateScene } from 'components/states/ErrorState/ErrorStateScene';
@@ -36,7 +36,7 @@ export class TraceViewPanelScene extends SceneObjectBase<TracePanelState> {
         // Get the datasource to check timeShiftEnabled configuration
         // Ideally this error would be returned by the datasource, but it's not currently supported.
         const datasourceUid = getDataSource(getTraceExplorationScene(this));
-        const datasource = await getDataSourceSrv().get(datasourceUid);
+        const datasource = await getDataSourceInstance(datasourceUid);
 
         // Check if the datasource has traceQuery.timeShiftEnabled set to true
         if (datasource) {

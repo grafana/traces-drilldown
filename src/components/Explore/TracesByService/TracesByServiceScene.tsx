@@ -36,7 +36,7 @@ import {
   VAR_LATENCY_THRESHOLD_EXPR,
   filterStreamingProgressTransformations,
 } from '../../../utils/shared';
-import { getDataSourceSrv } from '@grafana/runtime';
+import { getDataSourceInstance } from '@grafana/plugin-compat/datasources';
 import { TabsBarScene, actionViewsDefinitions } from './Tabs/TabsBarScene';
 import { isEqual } from 'lodash';
 import {
@@ -186,7 +186,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   }
 
   private async updateAttributes() {
-    const ds = await getDataSourceSrv().get(VAR_DATASOURCE_EXPR, { __sceneObject: { value: this } });
+    const ds = await getDataSourceInstance(VAR_DATASOURCE_EXPR, { __sceneObject: { value: this } });
 
     if (!ds) {
       return;

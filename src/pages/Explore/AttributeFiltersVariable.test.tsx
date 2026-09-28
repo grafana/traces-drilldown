@@ -1,4 +1,4 @@
-import { DataSourceSrv, setDataSourceSrv, setTemplateSrv, TemplateSrv } from '@grafana/runtime';
+import { setTemplateSrv, TemplateSrv } from '@grafana/runtime';
 import {
   getTagValuesProvider,
   isNewTagValueResponse,
@@ -7,6 +7,7 @@ import {
 } from './AttributeFiltersVariable';
 import { AdHocFiltersVariable } from '@grafana/scenes';
 import { DataSourceApi, MetricFindValue } from '@grafana/data';
+import { getDataSourceInstance } from '@grafana/plugin-compat/datasources';
 import { isUseValueTypeFilteringEnabled } from '../../featureFlags/featureFlags';
 import { explorationDS } from 'utils/shared';
 
@@ -14,11 +15,15 @@ jest.mock('../../featureFlags/featureFlags', () => ({
   isUseValueTypeFilteringEnabled: jest.fn(),
 }));
 
-const mockIsUseValueTypeFilteringEnabled = jest.mocked(isUseValueTypeFilteringEnabled);
+jest.mock('@grafana/plugin-compat/datasources', () => ({
+  getDataSourceInstance: jest.fn(),
+}));
+
+const mockedIsUseValueTypeFilteringEnabled = jest.mocked(isUseValueTypeFilteringEnabled);
+const mockedGetDataSourceInstance = jest.mocked(getDataSourceInstance);
 
 describe('AttributeFiltersVariable', () => {
   describe('getTagValuesProvider', () => {
-    let mockedDataSourceSrv: DataSourceSrv;
     let mockedDataSourceApi: DataSourceApi;
 
     beforeEach(() => {
@@ -33,20 +38,13 @@ describe('AttributeFiltersVariable', () => {
         uid: '',
         getTagValues: jest.fn().mockResolvedValue([]),
       };
-      mockedDataSourceSrv = {
-        get: jest.fn().mockResolvedValue(mockedDataSourceApi),
-        getInstanceSettings: jest.fn(),
-        getList: jest.fn(),
-        registerRuntimeDataSource: jest.fn(),
-        reload: jest.fn(),
-      };
-      setDataSourceSrv(mockedDataSourceSrv);
+      mockedGetDataSourceInstance.mockResolvedValue(mockedDataSourceApi);
 
       // get rid of annoying 'Failed to patch getAdhocFilters' log in tests
       const templateSrv = { getAdhocFilters: () => {} } as unknown as TemplateSrv;
       setTemplateSrv(templateSrv);
 
-      mockIsUseValueTypeFilteringEnabled.mockReturnValue(true);
+      mockedIsUseValueTypeFilteringEnabled.mockReturnValue(true);
       jest.spyOn(console, 'error').mockRestore();
     });
 
@@ -56,7 +54,7 @@ describe('AttributeFiltersVariable', () => {
 
       await getTagValuesProvider(variable, filter);
 
-      expect(mockedDataSourceSrv.get).toHaveBeenCalledWith(explorationDS, { __sceneObject: { value: variable } });
+      expect(mockedGetDataSourceInstance).toHaveBeenCalledWith(explorationDS, { __sceneObject: { value: variable } });
     });
 
     it('should call getTagValues with correct arguments', async () => {
@@ -116,7 +114,7 @@ describe('AttributeFiltersVariable', () => {
     });
 
     it('should return "replace: false" and skip data source calls when feature flag is turned off', async () => {
-      mockIsUseValueTypeFilteringEnabled.mockReturnValue(false);
+      mockedIsUseValueTypeFilteringEnabled.mockReturnValue(false);
 
       const variable = new AdHocFiltersVariable({ name: 'test-filter' });
       const filter = { key: 'span.name', operator: '=', value: 'internal' };
@@ -124,7 +122,7 @@ describe('AttributeFiltersVariable', () => {
       const result = await getTagValuesProvider(variable, filter);
 
       expect(result).toEqual({ replace: false, values: [] });
-      expect(mockedDataSourceSrv.get).not.toHaveBeenCalled();
+      expect(mockedGetDataSourceInstance).not.toHaveBeenCalled();
       expect(mockedDataSourceApi.getTagValues).not.toHaveBeenCalled();
     });
 
