@@ -27,7 +27,7 @@ To use Traces Drilldown with Grafana Cloud, you need:
 
 To use Traces Drilldown with self-hosted Grafana open source or Grafana Enterprise, you need:
 
-- Your own Grafana instance running 11.3 or newer
+- Your own Grafana instance running 13.1.0 or newer
 - Tempo 2.6 or newer
 - A configured [Tempo data source](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/) receiving tracing data
 
