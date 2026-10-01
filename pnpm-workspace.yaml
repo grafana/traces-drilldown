@@ -22,32 +22,11 @@ overrides:
   chokidar: ^5.0.0
   semver: ^7.8.5
   ua-parser-js: 2.0.10
-  lodash: ^4.18.0
   moment: ^2.31.0
+  dompurify: ^3.4.14
+  js-cookie: ^3.0.7
+  serialize-javascript: ^7.1.0
   # Grafana externalizes React Router v6 until https://github.com/grafana/grafana/issues/129933 lands.
   # v6.30.6 has no package fix for GHSA-wrjc-x8rr-h8h6; this browser plugin only uses static internal routes.
   # GHSA-337j-9hxr-rhxg affects SSR hydration, which this browser plugin does not use.
   'react-router@^6': ^6.30.6
-  serialize-javascript: ^7.1.0
-  immutable: ^5.1.8
-  dompurify: ^3.4.14
-  yaml: ^2.8.3
-  minimatch@^3: ~3.1.4
-  minimatch@^9: ~10.2.0
-  minimatch@^10: ^10.2.6
-  uuid: ^14.0.2
-  js-cookie: ^3.0.7
-  ws: 8.21.3
-  js-yaml: 4.3.2
-  qs: ^6.16.0
-  brace-expansion@^1: 1.1.21
-  brace-expansion@^5: '>=5.0.9'
-  fast-uri: '>=4.1.3'
-  postcss: ^8.5.26
-  nanoid@^3: '>=3.3.18 <4'
-minimumReleaseAgeExclude:
-  # Renovate security update: pnpm@11.11.0
-  - pnpm@11.11.0
-  - '@grafana/plugin-compat@0.1.0'
-  # Renovate security update: brace-expansion@1.1.21
-  - brace-expansion@1.1.21
