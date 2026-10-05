@@ -5,7 +5,27 @@
   "id": "grafana-exploretraces-app",
   "preload": true,
   "autoEnabled": true,
-  "languages": ["en-US"],
+  "languages": [
+    "en-US",
+    "cs-CZ",
+    "de-DE",
+    "es-ES",
+    "fr-FR",
+    "hu-HU",
+    "id-ID",
+    "it-IT",
+    "ja-JP",
+    "ko-KR",
+    "nl-NL",
+    "pl-PL",
+    "pt-BR",
+    "pt-PT",
+    "ru-RU",
+    "sv-SE",
+    "tr-TR",
+    "zh-Hans",
+    "zh-Hant"
+  ],
   "info": {
     "keywords": ["app", "tempo", "traces", "explore", "drilldown", "drill", "down", "drill-down"],
     "description": "Use Rate, Errors, and Duration (RED) metrics derived from traces to investigate errors within complex distributed systems.",
@@ -54,7 +74,7 @@
     }
   ],
   "dependencies": {
-    "grafanaDependency": ">=11.6.11-0 <12 || >=12.0.10-0 <12.1 || >=12.1.7-0 <12.2 || >=12.2.5-0",
+    "grafanaDependency": ">=13.1.0-0",
     "plugins": [],
     "extensions": {
       "exposedComponents": [
