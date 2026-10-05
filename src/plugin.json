@@ -101,11 +101,6 @@
     ],
     "addedComponents": [
       {
-        "targets": ["grafana-asserts-app/entity-assertions-widget/v1"],
-        "title": "Asserts widget",
-        "description": "A block with assertions for a given service"
-      },
-      {
         "targets": ["grafana-adaptivetraces-app/span-latency/v1"],
         "title": "Span Latency",
         "description": "A component that renders a span latency view that can be embedded in other parts of Grafana."
