@@ -1,10 +1,11 @@
-import { AdHocFiltersVariable, AdHocFilterWithLabels } from '@grafana/scenes';
+import { AdHocFiltersVariable, AdHocFilterWithLabels, sceneGraph } from '@grafana/scenes';
 import { AdHocVariableFilter, MetricFindValue } from '@grafana/data';
-import { MetricFindValueWithMeta, VAR_FILTERS, explorationDS } from 'utils/shared';
+import { MetricFindValueWithMeta, VAR_DATASOURCE_EXPR, VAR_FILTERS, explorationDS } from 'utils/shared';
 import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { VariableHide } from '@grafana/schema';
 import { isUseValueTypeFilteringEnabled } from 'featureFlags/featureFlags';
-import { getDataSourceSrv, logError } from '@grafana/runtime';
+import { logError } from '@grafana/runtime';
+import { getDataSourceInstance } from '@grafana/plugin-compat/datasources';
 import { stripOuterQuotes, toLabelValueType, toEscapedValue, getLabelValueType } from 'utils/utils';
 import { ProviderEvents } from '@openfeature/web-sdk';
 import { getOpenFeatureClient } from 'featureFlags/openFeature';
@@ -86,7 +87,7 @@ export async function getTagValuesProvider(
 
   try {
     const filters: AdHocVariableFilter[] = [{ key: filter.key, operator: filter.operator, value: filter.value }];
-    const ds = await getDataSourceSrv().get(explorationDS, { __sceneObject: { value: variable } });
+    const ds = await getDataSourceInstance(sceneGraph.interpolate(variable, VAR_DATASOURCE_EXPR));
     const response = (await ds.getTagValues?.({ filters, key: filter.key })) ?? [];
     const data = Array.isArray(response) ? response : response.data;
     const values = data.filter(Boolean).map((d) => {

@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 
 import { DataLinksCustomContext } from './DataLinksCustomContext';
 import { DataLinksContext, GrafanaConfig, locationUtil, useDataLinksContext } from '@grafana/data';
-import { getDataSourceSrv, usePluginFunctions } from '@grafana/runtime';
+import { usePluginFunctions } from '@grafana/runtime';
+import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 
 // --- Mocks ---
 
@@ -19,13 +20,16 @@ jest.mock('@grafana/data', () => {
 });
 
 jest.mock('@grafana/runtime', () => ({
-  getDataSourceSrv: jest.fn(),
   usePluginFunctions: jest.fn(),
+}));
+
+jest.mock('@grafana/plugin-compat/datasources', () => ({
+  getDataSourceInstanceList: jest.fn(),
 }));
 
 const mockedUseDataLinksContext = useDataLinksContext as unknown as jest.Mock;
 const mockedUsePluginFunctions = usePluginFunctions as unknown as jest.Mock;
-const mockedGetDataSourceSrv = getDataSourceSrv as jest.Mock;
+const mockedGetDataSourceInstanceList = jest.mocked(getDataSourceInstanceList);
 
 // --- Helpers ---
 
@@ -72,9 +76,7 @@ function setupAllConditionsMet() {
     functions: [{ fn: mockExtensionFn }],
   });
 
-  mockedGetDataSourceSrv.mockReturnValue({
-    getInstanceSettings: jest.fn((uid: string) => ({ type: 'loki', uid })),
-  });
+  mockedGetDataSourceInstanceList.mockResolvedValue([{ type: 'loki', uid: 'ds-uid' }]);
 
   mockUpstreamProcessor.mockImplementation((options: any) => options.linkModel);
 }
@@ -94,18 +96,20 @@ beforeEach(() => {
 
 describe('DataLinksCustomContext', () => {
   describe('early return paths - renders children without Provider', () => {
-    it('when embedded=true', () => {
+    it('when embedded=true', async () => {
       render(
         <DataLinksCustomContext embedded={true} timeRange={createMockTimeRange() as any}>
           <TestConsumer />
         </DataLinksCustomContext>
       );
 
-      expect(screen.getByTestId('child')).toBeInTheDocument();
-      expect(capturedContext).toBeNull();
+      await waitFor(() => {
+        expect(screen.getByTestId('child')).toBeInTheDocument();
+        expect(capturedContext).toBeNull();
+      });
     });
 
-    it('when useDataLinksContext is unavailable', () => {
+    it('when useDataLinksContext is unavailable', async () => {
       mockedUseDataLinksContext.mockReturnValue(undefined);
 
       render(
@@ -114,11 +118,13 @@ describe('DataLinksCustomContext', () => {
         </DataLinksCustomContext>
       );
 
-      expect(screen.getByTestId('child')).toBeInTheDocument();
-      expect(capturedContext).toBeNull();
+      await waitFor(() => {
+        expect(screen.getByTestId('child')).toBeInTheDocument();
+        expect(capturedContext).toBeNull();
+      });
     });
 
-    it('when usePluginFunctions returns no extensions', () => {
+    it('when usePluginFunctions returns no extensions', async () => {
       mockedUsePluginFunctions.mockReturnValue({ functions: [] });
 
       render(
@@ -127,11 +133,13 @@ describe('DataLinksCustomContext', () => {
         </DataLinksCustomContext>
       );
 
-      expect(screen.getByTestId('child')).toBeInTheDocument();
-      expect(capturedContext).toBeNull();
+      await waitFor(() => {
+        expect(screen.getByTestId('child')).toBeInTheDocument();
+        expect(capturedContext).toBeNull();
+      });
     });
 
-    it('when extension entry exists but fn is missing', () => {
+    it('when extension entry exists but fn is missing', async () => {
       mockedUsePluginFunctions.mockReturnValue({ functions: [{} as any] });
 
       render(
@@ -140,38 +148,44 @@ describe('DataLinksCustomContext', () => {
         </DataLinksCustomContext>
       );
 
-      expect(screen.getByTestId('child')).toBeInTheDocument();
-      expect(capturedContext).toBeNull();
+      await waitFor(() => {
+        expect(screen.getByTestId('child')).toBeInTheDocument();
+        expect(capturedContext).toBeNull();
+      });
     });
 
-    it('when timeRange is not provided', () => {
+    it('when timeRange is not provided', async () => {
       render(
         <DataLinksCustomContext>
           <TestConsumer />
         </DataLinksCustomContext>
       );
 
-      expect(screen.getByTestId('child')).toBeInTheDocument();
-      expect(capturedContext).toBeNull();
+      await waitFor(() => {
+        expect(screen.getByTestId('child')).toBeInTheDocument();
+        expect(capturedContext).toBeNull();
+      });
     });
   });
 
   describe('Provider rendering', () => {
-    it('renders Provider with custom dataLinkPostProcessor when all conditions are met', () => {
+    it('renders Provider with custom dataLinkPostProcessor when all conditions are met', async () => {
       render(
         <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
           <TestConsumer />
         </DataLinksCustomContext>
       );
 
-      expect(screen.getByTestId('child')).toBeInTheDocument();
-      expect(capturedContext).not.toBeNull();
-      expect(typeof capturedContext.dataLinkPostProcessor).toBe('function');
+      await waitFor(() => {
+        expect(screen.getByTestId('child')).toBeInTheDocument();
+        expect(capturedContext).not.toBeNull();
+        expect(typeof capturedContext.dataLinkPostProcessor).toBe('function');
+      });
     });
   });
 
   describe('dataLinkPostProcessor callback logic', () => {
-    it('updates href for Loki datasource links', () => {
+    it('updates href for Loki datasource links', async () => {
       const mockPath = '/a/grafana-lokiexplore-app/explore';
       mockExtensionFn.mockReturnValue({ path: mockPath });
 
@@ -181,10 +195,13 @@ describe('DataLinksCustomContext', () => {
         </DataLinksCustomContext>
       );
 
-      const linkModel = createMockLinkModel();
-      const result = capturedContext.dataLinkPostProcessor({ linkModel });
+      await waitFor(() => {
+        const linkModel = createMockLinkModel();
+        const result = capturedContext.dataLinkPostProcessor({ linkModel });
 
-      expect(result.href).toBe(`/grafana${mockPath}`);
+        expect(result.href).toBe(`/grafana${mockPath}`);
+      });
+
       expect(mockExtensionFn).toHaveBeenCalledWith(
         expect.objectContaining({
           targets: expect.arrayContaining([
@@ -196,10 +213,8 @@ describe('DataLinksCustomContext', () => {
       );
     });
 
-    it('does not modify href for non-Loki datasource links', () => {
-      mockedGetDataSourceSrv.mockReturnValue({
-        getInstanceSettings: jest.fn(() => ({ type: 'prometheus', uid: 'ds-uid' })),
-      });
+    it('does not modify href for non-Loki datasource links', async () => {
+      mockedGetDataSourceInstanceList.mockResolvedValue([{ type: 'prometheus', uid: 'ds-prom-uid' }]);
 
       render(
         <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
@@ -207,19 +222,26 @@ describe('DataLinksCustomContext', () => {
         </DataLinksCustomContext>
       );
 
-      const linkModel = createMockLinkModel();
-      const result = capturedContext.dataLinkPostProcessor({ linkModel });
+      await waitFor(() => {
+        const linkModel = createMockLinkModel();
+        const result = capturedContext.dataLinkPostProcessor({ linkModel });
 
-      expect(result.href).toBe('http://original-link');
-      expect(mockExtensionFn).not.toHaveBeenCalled();
+        expect(result.href).toBe('http://original-link');
+        expect(mockExtensionFn).not.toHaveBeenCalled();
+      });
     });
 
-    it('maintains stable dataLinkPostProcessor reference across re-renders', () => {
+    it('maintains stable dataLinkPostProcessor reference across re-renders', async () => {
       const { rerender } = render(
         <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
           <TestConsumer />
         </DataLinksCustomContext>
       );
+
+      await waitFor(() => {
+        capturedContext.dataLinkPostProcessor({ linkModel: createMockLinkModel() });
+        expect(mockExtensionFn).toHaveBeenCalled();
+      });
 
       const firstProcessor = capturedContext.dataLinkPostProcessor;
 
@@ -232,7 +254,7 @@ describe('DataLinksCustomContext', () => {
       expect(capturedContext.dataLinkPostProcessor).toBe(firstProcessor);
     });
 
-    it('does not modify href when extension returns no path', () => {
+    it('does not modify href when extension returns no path', async () => {
       mockExtensionFn.mockReturnValue(undefined);
 
       render(
@@ -241,11 +263,13 @@ describe('DataLinksCustomContext', () => {
         </DataLinksCustomContext>
       );
 
-      const linkModel = createMockLinkModel();
-      const result = capturedContext.dataLinkPostProcessor({ linkModel });
+      await waitFor(() => {
+        const linkModel = createMockLinkModel();
+        const result = capturedContext.dataLinkPostProcessor({ linkModel });
 
-      expect(result.href).toBe('http://original-link');
-      expect(mockExtensionFn).toHaveBeenCalled();
+        expect(mockExtensionFn).toHaveBeenCalled();
+        expect(result.href).toBe('http://original-link');
+      });
     });
   });
 });

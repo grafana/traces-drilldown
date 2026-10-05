@@ -6,9 +6,11 @@ import {
   TimeRange,
   useDataLinksContext,
 } from '@grafana/data';
-import { getDataSourceSrv, usePluginFunctions } from '@grafana/runtime';
+import { GetDataSourceListFilters, usePluginFunctions } from '@grafana/runtime';
+import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 import { DataQuery } from '@grafana/schema';
 import React, { useCallback, useMemo, useRef } from 'react';
+import { useAsync } from 'react-use';
 
 type ContextForLinks = {
   targets: DataQuery[];
@@ -43,6 +45,19 @@ export function DataLinksCustomContext(props: Props) {
   const logsDrilldownFn =
     logsDrilldownExtension && typeof logsDrilldownExtension.fn === 'function' ? logsDrilldownExtension.fn : undefined;
 
+  const isPostProcessingSupported = Boolean(postProcessingSupported);
+  const hasLogsDrilldownFn = Boolean(logsDrilldownFn);
+  const hasTimeRange = Boolean(timeRange);
+  const shouldRenderContext = !embedded && isPostProcessingSupported && hasLogsDrilldownFn && hasTimeRange;
+  const filters = useMemo<GetDataSourceListFilters>(() => ({ type: 'loki' }), []);
+  const { value: lokiInstances } = useAsync(async () => {
+    if (!shouldRenderContext) {
+      return undefined;
+    }
+
+    return getDataSourceInstanceList(filters);
+  }, [filters, shouldRenderContext]);
+
   // Use refs to keep stable callback identity regardless of whether upstream hooks return new references
   const dataLinksContextRef = useRef(dataLinksContext);
   dataLinksContextRef.current = dataLinksContext;
@@ -50,29 +65,32 @@ export function DataLinksCustomContext(props: Props) {
   const logsDrilldownFnRef = useRef(logsDrilldownFn);
   logsDrilldownFnRef.current = logsDrilldownFn;
 
-  const dataLinkPostProcessor: DataLinkPostProcessor = useCallback((options) => {
-    const ctx = dataLinksContextRef.current;
-    const extensionInvoke = logsDrilldownFnRef.current;
+  const dataLinkPostProcessor: DataLinkPostProcessor = useCallback(
+    (options) => {
+      const ctx = dataLinksContextRef.current;
+      const extensionInvoke = logsDrilldownFnRef.current;
 
-    if (!ctx || !extensionInvoke) {
-      return options.linkModel;
-    }
+      if (!ctx || !extensionInvoke) {
+        return options.linkModel;
+      }
 
-    const linkModel = ctx.dataLinkPostProcessor(options);
-    const query = linkModel?.interpolatedParams?.query;
-    const timeRange = linkModel?.interpolatedParams?.timeRange;
-    const linkDataSourceUid = linkModel?.interpolatedParams?.query?.datasource?.uid;
+      const linkModel = ctx.dataLinkPostProcessor(options);
+      const query = linkModel?.interpolatedParams?.query;
+      const timeRange = linkModel?.interpolatedParams?.timeRange;
+      const linkDataSourceUid = linkModel?.interpolatedParams?.query?.datasource?.uid;
+      const found = lokiInstances?.find((f) => f.uid === linkDataSourceUid);
 
-    const dataSourceType = getDataSourceSrv().getInstanceSettings(linkDataSourceUid)?.type;
+      if (!query || !linkModel || !timeRange || !found) {
+        return linkModel;
+      }
 
-    if (query && linkModel && dataSourceType === 'loki' && timeRange) {
       const extensionLink = extensionInvoke({
         targets: [
           {
             ...query,
             datasource: {
               uid: linkDataSourceUid,
-              type: dataSourceType,
+              type: 'loki',
             },
           },
         ],
@@ -82,14 +100,15 @@ export function DataLinksCustomContext(props: Props) {
       if (extensionLink?.path) {
         linkModel.href = locationUtil.assureBaseUrl(extensionLink.path);
       }
-    }
 
-    return linkModel;
-  }, []);
+      return linkModel;
+    },
+    [lokiInstances]
+  );
 
   const contextValue = useMemo(() => ({ dataLinkPostProcessor }), [dataLinkPostProcessor]);
 
-  if (embedded || !postProcessingSupported || !logsDrilldownFn || !timeRange) {
+  if (!shouldRenderContext) {
     return <>{children}</>;
   }
 
