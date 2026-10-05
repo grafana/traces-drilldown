@@ -9,7 +9,6 @@ import { AdHocFiltersVariable } from '@grafana/scenes';
 import { DataSourceApi, MetricFindValue } from '@grafana/data';
 import { getDataSourceInstance } from '@grafana/plugin-compat/datasources';
 import { isUseValueTypeFilteringEnabled } from '../../featureFlags/featureFlags';
-import { explorationDS } from 'utils/shared';
 
 jest.mock('../../featureFlags/featureFlags', () => ({
   isUseValueTypeFilteringEnabled: jest.fn(),
@@ -54,7 +53,7 @@ describe('AttributeFiltersVariable', () => {
 
       await getTagValuesProvider(variable, filter);
 
-      expect(mockedGetDataSourceInstance).toHaveBeenCalledWith(explorationDS, { __sceneObject: { value: variable } });
+      expect(mockedGetDataSourceInstance).toHaveBeenCalledWith('${ds}');
     });
 
     it('should call getTagValues with correct arguments', async () => {
