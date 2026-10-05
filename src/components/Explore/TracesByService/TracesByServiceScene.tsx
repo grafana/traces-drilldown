@@ -186,7 +186,7 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   }
 
   private async updateAttributes() {
-    const ds = await getDataSourceInstance(VAR_DATASOURCE_EXPR, { __sceneObject: { value: this } });
+    const ds = await getDataSourceInstance(sceneGraph.interpolate(this, VAR_DATASOURCE_EXPR));
 
     if (!ds) {
       return;
