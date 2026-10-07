@@ -26,6 +26,9 @@ overrides:
   dompurify: ^3.4.14
   js-cookie: ^3.0.7
   serialize-javascript: ^7.1.0
+  basic-ftp: ^6.2.1
+  'js-yaml@^3': ^4.3.2
+  micromatch: npm:picomatch@^2.3.2
   # Grafana externalizes React Router v6 until https://github.com/grafana/grafana/issues/129933 lands.
   # v6.30.6 has no package fix for GHSA-wrjc-x8rr-h8h6; this browser plugin only uses static internal routes.
   # GHSA-337j-9hxr-rhxg affects SSR hydration, which this browser plugin does not use.
