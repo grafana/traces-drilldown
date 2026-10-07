@@ -1,5 +1,58 @@
 # Changelog
 
+## [3.0.0](https://github.com/grafana/traces-drilldown/compare/v2.2.1...v3.0.0) (2026-10-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** raise Grafana dependency to >=13.1.0 ([#924](https://github.com/grafana/traces-drilldown/issues/924))
+
+### 🐛 Bug Fixes
+
+* **security/high/:** update dependency brace-expansion@^1 to v1.1.21 [security] ([#927](https://github.com/grafana/traces-drilldown/issues/927)) ([d38fe44](https://github.com/grafana/traces-drilldown/commit/d38fe44b6e7e4b2ba55876465562256c09b8f80c))
+
+
+### 📝 Documentation
+
+* require signed commits in CONTRIBUTING and UI screenshots ([#922](https://github.com/grafana/traces-drilldown/issues/922)) ([ccf394b](https://github.com/grafana/traces-drilldown/commit/ccf394b5d43d1ecf40b18814085f079e70e84a44))
+
+
+### 🤖 Continuous Integrations
+
+* bump bundle-types to v1.0.4 for signed commits ([#912](https://github.com/grafana/traces-drilldown/issues/912)) ([156b994](https://github.com/grafana/traces-drilldown/commit/156b9940ac80a3881a0860e7b61d4214a76f2da3))
+
+
+### 🧹 Chore
+
+* bump @grafana/create-plugin configuration to 7.11.0 ([#930](https://github.com/grafana/traces-drilldown/issues/930)) ([eb911bd](https://github.com/grafana/traces-drilldown/commit/eb911bd14de2472afd8722b1e8708075d09e8882))
+* **deps:** add and use @grafana/plugin-compat ([#911](https://github.com/grafana/traces-drilldown/issues/911)) ([c7c156c](https://github.com/grafana/traces-drilldown/commit/c7c156c00d35e9d769ef05f0a5915925911f0563))
+* **deps:** lock file maintenance ([#901](https://github.com/grafana/traces-drilldown/issues/901)) ([0d6cd3e](https://github.com/grafana/traces-drilldown/commit/0d6cd3e5064ca6120d0d0bbac60f60b25198426f))
+* **deps:** lock file maintenance ([#925](https://github.com/grafana/traces-drilldown/issues/925)) ([48d2976](https://github.com/grafana/traces-drilldown/commit/48d2976775186f3ea0e274659e3d8238137854f4))
+* **deps:** lock file maintenance ([#953](https://github.com/grafana/traces-drilldown/issues/953)) ([d3694bf](https://github.com/grafana/traces-drilldown/commit/d3694bf34bfa230b264d00f5dbc110604a63fb74))
+* **deps:** raise Grafana dependency to &gt;=13.1.0 ([#924](https://github.com/grafana/traces-drilldown/issues/924)) ([52a6e5e](https://github.com/grafana/traces-drilldown/commit/52a6e5e2db69fed3b8db158fc65f0759768adc24))
+* **deps:** replace all getDatasourceSrv calls ([#916](https://github.com/grafana/traces-drilldown/issues/916)) ([5cda06a](https://github.com/grafana/traces-drilldown/commit/5cda06a50aebd48c8772f1af7d316dbe2673aaf6))
+* **deps:** update actions/checkout action to v6.1.0 ([#941](https://github.com/grafana/traces-drilldown/issues/941)) ([55eeccf](https://github.com/grafana/traces-drilldown/commit/55eeccff19b9b62db2249c7e303b005637bdfb0d))
+* **deps:** update actions/setup-node action to v6.5.0 ([#942](https://github.com/grafana/traces-drilldown/issues/942)) ([3c60cf0](https://github.com/grafana/traces-drilldown/commit/3c60cf0207bfa1cf6f1b48493867235e54a476ab))
+* **deps:** update actions/stale action to v10.4.0 ([#944](https://github.com/grafana/traces-drilldown/issues/944)) ([80e3602](https://github.com/grafana/traces-drilldown/commit/80e3602f2ce8e8d3e78a0cbee0ef742123fce487))
+* **deps:** update copy-webpack-plugin, knip, and dependency overrides ([#956](https://github.com/grafana/traces-drilldown/issues/956)) ([02496a5](https://github.com/grafana/traces-drilldown/commit/02496a588ff1ce35bbf265dc798111f9f54bc008))
+* **deps:** update dependency @swc/core to v1.16.2 ([#931](https://github.com/grafana/traces-drilldown/issues/931)) ([e28b687](https://github.com/grafana/traces-drilldown/commit/e28b687d95e84cd12cab7ee18f678791b21b602e))
+* **deps:** update dependency i18next-cli to v1.74.2 ([#946](https://github.com/grafana/traces-drilldown/issues/946)) ([655b51a](https://github.com/grafana/traces-drilldown/commit/655b51a5acea44f2c5aa367c7cebbcdd6686cca9))
+* **deps:** update dependency lefthook to v2.1.14 ([#932](https://github.com/grafana/traces-drilldown/issues/932)) ([67b1851](https://github.com/grafana/traces-drilldown/commit/67b185107bf2c0dea030421ddc843ae6f843e3d0))
+* **deps:** update dependency prettier to v3.9.9 ([#933](https://github.com/grafana/traces-drilldown/issues/933)) ([27b5554](https://github.com/grafana/traces-drilldown/commit/27b5554a15c3e9a27915c79148fbb01b8ea119bd))
+* **deps:** update eslint ([#934](https://github.com/grafana/traces-drilldown/issues/934)) ([7a27184](https://github.com/grafana/traces-drilldown/commit/7a271845da98360ed4d3311576e13ddc174b9451))
+* **deps:** update grafana/grafana-enterprise docker tag to v13.2.2 ([#948](https://github.com/grafana/traces-drilldown/issues/948)) ([1e65764](https://github.com/grafana/traces-drilldown/commit/1e65764d3c00467dfd1df643e62f75eb10688050))
+* **deps:** update grafana/shared-workflows/lint-pr-title action to v1.2.4 ([#935](https://github.com/grafana/traces-drilldown/issues/935)) ([cfc09bd](https://github.com/grafana/traces-drilldown/commit/cfc09bd5e63256ea8384e2828275ba488a0ef29b))
+* **deps:** update grafana/tempo docker tag to v2.10.5 ([#937](https://github.com/grafana/traces-drilldown/issues/937)) ([d378312](https://github.com/grafana/traces-drilldown/commit/d378312bdae2df2c094f8a4f8ef17370cc35a79e))
+* **deps:** update pnpm to v11.28.1 ([#950](https://github.com/grafana/traces-drilldown/issues/950)) ([4027c2c](https://github.com/grafana/traces-drilldown/commit/4027c2c8506f1f439aa22af78f297b41ed9c332a))
+* **deps:** update pnpm/action-setup action to v6.1.0 ([#951](https://github.com/grafana/traces-drilldown/issues/951)) ([47aba34](https://github.com/grafana/traces-drilldown/commit/47aba34060258811bed1564000e1fb4c9f2991f0))
+* **deps:** update testing library ([#939](https://github.com/grafana/traces-drilldown/issues/939)) ([8c45259](https://github.com/grafana/traces-drilldown/commit/8c452598f7d3e9e3b81873b9a83dac479a8740ac))
+* **deps:** update webpack ([#940](https://github.com/grafana/traces-drilldown/issues/940)) ([9716685](https://github.com/grafana/traces-drilldown/commit/97166858b26a0d40dbfff4105fdd4b49b1c423ce))
+* Fix pnpm-lock ([#921](https://github.com/grafana/traces-drilldown/issues/921)) ([6153cf4](https://github.com/grafana/traces-drilldown/commit/6153cf4861254e1da9f48fdcc2c5e0f627416a8b))
+* **i18n:** expose all supported languages ([#918](https://github.com/grafana/traces-drilldown/issues/918)) ([5585c24](https://github.com/grafana/traces-drilldown/commit/5585c2438315ee98dfa221afb580067cd50dfacd))
+* reduce overrides ([#929](https://github.com/grafana/traces-drilldown/issues/929)) ([ec9357f](https://github.com/grafana/traces-drilldown/commit/ec9357fa4ed7acd0f4132da66b915b1e06f2b038))
+* Remove unused Asserts addedComponents manifest entry ([#955](https://github.com/grafana/traces-drilldown/issues/955)) ([4713990](https://github.com/grafana/traces-drilldown/commit/4713990df4ad39193e47359e2cbb8ca42504e439))
+* upgrade moment ([#928](https://github.com/grafana/traces-drilldown/issues/928)) ([dca219f](https://github.com/grafana/traces-drilldown/commit/dca219fe247ce92693f4753c38197c7834dce7a6))
+
 ## [2.2.1](https://github.com/grafana/traces-drilldown/compare/v2.2.0...v2.2.1) (2026-09-22)
 
 
