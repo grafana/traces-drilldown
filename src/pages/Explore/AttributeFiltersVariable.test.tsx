@@ -347,7 +347,7 @@ describe('AttributeFiltersVariable', () => {
       ]);
     });
 
-    it('should normalize already quoted strings and replace stale value labels', () => {
+    it('should derive the value from the value label', () => {
       expect(
         new AttributeFiltersVariable({
           initialFilters: [
@@ -356,7 +356,7 @@ describe('AttributeFiltersVariable', () => {
           ],
         }).state.filters
       ).toEqual([
-        { key: 'span.name', operator: '=', value: '"checkout"', valueLabels: ['checkout'] },
+        { key: 'span.name', operator: '=', value: '"stale"', valueLabels: ['stale'] },
         { key: 'span.name', operator: '=', value: '""', valueLabels: [''] },
       ]);
     });
