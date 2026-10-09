@@ -1,5 +1,6 @@
 import { setTemplateSrv, TemplateSrv } from '@grafana/runtime';
 import {
+  AttributeFiltersVariable,
   getTagValuesProvider,
   isNewTagValueResponse,
   mapFromNewTagValue,
@@ -302,6 +303,80 @@ describe('AttributeFiltersVariable', () => {
         value: '"true"',
         valueLabels: ['true'],
       });
+    });
+  });
+
+  describe('normalizeFilter', () => {
+    beforeEach(() => {
+      mockedIsUseValueTypeFilteringEnabled.mockReturnValue(true);
+    });
+
+    it('should leave filters unchanged when value type filtering is disabled', () => {
+      mockedIsUseValueTypeFilteringEnabled.mockReturnValue(false);
+
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [{ key: 'span.name', operator: '=', value: 'checkout', valueLabels: ['Checkout'] }],
+        }).state.filters
+      ).toEqual([{ key: 'span.name', operator: '=', value: 'checkout', valueLabels: ['Checkout'] }]);
+    });
+
+    it('should leave filters unchanged when the key, operator or value is missing', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: '', operator: '=', value: 'checkout' },
+            { key: 'span.name', operator: '', value: 'checkout' },
+            { key: 'span.name', operator: '=', value: '' },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: '', operator: '=', value: 'checkout' },
+        { key: 'span.name', operator: '', value: 'checkout' },
+        { key: 'span.name', operator: '=', value: '' },
+      ]);
+    });
+
+    it('should quote string values and preserve the operator and key label', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [{ key: 'span.name', keyLabel: 'Span name', operator: '!=', value: 'checkout' }],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.name', keyLabel: 'Span name', operator: '!=', value: '"checkout"', valueLabels: ['checkout'] },
+      ]);
+    });
+
+    it('should normalize already quoted strings and replace stale value labels', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: 'span.name', operator: '=', value: '"checkout"', valueLabels: ['stale'] },
+            { key: 'span.name', operator: '=', value: '""' },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.name', operator: '=', value: '"checkout"', valueLabels: ['checkout'] },
+        { key: 'span.name', operator: '=', value: '""', valueLabels: [''] },
+      ]);
+    });
+
+    it('should keep numeric, boolean, keyword and duration values unquoted', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: 'span.http.status_code', operator: '=', value: '200' },
+            { key: 'span.error', operator: '=', value: 'false' },
+            { key: 'status', operator: '=', value: '"error"' },
+            { key: 'duration', operator: '>', value: '100ms' },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.http.status_code', operator: '=', value: '200', valueLabels: ['200'] },
+        { key: 'span.error', operator: '=', value: 'false', valueLabels: ['false'] },
+        { key: 'status', operator: '=', value: 'error', valueLabels: ['error'] },
+        { key: 'duration', operator: '>', value: '100ms', valueLabels: ['100ms'] },
+      ]);
     });
   });
 });

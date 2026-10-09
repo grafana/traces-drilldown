@@ -1,17 +1,24 @@
 import { AdHocFiltersVariable, AdHocFilterWithLabels, sceneGraph } from '@grafana/scenes';
 import { AdHocVariableFilter, MetricFindValue } from '@grafana/data';
-import { MetricFindValueWithMeta, VAR_DATASOURCE_EXPR, VAR_FILTERS, explorationDS } from 'utils/shared';
+import {
+  IncludeExcludeOperator,
+  MetricFindValueWithMeta,
+  VAR_DATASOURCE_EXPR,
+  VAR_FILTERS,
+  explorationDS,
+} from 'utils/shared';
 import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 import { VariableHide } from '@grafana/schema';
 import { isUseValueTypeFilteringEnabled } from 'featureFlags/featureFlags';
 import { logError } from '@grafana/runtime';
 import { getDataSourceInstance } from '@grafana/plugin-compat/datasources';
 import { stripOuterQuotes, toLabelValueType, toEscapedValue, getLabelValueType } from 'utils/utils';
+import { toVariableFilter } from 'utils/filters';
 import { ProviderEvents } from '@openfeature/web-sdk';
 import { getOpenFeatureClient } from 'featureFlags/openFeature';
 
 export interface AttributeFiltersVariableProps {
-  initialFilters?: AdHocVariableFilter[];
+  initialFilters?: AdHocFilterWithLabels[];
 }
 
 export class AttributeFiltersVariable extends AdHocFiltersVariable {
@@ -22,7 +29,7 @@ export class AttributeFiltersVariable extends AdHocFiltersVariable {
       datasource: explorationDS,
       hide: VariableHide.hideLabel,
       layout: 'combobox',
-      filters: props.initialFilters ?? [],
+      filters: props.initialFilters?.map((filter) => normalizeFilter({ ...filter })) ?? [],
       allowCustomValue: true,
       expressionBuilder: renderTraceQLLabelFilters,
       getTagValuesProvider,
@@ -42,9 +49,28 @@ export class AttributeFiltersVariable extends AdHocFiltersVariable {
       return;
     }
 
-    // this will re issue a call to renderTraceQLLabelFilters with isUseValueTypeFilteringEnabled set
-    this.setState({ filters: [...this.state.filters] });
+    // Normalize the retained variable, not a new scene created by a React rerender.
+    this.setState({ filters: this.state.filters.map(normalizeFilter) });
   }
+}
+
+function normalizeFilter(filter: AdHocFilterWithLabels): AdHocFilterWithLabels {
+  if (!isUseValueTypeFilteringEnabled()) {
+    return filter;
+  }
+
+  if (!filter.key || !filter.operator || !filter.value) {
+    return filter;
+  }
+
+  return {
+    ...filter,
+    ...toVariableFilter({
+      key: filter.key,
+      operator: filter.operator as IncludeExcludeOperator,
+      rawValue: filter.value,
+    }),
+  };
 }
 
 type ProviderResponse = { replace?: boolean; values: MetricFindValueWithMeta[] };
