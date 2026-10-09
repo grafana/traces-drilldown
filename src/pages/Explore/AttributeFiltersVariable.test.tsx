@@ -378,5 +378,45 @@ describe('AttributeFiltersVariable', () => {
         { key: 'duration', operator: '>', value: '100ms', valueLabels: ['100ms'] },
       ]);
     });
+
+    it('should escape quotes, backslashes and newlines when value labels are missing', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: 'span.name', operator: '=', value: 'say "hi" now' },
+            { key: 'span.name', operator: '=', value: 'C:\\temp' },
+            { key: 'span.name', operator: '=', value: 'line1\nline2' },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.name', operator: '=', value: '"say \\"hi\\" now"', valueLabels: ['say "hi" now'] },
+        { key: 'span.name', operator: '=', value: '"C:\\\\temp"', valueLabels: ['C:\\temp'] },
+        { key: 'span.name', operator: '=', value: '"line1\\nline2"', valueLabels: ['line1\nline2'] },
+      ]);
+    });
+
+    it('should escape values restored from urls where the value label equals the value', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [{ key: 'span.name', operator: '=', value: 'say "hi" now', valueLabels: ['say "hi" now'] }],
+        }).state.filters
+      ).toEqual([{ key: 'span.name', operator: '=', value: '"say \\"hi\\" now"', valueLabels: ['say "hi" now'] }]);
+    });
+
+    it('should not escape already normalized values again', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: 'span.name', operator: '=', value: '"say \\"hi\\" now"', valueLabels: ['say "hi" now'] },
+            { key: 'span.name', operator: '=', value: '"C:\\\\temp"', valueLabels: ['C:\\temp'] },
+            { key: 'span.name', operator: '=', value: '"line1\\nline2"', valueLabels: ['line1\nline2'] },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.name', operator: '=', value: '"say \\"hi\\" now"', valueLabels: ['say "hi" now'] },
+        { key: 'span.name', operator: '=', value: '"C:\\\\temp"', valueLabels: ['C:\\temp'] },
+        { key: 'span.name', operator: '=', value: '"line1\\nline2"', valueLabels: ['line1\nline2'] },
+      ]);
+    });
   });
 });

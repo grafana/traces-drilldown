@@ -68,7 +68,8 @@ function normalizeFilter(filter: AdHocFilterWithLabels): AdHocFilterWithLabels {
     ...toVariableFilter({
       key: filter.key,
       operator: filter.operator as IncludeExcludeOperator,
-      rawValue: filter.value,
+      // valueLabels[0] is the unescaped value; filter.value may already be an escaped literal
+      rawValue: filter.valueLabels?.[0] ?? filter.value,
     }),
   };
 }
