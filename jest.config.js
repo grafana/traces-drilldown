@@ -13,6 +13,7 @@ const additionalESModules = [
   'memoize',
   'mimic-function',
   '@wojtekmaj/date-utils',
+  '@marcbachmann/cel-js',
 ];
 
 module.exports = {

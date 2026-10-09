@@ -1,97 +1,50 @@
 import React, { useEffect } from 'react';
 import { OpenFeatureProvider } from '@openfeature/react-sdk';
-import { OFREPWebProvider } from '@openfeature/ofrep-web-provider';
-import { StandardResolutionReasons } from '@openfeature/core';
-import { Client, OpenFeature, type Provider, type ResolutionDetails } from '@openfeature/web-sdk';
+import { Client, MultiProvider, OpenFeature } from '@openfeature/web-sdk';
 
-import { locationUtil } from '@grafana/data';
-import { config, logWarning } from '@grafana/runtime';
+import {
+  createOpenFeatureLocalStorageProvider,
+  createOpenFeatureOFREPWebProvider,
+  logWarning,
+} from '@grafana/runtime';
 
-/** OpenFeature domain for this plugin’s evaluations (OFREP to Grafana’s feature API). */
+/**
+ * OpenFeature domain for this plugin’s evaluations.
+ * Proxies Grafana’s providers so this domain stays independent of `internal-grafana-core`.
+ */
 export const PLUGIN_OPEN_FEATURE_DOMAIN = 'traces-drilldown';
 
-/** OFREP base URL for Grafana’s feature API (same host as the app, respects `appSubUrl`). Browser-only. */
-function getFeaturesOfrepBaseUrl(): string | undefined {
-  if (typeof window === 'undefined') {
-    return undefined;
-  }
-  const pathname = locationUtil
-    .assureBaseUrl(`/apis/features.grafana.app/v0alpha1/namespaces/${encodeURIComponent(config.namespace)}`)
-    // Match the previous appSubUrl.replace(/\/$/, '') join so `/grafana/` does not become `//apis`.
-    .replace(/\/{2,}/g, '/');
-  return new URL(pathname, window.location.origin).toString();
-}
-
-function defaultDetails<T>(value: T): ResolutionDetails<T> {
-  return { value, reason: StandardResolutionReasons.DEFAULT };
-}
-
-/**
- * Resolves every flag to the evaluator’s default until a live provider (OFREP) is ready.
- * Does not read boot config; avoids stale values vs the feature API.
- */
-const defaultOnlyProvider: Provider = {
-  metadata: { name: 'traces-drilldown-default-flags' },
-  runsOn: 'client',
-  resolveBooleanEvaluation(_flagKey, defaultValue): ResolutionDetails<boolean> {
-    return { value: defaultValue, reason: StandardResolutionReasons.DEFAULT };
-  },
-  resolveStringEvaluation: (_k, defaultValue) => defaultDetails(defaultValue),
-  resolveNumberEvaluation: (_k, defaultValue) => defaultDetails(defaultValue),
-  resolveObjectEvaluation: (_k, defaultValue) => defaultDetails(defaultValue),
-};
-
 let initOnce: Promise<void> | null = null;
-let defaultProviderRegistered = false;
 
-/** Clears init/latch state between tests. Do not use in production code. */
+/** Clears init latch between tests. Do not use in production code. */
 export function resetOpenFeaturePluginStateForTesting(): void {
   initOnce = null;
-  defaultProviderRegistered = false;
 }
 
 /**
- * Ensures a synchronous provider exists before any OpenFeature hooks run.
- * Re-asserted from `OpenFeaturePluginScope` so tests can re-install after
- * `resetOpenFeaturePluginStateForTesting()` + `OpenFeature.clearProviders()`.
- */
-function ensureDefaultOnlyProviderRegistered(): void {
-  if (defaultProviderRegistered) {
-    return;
-  }
-  OpenFeature.setProvider(PLUGIN_OPEN_FEATURE_DOMAIN, defaultOnlyProvider);
-  defaultProviderRegistered = true;
-}
-
-/**
- * Registers OFREP against Grafana’s feature API. On failure, the default-only provider
- * stays in place so hooks keep returning their declared defaults.
+ * Registers Grafana’s shared providers on this plugin’s domain: localStorage overrides
+ * (feature control UI) first, then the read-only OFREP proxy.
+ *
+ * Skips registration when a provider is already bound to the domain. On failure, the
+ * default provider stays in place so hooks keep returning their declared defaults.
  */
 export function ensureOpenFeaturePluginInitialized(): Promise<void> {
   initOnce ??= (async () => {
-    const evaluationContext = {
-      targetingKey: config.namespace,
-      namespace: config.namespace,
-      ...config.openFeatureContext,
-    };
-    const baseUrl = getFeaturesOfrepBaseUrl();
-    if (!baseUrl) {
-      logWarning('OpenFeature OFREP skipped; not in a browser context', {});
+    // No domain provider yet: `getProvider(domain)` falls back to the default provider.
+    if (OpenFeature.getProvider(PLUGIN_OPEN_FEATURE_DOMAIN) !== OpenFeature.getProvider()) {
       return;
     }
+
     try {
       await OpenFeature.setProviderAndWait(
         PLUGIN_OPEN_FEATURE_DOMAIN,
-        new OFREPWebProvider({
-          baseUrl,
-          disableVisibilityRefresh: true, // Do not refresh
-          cacheMode: 'disabled', // Do not write to localStorage
-          timeoutMs: 10_000,
-        }),
-        evaluationContext
+        new MultiProvider([
+          { provider: createOpenFeatureLocalStorageProvider() },
+          { provider: createOpenFeatureOFREPWebProvider() },
+        ])
       );
     } catch (error: unknown) {
-      logWarning('OpenFeature OFREP provider failed; feature flags remain at default values', {
+      logWarning('OpenFeature provider initialization failed; feature flags remain at default values', {
         error: error instanceof Error ? error.message : String(error),
       });
     }
@@ -107,16 +60,12 @@ export function ensureOpenFeaturePluginInitialized(): Promise<void> {
  * hooks will not resolve a client.
  */
 export function OpenFeaturePluginScope({ children }: { children: React.ReactNode }) {
-  ensureDefaultOnlyProviderRegistered();
-
   useEffect(() => {
     void ensureOpenFeaturePluginInitialized();
   }, []);
 
   return <OpenFeatureProvider domain={PLUGIN_OPEN_FEATURE_DOMAIN}>{children}</OpenFeatureProvider>;
 }
-
-ensureDefaultOnlyProviderRegistered();
 
 export function getOpenFeatureClient(): Client {
   return OpenFeature.getClient(PLUGIN_OPEN_FEATURE_DOMAIN);
