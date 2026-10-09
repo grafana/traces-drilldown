@@ -54,7 +54,7 @@
         "eslint-plugin-jsdoc",
         "eslint-plugin-react",
         "eslint-plugin-react-hooks",
-        "@stylistic/eslint-plugin-ts"
+        "@stylistic/eslint-plugin"
       ]
     },
     {
