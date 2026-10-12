@@ -1,5 +1,6 @@
 import { setTemplateSrv, TemplateSrv } from '@grafana/runtime';
 import {
+  AttributeFiltersVariable,
   getTagValuesProvider,
   isNewTagValueResponse,
   mapFromNewTagValue,
@@ -302,6 +303,120 @@ describe('AttributeFiltersVariable', () => {
         value: '"true"',
         valueLabels: ['true'],
       });
+    });
+  });
+
+  describe('normalizeFilter', () => {
+    beforeEach(() => {
+      mockedIsUseValueTypeFilteringEnabled.mockReturnValue(true);
+    });
+
+    it('should leave filters unchanged when value type filtering is disabled', () => {
+      mockedIsUseValueTypeFilteringEnabled.mockReturnValue(false);
+
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [{ key: 'span.name', operator: '=', value: 'checkout', valueLabels: ['Checkout'] }],
+        }).state.filters
+      ).toEqual([{ key: 'span.name', operator: '=', value: 'checkout', valueLabels: ['Checkout'] }]);
+    });
+
+    it('should leave filters unchanged when the key, operator or value is missing', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: '', operator: '=', value: 'checkout' },
+            { key: 'span.name', operator: '', value: 'checkout' },
+            { key: 'span.name', operator: '=', value: '' },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: '', operator: '=', value: 'checkout' },
+        { key: 'span.name', operator: '', value: 'checkout' },
+        { key: 'span.name', operator: '=', value: '' },
+      ]);
+    });
+
+    it('should quote string values and preserve the operator and key label', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [{ key: 'span.name', keyLabel: 'Span name', operator: '!=', value: 'checkout' }],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.name', keyLabel: 'Span name', operator: '!=', value: '"checkout"', valueLabels: ['checkout'] },
+      ]);
+    });
+
+    it('should derive the value from the value label', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: 'span.name', operator: '=', value: '"checkout"', valueLabels: ['stale'] },
+            { key: 'span.name', operator: '=', value: '""' },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.name', operator: '=', value: '"stale"', valueLabels: ['stale'] },
+        { key: 'span.name', operator: '=', value: '""', valueLabels: [''] },
+      ]);
+    });
+
+    it('should keep numeric, boolean, keyword and duration values unquoted', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: 'span.http.status_code', operator: '=', value: '200' },
+            { key: 'span.error', operator: '=', value: 'false' },
+            { key: 'status', operator: '=', value: '"error"' },
+            { key: 'duration', operator: '>', value: '100ms' },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.http.status_code', operator: '=', value: '200', valueLabels: ['200'] },
+        { key: 'span.error', operator: '=', value: 'false', valueLabels: ['false'] },
+        { key: 'status', operator: '=', value: 'error', valueLabels: ['error'] },
+        { key: 'duration', operator: '>', value: '100ms', valueLabels: ['100ms'] },
+      ]);
+    });
+
+    it('should escape quotes, backslashes and newlines when value labels are missing', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: 'span.name', operator: '=', value: 'say "hi" now' },
+            { key: 'span.name', operator: '=', value: 'C:\\temp' },
+            { key: 'span.name', operator: '=', value: 'line1\nline2' },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.name', operator: '=', value: '"say \\"hi\\" now"', valueLabels: ['say "hi" now'] },
+        { key: 'span.name', operator: '=', value: '"C:\\\\temp"', valueLabels: ['C:\\temp'] },
+        { key: 'span.name', operator: '=', value: '"line1\\nline2"', valueLabels: ['line1\nline2'] },
+      ]);
+    });
+
+    it('should escape values restored from urls where the value label equals the value', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [{ key: 'span.name', operator: '=', value: 'say "hi" now', valueLabels: ['say "hi" now'] }],
+        }).state.filters
+      ).toEqual([{ key: 'span.name', operator: '=', value: '"say \\"hi\\" now"', valueLabels: ['say "hi" now'] }]);
+    });
+
+    it('should not escape already normalized values again', () => {
+      expect(
+        new AttributeFiltersVariable({
+          initialFilters: [
+            { key: 'span.name', operator: '=', value: '"say \\"hi\\" now"', valueLabels: ['say "hi" now'] },
+            { key: 'span.name', operator: '=', value: '"C:\\\\temp"', valueLabels: ['C:\\temp'] },
+            { key: 'span.name', operator: '=', value: '"line1\\nline2"', valueLabels: ['line1\nline2'] },
+          ],
+        }).state.filters
+      ).toEqual([
+        { key: 'span.name', operator: '=', value: '"say \\"hi\\" now"', valueLabels: ['say "hi" now'] },
+        { key: 'span.name', operator: '=', value: '"C:\\\\temp"', valueLabels: ['C:\\temp'] },
+        { key: 'span.name', operator: '=', value: '"line1\\nline2"', valueLabels: ['line1\nline2'] },
+      ]);
     });
   });
 });
