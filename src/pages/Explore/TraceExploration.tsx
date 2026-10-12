@@ -6,6 +6,7 @@ import {
   CustomVariable,
   DataSourceVariable,
   SceneComponentProps,
+  SceneDataLayerSet,
   sceneGraph,
   SceneObject,
   SceneObjectBase,
@@ -17,7 +18,7 @@ import {
   SceneTimeRange,
   SceneVariableSet,
 } from '@grafana/scenes';
-import { useReturnToPrevious } from '@grafana/runtime';
+import { logError, useReturnToPrevious } from '@grafana/runtime';
 import { Icon, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
 
@@ -122,14 +123,20 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     if (!this._kgInitialized) {
       this._kgInitialized = true;
       if (isKgAnnotationsFeatureEnabled()) {
-        const kg = getKgSceneProps();
-        if (kg) {
-          this.setState({
-            $data: this.state.$data ?? kg.$data,
-            $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
-            controls: [kg.controls, ...this.state.controls],
-          });
-        }
+        const layerSet = new SceneDataLayerSet({ name: 'Insights', layers: [] });
+        this.setState({ $data: this.state.$data ?? layerSet });
+        getKgSceneProps(layerSet)
+          .then((kg) => {
+            if (!kg) {
+              return;
+            }
+
+            this.setState({
+              $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
+              controls: [kg.controls, ...this.state.controls],
+            });
+          })
+          .catch(logError);
       }
     }
 

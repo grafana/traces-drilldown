@@ -1,11 +1,9 @@
-import { config } from '@grafana/runtime';
+import { SceneDataLayerSet } from '@grafana/scenes';
 import { getKgSceneProps } from './kgAnnotations';
+import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 
-jest.mock('@grafana/runtime', () => ({
-  ...jest.requireActual('@grafana/runtime'),
-  config: {
-    datasources: {},
-  },
+jest.mock('@grafana/plugin-compat/datasources', () => ({
+  getDataSourceInstanceList: jest.fn(),
 }));
 
 jest.mock('@grafana/scenes', () => {
@@ -21,39 +19,37 @@ jest.mock('@grafana/scenes', () => {
   };
 });
 
-const mockConfig = config as { datasources: Record<string, { uid: string; type: string }> };
+const getDataSourceInstanceListMock = jest.mocked(getDataSourceInstanceList);
 
 describe('getKgSceneProps', () => {
+  const layerSet = new SceneDataLayerSet({ name: 'Insights', layers: [] });
   beforeEach(() => {
-    mockConfig.datasources = {};
+    jest.resetAllMocks();
+    getDataSourceInstanceListMock.mockResolvedValue([]);
   });
 
-  it('returns undefined when KG datasource is not available', () => {
-    mockConfig.datasources = {
-      tempo: { uid: 'some-tempo-ds', type: 'tempo' },
-    };
-
-    expect(getKgSceneProps()).toBeUndefined();
+  it('returns undefined when KG datasource is not available', async () => {
+    expect(await getKgSceneProps(layerSet)).toBeUndefined();
   });
 
-  it('returns scene props when KG datasource is available', () => {
-    mockConfig.datasources = {
-      kg: { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' },
-    };
+  it('returns scene props when KG datasource is available', async () => {
+    getDataSourceInstanceListMock.mockResolvedValue([
+      { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' },
+    ]);
 
-    const result = getKgSceneProps();
+    const result = await getKgSceneProps(layerSet);
     expect(result).toBeDefined();
     expect(result!.$data).toBeDefined();
     expect(result!.behaviors).toHaveLength(1);
     expect(result!.controls).toBeDefined();
   });
 
-  it('returns props with an empty layer set initially', () => {
-    mockConfig.datasources = {
-      kg: { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' },
-    };
+  it('returns props with an empty layer set initially', async () => {
+    getDataSourceInstanceListMock.mockResolvedValue([
+      { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' },
+    ]);
 
-    const result = getKgSceneProps();
+    const result = await getKgSceneProps(layerSet);
     expect(result!.$data.state.layers).toHaveLength(0);
   });
 });
