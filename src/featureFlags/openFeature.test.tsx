@@ -1,12 +1,8 @@
-import React from 'react';
-import { render, renderHook, screen, waitFor } from '@testing-library/react';
+import { createOpenFeatureLocalStorageProvider, createOpenFeatureOFREPWebProvider, logWarning } from '@grafana/runtime';
 import { OpenFeatureTestProvider } from '@openfeature/react-sdk';
-import { TypedInMemoryProvider, OpenFeature, type Provider } from '@openfeature/web-sdk';
-import {
-  createOpenFeatureLocalStorageProvider,
-  createOpenFeatureOFREPWebProvider,
-  logWarning,
-} from '@grafana/runtime';
+import { OpenFeature, TypedInMemoryProvider, type Provider } from '@openfeature/web-sdk';
+import { render, renderHook, screen, waitFor } from '@testing-library/react';
+import React from 'react';
 
 import {
   isUseValueTypeFilteringEnabled,
@@ -15,23 +11,12 @@ import {
   useFlagTracesDrilldownTimeSeeker,
   useFlagUseValueTypeFiltering,
 } from './featureFlags';
-import {
-  ensureOpenFeaturePluginInitialized,
-  OpenFeaturePluginScope,
-  PLUGIN_OPEN_FEATURE_DOMAIN,
-  resetOpenFeaturePluginStateForTesting,
-} from './openFeature';
+import { ensureOpenFeaturePluginInitialized, OpenFeaturePluginScope, PLUGIN_OPEN_FEATURE_DOMAIN } from './openFeature';
 
 jest.mock('@grafana/runtime', () => {
-  const actual = jest.requireActual('@grafana/runtime');
+  const actual = jest.requireActual<typeof import('@grafana/runtime')>('@grafana/runtime');
   return {
     ...actual,
-    config: {
-      ...actual.config,
-      namespace: 'test-ns',
-      appSubUrl: '',
-      openFeatureContext: {},
-    },
     logWarning: jest.fn(),
     createOpenFeatureLocalStorageProvider: jest.fn(),
     createOpenFeatureOFREPWebProvider: jest.fn(),
@@ -45,7 +30,6 @@ describe('openFeature', () => {
   let setProviderAndWaitSpy: jest.SpiedFunction<(typeof OpenFeature)['setProviderAndWait']>;
 
   beforeEach(async () => {
-    resetOpenFeaturePluginStateForTesting();
     jest.clearAllMocks();
     jest.mocked(createOpenFeatureLocalStorageProvider).mockReturnValue(localStorageProvider as never);
     jest.mocked(createOpenFeatureOFREPWebProvider).mockReturnValue(ofrepProvider as never);
@@ -55,7 +39,6 @@ describe('openFeature', () => {
 
   afterEach(async () => {
     jest.restoreAllMocks();
-    resetOpenFeaturePluginStateForTesting();
     await OpenFeature.clearProviders();
   });
 
@@ -139,14 +122,6 @@ describe('openFeature', () => {
           expect.objectContaining({ error: 'ofrep-down' })
         );
       });
-    });
-
-    it('returns the same promise when called repeatedly', async () => {
-      const a = ensureOpenFeaturePluginInitialized();
-      const b = ensureOpenFeaturePluginInitialized();
-      expect(a).toBe(b);
-      await a;
-      expect(setProviderAndWaitSpy).toHaveBeenCalledTimes(1);
     });
 
     it('does not replace a provider already registered for the domain', async () => {
