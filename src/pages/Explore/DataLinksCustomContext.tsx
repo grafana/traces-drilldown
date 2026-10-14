@@ -6,7 +6,8 @@ import {
   TimeRange,
   useDataLinksContext,
 } from '@grafana/data';
-import { GetDataSourceListFilters, usePluginFunctions } from '@grafana/runtime';
+import { usePluginFunctions } from '@grafana/runtime';
+import { type GetDataSourceInstanceListFilters } from '@grafana/runtime/unstable';
 import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 import { DataQuery } from '@grafana/schema';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -49,7 +50,7 @@ export function DataLinksCustomContext(props: Props) {
   const hasLogsDrilldownFn = Boolean(logsDrilldownFn);
   const hasTimeRange = Boolean(timeRange);
   const shouldRenderContext = !embedded && isPostProcessingSupported && hasLogsDrilldownFn && hasTimeRange;
-  const filters = useMemo<GetDataSourceListFilters>(() => ({ type: 'loki' }), []);
+  const filters = useMemo<GetDataSourceInstanceListFilters>(() => ({ type: 'loki' }), []);
   const { value: lokiInstances } = useAsync(async () => {
     if (!shouldRenderContext) {
       return undefined;
