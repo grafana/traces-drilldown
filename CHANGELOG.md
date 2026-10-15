@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.0.1](https://github.com/grafana/traces-drilldown/compare/v3.0.0...v3.0.1) (2026-10-15)
+
+
+### ⚡️ Performance Improvements
+
+* remove annotations from breakdown tiles ([#966](https://github.com/grafana/traces-drilldown/issues/966)) ([60651de](https://github.com/grafana/traces-drilldown/commit/60651de863c5404c514f2ccab6a38e942b251444))
+
+
+### 🧹 Chore
+
+* **deps:** lock file maintenance ([#961](https://github.com/grafana/traces-drilldown/issues/961)) ([350e3b1](https://github.com/grafana/traces-drilldown/commit/350e3b1d8c30315212aa47d041c118903864221b))
+* **deps:** update to @grafana/eslint-config v10 via create-plugin ([#957](https://github.com/grafana/traces-drilldown/issues/957)) ([5e7a7e1](https://github.com/grafana/traces-drilldown/commit/5e7a7e11c889675d4e22945e87515293a623c179))
+
 ## [3.0.0](https://github.com/grafana/traces-drilldown/compare/v2.2.1...v3.0.0) (2026-10-12)
 
 
