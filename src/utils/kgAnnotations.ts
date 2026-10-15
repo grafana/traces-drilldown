@@ -24,6 +24,7 @@ interface KgSceneProps {
 
 async function isKgDatasourceAvailable(): Promise<boolean> {
   const datasources = await getDataSourceInstanceList({
+    all: true,
     filter: (ds: { uid: string }) => ds.uid === KG_DATASOURCE_UID,
   });
   return datasources.length > 0;
@@ -175,11 +176,12 @@ class KgAnnotationBehavior extends SceneObjectBase<KgAnnotationBehaviorState> {
   }
 }
 
-export async function getKgSceneProps(layerSet: SceneDataLayerSet): Promise<KgSceneProps | undefined> {
+export async function getKgSceneProps(): Promise<KgSceneProps | undefined> {
   if (!(await isKgDatasourceAvailable())) {
     return undefined;
   }
 
+  const layerSet = new SceneDataLayerSet({ name: 'Insights', layers: [] });
   const toggle = new KgAnnotationToggle({
     isEnabled: true,
     layerSetRef: new SceneObjectRef(layerSet),

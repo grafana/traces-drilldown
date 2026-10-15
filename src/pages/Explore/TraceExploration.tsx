@@ -123,15 +123,19 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     if (!this._kgInitialized) {
       this._kgInitialized = true;
       if (isKgAnnotationsFeatureEnabled()) {
-        const layerSet = new SceneDataLayerSet({ name: 'Insights', layers: [] });
-        this.setState({ $data: this.state.$data ?? layerSet });
-        getKgSceneProps(layerSet)
+        getKgSceneProps()
           .then((kg) => {
             if (!kg) {
+              this.setState({
+                $data: this.state.$data,
+                $behaviors: [...(this.state.$behaviors ?? [])],
+                controls: [...this.state.controls],
+              });
               return;
             }
 
             this.setState({
+              $data: this.state.$data ?? kg.$data,
               $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
               controls: [kg.controls, ...this.state.controls],
             });
