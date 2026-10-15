@@ -1,4 +1,3 @@
-import { SceneDataLayerSet } from '@grafana/scenes';
 import { getKgSceneProps } from './kgAnnotations';
 import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 
@@ -22,14 +21,13 @@ jest.mock('@grafana/scenes', () => {
 const getDataSourceInstanceListMock = jest.mocked(getDataSourceInstanceList);
 
 describe('getKgSceneProps', () => {
-  const layerSet = new SceneDataLayerSet({ name: 'Insights', layers: [] });
   beforeEach(() => {
     jest.resetAllMocks();
     getDataSourceInstanceListMock.mockResolvedValue([]);
   });
 
   it('returns undefined when KG datasource is not available', async () => {
-    expect(await getKgSceneProps(layerSet)).toBeUndefined();
+    expect(await getKgSceneProps()).toBeUndefined();
   });
 
   it('returns scene props when KG datasource is available', async () => {
@@ -37,7 +35,7 @@ describe('getKgSceneProps', () => {
       { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' },
     ]);
 
-    const result = await getKgSceneProps(layerSet);
+    const result = await getKgSceneProps();
     expect(result).toBeDefined();
     expect(result!.$data).toBeDefined();
     expect(result!.behaviors).toHaveLength(1);
@@ -49,7 +47,7 @@ describe('getKgSceneProps', () => {
       { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' },
     ]);
 
-    const result = await getKgSceneProps(layerSet);
+    const result = await getKgSceneProps();
     expect(result!.$data.state.layers).toHaveLength(0);
   });
 });
