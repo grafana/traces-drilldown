@@ -6,7 +6,6 @@ import {
   CustomVariable,
   DataSourceVariable,
   SceneComponentProps,
-  SceneDataLayerSet,
   sceneGraph,
   SceneObject,
   SceneObjectBase,
