@@ -36,6 +36,17 @@ services:
     depends_on:
       - tempo
 
+  # Error spans with exception type, message, and stacktrace for the Exceptions tab.
+  k6-tracing-exceptions:
+    image: ghcr.io/grafana/xk6-client-tracing:latest@sha256:94c45fda864d2b8c05a477f66b1105cba6ae372dd0a8760d446d978c5eb1708f
+    environment:
+      - ENDPOINT=tempo:4317
+    volumes:
+      - ./k6-exceptions.js:/example-script.js:ro
+    restart: always
+    depends_on:
+      - tempo
+
   # A collection of services designed to generate real telemetry
   # Two regions are created: eu-east and us-west. Each region has a server and a requester.
   # eu-east will fail occassionall, but us-west will always succeed to allow for exploration
