@@ -131,7 +131,7 @@ export function getLayoutChild(
     const dataNode = new SceneDataNode({
       data: {
         ...data,
-        annotations: data.annotations?.filter((a) => a.refId === frame.refId),
+        annotations: undefined,
         series: [
           {
             ...frame,
