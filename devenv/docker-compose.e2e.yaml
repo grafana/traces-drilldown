@@ -1,11 +1,11 @@
 services:
   grafana:
     container_name: 'grafana-explore-traces-e2e'
-    image: grafana/${GRAFANA_IMAGE:-grafana-enterprise}:${GRAFANA_VERSION:-13.1.0@sha256:68a7ee3dc2c726e54b2be3533a9e1ac6baaed0893334947a6378520de28a6a76}
+    image: grafana/${GRAFANA_IMAGE:-grafana-enterprise}:${GRAFANA_VERSION:-13.2.3@sha256:06f65b30ff6513f55316beb6ff3e22d0132189297032ada2dfdc116f95663a60}
     restart: unless-stopped
     environment:
       - GF_PLUGINS_PREINSTALL_DISABLED=true
-      # Time seeker (grafana/grafana#121650). Requires Grafana 13+ where the toggle is registered.
+      # Time seeker (grafana/grafana#121650). Requires Grafana 13.2+ for the shared OpenFeature providers.
       - GF_FEATURE_TOGGLES_ENABLE=tracesDrilldownTimeSeeker,localizationForPlugins,tracesDrilldown.useValueTypeFiltering
       # Match the dev Dockerfile defaults so unsigned plugins load in CI without a custom image build.
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin

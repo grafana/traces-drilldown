@@ -1,9 +1,8 @@
-import React from 'react';
-import { render, renderHook, screen, waitFor } from '@testing-library/react';
+import { createOpenFeatureLocalStorageProvider, createOpenFeatureOFREPWebProvider, logWarning } from '@grafana/runtime';
 import { OpenFeatureTestProvider } from '@openfeature/react-sdk';
-import { TypedInMemoryProvider, OpenFeature } from '@openfeature/web-sdk';
-import { GrafanaConfig, locationUtil } from '@grafana/data';
-import { logWarning } from '@grafana/runtime';
+import { OpenFeature, TypedInMemoryProvider, type Provider } from '@openfeature/web-sdk';
+import { render, renderHook, screen, waitFor } from '@testing-library/react';
+import React from 'react';
 
 import {
   isUseValueTypeFilteringEnabled,
@@ -12,63 +11,34 @@ import {
   useFlagTracesDrilldownTimeSeeker,
   useFlagUseValueTypeFiltering,
 } from './featureFlags';
-import {
-  ensureOpenFeaturePluginInitialized,
-  OpenFeaturePluginScope,
-  PLUGIN_OPEN_FEATURE_DOMAIN,
-  resetOpenFeaturePluginStateForTesting,
-} from './openFeature';
+import { ensureOpenFeaturePluginInitialized, OpenFeaturePluginScope, PLUGIN_OPEN_FEATURE_DOMAIN } from './openFeature';
 
 jest.mock('@grafana/runtime', () => {
-  const actual = jest.requireActual('@grafana/runtime');
+  const actual = jest.requireActual<typeof import('@grafana/runtime')>('@grafana/runtime');
   return {
     ...actual,
-    config: {
-      ...actual.config,
-      namespace: 'test-ns',
-      appSubUrl: '',
-      openFeatureContext: {},
-    },
     logWarning: jest.fn(),
+    createOpenFeatureLocalStorageProvider: jest.fn(),
+    createOpenFeatureOFREPWebProvider: jest.fn(),
   };
 });
 
-let ofrepBaseUrl: string | undefined;
-
-/** Real OFREP constructs `OFREPApi` in the constructor (needs fetch); that runs before `setProviderAndWait` is invoked. */
-jest.mock('@openfeature/ofrep-web-provider', () => ({
-  OFREPWebProvider: class MockOFREPWebProvider {
-    metadata = { name: 'mock-ofrep' };
-    runsOn = 'client';
-    constructor(options: { baseUrl?: string }) {
-      ofrepBaseUrl = options.baseUrl;
-    }
-  },
-}));
-
-function initLocationUtil(appSubUrl: string) {
-  locationUtil.initialize({
-    config: { appSubUrl } as GrafanaConfig,
-    getTimeRangeForUrl: () => ({ from: 'now-1h', to: 'now' }),
-    getVariablesUrlParams: () => ({}),
-  });
-}
+const localStorageProvider = { metadata: { name: 'local-storage-provider' } } as Provider;
+const ofrepProvider = { metadata: { name: 'ofrep-provider' } } as Provider;
 
 describe('openFeature', () => {
   let setProviderAndWaitSpy: jest.SpiedFunction<(typeof OpenFeature)['setProviderAndWait']>;
 
   beforeEach(async () => {
-    resetOpenFeaturePluginStateForTesting();
     jest.clearAllMocks();
-    ofrepBaseUrl = undefined;
-    initLocationUtil('');
+    jest.mocked(createOpenFeatureLocalStorageProvider).mockReturnValue(localStorageProvider as never);
+    jest.mocked(createOpenFeatureOFREPWebProvider).mockReturnValue(ofrepProvider as never);
     await OpenFeature.clearProviders();
     setProviderAndWaitSpy = jest.spyOn(OpenFeature, 'setProviderAndWait').mockResolvedValue(undefined);
   });
 
   afterEach(async () => {
     jest.restoreAllMocks();
-    resetOpenFeaturePluginStateForTesting();
     await OpenFeature.clearProviders();
   });
 
@@ -79,7 +49,7 @@ describe('openFeature', () => {
   });
 
   describe('PLUGIN_OPEN_FEATURE_DOMAIN', () => {
-    it('is stable for OFREP / provider binding', () => {
+    it('is stable for provider binding', () => {
       expect(PLUGIN_OPEN_FEATURE_DOMAIN).toBe('traces-drilldown');
     });
   });
@@ -124,44 +94,46 @@ describe('openFeature', () => {
   });
 
   describe('ensureOpenFeaturePluginInitialized', () => {
-    it('resolves without logging when OFREP registration succeeds', async () => {
+    it('registers the shared localStorage and OFREP providers', async () => {
       await ensureOpenFeaturePluginInitialized();
+
       expect(logWarning).not.toHaveBeenCalled();
+      expect(createOpenFeatureLocalStorageProvider).toHaveBeenCalledTimes(1);
+      expect(createOpenFeatureOFREPWebProvider).toHaveBeenCalledTimes(1);
+      expect(setProviderAndWaitSpy).toHaveBeenCalledWith(
+        PLUGIN_OPEN_FEATURE_DOMAIN,
+        expect.objectContaining({
+          providerEntries: [
+            { name: 'local-storage-provider', provider: localStorageProvider },
+            { name: 'ofrep-provider', provider: ofrepProvider },
+          ],
+        })
+      );
     });
 
-    it('logs when OFREP registration fails and leaves defaults', async () => {
+    it('logs when provider registration fails and leaves defaults', async () => {
       setProviderAndWaitSpy.mockRejectedValue(new Error('ofrep-down'));
 
       await ensureOpenFeaturePluginInitialized();
 
       await waitFor(() => {
         expect(logWarning).toHaveBeenCalledWith(
-          'OpenFeature OFREP provider failed; feature flags remain at default values',
+          'OpenFeature provider initialization failed; feature flags remain at default values',
           expect.objectContaining({ error: 'ofrep-down' })
         );
       });
     });
 
-    it('returns the same promise when called repeatedly', async () => {
-      const a = ensureOpenFeaturePluginInitialized();
-      const b = ensureOpenFeaturePluginInitialized();
-      expect(a).toBe(b);
-      await a;
-      expect(setProviderAndWaitSpy).toHaveBeenCalledTimes(1);
-    });
+    it('does not replace a provider already registered for the domain', async () => {
+      setProviderAndWaitSpy.mockRestore();
+      await OpenFeature.setProviderAndWait(PLUGIN_OPEN_FEATURE_DOMAIN, new TypedInMemoryProvider({}));
+      const spy = jest.spyOn(OpenFeature, 'setProviderAndWait');
 
-    it('prefixes the OFREP path with appSubUrl and strips a trailing slash', async () => {
-      const expectedPath = `/grafana/apis/features.grafana.app/v0alpha1/namespaces/${encodeURIComponent('test-ns')}`;
-
-      initLocationUtil('/grafana');
       await ensureOpenFeaturePluginInitialized();
-      expect(ofrepBaseUrl).toBe(new URL(expectedPath, window.location.origin).toString());
 
-      resetOpenFeaturePluginStateForTesting();
-      ofrepBaseUrl = undefined;
-      initLocationUtil('/grafana/');
-      await ensureOpenFeaturePluginInitialized();
-      expect(ofrepBaseUrl).toBe(new URL(expectedPath, window.location.origin).toString());
+      expect(createOpenFeatureLocalStorageProvider).not.toHaveBeenCalled();
+      expect(createOpenFeatureOFREPWebProvider).not.toHaveBeenCalled();
+      expect(spy).not.toHaveBeenCalled();
     });
   });
 

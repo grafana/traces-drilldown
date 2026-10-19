@@ -7,7 +7,7 @@ services:
       context: .
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
-        grafana_version: ${GRAFANA_VERSION:-13.1.0@sha256:68a7ee3dc2c726e54b2be3533a9e1ac6baaed0893334947a6378520de28a6a76}
+        grafana_version: ${GRAFANA_VERSION:-13.2.3@sha256:06f65b30ff6513f55316beb6ff3e22d0132189297032ada2dfdc116f95663a60}
         development: ${DEVELOPMENT:-false}
         anonymous_auth_enabled: ${ANONYMOUS_AUTH_ENABLED:-true}
     ports:

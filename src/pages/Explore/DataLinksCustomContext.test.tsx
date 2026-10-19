@@ -2,7 +2,13 @@ import React, { useContext } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 
 import { DataLinksCustomContext } from './DataLinksCustomContext';
-import { DataLinksContext, GrafanaConfig, locationUtil, useDataLinksContext } from '@grafana/data';
+import {
+  DataLinksContext,
+  DataSourceInstanceListItem,
+  GrafanaConfig,
+  locationUtil,
+  useDataLinksContext,
+} from '@grafana/data';
 import { usePluginFunctions } from '@grafana/runtime';
 import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 
@@ -67,6 +73,17 @@ function TestConsumer() {
 
 const mockExtensionFn = jest.fn();
 
+function dataSourceListItem(type: string, uid: string): DataSourceInstanceListItem {
+  return {
+    type,
+    uid,
+    name: uid,
+    meta: {} as DataSourceInstanceListItem['meta'],
+    readOnly: false,
+    isDefault: false,
+  };
+}
+
 function setupAllConditionsMet() {
   mockedUseDataLinksContext.mockReturnValue({
     dataLinkPostProcessor: mockUpstreamProcessor,
@@ -76,7 +93,7 @@ function setupAllConditionsMet() {
     functions: [{ fn: mockExtensionFn }],
   });
 
-  mockedGetDataSourceInstanceList.mockResolvedValue([{ type: 'loki', uid: 'ds-uid' }]);
+  mockedGetDataSourceInstanceList.mockResolvedValue([dataSourceListItem('loki', 'ds-uid')]);
 
   mockUpstreamProcessor.mockImplementation((options: any) => options.linkModel);
 }
@@ -214,7 +231,7 @@ describe('DataLinksCustomContext', () => {
     });
 
     it('does not modify href for non-Loki datasource links', async () => {
-      mockedGetDataSourceInstanceList.mockResolvedValue([{ type: 'prometheus', uid: 'ds-prom-uid' }]);
+      mockedGetDataSourceInstanceList.mockResolvedValue([dataSourceListItem('prometheus', 'ds-prom-uid')]);
 
       render(
         <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
