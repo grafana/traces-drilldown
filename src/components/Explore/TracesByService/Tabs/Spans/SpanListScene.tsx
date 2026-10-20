@@ -317,7 +317,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       },
     }),
     description: css({
-      fontSize: theme.typography.h6.fontSize,
+      fontSize: theme.typography.body.fontSize,
       padding: `${theme.spacing(1)} 0 ${theme.spacing(2)} 0`,
     }),
     header: css({
