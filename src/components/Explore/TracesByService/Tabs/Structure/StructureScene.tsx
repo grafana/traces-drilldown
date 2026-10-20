@@ -428,7 +428,7 @@ export function buildQuery(metric: MetricFunction, partialLatency: string, laten
 const getStyles = (theme: GrafanaTheme2) => {
   return {
     description: css({
-      fontSize: theme.typography.h6.fontSize,
+      fontSize: theme.typography.body.fontSize,
       padding: `${theme.spacing(1)} 0`,
     }),
     traceViewList: css({
