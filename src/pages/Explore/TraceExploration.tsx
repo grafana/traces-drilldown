@@ -125,11 +125,6 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
         getKgSceneProps()
           .then((kg) => {
             if (!kg) {
-              this.setState({
-                $data: this.state.$data,
-                $behaviors: [...(this.state.$behaviors ?? [])],
-                controls: [...this.state.controls],
-              });
               return;
             }
 
