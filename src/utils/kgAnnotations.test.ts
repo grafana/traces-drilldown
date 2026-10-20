@@ -32,7 +32,7 @@ describe('getKgSceneProps', () => {
 
   it('returns scene props when KG datasource is available', async () => {
     getDataSourceInstanceListMock.mockResolvedValue([
-      { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' },
+      { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' } as any,
     ]);
 
     const result = await getKgSceneProps();
@@ -44,7 +44,7 @@ describe('getKgSceneProps', () => {
 
   it('returns props with an empty layer set initially', async () => {
     getDataSourceInstanceListMock.mockResolvedValue([
-      { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' },
+      { uid: 'grafanacloud-knowledgegraph', type: 'grafana-knowledgegraph-datasource' } as any,
     ]);
 
     const result = await getKgSceneProps();
