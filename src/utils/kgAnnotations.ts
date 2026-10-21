@@ -1,17 +1,17 @@
-import { config } from '@grafana/runtime';
 import {
-  AdHocFiltersVariable,
-  DataSourceVariable,
+  type AdHocFiltersVariable,
+  type DataSourceVariable,
   dataLayers,
   SceneDataLayerSet,
   SceneObjectBase,
   SceneObjectRef,
-  SceneObjectState,
+  type SceneObjectState,
   sceneGraph,
 } from '@grafana/scenes';
-import { DataQuery } from '@grafana/schema';
+import { type DataQuery } from '@grafana/schema';
 import { KgAnnotationToggle } from './KgAnnotationToggle';
 import { VAR_DATASOURCE, VAR_FILTERS } from './shared';
+import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 
 const KG_DATASOURCE_TYPE = 'grafana-knowledgegraph-datasource';
 const KG_DATASOURCE_UID = 'grafanacloud-knowledgegraph';
@@ -22,8 +22,12 @@ interface KgSceneProps {
   controls: KgAnnotationToggle;
 }
 
-function isKgDatasourceAvailable(): boolean {
-  return Object.values(config.datasources).some((d) => d.uid === KG_DATASOURCE_UID);
+async function isKgDatasourceAvailable(): Promise<boolean> {
+  const datasources = await getDataSourceInstanceList({
+    all: true,
+    filter: (ds: { uid: string }) => ds.uid === KG_DATASOURCE_UID,
+  });
+  return datasources.length > 0;
 }
 
 const SEVERITIES = [
@@ -172,13 +176,12 @@ class KgAnnotationBehavior extends SceneObjectBase<KgAnnotationBehaviorState> {
   }
 }
 
-export function getKgSceneProps(): KgSceneProps | undefined {
-  if (!isKgDatasourceAvailable()) {
+export async function getKgSceneProps(): Promise<KgSceneProps | undefined> {
+  if (!(await isKgDatasourceAvailable())) {
     return undefined;
   }
 
   const layerSet = new SceneDataLayerSet({ name: 'Insights', layers: [] });
-
   const toggle = new KgAnnotationToggle({
     isEnabled: true,
     layerSetRef: new SceneObjectRef(layerSet),
