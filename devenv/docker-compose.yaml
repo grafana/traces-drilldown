@@ -29,7 +29,7 @@ services:
 
   # generates uninteresting traces, but is useful for testing
   k6-tracing:
-    image: ghcr.io/grafana/xk6-client-tracing:latest@sha256:94c45fda864d2b8c05a477f66b1105cba6ae372dd0a8760d446d978c5eb1708f
+    image: ghcr.io/grafana/xk6-client-tracing:latest@sha256:94d6289695b87bcde81c7281f1cbc546332a35b0c787c5142962d99fea4f8ab9
     environment:
       - ENDPOINT=tempo:4317
     restart: always
@@ -38,7 +38,7 @@ services:
 
   # Error spans with exception type, message, and stacktrace for the Exceptions tab.
   k6-tracing-exceptions:
-    image: ghcr.io/grafana/xk6-client-tracing:latest@sha256:94c45fda864d2b8c05a477f66b1105cba6ae372dd0a8760d446d978c5eb1708f
+    image: ghcr.io/grafana/xk6-client-tracing:latest@sha256:94d6289695b87bcde81c7281f1cbc546332a35b0c787c5142962d99fea4f8ab9
     environment:
       - ENDPOINT=tempo:4317
     volumes:
