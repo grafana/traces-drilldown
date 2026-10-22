@@ -1,5 +1,33 @@
 # Changelog
 
+## [3.1.0](https://github.com/grafana/traces-drilldown/compare/v3.0.0...v3.1.0) (2026-10-22)
+
+
+### 🎉 Features
+
+* remove outdated config usages ([#974](https://github.com/grafana/traces-drilldown/issues/974)) ([64e2d0f](https://github.com/grafana/traces-drilldown/commit/64e2d0f978f2be7b144312b904d889915707a532))
+* replace config.datasources with getDataSourceInstanceList ([#964](https://github.com/grafana/traces-drilldown/issues/964)) ([c6bcefd](https://github.com/grafana/traces-drilldown/commit/c6bcefdcb44a7fee1cac59e3c1e5f8cb3fcb25d5))
+* use OpenFeature providers from @grafana/runtime ([#959](https://github.com/grafana/traces-drilldown/issues/959)) ([3cc7107](https://github.com/grafana/traces-drilldown/commit/3cc7107484ff172c920a3eb1df5021480a194d8e))
+
+
+### 🐛 Bug Fixes
+
+* use body font size for tab descriptions ([#971](https://github.com/grafana/traces-drilldown/issues/971)) ([c99a9c3](https://github.com/grafana/traces-drilldown/commit/c99a9c3339b17c3d749e9e64efaafa3de9493dd2))
+
+
+### ⚡️ Performance Improvements
+
+* remove annotations from breakdown tiles ([#966](https://github.com/grafana/traces-drilldown/issues/966)) ([60651de](https://github.com/grafana/traces-drilldown/commit/60651de863c5404c514f2ccab6a38e942b251444))
+
+
+### 🧹 Chore
+
+* bump xk6-client-tracing devenv image to v0.0.11 ([#973](https://github.com/grafana/traces-drilldown/issues/973)) ([a1aaeea](https://github.com/grafana/traces-drilldown/commit/a1aaeea45ef00cfdcff77ea8e9be6877bbad7b18))
+* **deps:** lock file maintenance ([#961](https://github.com/grafana/traces-drilldown/issues/961)) ([350e3b1](https://github.com/grafana/traces-drilldown/commit/350e3b1d8c30315212aa47d041c118903864221b))
+* **deps:** lock file maintenance ([#968](https://github.com/grafana/traces-drilldown/issues/968)) ([4920306](https://github.com/grafana/traces-drilldown/commit/492030603dd33613f7becb68bceae84436abf6df))
+* **deps:** update to @grafana/eslint-config v10 via create-plugin ([#957](https://github.com/grafana/traces-drilldown/issues/957)) ([5e7a7e1](https://github.com/grafana/traces-drilldown/commit/5e7a7e11c889675d4e22945e87515293a623c179))
+* generate exception spans in the local Tempo devenv ([#970](https://github.com/grafana/traces-drilldown/issues/970)) ([66c23d5](https://github.com/grafana/traces-drilldown/commit/66c23d5ca372332deca541baf7ddd3b16d3e760d))
+
 ## [3.0.0](https://github.com/grafana/traces-drilldown/compare/v2.2.1...v3.0.0) (2026-10-12)
 
 
