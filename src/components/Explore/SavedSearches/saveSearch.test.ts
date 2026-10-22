@@ -1,7 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { config } from '@grafana/runtime';
-
 import { useFlagQueryLibrary } from '../../../featureFlags/featureFlags';
 import {
   applySavedSearchToScene,
@@ -151,21 +149,12 @@ const mockedUseFlagQueryLibrary = jest.mocked(useFlagQueryLibrary);
 describe('useQueryLibrarySupported', () => {
   test('Returns true when supported', () => {
     mockedUseFlagQueryLibrary.mockReturnValue(true);
-    config.buildInfo.version = '12.4.0';
     const { result } = renderHook(() => useQueryLibrarySupported());
     expect(result.current).toBe(true);
   });
 
   test('Returns false if the feature is not enabled', () => {
     mockedUseFlagQueryLibrary.mockReturnValue(false);
-    config.buildInfo.version = '12.4.0';
-    const { result } = renderHook(() => useQueryLibrarySupported());
-    expect(result.current).toBe(false);
-  });
-
-  test('Returns false if the Grafana version is not supported', () => {
-    mockedUseFlagQueryLibrary.mockReturnValue(true);
-    config.buildInfo.version = '12.3.0';
     const { result } = renderHook(() => useQueryLibrarySupported());
     expect(result.current).toBe(false);
   });

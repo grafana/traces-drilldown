@@ -1,8 +1,5 @@
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 
-import semver from 'semver/preload';
-
-import { config } from '@grafana/runtime';
 import { SceneObject } from '@grafana/scenes';
 import { DataQuery } from '@grafana/schema';
 
@@ -12,7 +9,6 @@ import { TraceqlFilter, traceqlFiltersToAdHoc } from '../../../utils/links';
 import { parseTraceQLQuery } from '../../../utils/lezer-traceql-parser';
 import { getDatasourceVariable, getFiltersVariable, getTraceExplorationScene } from '../../../utils/utils';
 
-const MIN_VERSION = '12.4.0-21256324731';
 export const SAVED_SEARCHES_KEY = `${pluginJson.id}.savedSearches`;
 
 const SAVED_SEARCHES_CHANGED_EVENT = `${pluginJson.id}.savedSearchesChanged`;
@@ -23,7 +19,7 @@ function notifySavedSearchesChanged() {
 
 export function useQueryLibrarySupported(): boolean {
   const queryLibrary = useFlagQueryLibrary();
-  return !semver.ltr(config.buildInfo.version, MIN_VERSION) && queryLibrary;
+  return queryLibrary;
 }
 
 export function useCheckForExistingSearch(dsUid: string, query: string) {
