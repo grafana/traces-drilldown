@@ -15,7 +15,6 @@ export default [
       'react-hooks/immutability': 'warn',
       'react-hooks/globals': 'warn',
       'react-hooks/refs': 'warn',
-      'react-hooks/purity': 'warn',
     },
   },
   {

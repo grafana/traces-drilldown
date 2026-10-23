@@ -148,6 +148,9 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   children,
 }) => {
   const theme = useTheme2();
+  // Preserve the render-time snapshot used by range calculations and callbacks.
+  // The tests `current-time clamping` are there to make sure this existing behavior is preserved
+  // eslint-disable-next-line react-hooks/purity
   const now = Date.now();
 
   const dashboardFrom = data.timeRange.from.valueOf();

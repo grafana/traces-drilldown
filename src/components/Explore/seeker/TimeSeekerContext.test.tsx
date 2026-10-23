@@ -39,6 +39,9 @@ const TestConsumer = () => {
       <button data-testid="pan-left" onClick={() => context.panContextWindow('left')}>
         Pan Left
       </button>
+      <button data-testid="reset" onClick={context.resetContextWindow}>
+        Focus selection
+      </button>
     </div>
   );
 };
@@ -91,6 +94,92 @@ describe('TimeSeekerContext', () => {
       );
 
       expect(screen.getByTestId('loading')).toHaveTextContent('1');
+    });
+  });
+
+  describe('current-time clamping', () => {
+    const data = {
+      ...createMockData(),
+      timeRange: {
+        from: dateTime(1000),
+        to: dateTime(3000),
+        raw: { from: dateTime(1000), to: dateTime(3000) },
+      },
+    };
+
+    beforeEach(() => {
+      jest.spyOn(Date, 'now').mockReturnValue(5000);
+    });
+
+    afterEach(() => {
+      jest.mocked(Date.now).mockRestore();
+    });
+
+    it('should clamp the initial context window to the time at mount', () => {
+      render(
+        <TimeSeekerProvider {...defaultProps} data={data}>
+          <TestConsumer />
+        </TimeSeekerProvider>
+      );
+
+      expect(screen.getByTestId('visible-from')).toHaveTextContent('-11000');
+      expect(screen.getByTestId('visible-to')).toHaveTextContent('5000');
+    });
+
+    it('should clamp relative-range expansion to the time of the updated render', () => {
+      const { rerender } = render(
+        <TimeSeekerProvider {...defaultProps} data={data} initialVisibleRange={{ from: 1000, to: 3000 }}>
+          <TestConsumer />
+        </TimeSeekerProvider>
+      );
+
+      expect(screen.getByTestId('visible-from')).toHaveTextContent('1000');
+      expect(screen.getByTestId('visible-to')).toHaveTextContent('3000');
+
+      jest.mocked(Date.now).mockReturnValue(8000);
+      const relativeData = {
+        ...data,
+        timeRange: { ...data.timeRange, raw: { from: 'now-2s', to: 'now' } },
+      };
+
+      rerender(
+        <TimeSeekerProvider {...defaultProps} data={relativeData} initialVisibleRange={{ from: 1000, to: 3000 }}>
+          <TestConsumer />
+        </TimeSeekerProvider>
+      );
+
+      expect(screen.getByTestId('visible-from')).toHaveTextContent('-8000');
+      expect(screen.getByTestId('visible-to')).toHaveTextContent('8000');
+    });
+
+    it('should clamp reset to the last render time rather than the click time', () => {
+      const { rerender } = render(
+        <TimeSeekerProvider {...defaultProps} data={data}>
+          <TestConsumer />
+        </TimeSeekerProvider>
+      );
+
+      expect(screen.getByTestId('visible-from')).toHaveTextContent('1000');
+      expect(screen.getByTestId('visible-to')).toHaveTextContent('5000');
+
+      jest.mocked(Date.now).mockReturnValue(6000);
+      rerender(
+        <TimeSeekerProvider {...defaultProps} data={data} width={801}>
+          <TestConsumer />
+        </TimeSeekerProvider>
+      );
+
+      expect(screen.getByTestId('visible-from')).toHaveTextContent('1000');
+      expect(screen.getByTestId('visible-to')).toHaveTextContent('5000');
+
+      // Advance the clock without another render before clicking.
+      jest.mocked(Date.now).mockReturnValue(8000);
+      act(() => {
+        screen.getByTestId('reset').click();
+      });
+
+      expect(screen.getByTestId('visible-from')).toHaveTextContent('-10000');
+      expect(screen.getByTestId('visible-to')).toHaveTextContent('6000');
     });
   });
 
