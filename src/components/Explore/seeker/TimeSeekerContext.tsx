@@ -555,6 +555,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       panContextWindow,
       resetContextWindow,
       onChangeTimeRange,
+      setTimelineRange,
     ]
   );
 

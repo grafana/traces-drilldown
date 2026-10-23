@@ -16,7 +16,6 @@ export default [
       'react-hooks/globals': 'warn',
       'react-hooks/refs': 'warn',
       'react-hooks/purity': 'warn',
-      'react-hooks/preserve-manual-memoization': 'warn',
     },
   },
   {
