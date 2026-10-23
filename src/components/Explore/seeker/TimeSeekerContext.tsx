@@ -59,7 +59,7 @@ interface TimeSeekerContextValue {
   // Refs
   uplotRef: React.MutableRefObject<uPlot | null>;
   wheelListenerRef: React.MutableRefObject<((e: WheelEvent) => void) | null>;
-  suppressNextTimeRangeUpdate: React.MutableRefObject<boolean>;
+  suppressNextTimeRangeUpdateRef: React.MutableRefObject<boolean>;
   applyRelativeContextWindow: React.MutableRefObject<string | null>;
 
   // Actions
@@ -148,9 +148,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   children,
 }) => {
   const theme = useTheme2();
-  // Preserve the render-time snapshot used by range calculations and callbacks.
-  // The tests `current-time clamping` are there to make sure this existing behavior is preserved
-  // eslint-disable-next-line react-hooks/purity
+  // eslint-disable-next-line react-hooks/purity -- preserve the render-time snapshot used by range calculations and callbacks, the tests `current-time clamping` are there to make sure this existing behavior is preserved
   const now = Date.now();
 
   const dashboardFrom = data.timeRange.from.valueOf();
@@ -176,7 +174,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
 
   // Interaction tracking - consolidates multiple boolean flags
   const interactionMode = useRef<InteractionMode>('idle');
-  const suppressNextTimeRangeUpdate = useRef(false);
+  const suppressNextTimeRangeUpdateRef = useRef(false);
 
   // -------------------------------------------------------------------------
   // Set visible range with optional dashboard update suppression
@@ -187,10 +185,10 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       onVisibleRangeChange?.(range);
 
       if (suppressDashboardUpdate) {
-        suppressNextTimeRangeUpdate.current = true;
+        suppressNextTimeRangeUpdateRef.current = true;
         interactionMode.current = 'programmatic';
-        isProgrammaticSelect.current = true;
-        skipNextSelectUpdate.current = true;
+        isProgrammaticSelectRef.current = true;
+        skipNextSelectUpdateRef.current = true;
         // Transition back to idle once the programmatic selection is consumed.
         requestAnimationFrame(() => {
           interactionMode.current = 'idle';
@@ -237,7 +235,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       const brushTo = dashboardTo;
       const brushFrom = dashboardTo - durMs;
 
-      suppressNextTimeRangeUpdate.current = true;
+      suppressNextTimeRangeUpdateRef.current = true;
       setTimelineRange({ from: brushFrom, to: brushTo });
 
       const sameRange = areRangesEqual(visibleRange, { from: brushFrom, to: brushTo }, 10);
@@ -321,7 +319,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       const pixelsToMs = (startTo - startFrom) / u.bbox.width;
 
       interactionMode.current = 'panning';
-      suppressNextTimeRangeUpdate.current = true;
+      suppressNextTimeRangeUpdateRef.current = true;
 
       const onMouseMove = (moveEvent: MouseEvent) => {
         const deltaPx = moveEvent.clientX - startX;
@@ -410,10 +408,10 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
         const newRange = { from: newFrom, to: newTo };
         setTimelineRange(newRange);
 
-        if (!suppressNextTimeRangeUpdate.current) {
+        if (!suppressNextTimeRangeUpdateRef.current) {
           onChangeTimeRange(newRange);
         }
-        suppressNextTimeRangeUpdate.current = false;
+        suppressNextTimeRangeUpdateRef.current = false;
       };
 
       window.addEventListener('mousemove', onMouseMove);
@@ -453,8 +451,8 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
   // Build UPlot configuration
   // -------------------------------------------------------------------------
   // Create refs for chart config that won't trigger re-renders
-  const isProgrammaticSelect = useRef(false);
-  const skipNextSelectUpdate = useRef(false);
+  const isProgrammaticSelectRef = useRef(false);
+  const skipNextSelectUpdateRef = useRef(false);
 
   const chartConfig = useTimeSeekerChartConfig({
     theme,
@@ -463,10 +461,10 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
     timelineRange,
     uplotRef,
     wheelListenerRef,
-    isProgrammaticSelect,
-    skipNextSelectUpdate,
+    isProgrammaticSelectRef,
+    skipNextSelectUpdateRef,
     interactionMode,
-    suppressNextTimeRangeUpdate: suppressNextTimeRangeUpdate,
+    suppressNextTimeRangeUpdateRef,
     setVisibleRange,
     setTimelineRange,
     handlePanStart,
@@ -522,7 +520,7 @@ export const TimeSeekerProvider: React.FC<TimeSeekerProviderProps> = ({
       // Refs
       uplotRef,
       wheelListenerRef,
-      suppressNextTimeRangeUpdate,
+      suppressNextTimeRangeUpdateRef,
       applyRelativeContextWindow,
 
       // Actions

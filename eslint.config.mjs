@@ -12,7 +12,6 @@ export default [
       'react-hooks/rules-of-hooks': 'off',
       'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/set-state-in-effect': 'warn',
-      'react-hooks/immutability': 'warn',
     },
   },
   {

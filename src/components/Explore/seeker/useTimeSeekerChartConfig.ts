@@ -20,10 +20,10 @@ interface UseTimeSeekerChartConfigParams {
   timelineRange: { from: number; to: number };
   uplotRef: MutableRefObject<uPlot | null>;
   wheelListenerRef: MutableRefObject<((e: WheelEvent) => void) | null>;
-  isProgrammaticSelect: MutableRefObject<boolean>;
-  skipNextSelectUpdate: MutableRefObject<boolean>;
+  isProgrammaticSelectRef: MutableRefObject<boolean>;
+  skipNextSelectUpdateRef: MutableRefObject<boolean>;
   interactionMode: MutableRefObject<InteractionMode>;
-  suppressNextTimeRangeUpdate: MutableRefObject<boolean>;
+  suppressNextTimeRangeUpdateRef: MutableRefObject<boolean>;
   setVisibleRange: (range: AbsoluteTimeRange, suppressDashboardUpdate?: boolean) => void;
   setTimelineRange: Dispatch<SetStateAction<{ from: number; to: number }>>;
   handlePanStart: (e: MouseEvent | React.MouseEvent) => void;
@@ -38,10 +38,10 @@ export function useTimeSeekerChartConfig({
   timelineRange,
   uplotRef,
   wheelListenerRef,
-  isProgrammaticSelect,
-  skipNextSelectUpdate,
+  isProgrammaticSelectRef,
+  skipNextSelectUpdateRef,
   interactionMode,
-  suppressNextTimeRangeUpdate,
+  suppressNextTimeRangeUpdateRef,
   setVisibleRange,
   setTimelineRange,
   handlePanStart,
@@ -88,10 +88,11 @@ export function useTimeSeekerChartConfig({
       internalConfig.series[1].fill = seriesColor;
     }
 
+    // eslint-disable-next-line react-hooks/refs -- addHook registers this callback; it does not execute it during render.
     b.addHook('setSelect', (u: uPlot) => {
-      if (isProgrammaticSelect.current || skipNextSelectUpdate.current) {
-        isProgrammaticSelect.current = false;
-        skipNextSelectUpdate.current = false;
+      if (isProgrammaticSelectRef.current || skipNextSelectUpdateRef.current) {
+        isProgrammaticSelectRef.current = false;
+        skipNextSelectUpdateRef.current = false;
         return;
       }
 
@@ -110,12 +111,12 @@ export function useTimeSeekerChartConfig({
         if (!areRangesEqual(newRange, { from: timelineRange.from, to: timelineRange.to })) {
           setTimelineRange(newRange);
 
-          if (!suppressNextTimeRangeUpdate.current) {
+          if (!suppressNextTimeRangeUpdateRef.current) {
             onChangeTimeRange(newRange);
           }
         }
 
-        suppressNextTimeRangeUpdate.current = false;
+        suppressNextTimeRangeUpdateRef.current = false;
       }
     });
 
@@ -212,10 +213,10 @@ export function useTimeSeekerChartConfig({
     updateOverlay,
     uplotRef,
     wheelListenerRef,
-    isProgrammaticSelect,
-    skipNextSelectUpdate,
+    isProgrammaticSelectRef,
+    skipNextSelectUpdateRef,
     interactionMode,
-    suppressNextTimeRangeUpdate,
+    suppressNextTimeRangeUpdateRef,
     setTimelineRange,
   ]);
 }
