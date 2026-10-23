@@ -119,6 +119,7 @@ export function useTimeSeekerChartConfig({
       }
     });
 
+    // eslint-disable-next-line react-hooks/refs -- addHook only registers this callback; uPlot invokes it after mount, not during render.
     b.addHook('ready', (u: uPlot) => {
       uplotRef.current = u;
 

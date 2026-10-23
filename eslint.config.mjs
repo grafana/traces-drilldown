@@ -14,7 +14,6 @@ export default [
       'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/immutability': 'warn',
       'react-hooks/globals': 'warn',
-      'react-hooks/refs': 'warn',
     },
   },
   {
