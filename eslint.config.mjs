@@ -13,7 +13,6 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/immutability': 'warn',
-      'react-hooks/globals': 'warn',
     },
   },
   {
