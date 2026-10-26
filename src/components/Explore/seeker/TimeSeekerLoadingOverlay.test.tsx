@@ -1,5 +1,6 @@
 import React, { useLayoutEffect } from 'react';
 import { render, screen } from '@testing-library/react';
+import type uPlot from 'uplot';
 import { TimeSeekerLoadingOverlay } from './TimeSeekerLoadingOverlay';
 import { TimeSeekerProvider, useTimeSeeker } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
