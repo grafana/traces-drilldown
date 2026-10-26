@@ -1,7 +1,7 @@
-import React from 'react';
-import { render } from '@testing-library/react';
+import React, { useLayoutEffect } from 'react';
+import { render, screen } from '@testing-library/react';
 import { TimeSeekerLoadingOverlay } from './TimeSeekerLoadingOverlay';
-import { TimeSeekerProvider } from './TimeSeekerContext';
+import { TimeSeekerProvider, useTimeSeeker } from './TimeSeekerContext';
 import { dateTime, FieldType, LoadingState } from '@grafana/data';
 
 const createMockData = () => ({
@@ -23,20 +23,47 @@ const createMockData = () => ({
   },
 });
 
-const renderWithProvider = (loadingRanges?: Array<{ from: number; to: number }>) => {
-  return render(
-    <TimeSeekerProvider
-      data={createMockData()}
-      width={800}
-      chartHeight={42}
-      onChangeTimeRange={jest.fn()}
-      initialVisibleRange={{ from: 0, to: 10000 }}
-      loadingRanges={loadingRanges}
-    >
-      <TimeSeekerLoadingOverlay />
-    </TimeSeekerProvider>
-  );
+interface TestProviderProps {
+  loadingRanges?: Array<{ from: number; to: number }>;
+  plot?: uPlot;
+}
+
+const MockPlot = ({ plot }: { plot: uPlot }) => {
+  const { uplotRef } = useTimeSeeker();
+
+  useLayoutEffect(() => {
+    uplotRef.current = plot;
+    return () => {
+      uplotRef.current = null;
+    };
+  }, [plot, uplotRef]);
+
+  return null;
 };
+
+const TestProvider = ({ loadingRanges, plot }: TestProviderProps) => (
+  <TimeSeekerProvider
+    data={createMockData()}
+    width={800}
+    chartHeight={42}
+    onChangeTimeRange={jest.fn()}
+    initialVisibleRange={{ from: 0, to: 10000 }}
+    loadingRanges={loadingRanges}
+  >
+    {plot && <MockPlot plot={plot} />}
+    <TimeSeekerLoadingOverlay />
+  </TimeSeekerProvider>
+);
+
+const renderWithProvider = (loadingRanges?: Array<{ from: number; to: number }>, plot?: uPlot) => {
+  return render(<TestProvider loadingRanges={loadingRanges} plot={plot} />);
+};
+
+const createMockPlot = () =>
+  ({
+    valToPos: (value: number) => value / 10,
+    bbox: { left: 25, top: 0, width: 800, height: 42 },
+  }) as unknown as uPlot;
 
 describe('TimeSeekerLoadingOverlay', () => {
   it('returns null when loadingRanges is undefined', () => {
@@ -64,5 +91,41 @@ describe('TimeSeekerLoadingOverlay', () => {
     // Without uplot ref, it won't render actual overlays
     // This tests that the component handles the case gracefully
     expect(container).toBeTruthy();
+  });
+
+  it('should show loading indicators only for ranges with a positive measured width', () => {
+    renderWithProvider(
+      [
+        { from: 100, to: 100 },
+        { from: 300, to: 200 },
+        { from: 400, to: 600 },
+      ],
+      createMockPlot()
+    );
+
+    expect(screen.getAllByTestId('time-seeker-loading-overlay')).toHaveLength(1);
+    expect(screen.getByTestId('time-seeker-loading-overlay')).toBeVisible();
+  });
+
+  it('should remove completed loading indicators when pending ranges change', () => {
+    const plot = createMockPlot();
+    const { rerender } = renderWithProvider(
+      [
+        { from: 100, to: 200 },
+        { from: 300, to: 500 },
+      ],
+      plot
+    );
+
+    expect(screen.getAllByTestId('time-seeker-loading-overlay')).toHaveLength(2);
+
+    rerender(<TestProvider loadingRanges={[{ from: 600, to: 900 }]} plot={plot} />);
+
+    expect(screen.getAllByTestId('time-seeker-loading-overlay')).toHaveLength(1);
+    expect(screen.getByTestId('time-seeker-loading-overlay')).toBeVisible();
+
+    rerender(<TestProvider loadingRanges={[]} plot={plot} />);
+
+    expect(screen.queryByTestId('time-seeker-loading-overlay')).not.toBeInTheDocument();
   });
 });

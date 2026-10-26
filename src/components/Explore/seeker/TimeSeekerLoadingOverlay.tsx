@@ -59,6 +59,7 @@ export const TimeSeekerLoadingOverlay: React.FC = () => {
       {positions.map((position) => (
         <div
           key={`loading-${position.index}`}
+          data-testid="time-seeker-loading-overlay"
           className={styles.loadingOverlay}
           style={{
             left: position.left,
