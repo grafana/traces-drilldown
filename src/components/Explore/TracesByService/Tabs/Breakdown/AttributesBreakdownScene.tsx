@@ -15,7 +15,7 @@ import { t } from '@grafana/i18n';
 import { Stack, useStyles2, useTheme2 } from '@grafana/ui';
 import { getMetricColor } from '../../../seeker/getMetricColor';
 
-import { MetricFunction, MIN_PANEL_HEIGHT } from '../../../../../utils/shared';
+import { ALL, MetricFunction, MIN_PANEL_HEIGHT } from '../../../../../utils/shared';
 
 import { LayoutSwitcher } from '../../../LayoutSwitcher';
 import {
@@ -60,26 +60,13 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
   private _onActivate() {
     const variable = getGroupByVariable(this);
     const traceExploration = getTraceExplorationScene(this);
+    const rebuild = () => this.setBody(variable);
 
-    variable.subscribeToState(() => {
-      this.setBody(variable);
-    });
-
-    getTraceByServiceScene(this).subscribeToState(() => {
-      this.setBody(variable);
-    });
-
-    getPrimarySignalVariable(this).subscribeToState(() => {
-      this.setBody(variable);
-    });
-
-    traceExploration.getMetricVariable().subscribeToState(() => {
-      this.setBody(variable);
-    });
-
-    getPercentilesVariable(this).subscribeToState(() => {
-      this.setBody(variable);
-    });
+    this._subs.add(variable.subscribeToState(rebuild));
+    this._subs.add(getTraceByServiceScene(this).subscribeToState(rebuild));
+    this._subs.add(getPrimarySignalVariable(this).subscribeToState(rebuild));
+    this._subs.add(traceExploration.getMetricVariable().subscribeToState(rebuild));
+    this._subs.add(getPercentilesVariable(this).subscribeToState(rebuild));
 
     this.setBody(variable);
   }
@@ -108,6 +95,9 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
   }
 
   private setBody = (variable: CustomVariable) => {
+    if (!variable.getValue()) {
+      return;
+    }
     this.setState({
       body: buildNormalLayout(
         this,
@@ -168,11 +158,15 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
     const description = getDescription(metric as MetricFunction);
 
     useEffect(() => {
-      if (!groupBy || groupBy === 'All' || groupBy === '') {
-        model.onChange(favoriteAttributes[0], true);
+      const defaultGroupBy = favoriteAttributes[0] ?? attributes?.[0];
+      if (!defaultGroupBy) {
+        return;
+      }
+      if (!groupBy || groupBy === ALL || groupBy === '') {
+        model.onChange(defaultGroupBy, true);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [groupBy]);
+    }, [groupBy, favoriteAttributes, attributes]);
 
     return (
       <div className={styles.container} data-testid={testIds.breakdownContainer}>
