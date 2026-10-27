@@ -22,7 +22,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: grafana/plugin-actions/bundle-types@d4bf687e0b40ddb26b4212e9c2b06dfb491e28b6 # bundle-types/v1.0.4 (2026-07-13)
+      - uses: grafana/plugin-actions/bundle-types@e62759a5ee1a708adb4a1f564f8ae085cd47aedf # bundle-types/v1.0.8
         with:
           entry-point: ./src/exposedComponents/types.ts
           ts-config: ./tsconfig-for-bundle-types.json
