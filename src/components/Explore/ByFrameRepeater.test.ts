@@ -1,5 +1,6 @@
 import { createDataFrame, FieldType, getDefaultTimeRange, LoadingState } from '@grafana/data';
 import { SceneCSSGridLayout, SceneDataNode, SceneFlexItem } from '@grafana/scenes';
+import { EventTimeseriesDataReceived } from 'utils/shared';
 import {
   ByFrameRepeater,
   doesQueryMatchDataFrameLabels,
@@ -43,6 +44,14 @@ describe('ByFrameRepeater pagination', () => {
     getLayoutChild.mockClear();
     repeater.onShowMore();
     expect(getLayoutChild).toHaveBeenCalledTimes(24);
+  });
+
+  it('should publish the series on show more so new panels get the shared y-axis', () => {
+    const repeater = buildRepeater(30);
+    const onData = jest.fn();
+    repeater.subscribeToEvent(EventTimeseriesDataReceived, onData);
+    repeater.onShowMore();
+    expect(onData).toHaveBeenCalledTimes(1);
   });
 
   it('should mount the next page on show more', () => {

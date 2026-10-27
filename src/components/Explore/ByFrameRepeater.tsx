@@ -67,7 +67,6 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
               ]);
             } else if (data.data?.state === LoadingState.Done) {
               this.renderFilteredData(this.getFilteredData(this.state.searchQuery));
-              this.publishEvent(new EventTimeseriesDataReceived({ series: data.data.series }), true);
             }
           } else if (data.data?.state === LoadingState.Error) {
             this.setBodyChildren([
@@ -127,7 +126,15 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
 
     this.setState({ visibleCount: nextCount });
     this.state.body.setState({ children: [...this.state.body.state.children, ...added] });
+    this.publishSeries();
   };
+
+  private publishSeries() {
+    const series = sceneGraph.getData(this).state.data?.series;
+    if (series) {
+      this.publishEvent(new EventTimeseriesDataReceived({ series }), true);
+    }
+  }
 
   public onHintInViewChange = (isInView: boolean) => {
     if (isInView) {
@@ -196,6 +203,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
 
     this.repeated = { data, frames: nonEmpty };
     this.setBodyChildren(children, nonEmpty.length);
+    this.publishSeries();
   }
 
   public static Component = ({ model }: SceneComponentProps<ByFrameRepeater>) => {
