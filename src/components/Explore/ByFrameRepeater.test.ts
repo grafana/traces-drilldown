@@ -1,12 +1,7 @@
 import { createDataFrame, FieldType, getDefaultTimeRange, LoadingState } from '@grafana/data';
 import { SceneCSSGridLayout, SceneDataNode, SceneFlexItem } from '@grafana/scenes';
 import { EventTimeseriesDataReceived } from 'utils/shared';
-import {
-  ByFrameRepeater,
-  doesQueryMatchDataFrameLabels,
-  hasNonZeroValues,
-  PAGE_SIZE,
-} from 'components/Explore/ByFrameRepeater';
+import { ByFrameRepeater, doesQueryMatchDataFrameLabels, hasNonZeroValues } from 'components/Explore/ByFrameRepeater';
 
 const frame = (name: string, value: number) =>
   createDataFrame({
@@ -62,7 +57,9 @@ describe('ByFrameRepeater pagination', () => {
     const getLayoutChild = jest.fn(() => new SceneFlexItem({ body: undefined }));
     const repeater = buildRepeater(60, getLayoutChild);
     getLayoutChild.mockClear();
+
     repeater.onShowMore();
+
     expect(getLayoutChild).toHaveBeenCalledTimes(24);
   });
 
@@ -70,13 +67,17 @@ describe('ByFrameRepeater pagination', () => {
     const repeater = buildRepeater(30);
     const onData = jest.fn();
     repeater.subscribeToEvent(EventTimeseriesDataReceived, onData);
+
     repeater.onShowMore();
+
     expect(onData).toHaveBeenCalledTimes(1);
   });
 
   it('should mount the next page on show more', () => {
     const repeater = buildRepeater(30);
+
     repeater.onShowMore();
+
     expect(repeater.state.body.state.children).toHaveLength(30);
   });
 
@@ -84,21 +85,29 @@ describe('ByFrameRepeater pagination', () => {
     expect(buildRepeater(30).state.totalCount).toBe(30);
   });
 
-  it('should not grow past the total on show more', () => {
-    const repeater = buildRepeater(10);
+  it('should not build more panels on show more when all frames are visible', () => {
+    const getLayoutChild = jest.fn(() => new SceneFlexItem({ body: undefined }));
+    const repeater = buildRepeater(10, getLayoutChild);
+    getLayoutChild.mockClear();
+
     repeater.onShowMore();
-    expect(repeater.state.visibleCount ?? PAGE_SIZE).toBe(24);
+
+    expect(getLayoutChild).not.toHaveBeenCalled();
   });
 
   it('should load the next page when the hint comes into view', () => {
     const repeater = buildRepeater(30);
+
     repeater.onHintInViewChange(true);
+
     expect(repeater.state.body.state.children).toHaveLength(30);
   });
 
   it('should not load the next page when the hint leaves view', () => {
     const repeater = buildRepeater(30);
+
     repeater.onHintInViewChange(false);
+
     expect(repeater.state.body.state.children).toHaveLength(24);
   });
 });

@@ -118,6 +118,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
     if (!this.repeated || visibleCount >= (this.state.totalCount ?? 0)) {
       return;
     }
+
     const { data, frames } = this.repeated;
     const nextCount = visibleCount + PAGE_SIZE;
     const added = frames
