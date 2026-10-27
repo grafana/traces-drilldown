@@ -158,7 +158,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
     const description = getDescription(metric as MetricFunction);
 
     useEffect(() => {
-      const defaultGroupBy = favoriteAttributes[0] ?? attributes?.[0];
+      const defaultGroupBy = favoriteAttributes[0];
       if (!defaultGroupBy) {
         return;
       }
@@ -166,7 +166,7 @@ export class AttributesBreakdownScene extends SceneObjectBase<AttributesBreakdow
         model.onChange(defaultGroupBy, true);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [groupBy, favoriteAttributes, attributes]);
+    }, [groupBy, favoriteAttributes]);
 
     return (
       <div className={styles.container} data-testid={testIds.breakdownContainer}>

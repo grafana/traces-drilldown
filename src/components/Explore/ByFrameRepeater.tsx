@@ -246,6 +246,7 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     // stops scroll anchoring from loading pages in a loop
     scrollContainer: css({
+      flexGrow: 1,
       overflowAnchor: 'none',
     }),
     hint: css({
