@@ -164,6 +164,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
           }),
         }),
       ]);
+      this.publishSeries();
     }
   }
 

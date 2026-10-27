@@ -33,6 +33,26 @@ const buildRepeater = (count: number, getLayoutChild = () => new SceneFlexItem({
   return repeater;
 };
 
+describe('ByFrameRepeater y-axis sync', () => {
+  it('should publish the series when a refresh lands on a search with no matches', () => {
+    const data = { state: LoadingState.Done, series: [frame('svc', 1)], timeRange: getDefaultTimeRange() };
+    const dataNode = new SceneDataNode({ data });
+    const repeater = new ByFrameRepeater({
+      $data: dataNode,
+      body: new SceneCSSGridLayout({ children: [] }),
+      getLayoutChild: () => new SceneFlexItem({ body: undefined }),
+      searchQuery: 'nomatch',
+    });
+    repeater.activate();
+    const onData = jest.fn();
+    repeater.subscribeToEvent(EventTimeseriesDataReceived, onData);
+
+    dataNode.setState({ data: { ...data } });
+
+    expect(onData).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('ByFrameRepeater pagination', () => {
   it('should mount only the first page of frames', () => {
     expect(buildRepeater(30).state.body.state.children).toHaveLength(24);
