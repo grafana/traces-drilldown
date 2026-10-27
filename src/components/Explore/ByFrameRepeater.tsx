@@ -44,6 +44,8 @@ interface ByFrameRepeaterState extends SceneObjectState {
 }
 
 export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
+  private repeated?: { data: PanelData; frames: DataFrame[] };
+
   public constructor(state: ByFrameRepeaterState) {
     super(state);
 
@@ -114,11 +116,17 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
 
   public onShowMore = () => {
     const visibleCount = this.state.visibleCount ?? PAGE_SIZE;
-    if (visibleCount >= (this.state.totalCount ?? 0)) {
+    if (!this.repeated || visibleCount >= (this.state.totalCount ?? 0)) {
       return;
     }
-    this.setState({ visibleCount: visibleCount + PAGE_SIZE });
-    this.renderFilteredData(this.getFilteredData(this.state.searchQuery));
+    const { data, frames } = this.repeated;
+    const nextCount = visibleCount + PAGE_SIZE;
+    const added = frames
+      .slice(visibleCount, nextCount)
+      .map((frame, i) => this.state.getLayoutChild(data, frame, visibleCount + i));
+
+    this.setState({ visibleCount: nextCount });
+    this.state.body.setState({ children: [...this.state.body.state.children, ...added] });
   };
 
   public onHintInViewChange = (isInView: boolean) => {
@@ -186,6 +194,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
       .slice(0, visibleCount)
       .map((frame, frameIndex) => this.state.getLayoutChild(data, frame, frameIndex));
 
+    this.repeated = { data, frames: nonEmpty };
     this.setBodyChildren(children, nonEmpty.length);
   }
 

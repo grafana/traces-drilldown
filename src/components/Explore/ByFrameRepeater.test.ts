@@ -16,7 +16,7 @@ const frame = (name: string, value: number) =>
     ],
   });
 
-const buildRepeater = (count: number) => {
+const buildRepeater = (count: number, getLayoutChild = () => new SceneFlexItem({ body: undefined })) => {
   const repeater = new ByFrameRepeater({
     $data: new SceneDataNode({
       data: {
@@ -26,7 +26,7 @@ const buildRepeater = (count: number) => {
       },
     }),
     body: new SceneCSSGridLayout({ children: [] }),
-    getLayoutChild: () => new SceneFlexItem({ body: undefined }),
+    getLayoutChild,
   });
   repeater.activate();
   return repeater;
@@ -35,6 +35,14 @@ const buildRepeater = (count: number) => {
 describe('ByFrameRepeater pagination', () => {
   it('should mount only the first page of frames', () => {
     expect(buildRepeater(30).state.body.state.children).toHaveLength(24);
+  });
+
+  it('should only build the newly revealed children on show more', () => {
+    const getLayoutChild = jest.fn(() => new SceneFlexItem({ body: undefined }));
+    const repeater = buildRepeater(60, getLayoutChild);
+    getLayoutChild.mockClear();
+    repeater.onShowMore();
+    expect(getLayoutChild).toHaveBeenCalledTimes(24);
   });
 
   it('should mount the next page on show more', () => {
