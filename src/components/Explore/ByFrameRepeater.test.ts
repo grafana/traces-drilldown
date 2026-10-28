@@ -28,6 +28,11 @@ const buildRepeater = (count: number, getLayoutChild = () => new SceneFlexItem({
   return repeater;
 };
 
+const setQueryState = (repeater: ByFrameRepeater, state: LoadingState) => {
+  const dataNode = repeater.state.$data as SceneDataNode;
+  dataNode.setState({ data: { ...dataNode.state.data, state } });
+};
+
 describe('ByFrameRepeater y-axis sync', () => {
   it('should publish the series when a refresh lands on a search with no matches', () => {
     const data = { state: LoadingState.Done, series: [frame('svc', 1)], timeRange: getDefaultTimeRange() };
@@ -51,6 +56,25 @@ describe('ByFrameRepeater y-axis sync', () => {
 describe('ByFrameRepeater pagination', () => {
   it('should mount only the first page of frames', () => {
     expect(buildRepeater(30).state.body.state.children).toHaveLength(24);
+  });
+
+  it('should reset the visible count when the query starts loading', () => {
+    const repeater = buildRepeater(60);
+    repeater.onShowMore();
+
+    setQueryState(repeater, LoadingState.Loading);
+
+    expect(repeater.state.visibleCount).toBe(24);
+  });
+
+  it('should mount only the first page when a reloaded query is done', () => {
+    const repeater = buildRepeater(60);
+    repeater.onShowMore();
+
+    setQueryState(repeater, LoadingState.Loading);
+    setQueryState(repeater, LoadingState.Done);
+
+    expect(repeater.state.body.state.children).toHaveLength(24);
   });
 
   it('should only build the newly revealed children on show more', () => {
@@ -115,6 +139,10 @@ describe('ByFrameRepeater pagination', () => {
 describe('hasNonZeroValues', () => {
   it('should be false for a frame with only zeros', () => {
     expect(hasNonZeroValues(frame('a', 0))).toBe(false);
+  });
+
+  it('should be false for a frame with only NaN values', () => {
+    expect(hasNonZeroValues(frame('a', NaN))).toBe(false);
   });
 
   it('should be true for a frame with a non-zero value', () => {

@@ -79,6 +79,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
               }),
             ]);
           } else {
+            this.setState({ visibleCount: PAGE_SIZE });
             this.setBodyChildren([
               new SceneCSSGridLayout({
                 children: [
@@ -196,8 +197,21 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
   }
 
   private performRepeat(data: PanelData) {
-    const frames = this.state.groupBy ? this.groupSeriesBy(data, getGroupByVariable(this).getValueText()) : data.series;
-    const nonEmpty = frames.filter(hasNonZeroValues);
+    const nonEmpty: DataFrame[] = [];
+    let frames = data.series;
+
+    if (this.state.groupBy) {
+      frames = this.groupSeriesBy(data, getGroupByVariable(this).getValueText());
+    }
+
+    for (const currentFrame of frames) {
+      // Skip frames with no data
+      if (!hasNonZeroValues(currentFrame)) {
+        continue;
+      }
+      nonEmpty.push(currentFrame);
+    }
+
     const visibleCount = this.state.visibleCount ?? PAGE_SIZE;
     const children = nonEmpty
       .slice(0, visibleCount)
@@ -241,8 +255,12 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
   };
 }
 
-export const hasNonZeroValues = (frame: DataFrame) =>
-  frame.fields.filter((f) => f.type === FieldType.number).some((f) => f.values.some((v) => Boolean(v)));
+export const hasNonZeroValues = (currentFrame: DataFrame) => {
+  const sum = currentFrame.fields
+    .filter((f) => f.type === FieldType.number)
+    .reduce((sum, f) => sum + f.values.reduce((vSum, v) => vSum + (v || 0), 0) || 0, 0);
+  return sum !== 0;
+};
 
 function getStyles(theme: GrafanaTheme2) {
   return {
