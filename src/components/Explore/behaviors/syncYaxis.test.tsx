@@ -219,4 +219,18 @@ describe('syncYAxis', () => {
 
     cleanup();
   });
+
+  it('should not update panels that already have the max', () => {
+    const panel = { ...makeVizPanel(), state: { fieldConfig: { defaults: { max: 7 } } } } as unknown as VizPanel;
+    findAllSpy.mockReturnValue([panel]);
+
+    const root = new RootScene();
+    root.activate();
+    const cleanup = syncYAxis()(root);
+
+    root.publishEvent(new EventTimeseriesDataReceived({ series: [timeseriesFrame('A', 'data', [7, 3])] }), true);
+
+    expect(panel.setState).not.toHaveBeenCalled();
+    cleanup();
+  });
 });

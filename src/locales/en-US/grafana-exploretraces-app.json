@@ -62,7 +62,8 @@
     "selected-count_other": "Selected ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "No data for search term"
+    "no-data-for-search": "No data for search term",
+    "partial-results-hint": "Showing {{shown}} of {{total}}. Scroll to load more or search to narrow down."
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Select slowest traces",

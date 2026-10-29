@@ -48,6 +48,9 @@ function updateTimeseriesAxis(vizPanel: SceneObject, max: number) {
   const timeseries = sceneGraph.findAllObjects(vizPanel, (o) => o instanceof VizPanel) as VizPanel[];
 
   for (const t of timeseries) {
+    if (t.state.fieldConfig.defaults?.max === max) {
+      continue;
+    }
     t.clearFieldConfigCache(); // required
 
     t.setState({

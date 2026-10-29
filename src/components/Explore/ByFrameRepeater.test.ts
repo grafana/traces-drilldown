@@ -1,5 +1,154 @@
-import { FieldType } from '@grafana/data';
-import { doesQueryMatchDataFrameLabels } from 'components/Explore/ByFrameRepeater';
+import { createDataFrame, FieldType, getDefaultTimeRange, LoadingState } from '@grafana/data';
+import { SceneCSSGridLayout, SceneDataNode, SceneFlexItem } from '@grafana/scenes';
+import { EventTimeseriesDataReceived } from 'utils/shared';
+import { ByFrameRepeater, doesQueryMatchDataFrameLabels, hasNonZeroValues } from 'components/Explore/ByFrameRepeater';
+
+const frame = (name: string, value: number) =>
+  createDataFrame({
+    name,
+    fields: [
+      { name: 'time', type: FieldType.time, values: [1] },
+      { name: 'value', type: FieldType.number, values: [value] },
+    ],
+  });
+
+const buildRepeater = (count: number, getLayoutChild = () => new SceneFlexItem({ body: undefined })) => {
+  const repeater = new ByFrameRepeater({
+    $data: new SceneDataNode({
+      data: {
+        state: LoadingState.Done,
+        series: Array.from({ length: count }, (_, i) => frame(`svc-${i}`, 1)),
+        timeRange: getDefaultTimeRange(),
+      },
+    }),
+    body: new SceneCSSGridLayout({ children: [] }),
+    getLayoutChild,
+  });
+  repeater.activate();
+  return repeater;
+};
+
+const setQueryState = (repeater: ByFrameRepeater, state: LoadingState) => {
+  const dataNode = repeater.state.$data as SceneDataNode;
+  dataNode.setState({ data: { ...dataNode.state.data, state } });
+};
+
+describe('ByFrameRepeater y-axis sync', () => {
+  it('should publish the series when a refresh lands on a search with no matches', () => {
+    const data = { state: LoadingState.Done, series: [frame('svc', 1)], timeRange: getDefaultTimeRange() };
+    const dataNode = new SceneDataNode({ data });
+    const repeater = new ByFrameRepeater({
+      $data: dataNode,
+      body: new SceneCSSGridLayout({ children: [] }),
+      getLayoutChild: () => new SceneFlexItem({ body: undefined }),
+      searchQuery: 'nomatch',
+    });
+    repeater.activate();
+    const onData = jest.fn();
+    repeater.subscribeToEvent(EventTimeseriesDataReceived, onData);
+
+    dataNode.setState({ data: { ...data } });
+
+    expect(onData).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('ByFrameRepeater pagination', () => {
+  it('should mount only the first page of frames', () => {
+    expect(buildRepeater(30).state.body.state.children).toHaveLength(24);
+  });
+
+  it('should reset the visible count when the query starts loading', () => {
+    const repeater = buildRepeater(60);
+    repeater.onShowMore();
+
+    setQueryState(repeater, LoadingState.Loading);
+
+    expect(repeater.state.visibleCount).toBe(24);
+  });
+
+  it('should mount only the first page when a reloaded query is done', () => {
+    const repeater = buildRepeater(60);
+    repeater.onShowMore();
+
+    setQueryState(repeater, LoadingState.Loading);
+    setQueryState(repeater, LoadingState.Done);
+
+    expect(repeater.state.body.state.children).toHaveLength(24);
+  });
+
+  it('should only build the newly revealed children on show more', () => {
+    const getLayoutChild = jest.fn(() => new SceneFlexItem({ body: undefined }));
+    const repeater = buildRepeater(60, getLayoutChild);
+    getLayoutChild.mockClear();
+
+    repeater.onShowMore();
+
+    expect(getLayoutChild).toHaveBeenCalledTimes(24);
+  });
+
+  it('should publish the series on show more so new panels get the shared y-axis', () => {
+    const repeater = buildRepeater(30);
+    const onData = jest.fn();
+    repeater.subscribeToEvent(EventTimeseriesDataReceived, onData);
+
+    repeater.onShowMore();
+
+    expect(onData).toHaveBeenCalledTimes(1);
+  });
+
+  it('should mount the next page on show more', () => {
+    const repeater = buildRepeater(30);
+
+    repeater.onShowMore();
+
+    expect(repeater.state.body.state.children).toHaveLength(30);
+  });
+
+  it('should report the total number of non-empty frames', () => {
+    expect(buildRepeater(30).state.totalCount).toBe(30);
+  });
+
+  it('should not build more panels on show more when all frames are visible', () => {
+    const getLayoutChild = jest.fn(() => new SceneFlexItem({ body: undefined }));
+    const repeater = buildRepeater(10, getLayoutChild);
+    getLayoutChild.mockClear();
+
+    repeater.onShowMore();
+
+    expect(getLayoutChild).not.toHaveBeenCalled();
+  });
+
+  it('should load the next page when the hint comes into view', () => {
+    const repeater = buildRepeater(30);
+
+    repeater.onHintInViewChange(true);
+
+    expect(repeater.state.body.state.children).toHaveLength(30);
+  });
+
+  it('should not load the next page when the hint leaves view', () => {
+    const repeater = buildRepeater(30);
+
+    repeater.onHintInViewChange(false);
+
+    expect(repeater.state.body.state.children).toHaveLength(24);
+  });
+});
+
+describe('hasNonZeroValues', () => {
+  it('should be false for a frame with only zeros', () => {
+    expect(hasNonZeroValues(frame('a', 0))).toBe(false);
+  });
+
+  it('should be false for a frame with only NaN values', () => {
+    expect(hasNonZeroValues(frame('a', NaN))).toBe(false);
+  });
+
+  it('should be true for a frame with a non-zero value', () => {
+    expect(hasNonZeroValues(frame('a', 2))).toBe(true);
+  });
+});
 
 const DATA_FRAME_FIELDS = [
   {

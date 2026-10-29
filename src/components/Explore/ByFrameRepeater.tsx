@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { DataFrame, FieldType, GrafanaTheme2, LoadingState, PanelData, sortDataFrame } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import {
+  LazyLoader,
   SceneComponentProps,
   SceneCSSGridLayout,
   SceneFlexItem,
   sceneGraph,
   SceneLayout,
+  SceneObject,
   SceneObjectBase,
   SceneObjectState,
 } from '@grafana/scenes';
@@ -28,6 +30,8 @@ import {
 } from '../../utils/shared';
 import { cloneDataFrame } from '../../utils/frames';
 
+export const PAGE_SIZE = 24;
+
 interface ByFrameRepeaterState extends SceneObjectState {
   body: SceneLayout;
   groupBy?: boolean;
@@ -35,9 +39,13 @@ interface ByFrameRepeaterState extends SceneObjectState {
   getLayoutChild(data: PanelData, frame: DataFrame, frameIndex: number): SceneFlexItem;
 
   searchQuery?: string;
+  visibleCount?: number;
+  totalCount?: number;
 }
 
 export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
+  private repeated?: { data: PanelData; frames: DataFrame[] };
+
   public constructor(state: ByFrameRepeaterState) {
     super(state);
 
@@ -48,49 +56,39 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
         data.subscribeToState((data) => {
           if (data.data?.state === LoadingState.Done || data.data?.state === LoadingState.Streaming) {
             if (data.data.series.length === 0 && data.data?.state !== LoadingState.Streaming) {
-              this.state.body.setState({
-                children: [
-                  new SceneFlexItem({
-                    body: new EmptyStateScene({
-                      message: EMPTY_STATE_ERROR_MESSAGE,
-                      remedyMessage: EMPTY_STATE_ERROR_REMEDY_MESSAGE,
-                      padding: '32px',
-                    }),
+              this.setBodyChildren([
+                new SceneFlexItem({
+                  body: new EmptyStateScene({
+                    message: EMPTY_STATE_ERROR_MESSAGE,
+                    remedyMessage: EMPTY_STATE_ERROR_REMEDY_MESSAGE,
+                    padding: '32px',
                   }),
-                ],
-              });
+                }),
+              ]);
             } else if (data.data?.state === LoadingState.Done) {
-              const filtered = {
-                ...data.data,
-                series: data.data?.series.filter(doesQueryMatchDataFrameLabels(this.state.searchQuery)),
-              };
-              this.renderFilteredData(filtered as PanelData);
-              this.publishEvent(new EventTimeseriesDataReceived({ series: data.data.series }), true);
+              this.renderFilteredData(this.getFilteredData(this.state.searchQuery));
             }
           } else if (data.data?.state === LoadingState.Error) {
-            this.state.body.setState({
-              children: [
-                new SceneCSSGridLayout({
-                  children: [
-                    new ErrorStateScene({
-                      message: data.data.errors?.[0]?.message ?? 'An error occurred in the query',
-                    }),
-                  ],
-                }),
-              ],
-            });
+            this.setBodyChildren([
+              new SceneCSSGridLayout({
+                children: [
+                  new ErrorStateScene({
+                    message: data.data.errors?.[0]?.message ?? 'An error occurred in the query',
+                  }),
+                ],
+              }),
+            ]);
           } else {
-            this.state.body.setState({
-              children: [
-                new SceneCSSGridLayout({
-                  children: [
-                    new LoadingStateScene({
-                      component: () => SkeletonComponent(8),
-                    }),
-                  ],
-                }),
-              ],
-            });
+            this.setState({ visibleCount: PAGE_SIZE });
+            this.setBodyChildren([
+              new SceneCSSGridLayout({
+                children: [
+                  new LoadingStateScene({
+                    component: () => SkeletonComponent(8),
+                  }),
+                ],
+              }),
+            ]);
           }
         })
       );
@@ -112,28 +110,63 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
   };
 
   private onSearchQueryChangeDebounced = debounce((searchQuery: string) => {
-    const data = sceneGraph.getData(this);
-    const filtered = {
-      ...data.state.data,
-      series: data.state.data?.series.filter(doesQueryMatchDataFrameLabels(searchQuery)),
-    };
-    this.renderFilteredData(filtered as PanelData);
+    this.setState({ visibleCount: PAGE_SIZE });
+    this.renderFilteredData(this.getFilteredData(searchQuery));
   }, 250);
+
+  public onShowMore = () => {
+    const visibleCount = this.state.visibleCount ?? PAGE_SIZE;
+    if (!this.repeated || visibleCount >= (this.state.totalCount ?? 0)) {
+      return;
+    }
+
+    const { data, frames } = this.repeated;
+    const nextCount = visibleCount + PAGE_SIZE;
+    const added = frames
+      .slice(visibleCount, nextCount)
+      .map((frame, i) => this.state.getLayoutChild(data, frame, visibleCount + i));
+
+    this.setState({ visibleCount: nextCount });
+    this.state.body.setState({ children: [...this.state.body.state.children, ...added] });
+    this.publishSeries();
+  };
+
+  private publishSeries() {
+    const series = sceneGraph.getData(this).state.data?.series;
+    if (series) {
+      this.publishEvent(new EventTimeseriesDataReceived({ series }), true);
+    }
+  }
+
+  public onHintInViewChange = (isInView: boolean) => {
+    if (isInView) {
+      this.onShowMore();
+    }
+  };
+
+  private getFilteredData(searchQuery?: string) {
+    const data = sceneGraph.getData(this).state.data;
+    return { ...data, series: data?.series.filter(doesQueryMatchDataFrameLabels(searchQuery)) ?? [] } as PanelData;
+  }
+
+  private setBodyChildren(children: SceneObject[], totalCount = 0) {
+    this.setState({ totalCount });
+    this.state.body.setState({ children });
+  }
 
   private renderFilteredData(filtered: PanelData) {
     if (filtered.series && filtered.series.length > 0) {
-      this.performRepeat(filtered as PanelData);
+      this.performRepeat(filtered);
     } else {
-      this.state.body.setState({
-        children: [
-          new SceneFlexItem({
-            body: new EmptyStateScene({
-              message: t('by-frame-repeater.no-data-for-search', 'No data for search term'),
-              padding: '32px',
-            }),
+      this.setBodyChildren([
+        new SceneFlexItem({
+          body: new EmptyStateScene({
+            message: t('by-frame-repeater.no-data-for-search', 'No data for search term'),
+            padding: '32px',
           }),
-        ],
-      });
+        }),
+      ]);
+      this.publishSeries();
     }
   }
 
@@ -164,44 +197,72 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
   }
 
   private performRepeat(data: PanelData) {
-    const newChildren: SceneFlexItem[] = [];
+    const nonEmpty: DataFrame[] = [];
     let frames = data.series;
 
     if (this.state.groupBy) {
       frames = this.groupSeriesBy(data, getGroupByVariable(this).getValueText());
     }
 
-    for (let frameIndex = 0; frameIndex < frames.length; frameIndex++) {
-      const currentFrame = frames[frameIndex];
+    for (const currentFrame of frames) {
       // Skip frames with no data
-      const sum = currentFrame.fields
-        .filter((f) => f.type === FieldType.number)
-        .reduce((sum, f) => sum + f.values.reduce((vSum, v) => vSum + (v || 0), 0) || 0, 0);
-      if (sum === 0) {
+      if (!hasNonZeroValues(currentFrame)) {
         continue;
       }
-      // Build the layout child
-      const layoutChild = this.state.getLayoutChild(data, frames[frameIndex], frameIndex);
-      newChildren.push(layoutChild);
+      nonEmpty.push(currentFrame);
     }
 
-    this.state.body.setState({ children: newChildren });
+    const visibleCount = this.state.visibleCount ?? PAGE_SIZE;
+    const children = nonEmpty
+      .slice(0, visibleCount)
+      .map((frame, frameIndex) => this.state.getLayoutChild(data, frame, frameIndex));
+
+    this.repeated = { data, frames: nonEmpty };
+    this.setBodyChildren(children, nonEmpty.length);
+    this.publishSeries();
   }
 
   public static Component = ({ model }: SceneComponentProps<ByFrameRepeater>) => {
-    const { body, searchQuery } = model.useState();
+    const { body, searchQuery, visibleCount = PAGE_SIZE, totalCount = 0 } = model.useState();
     const styles = useStyles2(getStyles);
+    const shown = Math.min(visibleCount, totalCount);
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      scrollRef.current?.scrollTo({ top: 0 });
+    }, [searchQuery]);
 
     return (
       <div className={styles.container}>
         <Search searchQuery={searchQuery ?? ''} onSearchQueryChange={model.onSearchQueryChange} />
-        <body.Component model={body} />
+        <div ref={scrollRef} className={styles.scrollContainer}>
+          <body.Component model={body} />
+          {shown < totalCount && (
+            // key re-checks visibility after each page
+            <LazyLoader key={String(visibleCount)} mode="query" onChange={model.onHintInViewChange}>
+              <div className={styles.hint}>
+                {t(
+                  'by-frame-repeater.partial-results-hint',
+                  'Showing {{shown}} of {{total}}. Scroll to load more or search to narrow down.',
+                  { shown, total: totalCount }
+                )}
+              </div>
+            </LazyLoader>
+          )}
+        </div>
       </div>
     );
   };
 }
 
-function getStyles() {
+export const hasNonZeroValues = (currentFrame: DataFrame) => {
+  const sum = currentFrame.fields
+    .filter((f) => f.type === FieldType.number)
+    .reduce((sum, f) => sum + f.values.reduce((vSum, v) => vSum + (v || 0), 0) || 0, 0);
+  return sum !== 0;
+};
+
+function getStyles(theme: GrafanaTheme2) {
   return {
     container: css({
       display: 'flex',
@@ -210,6 +271,17 @@ function getStyles() {
       ['& div:nth-child(2)']: {
         overflow: 'auto',
       },
+    }),
+    // stops scroll anchoring from loading pages in a loop
+    scrollContainer: css({
+      flexGrow: 1,
+      overflowAnchor: 'none',
+    }),
+    hint: css({
+      display: 'flex',
+      justifyContent: 'center',
+      padding: theme.spacing(2, 0),
+      color: theme.colors.text.secondary,
     }),
   };
 }
