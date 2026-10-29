@@ -65,6 +65,7 @@ function createMockLinkModel(overrides: Record<string, any> = {}) {
 // Captures the context value provided through DataLinksContext.Provider
 let capturedContext: any = null;
 function TestConsumer() {
+  // eslint-disable-next-line react-hooks/globals -- capture context for test assertions only.
   capturedContext = useContext(DataLinksContext as React.Context<any>);
   return <div data-testid="child">child</div>;
 }

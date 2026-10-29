@@ -61,9 +61,11 @@ export function DataLinksCustomContext(props: Props) {
 
   // Use refs to keep stable callback identity regardless of whether upstream hooks return new references
   const dataLinksContextRef = useRef(dataLinksContext);
+  // eslint-disable-next-line react-hooks/refs -- keep values fresh and callback stable to avoid duplicate Loki pipelines (#650)
   dataLinksContextRef.current = dataLinksContext;
 
   const logsDrilldownFnRef = useRef(logsDrilldownFn);
+  // eslint-disable-next-line react-hooks/refs -- keep values fresh and callback stable to avoid duplicate Loki pipelines (#650)
   logsDrilldownFnRef.current = logsDrilldownFn;
 
   const dataLinkPostProcessor: DataLinkPostProcessor = useCallback(

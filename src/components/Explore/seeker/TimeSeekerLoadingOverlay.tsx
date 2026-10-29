@@ -1,44 +1,73 @@
-import React from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { useStyles2, useTheme2 } from '@grafana/ui';
 import { useTimeSeeker } from './TimeSeekerContext';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+
+interface LoadingOverlayPosition {
+  index: number;
+  left: number;
+  width: number;
+}
 
 export const TimeSeekerLoadingOverlay: React.FC = () => {
   const theme = useTheme2();
   const styles = useStyles2(() => getLoadingOverlayStyles(theme));
 
   const { loadingRanges, uplotRef, chartHeight } = useTimeSeeker();
+  const [positions, setPositions] = useState<LoadingOverlayPosition[]>([]);
 
-  if (!loadingRanges || loadingRanges.length === 0) {
-    return null;
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- measure after each render: plot geometry can change without the ref changing.
+  useLayoutEffect(() => {
+    const u = uplotRef.current;
+    const nextPositions: LoadingOverlayPosition[] = [];
+
+    if (u && loadingRanges) {
+      loadingRanges.forEach((range, index) => {
+        const left = u.valToPos(range.from, 'x') + u.bbox.left;
+        const right = u.valToPos(range.to, 'x') + u.bbox.left;
+        const width = right - left;
+
+        if (width <= 0) {
+          return;
+        }
+
+        nextPositions.push({ index, left, width });
+      });
+    }
+
+    setPositions((previous) => {
+      const unchanged =
+        previous.length === nextPositions.length &&
+        nextPositions.every(
+          (position, index) =>
+            position.index === previous[index]?.index &&
+            position.left === previous[index]?.left &&
+            position.width === previous[index]?.width
+        );
+
+      if (unchanged) {
+        return previous;
+      }
+
+      return nextPositions;
+    });
+  });
 
   return (
     <>
-      {loadingRanges.map((range, idx) => {
-        const u = uplotRef.current;
-        if (!u) {
-          return null;
-        }
-        const left = u.valToPos(range.from, 'x') + u.bbox.left;
-        const right = u.valToPos(range.to, 'x') + u.bbox.left;
-        const rangeWidth = right - left;
-        if (rangeWidth <= 0) {
-          return null;
-        }
-        return (
-          <div
-            key={`loading-${idx}`}
-            className={styles.loadingOverlay}
-            style={{
-              left,
-              width: rangeWidth,
-              height: chartHeight,
-            }}
-          />
-        );
-      })}
+      {positions.map((position) => (
+        <div
+          key={`loading-${position.index}`}
+          data-testid="time-seeker-loading-overlay"
+          className={styles.loadingOverlay}
+          style={{
+            left: position.left,
+            width: position.width,
+            height: chartHeight,
+          }}
+        />
+      ))}
     </>
   );
 };

@@ -16,7 +16,7 @@ export const TimeSeekerControls: React.FC = () => {
     visibleRange,
     setVisibleRange,
     setTimelineRange,
-    suppressNextTimeRangeUpdate,
+    suppressNextTimeRangeUpdateRef,
     zoomContextWindow,
     panContextWindow,
     resetContextWindow,
@@ -43,7 +43,7 @@ export const TimeSeekerControls: React.FC = () => {
 
     setVisibleRange(r, true);
     requestAnimationFrame(() => {
-      suppressNextTimeRangeUpdate.current = true;
+      suppressNextTimeRangeUpdateRef.current = true;
       setTimelineRange({ from: newTimelineFrom, to: newTimelineTo });
 
       const u = uplotRef.current;

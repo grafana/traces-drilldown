@@ -178,17 +178,17 @@ function useResizebleDrawer(): [
   }, []);
 
   const onMouseUp = useCallback(
-    (e: MouseEvent) => {
+    function handleMouseUp() {
       document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mouseup', handleMouseUp);
     },
     [onMouseMove]
   );
 
   const onTouchEnd = useCallback(
-    (e: TouchEvent) => {
+    function handleTouchEnd() {
       document.removeEventListener('touchmove', onTouchMove);
-      document.removeEventListener('touchend', onTouchEnd);
+      document.removeEventListener('touchend', handleTouchEnd);
     },
     [onTouchMove]
   );
