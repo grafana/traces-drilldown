@@ -27,6 +27,13 @@ interface ToVariableFilterArgs {
   operator: IncludeExcludeOperator;
 }
 
+export function isSingleValueFiltered(
+  filters: Array<{ key: string; operator: string }>,
+  attributeKey: string
+): boolean {
+  return filters.some((f) => f.key === attributeKey && f.operator === '=');
+}
+
 export function toVariableFilter({ key, operator, rawValue }: ToVariableFilterArgs): AdHocVariableFilter {
   const valueType = getLabelValueType(rawValue, key);
   const bareValue = stripOuterQuotes(rawValue);
