@@ -64,7 +64,8 @@
     "selected-count_other": "Wybrane ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "Brak danych dla wyszukiwanego hasła"
+    "no-data-for-search": "Brak danych dla wyszukiwanego hasła",
+    "partial-results-hint": ""
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Wybierz najwolniejsze ślady",

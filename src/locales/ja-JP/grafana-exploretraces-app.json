@@ -61,7 +61,8 @@
     "selected-count_other": "選択済み（{{count}}）："
   },
   "by-frame-repeater": {
-    "no-data-for-search": "検索キーワードに一致するデータはありません"
+    "no-data-for-search": "検索キーワードに一致するデータはありません",
+    "partial-results-hint": ""
   },
   "duration-comparison-control": {
     "select-slowest-traces": "最も遅いトレースを選択",
