@@ -62,7 +62,8 @@
     "selected-count_other": "Seleccionados ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "No hay datos para el término de búsqueda"
+    "no-data-for-search": "No hay datos para el término de búsqueda",
+    "partial-results-hint": ""
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Seleccionar las trazas más lentas",

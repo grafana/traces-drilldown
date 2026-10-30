@@ -61,7 +61,8 @@
     "selected-count_other": "선택됨({{count}}개):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "검색어에 대한 데이터가 없습니다."
+    "no-data-for-search": "검색어에 대한 데이터가 없습니다.",
+    "partial-results-hint": ""
   },
   "duration-comparison-control": {
     "select-slowest-traces": "가장 느린 트레이스 선택",
