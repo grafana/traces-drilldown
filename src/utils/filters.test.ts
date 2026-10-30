@@ -1,5 +1,5 @@
 import { AdHocFiltersVariable } from '@grafana/scenes';
-import { addToVariableFilters, toVariableFilter } from './filters';
+import { addToVariableFilters, isSingleValueFiltered, toVariableFilter } from './filters';
 
 describe('addToVariableFilters', () => {
   let variable: AdHocFiltersVariable;
@@ -156,5 +156,41 @@ describe('toVariableFilter', () => {
     const filter = toVariableFilter({ key: 'span.foo', operator: '=~', rawValue: 'bar.*' });
 
     expect(filter).toEqual({ key: 'span.foo', operator: '=~', value: '"bar.*"', valueLabels: ['bar.*'] });
+  });
+});
+
+describe('isSingleValueFiltered', () => {
+  const key = 'resource.service.name';
+
+  it('returns true for an equals filter', () => {
+    expect(isSingleValueFiltered([{ key, operator: '=' }], key)).toBe(true);
+  });
+
+  it('returns false for a not-equals filter', () => {
+    expect(isSingleValueFiltered([{ key, operator: '!=' }], key)).toBe(false);
+  });
+
+  it('returns false for a not-matches filter', () => {
+    expect(isSingleValueFiltered([{ key, operator: '!~' }], key)).toBe(false);
+  });
+
+  it('treats a matches filter as multi-value even when the regex could match one value', () => {
+    expect(isSingleValueFiltered([{ key, operator: '=~' }], key)).toBe(false);
+  });
+
+  it('returns true when equals is combined with another operator on the same key', () => {
+    expect(
+      isSingleValueFiltered(
+        [
+          { key, operator: '=' },
+          { key, operator: '!~' },
+        ],
+        key
+      )
+    ).toBe(true);
+  });
+
+  it('returns false when the key is not filtered', () => {
+    expect(isSingleValueFiltered([], key)).toBe(false);
   });
 });

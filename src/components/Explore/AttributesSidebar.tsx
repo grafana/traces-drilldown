@@ -6,6 +6,7 @@ import { TabsBar, Tab, Input, Icon, IconButton, useStyles2, Badge, Checkbox, But
 import { t, Trans } from '@grafana/i18n';
 import { MIN_PANEL_HEIGHT, RESOURCE_ATTR, SPAN_ATTR, ignoredAttributes } from 'utils/shared';
 import { getFiltersVariable } from 'utils/utils';
+import { isSingleValueFiltered } from 'utils/filters';
 import { SceneObject } from '@grafana/scenes';
 import { useFavoriteAttributes } from 'hooks';
 import { AttributeItem, ScopeType } from '../../types';
@@ -169,9 +170,9 @@ export function AttributesSidebar({
     return matchingItems;
   }, [attributeItems, searchValue, selectedScope, favoriteAttributes, matchesSearchValue]);
 
-  // Select the next favorite attribute if the selected attribute is in the filters (single mode only)
+  // Move the single-select breakdown to the next attribute only when the selected attribute is pinned to a single value (an equals filter)
   useEffect(() => {
-    if (!isMulti && selected && typeof selected === 'string' && currentFilters.includes(selected)) {
+    if (!isMulti && selected && typeof selected === 'string' && isSingleValueFiltered(filters, selected)) {
       const currentIndex = filteredAttributes.findIndex((item) => item.value === selected);
       const nextIndex = currentIndex + 1;
 
@@ -180,7 +181,7 @@ export function AttributesSidebar({
         return;
       }
     }
-  }, [selected, currentFilters, isMulti, filteredAttributes, onAttributeChange]);
+  }, [selected, filters, isMulti, filteredAttributes, onAttributeChange]);
 
   // Toggle star status for an attribute
   const toggleStar = useCallback(
