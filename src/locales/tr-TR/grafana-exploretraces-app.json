@@ -62,7 +62,8 @@
     "selected-count_other": "Seçilen ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "Arama terimi için veri yok"
+    "no-data-for-search": "Arama terimi için veri yok",
+    "partial-results-hint": ""
   },
   "duration-comparison-control": {
     "select-slowest-traces": "En yavaş izleri seçin",

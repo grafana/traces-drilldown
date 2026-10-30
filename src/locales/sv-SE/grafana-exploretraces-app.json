@@ -62,7 +62,8 @@
     "selected-count_other": "Vald ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "Inga data för söktermen"
+    "no-data-for-search": "Inga data för söktermen",
+    "partial-results-hint": ""
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Välj de långsammaste spåren",

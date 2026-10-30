@@ -61,7 +61,8 @@
     "selected-count_other": "已選取（{{count}} 個）："
   },
   "by-frame-repeater": {
-    "no-data-for-search": "沒有搜尋內容說明的資料"
+    "no-data-for-search": "沒有搜尋內容說明的資料",
+    "partial-results-hint": ""
   },
   "duration-comparison-control": {
     "select-slowest-traces": "選取最慢的追蹤",

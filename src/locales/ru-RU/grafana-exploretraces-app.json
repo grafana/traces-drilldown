@@ -64,7 +64,8 @@
     "selected-count_other": "Выбрано ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "Нет данных по поисковому запросу"
+    "no-data-for-search": "Нет данных по поисковому запросу",
+    "partial-results-hint": ""
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Выбрать самые медленные трассировки",

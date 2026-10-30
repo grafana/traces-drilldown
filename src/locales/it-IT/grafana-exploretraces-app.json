@@ -62,7 +62,8 @@
     "selected-count_other": ""
   },
   "by-frame-repeater": {
-    "no-data-for-search": ""
+    "no-data-for-search": "",
+    "partial-results-hint": ""
   },
   "duration-comparison-control": {
     "select-slowest-traces": "",
