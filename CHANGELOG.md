@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.2.0](https://github.com/grafana/traces-drilldown/compare/v3.1.0...v3.2.0) (2026-10-30)
+
+
+### 🎉 Features
+
+* bump @grafana/sign-plugin and node version ([#975](https://github.com/grafana/traces-drilldown/issues/975)) ([f9268d3](https://github.com/grafana/traces-drilldown/commit/f9268d3ea688fad64321610b0c1b118768141315))
+* lazy load panels in breakdown view ([#982](https://github.com/grafana/traces-drilldown/issues/982)) ([713376d](https://github.com/grafana/traces-drilldown/commit/713376dc0f4c1bcbeb0101dbd055c61e3d6ed308))
+
+
+### 🐛 Bug Fixes
+
+* **ci:** bump bundle-types action to the signed-commit release ([#983](https://github.com/grafana/traces-drilldown/issues/983)) ([0dfe5d5](https://github.com/grafana/traces-drilldown/commit/0dfe5d550030ee238c74603473bb32daf1393fe7))
+
+
+### 🧹 Chore
+
+* **deps:** lock file maintenance ([#977](https://github.com/grafana/traces-drilldown/issues/977)) ([984b1df](https://github.com/grafana/traces-drilldown/commit/984b1df7754a72bb8fede0cefaf43fac3ef36b07))
+* **eslint:** reduce react-hooks warnings ([#978](https://github.com/grafana/traces-drilldown/issues/978)) ([e522d2d](https://github.com/grafana/traces-drilldown/commit/e522d2de38dde50dbc5c17c2bf8baf4355d7eb30))
+
 ## [3.1.0](https://github.com/grafana/traces-drilldown/compare/v3.0.0...v3.1.0) (2026-10-22)
 
 
