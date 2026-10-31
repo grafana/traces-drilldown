@@ -138,6 +138,7 @@
   },
   "panel-menu": {
     "add-to-dashboard": "Add to dashboard",
+    "add-to-notebook": "Add to notebook",
     "create-alert": "Create alert",
     "explore": "Explore",
     "navigation": "Navigation"

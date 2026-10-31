@@ -8,6 +8,7 @@ import {
   SceneFlexLayout,
   sceneGraph,
   SceneObject,
+  VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
 import { t } from '@grafana/i18n';
@@ -141,38 +142,49 @@ export function getLayoutChild(
       },
     });
 
+    const scopedQuery = generateMetricsQueryForBreakdownTile(metric, variable.getValueText(), frame);
+    const traceExploration = getTraceExplorationScene(scene);
+    const query = scopedQuery ? sceneGraph.interpolate(traceExploration, scopedQuery) : undefined;
+
+    const alertTargets: AlertPanelTarget[] = scopedQuery
+      ? [
+          {
+            refId: 'A',
+            query: scopedQuery,
+            queryType: 'traceql',
+            tableType: 'spans',
+            limit: 100,
+            spss: 10,
+            filters: [],
+          },
+        ]
+      : [];
+
+    const menuState = { query, alertTargets, onBreakdownCreateAlert };
     if (existingGridItem) {
-      existingGridItem.state.body?.setState({ $data: dataNode });
+      const panel = existingGridItem.state.body;
+      if (panel instanceof VizPanel) {
+        let menu: PanelMenu | undefined;
+        if (scopedQuery) {
+          menu = panel.state.menu instanceof PanelMenu ? panel.state.menu : new PanelMenu(menuState);
+          menu.setState(menuState);
+        }
+        panel.setState({
+          $data: dataNode,
+          menu,
+          showMenuAlways: Boolean(menu),
+        });
+      }
       return existingGridItem;
     }
 
-    const scopedQuery = generateMetricsQueryForBreakdownTile(metric, variable.getValueText(), frame);
-    const traceExploration = getTraceExplorationScene(scene);
-    const query = sceneGraph.interpolate(traceExploration, scopedQuery);
-
-    const alertTargets: AlertPanelTarget[] = [
-      {
-        refId: 'A',
-        query,
-        queryType: 'traceql',
-        tableType: 'spans',
-        limit: 100,
-        spss: 10,
-        filters: [],
-      },
-    ];
-
     const panel = (metric === 'duration' ? linesPanelConfig(metric).setUnit('s') : barsPanelConfig(metric))
       .setTitle(getTitle(frame, variable.getValueText()))
-      .setMenu(
-        new PanelMenu({
-          query,
-          alertTargets,
-          onBreakdownCreateAlert,
-        })
-      )
-      .setShowMenuAlways(true)
       .setData(dataNode);
+
+    if (scopedQuery) {
+      panel.setMenu(new PanelMenu(menuState)).setShowMenuAlways(true);
+    }
 
     const actions = actionsFn(frame);
     if (actions) {
