@@ -21,8 +21,8 @@ importers:
   .:
     dependencies:
       '@emotion/css':
-        specifier: 11.10.6
-        version: 11.10.6(supports-color@8.1.1)
+        specifier: 11.13.5
+        version: 11.13.5(supports-color@8.1.1)
       '@grafana/data':
         specifier: 13.2.3
         version: 13.2.3(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(js-cookie@3.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(supports-color@8.1.1)(typescript@5.8.3)
@@ -567,9 +567,6 @@ packages:
 
   '@emotion/cache@11.14.0':
     resolution: {integrity: sha512-L/B1lc/TViYk4DcpGxtAVbx0ZyiKM5ktoIyafGkH6zg/tj+mA+NE//aPYKG0k8kCHSHVJrpLpcAlOBEXQ3SavA==}
-
-  '@emotion/css@11.10.6':
-    resolution: {integrity: sha512-88Sr+3heKAKpj9PCqq5A1hAmAkoSIvwEq1O2TwDij7fUtsJpdkV4jMTISSTouFeRvsGvXIpuSuDQ4C1YdfNGXw==}
 
   '@emotion/css@11.13.5':
     resolution: {integrity: sha512-wQdD0Xhkn3Qy2VNcIzbLP9MR8TafI0MJb7BEAXKp+w4+XqErksWR4OXomuDzPsN4InLdGhVe6EYcn2ZIUCpB8w==}
@@ -6097,16 +6094,6 @@ snapshots:
       '@emotion/utils': 1.4.2
       '@emotion/weak-memoize': 0.4.0
       stylis: 4.2.0
-
-  '@emotion/css@11.10.6(supports-color@8.1.1)':
-    dependencies:
-      '@emotion/babel-plugin': 11.13.5(supports-color@8.1.1)
-      '@emotion/cache': 11.14.0
-      '@emotion/serialize': 1.3.3
-      '@emotion/sheet': 1.4.0
-      '@emotion/utils': 1.4.2
-    transitivePeerDependencies:
-      - supports-color
 
   '@emotion/css@11.13.5(supports-color@8.1.1)':
     dependencies:
