@@ -175,7 +175,7 @@ importers:
         version: 7.1.5(webpack@5.111.1)
       diagnostics-webpack-plugin:
         specifier: ^1.0.1
-        version: 1.0.2(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(typescript@5.8.3)(webpack@5.111.1)
+        version: 1.1.0(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(typescript@5.8.3)(webpack@5.111.1)
       eslint:
         specifier: 9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
@@ -2800,15 +2800,15 @@ packages:
     resolution: {integrity: sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==}
     engines: {node: '>=8'}
 
-  diagnostics-webpack-plugin@1.0.2:
-    resolution: {integrity: sha512-ZxJDHs1q1JdS3QVwXx+zq1HScM4WV48R7ZLMBQLa/KcUi714aA6iaGfvg+kEO138WNeq0XCJ3vq7ClE9y9yKnA==}
+  diagnostics-webpack-plugin@1.1.0:
+    resolution: {integrity: sha512-lFURLtJhgvhJTcsifwNGQfa1szkw2Koxm2thKU57pGVlIs0cBbBtnfBtU1+6YHq+nJW0ghbobxCqN58v1yv4aQ==}
     engines: {node: '>= 22.12.0'}
     peerDependencies:
       '@biomejs/biome': ^2.0.0
       eslint: ^9.0.0 || ^10.0.0
       oxlint: ^1.0.0
       stylelint: ^17.0.0
-      typescript: ^5.0.0 || ^6.0.0
+      typescript: ^5.0.0 || ^6.0.0 || ^7.1.0-0
       webpack: ^5.106.0
     peerDependenciesMeta:
       '@biomejs/biome':
@@ -8525,7 +8525,7 @@ snapshots:
 
   detect-newline@3.1.0: {}
 
-  diagnostics-webpack-plugin@1.0.2(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(typescript@5.8.3)(webpack@5.111.1):
+  diagnostics-webpack-plugin@1.1.0(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(typescript@5.8.3)(webpack@5.111.1):
     dependencies:
       jest-worker: 30.5.1
       picomatch: 4.0.7
