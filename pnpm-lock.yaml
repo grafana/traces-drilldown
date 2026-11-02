@@ -174,8 +174,8 @@ importers:
         specifier: 7.1.5
         version: 7.1.5(webpack@5.111.1)
       diagnostics-webpack-plugin:
-        specifier: ^1.0.1
-        version: 1.1.0(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(typescript@5.8.3)(webpack@5.111.1)
+        specifier: 1.0.1
+        version: 1.0.1(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(typescript@5.8.3)(webpack@5.111.1)
       eslint:
         specifier: 9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)
@@ -204,14 +204,14 @@ importers:
         specifier: 5.0.0
         version: 5.0.0(webpack@5.111.1)
       intersection-observer:
-        specifier: ^0.12.2
+        specifier: 0.12.2
         version: 0.12.2
       jest:
         specifier: 30.5.2
         version: 30.5.2(@types/node@24.10.1)(babel-plugin-macros@3.1.0)(supports-color@8.1.1)(ts-node@10.9.2(@swc/core@1.16.20(@swc/helpers@0.5.23))(@types/node@24.10.1)(typescript@5.8.3))
       jest-canvas-mock:
-        specifier: ^2.5.2
-        version: 2.5.8
+        specifier: 2.5.2
+        version: 2.5.2
       jest-environment-jsdom:
         specifier: 30.5.2
         version: 30.5.2(supports-color@8.1.1)
@@ -2797,15 +2797,15 @@ packages:
     resolution: {integrity: sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==}
     engines: {node: '>=8'}
 
-  diagnostics-webpack-plugin@1.1.0:
-    resolution: {integrity: sha512-lFURLtJhgvhJTcsifwNGQfa1szkw2Koxm2thKU57pGVlIs0cBbBtnfBtU1+6YHq+nJW0ghbobxCqN58v1yv4aQ==}
+  diagnostics-webpack-plugin@1.0.1:
+    resolution: {integrity: sha512-Szi3NrBxQRZP/KvMTDMoQgPAtuVbUI3tQdPbz94YdALVoqDRZ9/3NBO6sE8QAJd6L9ceBcAgZ1I0wNxULRWWng==}
     engines: {node: '>= 22.12.0'}
     peerDependencies:
       '@biomejs/biome': ^2.0.0
       eslint: ^9.0.0 || ^10.0.0
       oxlint: ^1.0.0
       stylelint: ^17.0.0
-      typescript: ^5.0.0 || ^6.0.0 || ^7.1.0-0
+      typescript: ^5.0.0 || ^6.0.0
       webpack: ^5.106.0
     peerDependenciesMeta:
       '@biomejs/biome':
@@ -3637,8 +3637,8 @@ packages:
     resolution: {integrity: sha512-H0dkQoCa3b2VEeKQBOxFph+JAbcrQdE7KC0UkqwpLmv2EC4P41QXP+rqo9wYodACiG5/WM5s9oDApTU8utwj9g==}
     engines: {node: '>= 0.4'}
 
-  jest-canvas-mock@2.5.8:
-    resolution: {integrity: sha512-RUZRaFHCnLjg0/UAodCai5PTsa7kQI1rUXE5wsQu9f2315dh2YSN7/i3fObTycs7PO09DLSiGXiJTALYIw2yuw==}
+  jest-canvas-mock@2.5.2:
+    resolution: {integrity: sha512-vgnpPupjOL6+L5oJXzxTxFrlGEIbHdZqFU+LFNdtLxZ3lRDCl17FlTMM7IatoRQkrcyOTMlDinjUguqmQ6bR2A==}
 
   jest-changed-files@30.5.1:
     resolution: {integrity: sha512-0+bvMM/ENhDI29Z8q1r4HxiDIi4G5tnBmSw4esfPQoj9q8Nik7KIyuxHkTVnnniJQf05SxpGaKDQ+4h28ynGPg==}
@@ -8522,7 +8522,7 @@ snapshots:
 
   detect-newline@3.1.0: {}
 
-  diagnostics-webpack-plugin@1.1.0(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(typescript@5.8.3)(webpack@5.111.1):
+  diagnostics-webpack-plugin@1.0.1(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))(typescript@5.8.3)(webpack@5.111.1):
     dependencies:
       jest-worker: 30.5.1
       picomatch: 4.0.7
@@ -9515,7 +9515,7 @@ snapshots:
       has-symbols: 1.1.0
       set-function-name: 2.0.2
 
-  jest-canvas-mock@2.5.8:
+  jest-canvas-mock@2.5.2:
     dependencies:
       cssfontparser: 1.2.1
       moo-color: 1.0.3
