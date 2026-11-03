@@ -242,6 +242,73 @@ describe('AttributesSidebar', () => {
     });
   });
 
+  describe('Operator-aware move-away', () => {
+    it('does not advance away from a not-matches-filtered selected attribute', () => {
+      mockFiltersVariable.useState = createMockUseState([{ key: 'resource.cluster', operator: '!~', value: 'foo' }]);
+
+      render(
+        <AttributesSidebar
+          options={sampleOptions}
+          selected="resource.cluster"
+          onAttributeChange={mockOnAttributeChange}
+          model={mockModel}
+        />
+      );
+
+      expect(mockOnAttributeChange).not.toHaveBeenCalled();
+    });
+
+    it('advances to the next attribute for an equals-filtered selected attribute', () => {
+      mockFiltersVariable.useState = createMockUseState([{ key: 'resource.cluster', operator: '=', value: 'foo' }]);
+
+      render(
+        <AttributesSidebar
+          options={sampleOptions}
+          selected="resource.cluster"
+          onAttributeChange={mockOnAttributeChange}
+          model={mockModel}
+        />
+      );
+
+      expect(mockOnAttributeChange).toHaveBeenCalledWith('span.db.system', true);
+    });
+
+    it('keeps the funnel indicator on a not-matches-filtered attribute that stays selectable', () => {
+      mockFiltersVariable.useState = createMockUseState([{ key: 'resource.cluster', operator: '!~', value: 'foo' }]);
+
+      render(
+        <AttributesSidebar
+          options={sampleOptions}
+          selected="resource.cluster"
+          onAttributeChange={mockOnAttributeChange}
+          model={mockModel}
+        />
+      );
+
+      const clusterItem = screen.getByText('cluster').closest('li');
+      expect(clusterItem).toHaveAttribute('title', 'Filtered: cluster');
+      expect(clusterItem?.querySelector('svg')).toBeInTheDocument();
+    });
+
+    it('renders the empty state without a silent jump when a non-equals filter leaves no attributes', () => {
+      mockFiltersVariable.useState = createMockUseState([{ key: 'resource.cluster', operator: '!~', value: 'foo' }]);
+
+      render(
+        <AttributesSidebar
+          options={[{ label: 'resource.cluster', value: 'resource.cluster' }]}
+          selected="resource.cluster"
+          onAttributeChange={mockOnAttributeChange}
+          model={mockModel}
+        />
+      );
+
+      fireEvent.click(screen.getByText('Span'));
+
+      expect(screen.getByText('No attributes match your criteria')).toBeInTheDocument();
+      expect(mockOnAttributeChange).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Multi Selection Mode', () => {
     it('should display selected count', () => {
       render(

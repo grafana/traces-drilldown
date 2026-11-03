@@ -104,6 +104,11 @@ async function assertBackAndForwardNavigationWorksForFilters(
   const spanNameAttribute: AttributeItem = { label: 'name', scope: 'Span', value: 'name' };
   const serviceNameTestId = getTestIdFromAttribute(serviceNameAttribute);
   const spanNameTestId = getTestIdFromAttribute(spanNameAttribute);
+  // Include adds an equals filter, so the breakdown moves to the next attribute; exclude keeps it on service.name
+  const [filteredLabel, filteredSelectedId, filteredNotSelectedId] =
+    toBeClicked === 'include'
+      ? ['name', spanNameTestId, serviceNameTestId]
+      : ['resource.service.name', serviceNameTestId, spanNameTestId];
 
   await expect(tracesExplorePage.page.getByRole('button', { name: toBeClicked }).first()).toBeVisible();
 
@@ -116,8 +121,8 @@ async function assertBackAndForwardNavigationWorksForFilters(
   await tracesExplorePage.assertNotLoading();
 
   await tracesExplorePage.assertAdHocFilterPopulated(serviceNameAttribute);
-  await tracesExplorePage.assertSelectedLabel('name');
-  await tracesExplorePage.assertSelectedAttributes(spanNameTestId, serviceNameTestId);
+  await tracesExplorePage.assertSelectedLabel(filteredLabel);
+  await tracesExplorePage.assertSelectedAttributes(filteredSelectedId, filteredNotSelectedId);
 
   await tracesExplorePage.page.goBack();
   await tracesExplorePage.assertNotLoading();
@@ -130,8 +135,8 @@ async function assertBackAndForwardNavigationWorksForFilters(
   await tracesExplorePage.assertNotLoading();
 
   await tracesExplorePage.assertAdHocFilterPopulated(serviceNameAttribute);
-  await tracesExplorePage.assertSelectedLabel('name');
-  await tracesExplorePage.assertSelectedAttributes(spanNameTestId, serviceNameTestId);
+  await tracesExplorePage.assertSelectedLabel(filteredLabel);
+  await tracesExplorePage.assertSelectedAttributes(filteredSelectedId, filteredNotSelectedId);
 }
 
 async function assertBackAndForwardNavigationWorksForTabs(tracesExplorePage: TracesExplorePage, tabToClick: RateTabs) {
