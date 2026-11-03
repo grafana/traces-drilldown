@@ -1,5 +1,31 @@
 # Changelog
 
+## [3.2.0](https://github.com/grafana/traces-drilldown/compare/v3.1.0...v3.2.0) (2026-11-03)
+
+
+### 🎉 Features
+
+* bump @grafana/sign-plugin and node version ([#975](https://github.com/grafana/traces-drilldown/issues/975)) ([f9268d3](https://github.com/grafana/traces-drilldown/commit/f9268d3ea688fad64321610b0c1b118768141315))
+* lazy load panels in breakdown view ([#982](https://github.com/grafana/traces-drilldown/issues/982)) ([713376d](https://github.com/grafana/traces-drilldown/commit/713376dc0f4c1bcbeb0101dbd055c61e3d6ed308))
+
+
+### 🐛 Bug Fixes
+
+* **ci:** bump bundle-types action to the signed-commit release ([#983](https://github.com/grafana/traces-drilldown/issues/983)) ([0dfe5d5](https://github.com/grafana/traces-drilldown/commit/0dfe5d550030ee238c74603473bb32daf1393fe7))
+* keep a filtered attribute selectable in Breakdown unless it is pinned with = ([#985](https://github.com/grafana/traces-drilldown/issues/985)) ([9555955](https://github.com/grafana/traces-drilldown/commit/95559551acc0e52f72c7def89ea07f942b6dd911))
+* **security/medium/:** update dependency glob to v14 [security] ([#987](https://github.com/grafana/traces-drilldown/issues/987)) ([4fa7aee](https://github.com/grafana/traces-drilldown/commit/4fa7aeeb8f49824e79e0a12554d851ffed301a88))
+
+
+### 🧹 Chore
+
+* bump @grafana/create-plugin configuration to 7.17.0 ([#993](https://github.com/grafana/traces-drilldown/issues/993)) ([e458aca](https://github.com/grafana/traces-drilldown/commit/e458aca3e10566295f64c319dbb760a3c97dcf0a))
+* **deps:** lock file maintenance ([#977](https://github.com/grafana/traces-drilldown/issues/977)) ([984b1df](https://github.com/grafana/traces-drilldown/commit/984b1df7754a72bb8fede0cefaf43fac3ef36b07))
+* **deps:** update dependency @swc/core to v1.16.20 ([#989](https://github.com/grafana/traces-drilldown/issues/989)) ([9be6fba](https://github.com/grafana/traces-drilldown/commit/9be6fbaf098d54733048f2be11bb2ce72b482b2b))
+* **deps:** update dependency @testing-library/user-event to v14.6.8 ([#990](https://github.com/grafana/traces-drilldown/issues/990)) ([41b6978](https://github.com/grafana/traces-drilldown/commit/41b6978ee73b4dfda22ff9f52269a148246c6f8e))
+* **deps:** update dependency @types/lodash to v4.17.27 ([#991](https://github.com/grafana/traces-drilldown/issues/991)) ([9b9ee48](https://github.com/grafana/traces-drilldown/commit/9b9ee484ba5dda50900d3d9bc55e5532d06e750d))
+* **eslint:** reduce react-hooks warnings ([#978](https://github.com/grafana/traces-drilldown/issues/978)) ([e522d2d](https://github.com/grafana/traces-drilldown/commit/e522d2de38dde50dbc5c17c2bf8baf4355d7eb30))
+* glob fix ([#992](https://github.com/grafana/traces-drilldown/issues/992)) ([64b7364](https://github.com/grafana/traces-drilldown/commit/64b73649b115646bf74b97e5116b365a12a8d2c0))
+
 ## [3.1.0](https://github.com/grafana/traces-drilldown/compare/v3.0.0...v3.1.0) (2026-10-22)
 
 
