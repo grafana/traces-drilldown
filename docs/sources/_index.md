@@ -44,7 +44,7 @@ cards:
       description: Use your tracing data to identify issues and determine the root cause.
       height: 24
     - title: Changelog
-      href: https://github.com/grafana/explore-traces/blob/main/CHANGELOG.md
+      href: https://github.com/grafana/traces-drilldown/blob/main/CHANGELOG.md
       description: Learn about the updates, new features, and bugfixes in this version.
       height: 24
 ---
