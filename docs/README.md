@@ -20,7 +20,7 @@ For more information about markdown, you can see the [CommonMark specification](
 
 If you have a GitHub account and you're just making a small fix, for example fixing a typo or updating an example, you can edit the topic in GitHub.
 
-1. Find the topic in the explore-traces repo.
+1. Find the topic in the traces-drilldown repo.
 2. Click the pencil icon.
 3. Enter your changes.
 4. Click **Commit changes**. GitHub creates a pull request for you.
