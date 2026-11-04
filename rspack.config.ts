@@ -26,6 +26,13 @@ const config = async (env: Env): Promise<Configuration> => {
         'process.env.COMMIT_SHA': JSON.stringify(commitHash || 'local'),
       }),
     ],
+    stats: {
+      assets: true,
+      chunks: true,
+      chunkModules: true,
+      nestedModules: true,
+      entrypoints: true,
+    },
   });
 };
 
