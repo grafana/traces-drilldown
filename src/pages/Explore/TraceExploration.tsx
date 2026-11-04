@@ -62,6 +62,8 @@ import { SaveSearchButton } from '../../components/Explore/SavedSearches/SaveSea
 import { PluginInfo } from '../../components/App/header/PluginInfo';
 import { AddToDashboardModal } from '../../components/Explore/actions/addToDashboard/AddToDashboardModal';
 import { EventOpenAddToDashboard, type PanelDataRequestPayload } from '../../components/Explore/actions/addToDashboard';
+import { EventOpenAddToNotebook, type NotebookCapture } from '../../components/Explore/actions/addToNotebook';
+import { AddToNotebookModal } from '../../components/Explore/actions/AddToNotebookModal';
 
 export interface TraceExplorationState extends SharedExplorationState, SceneObjectState {
   topScene?: SceneObject;
@@ -84,6 +86,7 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
 
   isAddToDashboardModalOpen: boolean;
   addToDashboardPanelData?: PanelDataRequestPayload;
+  notebookCapture?: NotebookCapture;
 }
 
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
@@ -150,6 +153,11 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
     this._subs.add(
       this.subscribeToEvent(EventOpenAddToDashboard, (event) => {
         this.openAddToDashboardModal(event.payload.panelData);
+      })
+    );
+    this._subs.add(
+      this.subscribeToEvent(EventOpenAddToNotebook, (event) => {
+        this.setState({ notebookCapture: event.payload });
       })
     );
 
@@ -263,6 +271,7 @@ export class TraceExplorationScene extends SceneObjectBase {
       $timeRange,
       isAddToDashboardModalOpen,
       addToDashboardPanelData,
+      notebookCapture,
     } = traceExploration.useState();
 
     const { hasIssue } = issueDetector?.useState() || {
@@ -294,6 +303,12 @@ export class TraceExplorationScene extends SceneObjectBase {
           <AddToDashboardModal
             panelData={addToDashboardPanelData}
             onClose={() => traceExploration.closeAddToDashboardModal()}
+          />
+        )}
+        {notebookCapture && (
+          <AddToNotebookModal
+            capture={notebookCapture}
+            onClose={() => traceExploration.setState({ notebookCapture: undefined })}
           />
         )}
       </div>
