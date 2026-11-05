@@ -1,5 +1,9 @@
+import { createDataFrame, FieldType } from '@grafana/data';
+
 import {
+  getLabelValue,
   getLabelValueType,
+  getRawLabelValue,
   isBooleanValue,
   isNumberValue,
   isQuotedValue,
@@ -7,6 +11,83 @@ import {
   toEscapedValue,
   toLabelValueType,
 } from './utils';
+
+describe('intrinsic label lookup', () => {
+  const labelFrame = (labels: Record<string, string>) =>
+    createDataFrame({
+      fields: [{ name: 'Value', type: FieldType.number, values: [1], labels }],
+    });
+
+  it.each([
+    ['span:duration', 'duration'],
+    ['span:name', 'name'],
+    ['span:status', 'status'],
+    ['span:statusMessage', 'statusMessage'],
+    ['span:kind', 'kind'],
+    ['trace:duration', 'traceDuration'],
+    ['trace:rootName', 'rootName'],
+    ['trace:rootService', 'rootServiceName'],
+  ])('should resolve the Tempo alias pair %s / %s in both directions', (scoped, legacy) => {
+    const legacyFrame = labelFrame({ [legacy]: '"value"' });
+    const scopedFrame = labelFrame({ [scoped]: '"value"' });
+
+    expect(getRawLabelValue(legacyFrame, scoped)).toBe('"value"');
+    expect(getLabelValue(legacyFrame, scoped)).toBe('value');
+
+    expect(getRawLabelValue(scopedFrame, legacy)).toBe('"value"');
+    expect(getLabelValue(scopedFrame, legacy)).toBe('value');
+  });
+
+  it.each(['span:id', 'span:childCount', 'event:name', 'instrumentation:version'])(
+    'should read the single-spelling intrinsic %s without an alias entry',
+    (key) => {
+      const frame = labelFrame({ [key]: '"value"' });
+
+      expect(getRawLabelValue(frame, key)).toBe('"value"');
+      expect(getLabelValue(frame, key)).toBe('value');
+    }
+  );
+
+  it('should prefer an exact label over its alias', () => {
+    const frame = labelFrame({ 'span:name': '"scoped"', name: '"legacy"' });
+
+    expect(getRawLabelValue(frame, 'span:name')).toBe('"scoped"');
+    expect(getLabelValue(frame, 'span:name')).toBe('scoped');
+    expect(getLabelValue(frame, 'name')).toBe('legacy');
+  });
+
+  it.each(['span.name', 'span.kind', 'span:status', 'event:name', 'span:unknown', 'resource.service.name'])(
+    'should not resolve an unrelated key %s',
+    (key) => {
+      const frame = labelFrame({ name: '"checkout"', kind: '"server"' });
+
+      expect(getRawLabelValue(frame, key)).toBeNull();
+      expect(getLabelValue(frame, key)).toBe('No labels');
+    }
+  );
+
+  it('should ignore the percentile label when no key is provided', () => {
+    const frame = labelFrame({ p: '0.95', name: '"checkout"' });
+
+    expect(getRawLabelValue(frame)).toBe('"checkout"');
+    expect(getLabelValue(frame)).toBe('checkout');
+    expect(getLabelValue(frame, 'span:name')).toBe('checkout');
+  });
+
+  it('should return missing-value sentinels for a percentile-only frame', () => {
+    const frame = labelFrame({ p: '0.95' });
+
+    expect(getRawLabelValue(frame, 'span:name')).toBeNull();
+    expect(getLabelValue(frame, 'span:name')).toBe('No labels');
+  });
+
+  it('should return missing-value sentinels when no numeric labels exist', () => {
+    const frame = createDataFrame({ fields: [] });
+
+    expect(getRawLabelValue(frame, 'span:name')).toBeNull();
+    expect(getLabelValue(frame, 'span:name')).toBe('No labels');
+  });
+});
 
 describe('utils', () => {
   describe('isNumberValue', () => {

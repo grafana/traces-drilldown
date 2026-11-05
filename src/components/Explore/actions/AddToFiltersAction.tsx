@@ -21,7 +21,7 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
 
     const labels = this.state.frame.fields.find((f) => f.labels)?.labels ?? {};
     if (this.state.labelKey) {
-      if (!labels[this.state.labelKey]) {
+      if (getRawLabelValue(this.state.frame, this.state.labelKey) === null) {
         return;
       }
     } else {
@@ -82,7 +82,7 @@ export class AddToFiltersAction extends SceneObjectBase<AddToFiltersActionState>
 
     const labels = this.state.frame.fields.find((f) => f.labels)?.labels ?? {};
     const clickOperator = operator === '=' ? 'include' : 'exclude';
-    if (this.state.labelKey && !labels[this.state.labelKey]) {
+    if (this.state.labelKey && getRawLabelValue(this.state.frame, this.state.labelKey) === null) {
       logWarning(`There were no labels matching ${this.state.labelKey}, ${clickOperator} click ignored`);
       return;
     }
