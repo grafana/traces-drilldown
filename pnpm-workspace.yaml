@@ -32,10 +32,7 @@ overrides:
   zod: '>=4.6.7'
   fast-uri: '>=3.1.9'
   qs: '>=6.16.1'
-  'glob@^10': ^14.0.2
-  'glob@^13': ^14.0.2
-  'minimatch@^9': ^11.0.1
-  'minimatch@^10': ^11.0.1
+  glob: 14.0.2
   deepmerge: 4.1.2
   # Grafana externalizes React Router v6 until https://github.com/grafana/grafana/issues/129933 lands.
   # v6.30.6 has no package fix for GHSA-wrjc-x8rr-h8h6; this browser plugin only uses static internal routes.
