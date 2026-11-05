@@ -9,7 +9,7 @@ import {
   locationUtil,
   useDataLinksContext,
 } from '@grafana/data';
-import { usePluginFunctions } from '@grafana/runtime';
+import { locationService, usePluginFunctions } from '@grafana/runtime';
 import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 
 // --- Mocks ---
@@ -27,6 +27,7 @@ jest.mock('@grafana/data', () => {
 
 jest.mock('@grafana/runtime', () => ({
   usePluginFunctions: jest.fn(),
+  locationService: { push: jest.fn() },
 }));
 
 jest.mock('@grafana/plugin-compat/datasources', () => ({
@@ -231,6 +232,66 @@ describe('DataLinksCustomContext', () => {
       );
     });
 
+    it.each([
+      '/a/grafana-lokiexplore-app/explore?var-labels=job%7C%3D%7Ctest&from=1&to=2',
+      '/grafana/a/grafana-lokiexplore-app/explore?var-labels=job%7C%3D%7Ctest&from=1&to=2',
+    ])('should navigate Loki links without duplicating the subpath for %s', async (path) => {
+      mockExtensionFn.mockReturnValue({ path });
+
+      render(
+        <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
+          <TestConsumer />
+        </DataLinksCustomContext>
+      );
+
+      const result = await waitFor(() => {
+        const result = capturedContext.dataLinkPostProcessor({ linkModel: createMockLinkModel() });
+
+        expect(result.onClick).toEqual(expect.any(Function));
+        return result;
+      });
+
+      expect(locationService.push).not.toHaveBeenCalled();
+      result.onClick();
+
+      expect(locationService.push).toHaveBeenCalledTimes(1);
+      expect(locationService.push).toHaveBeenCalledWith(
+        '/a/grafana-lokiexplore-app/explore?var-labels=job%7C%3D%7Ctest&from=1&to=2'
+      );
+    });
+
+    it('should navigate Loki links without a subpath', async () => {
+      locationUtil.initialize({
+        config: { appSubUrl: '' } as GrafanaConfig,
+        getTimeRangeForUrl: () => ({ from: 'now-1h', to: 'now' }),
+        getVariablesUrlParams: () => ({}),
+      });
+      mockExtensionFn.mockReturnValue({
+        path: '/a/grafana-lokiexplore-app/explore?var-labels=job%7C%3D%7Ctest&from=1&to=2',
+      });
+
+      render(
+        <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
+          <TestConsumer />
+        </DataLinksCustomContext>
+      );
+
+      const result = await waitFor(() => {
+        const result = capturedContext.dataLinkPostProcessor({ linkModel: createMockLinkModel() });
+
+        expect(result.href).toBe('/a/grafana-lokiexplore-app/explore?var-labels=job%7C%3D%7Ctest&from=1&to=2');
+        return result;
+      });
+
+      expect(locationService.push).not.toHaveBeenCalled();
+      result.onClick();
+
+      expect(locationService.push).toHaveBeenCalledTimes(1);
+      expect(locationService.push).toHaveBeenCalledWith(
+        '/a/grafana-lokiexplore-app/explore?var-labels=job%7C%3D%7Ctest&from=1&to=2'
+      );
+    });
+
     it('does not modify href for non-Loki datasource links', async () => {
       mockedGetDataSourceInstanceList.mockResolvedValue([dataSourceListItem('prometheus', 'ds-prom-uid')]);
 
@@ -288,6 +349,30 @@ describe('DataLinksCustomContext', () => {
         expect(mockExtensionFn).toHaveBeenCalled();
         expect(result.href).toBe('http://original-link');
       });
+    });
+
+    it('should preserve upstream navigation when the extension returns no path', async () => {
+      const upstreamOnClick = jest.fn();
+      mockExtensionFn.mockReturnValue(undefined);
+
+      render(
+        <DataLinksCustomContext timeRange={createMockTimeRange() as any}>
+          <TestConsumer />
+        </DataLinksCustomContext>
+      );
+
+      const result = await waitFor(() => {
+        const linkModel = createMockLinkModel({ onClick: upstreamOnClick });
+        const result = capturedContext.dataLinkPostProcessor({ linkModel });
+
+        expect(mockExtensionFn).toHaveBeenCalled();
+        return result;
+      });
+
+      result.onClick();
+
+      expect(upstreamOnClick).toHaveBeenCalledTimes(1);
+      expect(locationService.push).not.toHaveBeenCalled();
     });
   });
 });
