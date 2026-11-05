@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.2.1](https://github.com/grafana/traces-drilldown/compare/v3.2.0...v3.2.1) (2026-11-05)
+
+
+### 🐛 Bug Fixes
+
+* resolve intrinsic aliases in breakdowns ([#1004](https://github.com/grafana/traces-drilldown/issues/1004)) ([83d1146](https://github.com/grafana/traces-drilldown/commit/83d11467e87a49688034c522b413f48ec302b1ff))
+
+
+### 🧹 Chore
+
+* **deps:** bumps @grafana/scenes to 9.2.2 ([#1000](https://github.com/grafana/traces-drilldown/issues/1000)) ([34a366c](https://github.com/grafana/traces-drilldown/commit/34a366c7c09cc3dd4b59e099c1306ce72f18efbb))
+* **deps:** update grafana/tempo docker tag to v2.10.10 ([#998](https://github.com/grafana/traces-drilldown/issues/998)) ([100e95e](https://github.com/grafana/traces-drilldown/commit/100e95e10964c35d0d07bcb5ec77ef30ee453203))
+* update references ([#1001](https://github.com/grafana/traces-drilldown/issues/1001)) ([b6f395b](https://github.com/grafana/traces-drilldown/commit/b6f395b0504e2e2684fe058f496bf918d073eabb))
+
 ## [3.2.0](https://github.com/grafana/traces-drilldown/compare/v3.1.0...v3.2.0) (2026-11-03)
 
 
