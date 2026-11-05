@@ -21,7 +21,7 @@ import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateSc
 import { ErrorStateScene } from 'components/states/ErrorState/ErrorStateScene';
 import { debounce } from 'lodash';
 import { Search } from './Search';
-import { getGroupByVariable } from 'utils/utils';
+import { getGroupByVariable, getRawLabelValue } from 'utils/utils';
 import {
   EMPTY_STATE_ERROR_MESSAGE,
   EMPTY_STATE_ERROR_REMEDY_MESSAGE,
@@ -173,7 +173,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
   private groupSeriesBy(data: PanelData, groupBy: string) {
     const groupedData = data.series.reduce(
       (acc, series) => {
-        const key = series.fields.find((f) => f.type === FieldType.number)?.labels?.[groupBy];
+        const key = getRawLabelValue(series, groupBy);
         if (!key) {
           return acc;
         }

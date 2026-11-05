@@ -9,7 +9,7 @@ jest.mock('../../../utils/utils', () => {
   const actual = jest.requireActual('../../../utils/utils');
   return {
     getFiltersVariable: jest.fn(),
-    getLabelValue: jest.fn(),
+    getLabelValue: (frame: DataFrame, labelName?: string) => actual.getLabelValue(frame, labelName),
     getLabelValueType: (value: unknown, key?: string) => actual.getLabelValueType(value, key),
     getRawLabelValue: (frame: unknown, labelName?: string) => actual.getRawLabelValue(frame, labelName),
     stripOuterQuotes: (value: string) => actual.stripOuterQuotes(value),
@@ -24,7 +24,6 @@ jest.mock('../../../featureFlags/featureFlags', () => ({
 const mockUseFlagUseValueTypeFiltering = jest.mocked(useFlagUseValueTypeFiltering);
 
 const mockGetFiltersVariable = require('../../../utils/utils').getFiltersVariable;
-const mockGetLabelValue = require('../../../utils/utils').getLabelValue;
 
 describe('AddToFiltersAction without useFlagUseValueTypeFiltering', () => {
   let variable: AdHocFiltersVariable;
@@ -41,15 +40,34 @@ describe('AddToFiltersAction without useFlagUseValueTypeFiltering', () => {
       fields: [
         {
           labels: { label1: 'value1', label2: 'value2' },
-          type: 'string',
+          type: FieldType.number,
         },
       ],
     } as unknown as DataFrame;
 
     onClick = jest.fn();
     mockGetFiltersVariable.mockReturnValue(variable);
-    mockGetLabelValue.mockReturnValue('value1');
     mockUseFlagUseValueTypeFiltering.mockReturnValue(false);
+  });
+
+  it('should include span:name using the returned name label', () => {
+    frame.fields[0].labels = { name: '"checkout"' };
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'span:name' });
+    action.onIncludeClick();
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [{ key: 'span:name', operator: '=', value: 'checkout' }],
+    });
+    expect(onClick).toHaveBeenCalledWith({ labelName: 'span:name' });
+  });
+
+  it('should exclude span:kind using the returned kind label', () => {
+    frame.fields[0].labels = { kind: '"server"' };
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'span:kind' });
+    action.onExcludeClick();
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [{ key: 'span:kind', operator: '!=', value: 'server' }],
+    });
+    expect(onClick).toHaveBeenCalledWith({ labelName: 'span:kind' });
   });
 
   it('should render both Include and Exclude buttons', () => {
@@ -173,6 +191,26 @@ describe('AddToFiltersAction with useFlagUseValueTypeFiltering', () => {
     onClick = jest.fn();
     mockGetFiltersVariable.mockReturnValue(variable);
     mockUseFlagUseValueTypeFiltering.mockReturnValue(true);
+  });
+
+  it('should include span:name using the returned name label', () => {
+    frame.fields[0].labels = { name: '"checkout"' };
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'span:name' });
+    action.newOnIncludeClick();
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [{ key: 'span:name', operator: '=', value: '"checkout"', valueLabels: ['checkout'] }],
+    });
+    expect(onClick).toHaveBeenCalledWith({ labelName: 'span:name' });
+  });
+
+  it('should exclude span:kind using the returned kind label', () => {
+    frame.fields[0].labels = { kind: '"server"' };
+    const action = new AddToFiltersAction({ frame, onClick, labelKey: 'span:kind' });
+    action.newOnExcludeClick();
+    expect(variable.setState).toHaveBeenCalledWith({
+      filters: [{ key: 'span:kind', operator: '!=', value: 'server', valueLabels: ['server'] }],
+    });
+    expect(onClick).toHaveBeenCalledWith({ labelName: 'span:kind' });
   });
 
   it('should render both Include and Exclude buttons', () => {

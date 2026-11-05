@@ -112,18 +112,12 @@ export function getLabelKey(frame: DataFrame) {
 }
 
 export function getLabelValue(frame: DataFrame, labelName?: string) {
-  const labels = frame.fields.find((f) => f.type === 'number')?.labels;
-
-  if (!labels) {
+  const value = getRawLabelValue(frame, labelName);
+  if (value === null) {
     return NO_LABELS;
   }
 
-  const keys = Object.keys(labels).filter((k) => k !== 'p'); // remove the percentile label
-  if (keys.length === 0) {
-    return NO_LABELS;
-  }
-
-  return labels[labelName || keys[0]].replace(/"/g, '');
+  return value.replace(/"/g, '');
 }
 
 export function getPercentilesVariable(scene: SceneObject): CustomVariable {
@@ -233,18 +227,42 @@ export const getOpenTrace = (scene: SceneObject) => {
   };
 };
 
+// https://github.com/grafana/tempo/blob/36bd213b18629610ebaf534da3ba8f3288041aae/pkg/traceql/enum_attributes.go
+const intrinsicLabelAliases = new Map([
+  ['span:duration', 'duration'],
+  ['duration', 'span:duration'],
+  ['span:name', 'name'],
+  ['name', 'span:name'],
+  ['span:status', 'status'],
+  ['status', 'span:status'],
+  ['span:statusMessage', 'statusMessage'],
+  ['statusMessage', 'span:statusMessage'],
+  ['span:kind', 'kind'],
+  ['kind', 'span:kind'],
+  ['trace:duration', 'traceDuration'],
+  ['traceDuration', 'trace:duration'],
+  ['trace:rootName', 'rootName'],
+  ['rootName', 'trace:rootName'],
+  ['trace:rootService', 'rootServiceName'],
+  ['rootServiceName', 'trace:rootService'],
+]);
+
 export function getRawLabelValue(frame: DataFrame, labelName?: string): string | null {
-  const labels = frame.fields.find((f) => f.type === 'number')?.labels;
+  const labels = frame.fields.find((field) => field.type === 'number')?.labels;
   if (!labels) {
     return null;
   }
 
-  const keys = Object.keys(labels).filter((k) => k !== 'p'); // remove the percentile label
+  const keys = Object.keys(labels).filter((key) => key !== 'p');
   if (keys.length === 0) {
     return null;
   }
 
-  return labels[labelName || keys[0]];
+  const key = labelName || keys[0];
+  const alias = intrinsicLabelAliases.get(key);
+  const keyValue = labels[key];
+  const aliasValue = alias ? (labels[alias] ?? null) : null;
+  return keyValue ?? aliasValue;
 }
 
 export function isNumberValue(value?: unknown): boolean {
