@@ -2,7 +2,7 @@ import { Locator, Page, expect } from '@playwright/test';
 import { GrafanaPage, NavigateOptions, PluginTestCtx } from '@grafana/plugin-e2e';
 
 import pluginJson from '../../src/plugin.json';
-import { getTestIdFromMetric, testIds } from '../../src/utils/testIds';
+import { actionViewTestIds, getTestIdFromMetric, testIds } from '../../src/utils/testIds';
 import { MetricFunction } from '../../src/utils/shared';
 import { AttributeItem } from '../../src/types';
 
@@ -99,7 +99,13 @@ export class TracesExplorePage extends GrafanaPage {
   }
 
   getTab(tab: RateTabs): Locator {
-    return this.getByGrafanaSelector(this.ctx.selectors.components.Tab.title(tab));
+    const tabIds: Record<RateTabs, string> = {
+      'Service structure': actionViewTestIds.structure,
+      Comparison: actionViewTestIds.comparison,
+      Traces: actionViewTestIds.traceList,
+      Breakdown: actionViewTestIds.breakdown,
+    };
+    return this.page.getByTestId(tabIds[tab]);
   }
 
   async assertTabSelected(tab: RateTabs) {

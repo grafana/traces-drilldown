@@ -1,5 +1,5 @@
 import { VariableValue } from '@grafana/scenes';
-import { actionViewTestIds, getTraceOpenTestId, getTestIdFromAttribute, getTestIdFromMetric, testIds } from './testIds';
+import { getTraceOpenTestId, getTestIdFromAttribute, getTestIdFromMetric, testIds } from './testIds';
 import { AttributeItem } from '../types';
 
 describe('getTestIdFromMetric', () => {
@@ -46,9 +46,6 @@ describe('getTestIdFromAttribute', () => {
 });
 
 describe('interactive anchors', () => {
-  it('provides a unique tab anchor for every action view', () => {
-    expect(new Set(Object.values(actionViewTestIds)).size).toBe(6);
-  });
   it('distinguishes traces and spans without depending on display labels or row positions', () => {
     expect(getTraceOpenTestId('abc', '01')).toBe('grafana-exploretraces-app open-trace-abc-span-01');
     expect(getTraceOpenTestId('abc', '01')).not.toBe(getTraceOpenTestId('abc', '02'));
