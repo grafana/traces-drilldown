@@ -1,3 +1,4 @@
+import { testIds } from 'utils/testIds';
 import React, { useEffect } from 'react';
 import { CustomVariable, MultiValueVariable, MultiValueVariableState, SceneComponentProps } from '@grafana/scenes';
 import { primarySignalOptions } from './primary-signals';
@@ -77,6 +78,7 @@ export class PrimarySignalVariable extends CustomVariable {
           className={styles.buttonGroup}
         />
         <Select
+          data-testid={testIds.primarySignalSelect}
           options={[
             { label: t('primary-signal-variable.primary-signal-label', 'Primary signal'), options: selectOptions },
           ]}

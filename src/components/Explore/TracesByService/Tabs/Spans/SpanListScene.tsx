@@ -41,7 +41,7 @@ import {
 } from '../../../../../utils/shared';
 import { reportAppInteraction, USER_EVENTS_PAGES, USER_EVENTS_ACTIONS } from 'utils/analytics';
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
-import { testIds } from 'utils/testIds';
+import { getTraceOpenTestId, testIds } from 'utils/testIds';
 
 export interface SpanListSceneState extends SceneObjectState {
   panel?: SceneFlexLayout;
@@ -99,6 +99,7 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
                     <div className={'cell-link-wrapper'}>
                       <div
                         className={'cell-link'}
+                        data-testid={getTraceOpenTestId(traceId, spanId)}
                         title={name}
                         onClick={() => {
                           this.publishEvent(new EventTraceOpened({ traceId, spanId }), true);
@@ -253,13 +254,13 @@ export class SpanListScene extends SceneObjectBase<SpanListSceneState> {
     }
 
     return (
-      <div className={styles.container} data-testid={testIds.tracesContainer}>
+      <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.description}>
             <Trans i18nKey="span-list-scene.description">View a list of spans for the current set of filters.</Trans>
           </div>
         </div>
-        <div className={styles.content}>
+        <div className={styles.content} data-testid={testIds.tracesContainer}>
           <Stack direction="row" gap={2} width="100%">
             <AttributesSidebar
               options={attributes?.map((x) => toOption(x)) ?? []}

@@ -1,3 +1,4 @@
+import { testIds } from 'utils/testIds';
 import React, { useState } from 'react';
 import { useLocation } from 'react-use';
 
@@ -24,5 +25,14 @@ export const ShareExplorationAction = ({ exploration }: ShareExplorationActionSt
     }
   };
 
-  return <Button size="sm" variant={'secondary'} icon={'share-alt'} tooltip={tooltip} onClick={onShare} />;
+  return (
+    <Button
+      data-testid={testIds.shareExploration}
+      size="sm"
+      variant={'secondary'}
+      icon={'share-alt'}
+      tooltip={tooltip}
+      onClick={onShare}
+    />
+  );
 };

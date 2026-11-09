@@ -1,3 +1,4 @@
+import { actionViewTestIds } from 'utils/testIds';
 import { css } from '@emotion/css';
 import { SceneObjectBase, SceneComponentProps, SceneObject, sceneGraph, SceneObjectState } from '@grafana/scenes';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
@@ -151,6 +152,7 @@ export class TabsBarScene extends SceneObjectBase<TabsBarSceneState> {
             return (
               <Tab
                 key={index}
+                data-testid={actionViewTestIds[tab.value]}
                 label={tab.displayName(metric as MetricFunction)}
                 active={actionView === tab.value}
                 onChangeTab={() => metricScene.onUserSetActionView(tab.value)}
