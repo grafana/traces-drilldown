@@ -63,7 +63,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "Arama terimi için veri yok",
-    "partial-results-hint": ""
+    "partial-results-hint": "Toplam {{total}} taneden {{shown}} tanesi gösteriliyor. Daha fazla yüklemek için kaydırın veya sonuçları daraltmak için arama yapın."
   },
   "duration-comparison-control": {
     "select-slowest-traces": "En yavaş izleri seçin",

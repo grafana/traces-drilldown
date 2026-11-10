@@ -1,282 +1,282 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Načítání adaptivního trasování…"
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Vyloučit",
+    "include": "Zahrnout"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Drilldown trasování"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Zakázat plugin",
+    "enable-plugin": "Povolit plugin",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Rozsah dotazu",
+      "query-range-description": "Časový rozsah pro každou dávku uloženou v mezipaměti v Time Seeker. Vyšší hodnoty znamenají méně dotazů, ale více dat na dotaz."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Povolit/Zakázat",
+      "time-seeker-settings": "Nastavení Time Seeker"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "Plugin je aktuálně povolen.",
+    "plugin-not-enabled": "Plugin je aktuálně zakázán.",
+    "save-settings": "Uložit nastavení"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Mřížka",
+    "layout-rows": "Řádky",
+    "layout-single": "Jednorázový"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Chyba",
+    "rate-label": "Hodnocení"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Výchozí hodnota",
+    "description": "Atributy jsou seřazeny podle rozdílu mezi základními hodnotami a hodnotami výběru pro každou hodnotu.",
+    "hide-baseline-only-label": "Skrýt pouze základní hodnotu",
+    "hide-baseline-only-tooltip": "Skrýt panely, které mají pouze procento základní hodnoty a žádný výběr",
+    "selection-label": "Výběr"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Přidat do oblíbených",
+    "all-button": "Vše",
+    "clear-search": "Vymazat vyhledávání",
+    "drop-here": "Přetáhnout zde",
+    "drop-here-below": "Přetáhnout zde",
+    "no-available": "Nejsou k dispozici žádné atributy",
+    "no-match": "Žádné atributy neodpovídají vašim kritériím",
+    "none": "Žádné",
+    "remove-from-favorites": "Odebrat z oblíbených",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Vše",
+      "favorites": "Oblíbené",
+      "resource": "Zdroj",
+      "span": "Rozsah"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_one": "",
-    "selected-count_few": "",
-    "selected-count_many": "",
-    "selected-count_other": ""
+    "search-placeholder": "Hledat atributy…",
+    "selected": "Vybrané:",
+    "selected-count_one": "Vybrané ({{count}}):",
+    "selected-count_few": "Vybrané ({{count}}):",
+    "selected-count_many": "Vybrané ({{count}}):",
+    "selected-count_other": "Vybrané ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "",
-    "partial-results-hint": ""
+    "no-data-for-search": "Žádná data pro hledaný výraz",
+    "partial-results-hint": "Zobrazuje se {{shown}} z {{total}}. Posunutím načtete další nebo vyhledáváním zúžíte výběr."
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "Vybrat nejpomalejší trasování",
+    "slowest-traces-selected": "Vybrána nejpomalejší trasování"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Chyba dotazu"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Chyba:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}} %"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Zobrazit podrobnosti výjimky z trasování s chybami pro aktuální sadu filtrů."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "Vyloučit zprávu o výjimce",
+    "grouped-messages-aria-label": "Zobrazit seskupené zprávy o výjimkách",
+    "grouped-messages-common-prefix": "Běžné",
+    "grouped-messages-title": "Seskupené zprávy",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "Podrobnosti o výjimce",
+      "exception-details-tooltip": "Typ výjimky, zpráva, služba a časové razítko posledního zobrazení. Pomocí tlačítek Zahrnout/Vyloučit můžete zahrnout nebo vyloučit zprávy o výjimkách, případně klikněte na typ nebo zprávu pro filtrování.",
+      "frequency": "Frekvence",
+      "frequency-tooltip": "Vizuální znázornění frekvence výjimek v průběhu času",
+      "occurrences": "Výskyty",
+      "occurrences-tooltip": "Celkový počet výskytů této výjimky"
     },
-    "include-aria-label": ""
+    "include-aria-label": "Zahrnout zprávu o výjimce"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "Zobrazit trasování"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "Načítání…",
+    "open-in-traces-drilldown": "Otevřít v drilldownu trasování"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Zavřít"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "Nejvyšší rozdíl"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "Zkontrolovat"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "Poznatky",
+    "description": "Překryjte kondice stavu (kritický, varování, informace) ze znalostního grafu na panelech časových řad",
+    "label": "Poznatky"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Zobrazit"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Žádná uložená vyhledávání k zobrazení.",
+    "remove-tooltip": "Odebrat",
+    "select-button": "Vybrat",
+    "title": "Načíst dříve uložené vyhledávání"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Načíst uložený dotaz",
+    "load-saved-search": "Načíst uložené vyhledávání",
+    "no-saved-searches": "Žádná uložená vyhledávání k načtení"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "Otevřít v drilldownu trasování"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Přidat na dashboard",
+    "create-alert": "Vytvořit výstrahu",
+    "explore": "Prozkoumat",
+    "navigation": "Navigace"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "Výchozí",
+    "label": "Percentily",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "Informace o pluginu",
+      "tooltip": "Informace o pluginu"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Poslední aktualizace: {{updated}}",
+      "title": "Drilldown trasování Grafana, verze {{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Seznam změn",
+      "commit-sha": "Provést SHA: {{sha}}",
+      "contribute": "Přispět",
+      "documentation": "Dokumentace",
+      "give-feedback": "Poskytnout zpětnou vazbu",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "Nahlásit problém"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Primární signál",
+    "primary-signal-label": "Primární signál"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Výběr srovnání"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "Uložit do uložených dotazů",
+    "save-search": "Uložit vyhledávání"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "Zrušit",
+    "close": "Zavřít",
+    "existing-search-warning": "Existuje dříve uložené vyhledávání se stejným dotazem: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Popis",
+      "title": "Název"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "Uložená vyhledávání se ukládají místně do vašeho prohlížeče a budou k dispozici pouze na tomto zařízení.",
+    "save": "Uložit",
+    "success-message": "Vyhledávání bylo úspěšně uloženo.",
+    "success-title": "Úspěch",
+    "title": "Uložit současné vyhledávání"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Hledat"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Zpět na všechna trasování"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Zobrazit seznam rozsahů pro aktuální sadu filtrů.",
+    "open-in-new-tab": "Otevřít v nové záložce"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Žádná data",
+    "not-enough-data": "Nedostatek dat"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Streamování"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Analyzujte strukturu pomalých rozsahů z trasování, které odpovídají aktuálním filtrům.",
+    "duration-panel-info": "Každý panel představuje souhrnné zobrazení sestavené pomocí rozsahů z více trasování.",
+    "errors-description": "Analyzujte strukturu chyb trasování, které odpovídají aktuálním filtrům.",
+    "errors-panel-info": "Každý panel představuje souhrnné zobrazení sestavené pomocí rozsahů z více trasování.",
+    "no-data-message": "Záložka Struktura zobrazuje {{emptyMsg}} rozsahy pod tím, co právě zkoumáte. V současné době nejsou pod zkoumanými rozsahy žádné podřízené {{emptyMsg}} rozsahy.",
+    "open-trace": "Otevřít trasování",
+    "rate-description": "Analyzujte strukturu služby trasování, která odpovídá aktuálním filtrům.",
+    "rate-panel-info": "Každý panel představuje souhrnné zobrazení sestavené pomocí rozsahů z více trasování.",
+    "read-more": "Přečtěte si více o",
+    "works-best": "Záložka Struktura funguje nejlépe s úplnými trasováními."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Zaměření na výběr",
+    "large-batch-warning": "Time Seeker musí načíst velké množství dat. Může to mít vliv na výkon.",
+    "pan-left": "Posunout doleva",
+    "pan-right": "Posunout doprava",
+    "set-range": "Nastavit rozsah",
+    "zoom-in": "Přiblížit kontext",
+    "zoom-out": "Oddálit kontext"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "Načítání Time Seeker…",
+    "seeker-label": "Seeker"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "Není vybráno žádné trasování"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "Zobrazit trasování {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Drilldown trasování"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Zdroj dat",
+      "filters": "Filtry",
+      "trace-id": "ID trasování",
+      "trace-id-placeholder": "Zadejte ID a stiskněte klávesu Enter"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Zdroj dat",
+      "duration-percentiles": "Percentily doby trvání"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Přečtěte si dokumentaci",
+    "warning-message": "Při spuštění dotazu na metriky TraceQL jsme zjistili chybu: „Procesor localblocks nebyl nalezen“. To obvykle znamená, že procesor „local-blocks“ není v Tempo nakonfigurován, což je nutné pro fungování drilldownu trasování Grafana.",
+    "warning-title": "Metriky TraceQL nejsou nakonfigurovány"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Vyberte typ metriky",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- Čas, který tyto rozsahy zaberou, znázorněný jako tepelná mapa (doba odezvy, latence).",
+      "duration-label": "Doba trvání",
+      "errors-description": "- Selhávající rozsahy, celkové problémy v ekosystému trasování,",
+      "errors-label": "Chyby",
+      "rate-description": "- Počet rozsahů za sekundu, která odpovídají vašemu filtru. Užitečné pro zjištění neobvyklých nárůstů aktivity.",
+      "rate-label": "Hodnocení",
+      "read-documentation": "Přečtěte si dokumentaci",
+      "subtitle": "Prozkoumejte metriky frekvence, chyb a doby trvání (RED) generované z trasování nástrojem Tempo.",
+      "title": "Metriky RED pro trasování"
     }
   }
 }
