@@ -1,3 +1,4 @@
+import { testIds } from 'utils/testIds';
 import { css, cx } from '@emotion/css';
 import { useDialog } from '@react-aria/dialog';
 import { useOverlay } from '@react-aria/overlays';
@@ -76,7 +77,11 @@ export function Drawer({
   // Adds body class while open so the toolbar nav can hide some actions while drawer is open
   useBodyClassWhileOpen();
 
-  const content = <div className={styles.content}>{children}</div>;
+  const content = (
+    <div data-testid={testIds.traceDrawer} className={styles.content}>
+      {children}
+    </div>
+  );
   const overrideWidth = drawerWidth ?? drawerSizes[size].width;
   const minWidth = drawerSizes[size].minWidth;
 

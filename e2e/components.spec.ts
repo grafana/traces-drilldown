@@ -36,13 +36,11 @@ test.describe('components', () => {
     });
   });
 
-  test('for tabs are visible', async ({ tracesExplorePage, selectors }) => {
-    await expect(tracesExplorePage.getByGrafanaSelector(selectors.components.Tab.title('Breakdown'))).toBeVisible();
-    await expect(
-      tracesExplorePage.getByGrafanaSelector(selectors.components.Tab.title('Service structure'))
-    ).toBeVisible();
-    await expect(tracesExplorePage.getByGrafanaSelector(selectors.components.Tab.title('Comparison'))).toBeVisible();
-    await expect(tracesExplorePage.getByGrafanaSelector(selectors.components.Tab.title('Traces'))).toBeVisible();
+  test('for tabs are visible', async ({ tracesExplorePage }) => {
+    await expect(tracesExplorePage.getTab('breakdown')).toBeVisible();
+    await expect(tracesExplorePage.getTab('structure')).toBeVisible();
+    await expect(tracesExplorePage.getTab('comparison')).toBeVisible();
+    await expect(tracesExplorePage.getTab('traceList')).toBeVisible();
   });
 
   test('for breakdown tab are visible', async ({ tracesExplorePage }) => {
