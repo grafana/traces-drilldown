@@ -1,279 +1,279 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "正在加载自适应追踪..."
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "排除",
+    "include": "包含"
   },
   "app": {
-    "page-title": ""
+    "page-title": "追踪深入分析"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "禁用插件",
+    "enable-plugin": "启用插件",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "查询范围",
+      "query-range-description": "时间查找器中每个缓存批次的时间范围。值越大，查询次数越少，但每次查询的数据量越多。"
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "启用/禁用",
+      "time-seeker-settings": "时间查找器设置"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "插件当前已启用。",
+    "plugin-not-enabled": "插件当前未启用。",
+    "save-settings": "保存设置"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "网格",
+    "layout-rows": "行",
+    "layout-single": "单一"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "错误",
+    "rate-label": "速率"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "基线",
+    "description": "属性按每个值的基线值与所选值之间的差值排序。",
+    "hide-baseline-only-label": "隐藏仅基线",
+    "hide-baseline-only-tooltip": "隐藏仅有基线百分比而没有所选内容的面板",
+    "selection-label": "所选内容"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "添加到收藏夹",
+    "all-button": "全部",
+    "clear-search": "清除搜索",
+    "drop-here": "拖放到此处",
+    "drop-here-below": "拖放到此处",
+    "no-available": "无可用属性",
+    "no-match": "没有属性与您的标准匹配",
+    "none": "无",
+    "remove-from-favorites": "从收藏夹中移除",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "全部",
+      "favorites": "收藏",
+      "resource": "资源",
+      "span": "跨度"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_other": ""
+    "search-placeholder": "搜索属性...",
+    "selected": "已选择：",
+    "selected-count_other": "已选择（{{count}} 个）："
   },
   "by-frame-repeater": {
-    "no-data-for-search": "",
-    "partial-results-hint": ""
+    "no-data-for-search": "无搜索词的数据",
+    "partial-results-hint": "正在显示 {{shown}} 个，共 {{total}} 个。滚动以加载更多，或搜索以缩小范围。"
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "选择最慢的追踪",
+    "slowest-traces-selected": "已选择最慢的追踪"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "查询错误"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "错误："
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}}%"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "查看符合当前筛选条件组的错误追踪中的异常详情。"
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "排除异常消息",
+    "grouped-messages-aria-label": "显示分组的异常消息",
+    "grouped-messages-common-prefix": "常用",
+    "grouped-messages-title": "分组消息",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "异常详情",
+      "exception-details-tooltip": "异常类型、消息、服务和最后出现时间戳。使用“包含/排除”按钮来包含或排除异常消息，或点击“类型”或“消息”进行筛选。",
+      "frequency": "频率",
+      "frequency-tooltip": "异常频率随时间变化的可视化表示",
+      "occurrences": "出现次数",
+      "occurrences-tooltip": "此异常发生的总次数"
     },
-    "include-aria-label": ""
+    "include-aria-label": "包含异常消息"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "查看追踪"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "正在加载...",
+    "open-in-traces-drilldown": "在“追踪深入分析”中打开"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "关闭"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "最大差值"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "检查"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "洞察",
+    "description": "在时间序列面板上叠加来自知识图谱的运行状况（严重、警告、信息）",
+    "label": "洞察"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "查看"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "没有可显示的已保存搜索。",
+    "remove-tooltip": "移除",
+    "select-button": "选择",
+    "title": "加载之前保存的搜索"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "加载已保存的查询",
+    "load-saved-search": "加载已保存的搜索",
+    "no-saved-searches": "没有要加载的已保存搜索"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "在“追踪深入分析”中打开"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "添加到面板",
+    "create-alert": "创建警报",
+    "explore": "探索",
+    "navigation": "导航"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "默认",
+    "label": "百分位",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "插件信息",
+      "tooltip": "插件信息"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "上次更新：{{updated}}",
+      "title": "Grafana 追踪深入分析 v{{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "变更日志",
+      "commit-sha": "提交 SHA：{{sha}}",
+      "contribute": "贡献",
+      "documentation": "文档",
+      "give-feedback": "提供反馈",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "报告问题"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "主要信号",
+    "primary-signal-label": "主要信号"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "比较所选内容"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "保存在“已保存的查询”中",
+    "save-search": "保存搜索"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "取消",
+    "close": "关闭",
+    "existing-search-warning": "存在一个使用相同查询的已保存搜索：{{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "描述",
+      "title": "标题"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "已保存的搜索会存储在您的浏览器本地，并且只能在此设备上使用。",
+    "save": "保存",
+    "success-message": "已成功保存搜索。",
+    "success-title": "成功",
+    "title": "保存当前搜索"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "搜索"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "返回所有追踪"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "查看当前筛选条件组的跨度列表。",
+    "open-in-new-tab": "在新选项卡中打开"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "无数据",
+    "not-enough-data": "数据不足"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "流式传输"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "分析符合当前筛选条件的追踪中慢速跨度的结构。",
+    "duration-panel-info": "每个面板都代表一个聚合视图，由来自多次追踪的跨度编译而成。",
+    "errors-description": "分析符合当前筛选条件的追踪中的错误结构。",
+    "errors-panel-info": "每个面板都代表一个聚合视图，由来自多次追踪的跨度编译而成。",
+    "no-data-message": "“结构”选项卡会显示当前调查内容下方的{{emptyMsg}}跨度。目前，您正在调查的跨度下没有子级{{emptyMsg}}跨度。",
+    "open-trace": "打开追踪",
+    "rate-description": "分析符合当前筛选条件的追踪中的服务结构。",
+    "rate-panel-info": "每个面板都代表一个聚合视图，由来自多次追踪的跨度编译而成。",
+    "read-more": "详细了解",
+    "works-best": "“结构”选项卡最适合完整追踪。"
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "聚焦所选内容",
+    "large-batch-warning": "时间查找器需要加载大量数据。性能可能会受到影响。",
+    "pan-left": "向左平移",
+    "pan-right": "向右平移",
+    "set-range": "设置范围",
+    "zoom-in": "在上下文中放大",
+    "zoom-out": "在上下文中缩小"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "正在加载时间查找器…",
+    "seeker-label": "查找器"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "未选择追踪"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "查看追踪 {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "追踪深入分析"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "数据源",
+      "filters": "筛选条件",
+      "trace-id": "追踪 ID",
+      "trace-id-placeholder": "输入 ID，然后按回车键"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "数据源",
+      "duration-percentiles": "持续时间百分位"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "阅读文档",
+    "warning-message": "我们在运行 TraceQL 指标查询时发现一个错误：“找不到 localblocks 处理器”。这通常意味着 Tempo 中未配置“local-blocks”处理器，而 Grafana 追踪深入分析需要此处理器才能运行。",
+    "warning-title": "未配置 TraceQL 指标"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "选择指标类型",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- 这些跨度的用时，以热图表示（响应时间、延迟）",
+      "duration-label": "持续时间",
+      "errors-description": "- 失败的跨度，属于追踪生态系统的整体问题",
+      "errors-label": "错误",
+      "rate-description": "- 符合您筛选条件的每秒跨度，有助于发现活动中的异常峰值",
+      "rate-label": "速率",
+      "read-documentation": "阅读文档",
+      "subtitle": "探索 Tempo 从追踪中生成的速率、错误和持续时间 (RED) 指标。",
+      "title": "追踪的 RED 指标"
     }
   }
 }

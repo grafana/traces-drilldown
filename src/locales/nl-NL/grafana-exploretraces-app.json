@@ -63,7 +63,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "Geen gegevens voor zoekterm",
-    "partial-results-hint": ""
+    "partial-results-hint": "{{shown}} van {{total}} weergegeven. Scrol om meer te laden of zoek om de resultaten te beperken."
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Selecteer langzaamste traces",

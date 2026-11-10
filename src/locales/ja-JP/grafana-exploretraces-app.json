@@ -62,7 +62,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "検索キーワードに一致するデータはありません",
-    "partial-results-hint": ""
+    "partial-results-hint": "{{total}}件中{{shown}}件を表示中スクロールしてさらに読み込むか、検索して絞り込んでください。"
   },
   "duration-comparison-control": {
     "select-slowest-traces": "最も遅いトレースを選択",

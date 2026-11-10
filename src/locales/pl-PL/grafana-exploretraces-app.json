@@ -65,7 +65,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "Brak danych dla wyszukiwanego hasła",
-    "partial-results-hint": ""
+    "partial-results-hint": "Wyświetlanie {{shown}} z {{total}}. Przewiń, aby wczytać więcej, lub wyszukaj, aby zawęzić wyniki."
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Wybierz najwolniejsze ślady",
