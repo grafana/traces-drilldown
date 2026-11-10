@@ -37,10 +37,10 @@ test.describe('components', () => {
   });
 
   test('for tabs are visible', async ({ tracesExplorePage }) => {
-    await expect(tracesExplorePage.getTab('Breakdown')).toBeVisible();
-    await expect(tracesExplorePage.getTab('Service structure')).toBeVisible();
-    await expect(tracesExplorePage.getTab('Comparison')).toBeVisible();
-    await expect(tracesExplorePage.getTab('Traces')).toBeVisible();
+    await expect(tracesExplorePage.getTab('breakdown')).toBeVisible();
+    await expect(tracesExplorePage.getTab('structure')).toBeVisible();
+    await expect(tracesExplorePage.getTab('comparison')).toBeVisible();
+    await expect(tracesExplorePage.getTab('traceList')).toBeVisible();
   });
 
   test('for breakdown tab are visible', async ({ tracesExplorePage }) => {

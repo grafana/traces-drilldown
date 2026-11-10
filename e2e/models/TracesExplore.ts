@@ -6,7 +6,7 @@ import { actionViewTestIds, getTestIdFromMetric, testIds } from '../../src/utils
 import { MetricFunction } from '../../src/utils/shared';
 import { AttributeItem } from '../../src/types';
 
-export type RateTabs = 'Service structure' | 'Comparison' | 'Traces' | 'Breakdown';
+export type RateTabs = keyof Pick<typeof actionViewTestIds, 'structure' | 'comparison' | 'traceList' | 'breakdown'>;
 
 export class TracesExplorePage extends GrafanaPage {
   constructor(readonly ctx: PluginTestCtx) {
@@ -99,13 +99,7 @@ export class TracesExplorePage extends GrafanaPage {
   }
 
   getTab(tab: RateTabs): Locator {
-    const tabIds: Record<RateTabs, string> = {
-      'Service structure': actionViewTestIds.structure,
-      Comparison: actionViewTestIds.comparison,
-      Traces: actionViewTestIds.traceList,
-      Breakdown: actionViewTestIds.breakdown,
-    };
-    return this.page.getByTestId(tabIds[tab]);
+    return this.page.getByTestId(actionViewTestIds[tab]);
   }
 
   async assertTabSelected(tab: RateTabs) {

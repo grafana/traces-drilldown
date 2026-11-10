@@ -18,7 +18,7 @@ export function DropdownIndicator({ selectProps }: DropdownIndicatorProps) {
   const isOpen = selectProps.menuIsOpen;
   const icon = isOpen ? 'angle-up' : 'angle-down';
   const size = 'md';
-  return <Icon name={icon} size={size} />;
+  return <Icon data-testid={testIds.primarySignalSelect} name={icon} size={size} />;
 }
 
 const GroupHeading = () => {
@@ -78,7 +78,6 @@ export class PrimarySignalVariable extends CustomVariable {
           className={styles.buttonGroup}
         />
         <Select
-          data-testid={testIds.primarySignalSelect}
           options={[
             { label: t('primary-signal-variable.primary-signal-label', 'Primary signal'), options: selectOptions },
           ]}
