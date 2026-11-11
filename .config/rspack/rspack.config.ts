@@ -5,34 +5,42 @@
  * https://grafana.com/developers/plugin-tools/how-to-guides/extend-configurations#extend-the-webpack-config
  */
 
-import CopyWebpackPlugin from 'copy-webpack-plugin';
-import DiagnosticsPlugin from 'diagnostics-webpack-plugin';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import {
+  BannerPlugin,
+  Compilation,
+  CopyRspackPlugin,
+  LightningCssMinimizerRspackPlugin,
+  SubresourceIntegrityPlugin,
+  SwcJsMinimizerRspackPlugin,
+  type Configuration,
+} from '@rspack/core';
+import { TsCheckerRspackPlugin } from 'ts-checker-rspack-plugin';
 import path from 'path';
 import ReplaceInFileWebpackPlugin from 'replace-in-file-webpack-plugin';
-import TerserPlugin from 'terser-webpack-plugin';
-import { SubresourceIntegrityPlugin } from 'webpack-subresource-integrity';
-import webpack, { type Configuration } from 'webpack';
-import LiveReloadPlugin from 'webpack-livereload-plugin';
-import VirtualModulesPlugin from 'webpack-virtual-modules';
+import { RspackVirtualModulePlugin } from 'rspack-plugin-virtual-module';
 
-import { BuildModeWebpackPlugin } from './BuildModeWebpackPlugin.ts';
-import { DIST_DIR, SOURCE_DIR } from './constants.ts';
-import { getCPConfigVersion, getEntries, getPackageJson, getPluginJson, hasReadme, isWSL } from './utils.ts';
+import RspackLiveReloadPlugin from './LiveReloadRspackPlugin.ts';
+import { BuildModeRspackPlugin } from './BuildModeRspackPlugin.ts';
+import { LicenseRspackPlugin } from './LicenseRspackPlugin.ts';
+import DiagnosticsRspackPlugin from './DiagnosticsRspackPlugin.ts';
+import { PluginCssRspackPlugin } from './PluginCssRspackPlugin.ts';
+import { DIST_DIR, SOURCE_DIR } from '../bundler/constants.ts';
+import { getCPConfigVersion, getEntries, getPackageJson, getPluginJson, isWSL } from '../bundler/utils.ts';
 import { externals } from '../bundler/externals.ts';
+import { copyFilePatterns } from '../bundler/copyFiles.ts';
 
 const pluginJson = getPluginJson();
+const pluginId = pluginJson.id;
 const cpVersion = getCPConfigVersion();
 const pluginVersion = getPackageJson().version;
-
-const virtualPublicPath = new VirtualModulesPlugin({
-  'node_modules/grafana-public-path.js': `
+const virtualPublicPath = new RspackVirtualModulePlugin({
+  'grafana-public-path': `
 import amdMetaModule from 'amd-module';
 
 __webpack_public_path__ =
   amdMetaModule && amdMetaModule.uri
     ? amdMetaModule.uri.slice(0, amdMetaModule.uri.lastIndexOf('/') + 1)
-    : 'public/plugins/${pluginJson.id}/';
+    : 'public/plugins/${pluginId}/';
 `,
 });
 
@@ -42,21 +50,19 @@ export type Env = {
 
 const config = async (env: Env): Promise<Configuration> => {
   const baseConfig: Configuration = {
-    cache: {
-      type: 'filesystem',
-      buildDependencies: {
-        // __filename doesn't work in Node 24
-        config: [path.resolve(process.cwd(), '.config', 'webpack', 'webpack.config.ts')],
-      },
-    },
-
     context: path.join(process.cwd(), SOURCE_DIR),
 
     devtool: env.production ? 'source-map' : 'eval-source-map',
 
-    entry: await getEntries(),
+    // grafana-public-path sets the public path first. grafana-plugin-css adds ./module.css to the define() dependencies
+    entry: Object.fromEntries(
+      Object.entries(await getEntries()).map(([name, entryPath]) => [
+        name,
+        ['grafana-public-path', 'grafana-plugin-css', entryPath],
+      ])
+    ),
 
-    externals,
+    externals: [...externals, { 'grafana-plugin-css': './module.css' }],
 
     // Support WebAssembly according to latest spec - makes WebAssembly module async
     experiments: {
@@ -66,46 +72,47 @@ const config = async (env: Env): Promise<Configuration> => {
     mode: env.production ? 'production' : 'development',
 
     module: {
+      parser: {
+        // keeps default imports of CSS modules working: `import styles from './x.module.css'`
+        'css/auto': { namedExports: false },
+      },
+      generator: {
+        // class names of CSS modules start with the plugin id
+        'css/auto': { localIdentName: '[uniqueName]-[local]-[hash:6]' },
+      },
       rules: [
-        // This must come first in the rules array otherwise it breaks sourcemaps.
-        {
-          test: /src\/(?:.*\/)?module\.tsx?$/,
-          use: [
-            {
-              loader: 'imports-loader',
-              options: {
-                imports: `side-effects grafana-public-path`,
-              },
-            },
-          ],
-        },
         {
           exclude: /(node_modules)/,
           test: /\.[tj]sx?$/,
           use: {
-            loader: 'swc-loader',
+            loader: 'builtin:swc-loader',
             options: {
               jsc: {
-                baseUrl: path.resolve(process.cwd(), SOURCE_DIR),
-                target: 'es2015',
-                loose: false,
+                externalHelpers: true,
                 parser: {
                   syntax: 'typescript',
                   tsx: true,
-                  decorators: false,
-                  dynamicImport: true,
                 },
+                transform: {
+                  react: {
+                    development: !env.production,
+                    refresh: false,
+                  },
+                },
+                target: 'es2022',
               },
             },
           },
+          type: 'javascript/auto',
         },
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader'],
+          type: 'css/auto',
         },
         {
           test: /\.s[ac]ss$/,
-          use: ['style-loader', 'css-loader', 'sass-loader'],
+          use: ['sass-loader'],
+          type: 'css/auto',
         },
         {
           test: /\.(png|jpe?g|gif|svg)$/,
@@ -126,22 +133,27 @@ const config = async (env: Env): Promise<Configuration> => {
 
     optimization: {
       minimize: Boolean(env.production),
-      minimizer: [
-        new TerserPlugin({
-          extractComments: {
-            banner: false,
-            filename: 'LICENSE.txt',
+      splitChunks: {
+        cacheGroups: {
+          // CSS used by more than one lazy chunk goes into one shared file instead of a copy per chunk
+          sharedCss: {
+            type: /^css/,
+            chunks: 'async',
+            minChunks: 2,
+            minSize: 0,
+            priority: 10,
           },
-
-          terserOptions: {
-            format: {
-              comments: (_, { type, value }) => type === 'comment2' && value.trim().startsWith('[create-plugin]'),
-            },
-            compress: {
-              drop_console: ['log', 'info'],
-            },
+        },
+      },
+      minimizer: [
+        new SwcJsMinimizerRspackPlugin({
+          extractComments: { banner: false },
+          minimizerOptions: {
+            format: { comments: false },
+            compress: { pure_funcs: ['console.log', 'console.info'] },
           },
         }),
+        new LightningCssMinimizerRspackPlugin(),
       ],
     },
 
@@ -151,49 +163,41 @@ const config = async (env: Env): Promise<Configuration> => {
       },
       filename: '[name].js',
       chunkFilename: env.production ? '[name].js?_cache=[contenthash]' : '[name].js',
+      cssFilename: '[name].css',
+      cssChunkFilename: env.production ? '[name].css?_cache=[contenthash]' : '[name].css',
       library: {
         type: 'amd',
       },
       path: path.resolve(process.cwd(), DIST_DIR),
-      publicPath: `public/plugins/${pluginJson.id}/`,
-      uniqueName: pluginJson.id,
+      publicPath: `public/plugins/${pluginId}/`,
+      uniqueName: pluginId,
       crossOriginLoading: 'anonymous',
     },
 
     plugins: [
-      new BuildModeWebpackPlugin(),
+      new BuildModeRspackPlugin(),
+      new LicenseRspackPlugin(),
+      new PluginCssRspackPlugin({ pluginId, publicPath: `public/plugins/${pluginId}/` }),
       virtualPublicPath,
       // Insert create plugin version information into the bundle
-      new webpack.BannerPlugin({
-        banner: `/* [create-plugin] version: ${cpVersion} */
-          /* [create-plugin] plugin: ${pluginJson.id}@${pluginVersion} */`,
+      new BannerPlugin({
+        banner: [
+          `/* [create-plugin] version: ${cpVersion} */`,
+          `/* [create-plugin] plugin: ${pluginId}@${pluginVersion} */`,
+        ].join('\n'),
         raw: true,
         entryOnly: true,
+        test: /\.js$/,
+        // after minification to prevent banner removal and before source maps and hashes are generated so they include it.
+        stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE + 1,
       }),
-      new CopyWebpackPlugin({
-        patterns: [
-          // If src/README.md exists use it; otherwise the root README
-          // To `compiler.options.output`
-          { from: hasReadme() ? 'README.md' : '../README.md', to: '.', force: true },
-          { from: 'plugin.json', to: '.' },
-          { from: '../LICENSE', to: '.' },
-          { from: '../CHANGELOG.md', to: '.', force: true },
-          { from: '**/*.json', to: '.' },
-          { from: '**/*.svg', to: '.', noErrorOnMissing: true },
-          { from: '**/*.png', to: '.', noErrorOnMissing: true },
-          { from: '**/*.html', to: '.', noErrorOnMissing: true },
-          { from: 'img/**/*', to: '.', noErrorOnMissing: true },
-          { from: 'libs/**/*', to: '.', noErrorOnMissing: true },
-          { from: 'static/**/*', to: '.', noErrorOnMissing: true },
-          { from: '**/query_help.md', to: '.', noErrorOnMissing: true },
-        ],
+      new CopyRspackPlugin({
+        patterns: copyFilePatterns,
       }),
-      // Replace certain template-variables in the README and plugin.json
       new ReplaceInFileWebpackPlugin([
         {
           dir: DIST_DIR,
           test: [/(^|\/)plugin\.json$/, /(^|\/)README\.md$/],
-
           rules: [
             {
               search: /\%VERSION\%/g,
@@ -205,7 +209,7 @@ const config = async (env: Env): Promise<Configuration> => {
             },
             {
               search: /\%PLUGIN_ID\%/g,
-              replace: pluginJson.id,
+              replace: pluginId,
             },
           ],
         },
@@ -215,15 +219,15 @@ const config = async (env: Env): Promise<Configuration> => {
       }),
       ...(env.development
         ? [
-            new LiveReloadPlugin(),
-            new ForkTsCheckerWebpackPlugin({
+            new RspackLiveReloadPlugin(),
+            new TsCheckerRspackPlugin({
               async: Boolean(env.development),
               issue: {
                 include: [{ file: '**/*.{ts,tsx}' }],
               },
               typescript: { configFile: path.join(process.cwd(), 'tsconfig.json') },
             }),
-            new DiagnosticsPlugin({
+            new DiagnosticsRspackPlugin({
               lintOnStart: false, // don't lint on start, only lint changed files
               checks: [{ use: 'eslint', extensions: ['ts', 'tsx'] }],
             }),
@@ -235,7 +239,6 @@ const config = async (env: Env): Promise<Configuration> => {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
       // handle resolving "rootDir" paths
       modules: [path.resolve(process.cwd(), 'src'), 'node_modules'],
-      unsafeCache: true,
     },
   };
 
