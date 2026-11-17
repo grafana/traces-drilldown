@@ -27,7 +27,7 @@ overrides:
   js-cookie: ^3.0.7
   serialize-javascript: ^7.1.0
   'js-yaml@^3': ^4.3.2
-  micromatch: npm:picomatch@^2.3.2
+  micromatch: npm:picomatch@^4.0.0
   glob: 14.0.2
   deepmerge: 4.1.2
   # Grafana externalizes React Router v6 until https://github.com/grafana/grafana/issues/129933 lands.
@@ -37,3 +37,5 @@ overrides:
 
 minimumReleaseAgeExclude:
   - '@grafana/scenes@9.2.2'
+  # Renovate security update: picomatch@4.0.7
+  - picomatch@4.0.7

@@ -13,7 +13,7 @@ overrides:
   js-cookie: ^3.0.7
   serialize-javascript: ^7.1.0
   js-yaml@^3: ^4.3.2
-  micromatch: npm:picomatch@^2.3.2
+  micromatch: npm:picomatch@^4.0.0
   glob: 14.0.2
   deepmerge: 4.1.2
   react-router@^6: ^6.30.6
