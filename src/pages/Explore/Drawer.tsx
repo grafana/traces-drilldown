@@ -19,8 +19,6 @@ export interface Props {
   title?: ReactNode;
   /** Subtitle shown below the title */
   subtitle?: ReactNode;
-  /** Should the Drawer be closable by clicking on the mask, defaults to true */
-  closeOnMaskClick?: boolean;
   /**
    * Specifies the width and min-width.
    * sm = width 25% & min-width 384px
@@ -49,7 +47,6 @@ const drawerSizes = {
 export function Drawer({
   children,
   onClose,
-  closeOnMaskClick = true,
   scrollableContent = true,
   title,
   subtitle,
@@ -112,7 +109,7 @@ export function Drawer({
         motionName: styles.drawerMotion,
       }}
       maskClassName={styles.mask}
-      maskClosable={closeOnMaskClick}
+      maskClosable={true}
       maskMotion={{
         motionAppear: true,
         motionName: styles.maskMotion,
@@ -304,14 +301,11 @@ const getStyles = (theme: GrafanaTheme2) => {
         },
       },
     }),
-    // we want the mask itself to span the whole page including the top bar
-    // this ensures trying to click something in the top bar will close the drawer correctly
-    // but we don't want the backdrop styling to apply over the top bar as it looks weird
-    // instead have a child pseudo element to apply the backdrop styling below the top bar
+    // Clicks on this backdrop close the drawer. The drawer root stops short of the extension
+    // sidebar, so that sidebar stays clickable.
     mask: css({
       // The !important here is to override the default .rc-drawer-mask styles
       backgroundColor: 'transparent !important',
-
       position: 'absolute !important' as 'absolute',
 
       '&:before': {

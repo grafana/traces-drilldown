@@ -1,8 +1,16 @@
 import { lazy } from 'react';
 import { AppPlugin } from '@grafana/data';
 
-import { EmbeddedTraceExplorationState, OpenInExploreTracesButtonProps } from 'exposedComponents/types';
-import { SuspendedEmbeddedTraceExploration, SuspendedOpenInExploreTracesButton } from 'exposedComponents';
+import {
+  EmbeddedTraceExceptionsState,
+  EmbeddedTraceExplorationState,
+  OpenInExploreTracesButtonProps,
+} from 'exposedComponents/types';
+import {
+  SuspendedEmbeddedTraceExceptions,
+  SuspendedEmbeddedTraceExploration,
+  SuspendedOpenInExploreTracesButton,
+} from 'exposedComponents';
 import { initPluginI18n } from './i18n/initPluginI18n';
 import { linkConfigs } from 'utils/links';
 import { JsonData } from './components/AppConfig/AppConfig';
@@ -35,6 +43,12 @@ export const plugin = new AppPlugin<JsonData>()
     title: 'Embedded Trace Exploration',
     description: 'A component that renders a trace exploration view that can be embedded in other parts of Grafana.',
     component: SuspendedEmbeddedTraceExploration as React.ComponentType<EmbeddedTraceExplorationState>,
+  })
+  .exposeComponent({
+    id: 'grafana-exploretraces-app/embedded-trace-exceptions/v1',
+    title: 'Embedded Trace Exceptions',
+    description: 'The Exceptions tab from Traces Drilldown, for the Assistant and other plugins to embed.',
+    component: SuspendedEmbeddedTraceExceptions as React.ComponentType<EmbeddedTraceExceptionsState>,
   });
 
 for (const linkConfig of linkConfigs) {

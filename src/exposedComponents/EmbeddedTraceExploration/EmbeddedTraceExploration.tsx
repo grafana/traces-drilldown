@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { SceneTimeRange, sceneUtils, UrlSyncContextProvider } from '@grafana/scenes';
+import { SceneTimeRange, syncStateFromSearchParams, UrlSyncContextProvider } from '@grafana/scenes';
 
 import { TraceExploration } from '../../pages/Explore/TraceExploration';
 import { EmbeddedTraceExplorationState } from 'exposedComponents/types';
 import { usePluginJsonData } from '../../components/App/App';
 
-function buildTraceExplorationFromState({
+export function buildTraceExplorationFromState({
   initialTimeRange,
   onTimeRangeChange,
   queryRangeHours,
+  syncFromUrl,
   ...state
-}: EmbeddedTraceExplorationState & { queryRangeHours?: number }) {
+}: EmbeddedTraceExplorationState & { queryRangeHours?: number; syncFromUrl?: boolean }) {
   const $timeRange = new SceneTimeRange({
     value: initialTimeRange,
     from: initialTimeRange.raw.from.toString(),
@@ -31,12 +32,10 @@ function buildTraceExplorationFromState({
     ...state,
   });
 
-  // Otherwise, we'll sync with the URL when in embedded mini mode,
-  // and this conflicts the embedded mini mode query when Traces Drilldown is also opened
-  // because the URL is already synced with Traces Drilldown
-  if (!state.embeddedMini) {
+  // embeddedMini, and callers that pass syncFromUrl: false, leave the host URL alone.
+  if (syncFromUrl ?? !state.embeddedMini) {
     const params = new URLSearchParams(window.location.search);
-    sceneUtils.syncStateFromSearchParams(exploration, params);
+    syncStateFromSearchParams(exploration, params);
   }
 
   return exploration;

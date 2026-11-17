@@ -21,6 +21,7 @@ Users can land in Traces Drilldown from elsewhere in Grafana:
 The plugin exposes:
 
 - **Embedded trace exploration**: A full exploration view scoped by props/state for use inside other apps or surfaces.
+- **Embedded trace exceptions**: The Exceptions tab only (errors metric, no RED panels), for the Assistant and other plugins. Component id: `grafana-exploretraces-app/embedded-trace-exceptions/v1`.
 - **Open in Traces Drilldown button**: Opens the app with a configured exploration context.
 
 ### Direct URLs
