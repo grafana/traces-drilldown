@@ -108,7 +108,11 @@ describe('EmbeddedTraceExceptions', () => {
   it('stops the exploration and service when unmounted', () => {
     const deactivateExploration = jest.fn();
     const deactivateService = jest.fn();
-    const service = new TracesByServiceScene({});
+    const service = new TracesByServiceScene({}) as unknown as {
+      isActive: boolean;
+      state: { exceptionsScene?: { Component: () => React.JSX.Element } };
+      activate: () => () => void;
+    };
     service.activate = () => {
       service.isActive = true;
       service.state.exceptionsScene = { Component: () => <div>exceptions-table</div> };
