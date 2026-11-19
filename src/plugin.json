@@ -111,6 +111,12 @@
         "description": "A component that renders a span latency view that can be embedded in other parts of Grafana."
       }
     ],
+    "addedFunctions": [
+      {
+        "title": "assistant-extension",
+        "targets": ["grafana-assistant-app/extension/v1"]
+      }
+    ],
     "addedLinks": [
       {
         "targets": ["grafana/dashboard/panel/menu"],

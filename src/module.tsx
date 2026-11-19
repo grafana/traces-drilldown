@@ -11,6 +11,8 @@ import {
   SuspendedEmbeddedTraceExploration,
   SuspendedOpenInExploreTracesButton,
 } from 'exposedComponents';
+import { assistantExtensionManifest } from './assistant/exceptions/exceptionsExtension';
+import { getAssistantExtensionConfig } from './assistant/extensionConfig';
 import { initPluginI18n } from './i18n/initPluginI18n';
 import { linkConfigs } from 'utils/links';
 import { JsonData } from './components/AppConfig/AppConfig';
@@ -49,7 +51,8 @@ export const plugin = new AppPlugin<JsonData>()
     title: 'Embedded Trace Exceptions',
     description: 'The Exceptions tab from Traces Drilldown, for the Assistant and other plugins to embed.',
     component: SuspendedEmbeddedTraceExceptions as React.ComponentType<EmbeddedTraceExceptionsState>,
-  });
+  })
+  .addFunction(getAssistantExtensionConfig(assistantExtensionManifest));
 
 for (const linkConfig of linkConfigs) {
   plugin.addLink(linkConfig);
