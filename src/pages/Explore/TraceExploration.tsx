@@ -2,7 +2,7 @@ import { testIds } from 'utils/testIds';
 import { css } from '@emotion/css';
 import React, { useCallback, useEffect } from 'react';
 
-import { GrafanaTheme2, AdHocVariableFilter } from '@grafana/data';
+import { GrafanaTheme2, AdHocVariableFilter, dateMath, locationUtil } from '@grafana/data';
 import {
   CustomVariable,
   DataSourceVariable,
@@ -17,8 +17,9 @@ import {
   SceneTimePicker,
   SceneTimeRange,
   SceneVariableSet,
+  getUrlState,
 } from '@grafana/scenes';
-import { logError, useReturnToPrevious } from '@grafana/runtime';
+import { locationService, logError, useReturnToPrevious } from '@grafana/runtime';
 import { Icon, Stack, useStyles2, LinkButton, Input } from '@grafana/ui';
 import { t, Trans } from '@grafana/i18n';
 
@@ -41,6 +42,8 @@ import {
   getFiltersVariable,
   getPrimarySignalVariable,
   getUrlForExploration,
+  getUrlForValues,
+  isExceptionsEmbed,
 } from '../../utils/utils';
 import { TraceDrawerScene } from '../../components/Explore/TracesByService/TraceDrawerScene';
 import { VariableHide } from '@grafana/schema';
@@ -87,6 +90,30 @@ export interface TraceExplorationState extends SharedExplorationState, SceneObje
   addToDashboardPanelData?: PanelDataRequestPayload;
 }
 
+function urlTime(value: string, roundUp: boolean): string {
+  // "2026-11-10T08:00:00Z" is not a unix timestamp. The URL parser reads it as 2026.
+  if (value.includes('now') || /^\d+$/.test(value)) {
+    return value;
+  }
+  const parsed = dateMath.parse(value, roundUp);
+  return parsed?.isValid() ? String(parsed.valueOf()) : value;
+}
+
+function openTraceInDrilldown(exploration: TraceExploration, traceId: string, spanId?: string) {
+  const params = getUrlState(exploration);
+  params.traceId = traceId;
+  if (spanId) {
+    params.spanId = spanId;
+  }
+  if (typeof params.from === 'string') {
+    params.from = urlTime(params.from, false);
+  }
+  if (typeof params.to === 'string') {
+    params.to = urlTime(params.to, true);
+  }
+  locationService.push(locationUtil.stripBaseFromUrl(getUrlForValues(params)));
+}
+
 export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, {
     keys: ['traceId', 'spanId'],
@@ -120,6 +147,11 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       this.setState({ topScene: getTopScene(this.state) });
     }
 
+    // The exceptions embed does not render EmbeddedHeader, which otherwise selects all spans.
+    if (isExceptionsEmbed(this.state)) {
+      getPrimarySignalVariable(this).changeValueTo(primarySignalOptions[1].value!);
+    }
+
     if (!this._kgInitialized) {
       this._kgInitialized = true;
       if (isKgAnnotationsFeatureEnabled()) {
@@ -141,6 +173,11 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
 
     this._subs.add(
       this.subscribeToEvent(EventTraceOpened, (event) => {
+        // No drawer in the exceptions embed. Leave the scene alone and open Drilldown.
+        if (isExceptionsEmbed(this.state)) {
+          openTraceInDrilldown(this, event.payload.traceId, event.payload.spanId);
+          return;
+        }
         this.setState({
           traceId: event.payload.traceId,
           spanId: event.payload.spanId,
@@ -161,7 +198,8 @@ export class TraceExploration extends SceneObjectBase<TraceExplorationState> {
       }
     });
 
-    if (this.state.issueDetector) {
+    // The exceptions embed never shows this warning, and the probe query competes with the exceptions query.
+    if (this.state.issueDetector && !isExceptionsEmbed(this.state)) {
       if (!this.state.issueDetector.isActive) {
         this.state.issueDetector.activate();
       }

@@ -2,7 +2,11 @@ import { dateTime } from '@grafana/data';
 import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 
-import { SuspendedEmbeddedTraceExploration, SuspendedOpenInExploreTracesButton } from './index';
+import {
+  SuspendedEmbeddedTraceExceptions,
+  SuspendedEmbeddedTraceExploration,
+  SuspendedOpenInExploreTracesButton,
+} from './index';
 
 const initPluginI18n = jest.fn();
 
@@ -26,6 +30,12 @@ jest.mock('exposedComponents/OpenInExploreTracesButton/OpenInExploreTracesButton
   default: () => buttonRender(),
 }));
 
+const exceptionsRender = jest.fn(() => <div>embedded-trace-exceptions</div>);
+jest.mock('exposedComponents/EmbeddedTraceExceptions/EmbeddedTraceExceptions', () => ({
+  __esModule: true,
+  default: () => exceptionsRender(),
+}));
+
 const initialTimeRange = {
   from: dateTime(1000),
   to: dateTime(3000),
@@ -38,6 +48,7 @@ describe('exposed component i18n init', () => {
   beforeEach(() => {
     embeddedRender.mockClear();
     buttonRender.mockClear();
+    exceptionsRender.mockClear();
     initPluginI18n.mockReset();
     initPluginI18n.mockImplementation(
       () =>
@@ -60,6 +71,21 @@ describe('exposed component i18n init', () => {
       expect(screen.getByText('embedded-exploration')).toBeInTheDocument();
     });
     expect(embeddedRender).toHaveBeenCalled();
+  });
+
+  it('does not mount EmbeddedTraceExceptions until i18n init finishes', async () => {
+    render(<SuspendedEmbeddedTraceExceptions initialTimeRange={initialTimeRange} />);
+
+    expect(initPluginI18n).toHaveBeenCalled();
+    expect(exceptionsRender).not.toHaveBeenCalled();
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+
+    resolveInit();
+
+    await waitFor(() => {
+      expect(screen.getByText('embedded-trace-exceptions')).toBeInTheDocument();
+    });
+    expect(exceptionsRender).toHaveBeenCalled();
   });
 
   it('does not mount OpenInExploreTracesButton until i18n init finishes', async () => {

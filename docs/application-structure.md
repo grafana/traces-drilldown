@@ -14,13 +14,14 @@ Users can land in Traces Drilldown from elsewhere in Grafana:
 
 - **Dashboard panel menu**: “Open in Traces Drilldown” when the panel uses a Tempo query—filters and time range are carried over when they can be mapped from structured filters or parsed TraceQL.
 - **Explore toolbar**: Link into the queryless Traces Drilldown experience from Explore when working with Tempo.
-- **Grafana Assistant**: Navigation extension to open Traces Drilldown with appropriate context.
+- **Grafana Assistant**: Navigation extension to open Traces Drilldown with appropriate context. A reply about trace exceptions can show the exceptions view below the message. The tag is `<grafana_exploretraces_app_exceptions />`, registered on the Assistant extension point.
 
 ### Embedded components
 
 The plugin exposes:
 
 - **Embedded trace exploration**: A full exploration view scoped by props/state for use inside other apps or surfaces.
+- **Embedded trace exceptions**: The Exceptions tab only (errors metric, no RED panels), for the Assistant and other plugins. Component id: `grafana-exploretraces-app/embedded-trace-exceptions/v1`.
 - **Open in Traces Drilldown button**: Opens the app with a configured exploration context.
 
 ### Direct URLs

@@ -111,10 +111,10 @@ describe('buildExceptionsQuery', () => {
     expect(query).toEqual({
       refId: 'A',
       query:
-        '{${primarySignal} && ${filters} && status = error} | select(resource.service.name, event.exception.message,event.exception.stacktrace,event.exception.type) with(most_recent=true)',
+        '{${primarySignal} && ${filters} && status = error} | select(resource.service.name, event.exception.message, event.exception.type) with(most_recent=true)',
       queryType: 'traceql',
       tableType: 'spans',
-      limit: 400,
+      limit: 300,
       spss: 10,
       filters: [],
     });
