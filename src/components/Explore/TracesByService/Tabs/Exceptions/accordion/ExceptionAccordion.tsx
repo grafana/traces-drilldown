@@ -16,6 +16,7 @@ import {
   getSpanListColumnsVariable,
   getTraceByServiceScene,
   getTraceExplorationScene,
+  isExceptionsEmbed,
 } from 'utils/utils';
 import { ExceptionRow } from '../ExceptionsTable';
 import { ExceptionComparison } from './ExceptionComparison';
@@ -27,7 +28,7 @@ interface ExceptionAccordionProps {
 }
 
 export const ExceptionAccordionContent = ({ row, scene }: ExceptionAccordionProps) => {
-  const embedded = getTraceExplorationScene(scene).state.embedded === true;
+  const embedded = isExceptionsEmbed(getTraceExplorationScene(scene).state);
   const styles = useStyles2(getAccordionStyles, embedded);
   const spanListColumnsVar = getSpanListColumnsVariable(scene);
   spanListColumnsVar.useState(); // re-render on change

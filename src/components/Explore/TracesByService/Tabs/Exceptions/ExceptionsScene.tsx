@@ -27,7 +27,7 @@ import {
 import { buildExceptionsQuery } from 'components/Explore/queries/exceptions';
 import { aggregateExceptions, ExceptionMessageFilterOperator } from './ExceptionUtils';
 import { ExceptionsTable, ExceptionRow } from './ExceptionsTable';
-import { getFiltersVariable, getTraceByServiceScene, getTraceExplorationScene } from 'utils/utils';
+import { getFiltersVariable, getTraceByServiceScene, getTraceExplorationScene, isExceptionsEmbed } from 'utils/utils';
 import { addToFilters } from 'components/Explore/actions/AddToFiltersAction';
 import { useFlagUseValueTypeFiltering } from 'featureFlags/featureFlags';
 import { addToVariableFilters, toVariableFilter } from 'utils/filters';
@@ -177,7 +177,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
 
   public static Component = ({ model }: SceneComponentProps<ExceptionsScene>) => {
     // Do not subscribe to the exploration. A trace click must not re-render this view.
-    const embedded = getTraceExplorationScene(model).state.embedded === true;
+    const embedded = isExceptionsEmbed(getTraceExplorationScene(model).state);
     const styles = useStyles2(getStyles, embedded);
     const theme = useTheme2();
     const { dataState, exceptionRows } = model.useState();
