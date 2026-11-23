@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
 import { TracesByServiceScene } from 'components/Explore/TracesByService/TracesByServiceScene';
+import type { ExceptionsScene } from 'components/Explore/TracesByService/Tabs/Exceptions/ExceptionsScene';
 import { usePluginJsonData } from '../../components/App/App';
 import { EmbeddedTraceExceptionsState } from 'exposedComponents/types';
 import { buildTraceExplorationFromState } from '../EmbeddedTraceExploration/EmbeddedTraceExploration';
 
 export default function EmbeddedTraceExceptions(props: EmbeddedTraceExceptionsState) {
   const jsonData = usePluginJsonData();
-  const [started] = useState(() => {
-    const exploration = buildTraceExplorationFromState({
+  const [exploration] = useState(() =>
+    buildTraceExplorationFromState({
       ...props,
       embedded: true,
       initialMetric: 'errors',
@@ -17,8 +18,11 @@ export default function EmbeddedTraceExceptions(props: EmbeddedTraceExceptionsSt
       // The host page owns the URL.
       syncFromUrl: false,
       queryRangeHours: jsonData.queryRangeHours,
-    });
+    })
+  );
+  const [exceptionsScene, setExceptionsScene] = useState<ExceptionsScene>();
 
+  useEffect(() => {
     // The service creates the exceptions scene on start, and only while the metric is errors.
     // Activating the exploration creates the service but does not start it.
     exploration.getMetricVariable();
@@ -26,20 +30,17 @@ export default function EmbeddedTraceExceptions(props: EmbeddedTraceExceptionsSt
     const service = exploration.state.topScene;
     if (!(service instanceof TracesByServiceScene)) {
       stopExploration();
-      return undefined;
+      return;
     }
 
     const stopService = service.activate();
-    return {
-      scene: service.state.exceptionsScene,
-      stop() {
-        stopService();
-        stopExploration();
-      },
+    setExceptionsScene(service.state.exceptionsScene);
+
+    return () => {
+      stopService();
+      stopExploration();
     };
-  });
+  }, [exploration]);
 
-  useEffect(() => started?.stop, [started]);
-
-  return started?.scene ? <started.scene.Component model={started.scene} /> : null;
+  return exceptionsScene ? <exceptionsScene.Component model={exceptionsScene} /> : null;
 }
