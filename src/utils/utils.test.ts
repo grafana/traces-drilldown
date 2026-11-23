@@ -7,6 +7,7 @@ import {
   isBooleanValue,
   isNumberValue,
   isQuotedValue,
+  tryParseUrl,
   stripOuterQuotes,
   toEscapedValue,
   toLabelValueType,
@@ -414,5 +415,23 @@ describe('utils', () => {
       expect(toEscapedValue('bare', 'say "hi"')).toEqual(`say \"hi\"`);
       expect(toEscapedValue('bare', 'a\nb')).toEqual(`a\nb`);
     });
+  });
+});
+
+describe('tryParseUrl()', () => {
+  it('should parse an absolute URL', () => {
+    const parsed = tryParseUrl('https://example.com/explore?view=traces#details');
+
+    expect(parsed?.origin).toBe('https://example.com');
+    expect(parsed?.pathname).toBe('/explore');
+    expect(parsed?.search).toBe('?view=traces');
+    expect(parsed?.hash).toBe('#details');
+    expect(parsed?.href).toBe('https://example.com/explore?view=traces#details');
+  });
+
+  it('should return null for a relative URL', () => {
+    const parsed = tryParseUrl('/explore?view=traces');
+
+    expect(parsed).toBeNull();
   });
 });
