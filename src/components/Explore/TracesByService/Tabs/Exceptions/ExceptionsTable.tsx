@@ -24,6 +24,7 @@ interface ExceptionsTableProps {
   rows: ExceptionRow[];
   theme: GrafanaTheme2;
   scene: SceneObject;
+  embedded?: boolean;
   onFilterClick?: (key: string, value: string, operator?: ExceptionMessageFilterOperator, append?: boolean) => void;
 }
 
@@ -125,7 +126,7 @@ const getSharedPrefixAndMessageRemainders = (messages: string[]) => {
   return { sharedPrefix, remainders };
 };
 
-export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: ExceptionsTableProps) => {
+export const ExceptionsTable = ({ rows, theme, onFilterClick, scene, embedded = false }: ExceptionsTableProps) => {
   const styles = useStyles2(getStyles);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
@@ -272,6 +273,12 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                             )}
                           </div>
                           <div className={styles.exceptionMeta}>
+                            <span
+                              className={styles.narrowOccurrences}
+                              title={t('exceptions-table.header.occurrences', 'Occurrences')}
+                            >
+                              {row.occurrences}
+                            </span>
                             {row.service && (
                               <span className={styles.metaItem}>
                                 <Icon name="cube" size="xs" />
@@ -286,12 +293,14 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
                             )}
                           </div>
                         </div>
-                        <IncludeExcludeButtons
-                          onInclude={(e) => handleMessageFilterClick(row.message, 'include', e)}
-                          onExclude={(e) => handleMessageFilterClick(row.message, 'exclude', e)}
-                          includeAriaLabel={t('exceptions-table.include-aria-label', 'Include exception message')}
-                          excludeAriaLabel={t('exceptions-table.exclude-aria-label', 'Exclude exception message')}
-                        />
+                        {!embedded && onFilterClick && (
+                          <IncludeExcludeButtons
+                            onInclude={(e) => handleMessageFilterClick(row.message, 'include', e)}
+                            onExclude={(e) => handleMessageFilterClick(row.message, 'exclude', e)}
+                            includeAriaLabel={t('exceptions-table.include-aria-label', 'Include exception message')}
+                            excludeAriaLabel={t('exceptions-table.exclude-aria-label', 'Exclude exception message')}
+                          />
+                        )}
                       </div>
                     </div>
                   </td>
@@ -325,6 +334,8 @@ export const ExceptionsTable = ({ rows, theme, onFilterClick, scene }: Exception
 };
 
 const getStyles = (theme: GrafanaTheme2) => {
+  const narrow = '@container (max-width: 560px)';
+
   const baseHeaderCell = {
     padding: theme.spacing(1.5),
     fontWeight: theme.typography.fontWeightMedium,
@@ -347,6 +358,16 @@ const getStyles = (theme: GrafanaTheme2) => {
     verticalAlign: 'middle' as const,
   };
 
+  const collapsedColumn = {
+    width: 0,
+    padding: 0,
+    border: 'none',
+    overflow: 'hidden',
+    '& > *': {
+      display: 'none',
+    },
+  };
+
   const centeredTableCell = (width: string) => ({
     ...baseTableCell,
     textAlign: 'center' as const,
@@ -358,6 +379,8 @@ const getStyles = (theme: GrafanaTheme2) => {
       width: '100%',
       height: '100%',
       minHeight: 0,
+      minWidth: 0,
+      containerType: 'inline-size',
       overflowX: 'auto',
       overflowY: 'auto',
     }),
@@ -375,8 +398,14 @@ const getStyles = (theme: GrafanaTheme2) => {
       textAlign: 'left',
       width: 'auto',
     }),
-    headerCellOccurrences: css(centeredHeaderCell('150px')),
-    headerCellFrequency: css(centeredHeaderCell('220px')),
+    headerCellOccurrences: css({
+      ...centeredHeaderCell('150px'),
+      [narrow]: collapsedColumn,
+    }),
+    headerCellFrequency: css({
+      ...centeredHeaderCell('220px'),
+      [narrow]: collapsedColumn,
+    }),
     headerIcon: css({
       color: theme.colors.text.secondary,
       opacity: 0.7,
@@ -389,8 +418,22 @@ const getStyles = (theme: GrafanaTheme2) => {
       },
     }),
     tableCell: css(baseTableCell),
-    tableCellOccurrences: css(centeredTableCell('150px')),
-    tableCellFrequency: css(centeredTableCell('220px')),
+    tableCellOccurrences: css({
+      ...centeredTableCell('150px'),
+      [narrow]: collapsedColumn,
+    }),
+    tableCellFrequency: css({
+      ...centeredTableCell('220px'),
+      [narrow]: collapsedColumn,
+    }),
+    narrowOccurrences: css({
+      display: 'none',
+      alignItems: 'center',
+      lineHeight: theme.typography.body.lineHeight,
+      [narrow]: {
+        display: 'inline-flex',
+      },
+    }),
     occurrencesCell: css({
       color: theme.colors.text.primary,
       fontSize: theme.typography.body.fontSize,
@@ -450,6 +493,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       display: 'flex',
       alignItems: 'center',
       gap: theme.spacing(1),
+      lineHeight: theme.typography.body.lineHeight,
       color: theme.colors.text.secondary,
       marginTop: theme.spacing(0.25),
     }),

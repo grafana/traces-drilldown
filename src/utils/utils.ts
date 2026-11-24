@@ -45,6 +45,11 @@ export function getTraceExplorationScene(model: SceneObject): TraceExploration {
   return sceneGraph.getAncestor(model, TraceExploration);
 }
 
+/** Exceptions tab embedded on its own. It does not show RED panels, the attribute sidebar, or the issue warning. */
+export function isExceptionsEmbed(state: { embedded?: boolean; initialActionView?: ActionViewType }): boolean {
+  return state.embedded === true && state.initialActionView === 'exceptions';
+}
+
 export function getTraceByServiceScene(model: SceneObject): TracesByServiceScene {
   return sceneGraph.getAncestor(model, TracesByServiceScene);
 }

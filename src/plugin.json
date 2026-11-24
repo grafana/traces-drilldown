@@ -97,6 +97,11 @@
         "id": "grafana-exploretraces-app/embedded-trace-exploration/v1",
         "title": "Embedded Trace Exploration",
         "description": "A component that renders a trace exploration view that can be embedded in other parts of Grafana."
+      },
+      {
+        "id": "grafana-exploretraces-app/embedded-trace-exceptions/v1",
+        "title": "Embedded Trace Exceptions",
+        "description": "The Exceptions tab from Traces Drilldown, for the Assistant and other plugins to embed."
       }
     ],
     "addedComponents": [
@@ -104,6 +109,12 @@
         "targets": ["grafana-adaptivetraces-app/span-latency/v1"],
         "title": "Span Latency",
         "description": "A component that renders a span latency view that can be embedded in other parts of Grafana."
+      }
+    ],
+    "addedFunctions": [
+      {
+        "title": "assistant-extension",
+        "targets": ["grafana-assistant-app/extension/v1"]
       }
     ],
     "addedLinks": [

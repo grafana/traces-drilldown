@@ -8,12 +8,15 @@ import { SceneObject } from '@grafana/scenes';
 
 import { AttributesSidebar } from 'components/Explore/AttributesSidebar';
 import { escapeTraceQlStringLiteral, renderTraceQLLabelFilters } from 'utils/filters-renderer';
+import { MIN_PANEL_HEIGHT } from 'utils/shared';
 import { formatExceptionMessageTraceQLFilter } from '../ExceptionUtils';
 import {
   getFiltersVariable,
   getPrimarySignalVariable,
   getSpanListColumnsVariable,
   getTraceByServiceScene,
+  getTraceExplorationScene,
+  isExceptionsEmbed,
 } from 'utils/utils';
 import { ExceptionRow } from '../ExceptionsTable';
 import { ExceptionComparison } from './ExceptionComparison';
@@ -25,7 +28,8 @@ interface ExceptionAccordionProps {
 }
 
 export const ExceptionAccordionContent = ({ row, scene }: ExceptionAccordionProps) => {
-  const styles = useStyles2(getAccordionStyles);
+  const embedded = isExceptionsEmbed(getTraceExplorationScene(scene).state);
+  const styles = useStyles2(getAccordionStyles, embedded);
   const spanListColumnsVar = getSpanListColumnsVariable(scene);
   spanListColumnsVar.useState(); // re-render on change
 
@@ -65,19 +69,25 @@ export const ExceptionAccordionContent = ({ row, scene }: ExceptionAccordionProp
       </div>
 
       <div className={styles.section}>
-        <Stack direction="row" gap={2} width="100%">
-          <AttributesSidebar
-            options={attributes?.map((x) => toOption(x)) ?? []}
-            selected={selectedAttributes}
-            onAttributeChange={(cols) => spanListColumnsVar.changeValueTo(cols ?? [])}
-            model={scene}
-            showFavorites={true}
-            isMulti={true}
-          />
+        <Stack direction="row" gap={2} width="100%" alignItems="stretch">
+          {!embedded && (
+            <AttributesSidebar
+              options={attributes?.map((x) => toOption(x)) ?? []}
+              selected={selectedAttributes}
+              onAttributeChange={(cols) => spanListColumnsVar.changeValueTo(cols ?? [])}
+              model={scene}
+              showFavorites={true}
+              isMulti={true}
+            />
+          )}
 
           <div className={styles.comparisonAndResultsContainer}>
-            <ExceptionComparison selectedAttributes={selectedAttributes} baseFilter={baseFilter} scene={scene} />
-            <ExceptionTraceResults selectedAttributes={selectedAttributes} baseFilter={baseFilter} scene={scene} />
+            {!embedded && (
+              <ExceptionComparison selectedAttributes={selectedAttributes} baseFilter={baseFilter} scene={scene} />
+            )}
+            <div className={styles.traceResults}>
+              <ExceptionTraceResults selectedAttributes={selectedAttributes} baseFilter={baseFilter} scene={scene} />
+            </div>
           </div>
         </Stack>
       </div>
@@ -137,7 +147,7 @@ export const buildExceptionFilterExpr = ({
   return `{${primarySignalExpr} && ${filtersExpr} && status = error && ${formatExceptionMessageTraceQLFilter(exceptionMessage)}${typeFilter}}`;
 };
 
-const getAccordionStyles = (theme: GrafanaTheme2) => {
+const getAccordionStyles = (theme: GrafanaTheme2, embedded?: boolean) => {
   return {
     container: css({
       padding: theme.spacing(2),
@@ -168,8 +178,23 @@ const getAccordionStyles = (theme: GrafanaTheme2) => {
     comparisonAndResultsContainer: css({
       flex: 1,
       minWidth: 0,
+      minHeight: 0,
       display: 'flex',
       flexDirection: 'column',
+      alignSelf: 'stretch',
+    }),
+    // The scenes table sizes to its parent. Without a height it collapses.
+    // In drilldown it grows to the bottom of the attributes sidebar.
+    traceResults: css({
+      width: '100%',
+      minWidth: 0,
+      overflow: 'hidden',
+      minHeight: embedded ? 320 : MIN_PANEL_HEIGHT,
+      flex: embedded ? undefined : 1,
+      height: embedded ? 320 : MIN_PANEL_HEIGHT,
+      '& > div': {
+        height: '100%',
+      },
     }),
   };
 };

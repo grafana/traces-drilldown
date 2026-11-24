@@ -5,6 +5,7 @@ import {
   getLabelValueType,
   getRawLabelValue,
   isBooleanValue,
+  isExceptionsEmbed,
   isNumberValue,
   isQuotedValue,
   stripOuterQuotes,
@@ -414,5 +415,20 @@ describe('utils', () => {
       expect(toEscapedValue('bare', 'say "hi"')).toEqual(`say \"hi\"`);
       expect(toEscapedValue('bare', 'a\nb')).toEqual(`a\nb`);
     });
+  });
+});
+
+describe('isExceptionsEmbed', () => {
+  it('is true only for the embedded exceptions-only view', () => {
+    expect(isExceptionsEmbed({ embedded: true, initialActionView: 'exceptions' })).toBe(true);
+  });
+
+  it.each([
+    ['the Drilldown app', {}],
+    ['an existing embed with no initial view', { embedded: true }],
+    ['an existing embed on another view', { embedded: true, initialActionView: 'breakdown' as const }],
+    ['a non-embedded exceptions view', { initialActionView: 'exceptions' as const }],
+  ])('is false for %s', (_name, state) => {
+    expect(isExceptionsEmbed(state)).toBe(false);
   });
 });

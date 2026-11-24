@@ -45,6 +45,7 @@ import {
   getLatencyThresholdVariable,
   getSpanListColumnsVariable,
   getTraceExplorationScene,
+  isExceptionsEmbed,
 } from 'utils/utils';
 import { reportAppInteraction, USER_EVENTS_ACTIONS, USER_EVENTS_PAGES } from '../../../utils/analytics';
 import { MiniREDPanel } from './MiniREDPanel';
@@ -68,6 +69,7 @@ export interface TraceSceneState extends SceneObjectState {
 
 export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['actionView', 'selection'] });
+  private _stopExceptionsScene?: () => void;
 
   public constructor(state: MakeOptional<TraceSceneState, 'body'>) {
     super({
@@ -79,16 +81,14 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   }
 
   private _onActivate() {
-    // Get the initial actionView from URL if it exists i.e. coming from a bookmark
-    const params = new URLSearchParams(window.location.search);
-    const urlActionView = params.get('actionView');
-    if (urlActionView && actionViewsDefinitions.find((v) => v.value === urlActionView)) {
-      this.setState({ actionView: urlActionView as ActionViewType });
+    const exploration = getTraceExplorationScene(this);
+    const urlActionView = new URLSearchParams(window.location.search).get('actionView');
+    if (isAllowedActionView(urlActionView, exploration.state.allowedActionViews)) {
+      this.setState({ actionView: urlActionView });
     }
 
     this.updateBody();
 
-    const exploration = getTraceExplorationScene(this);
     const metricVariable = exploration.getMetricVariable();
     this._subs.add(
       metricVariable.subscribeToState((newState, prevState) => {
@@ -139,6 +139,8 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
 
     this.updateQueryRunner(metricVariable.getValue() as MetricFunction);
     this.updateAttributes();
+
+    return () => this.stopExceptionsScene();
   }
 
   updateBody() {
@@ -163,29 +165,36 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   }
 
   private updateExceptionsScene(metric: MetricFunction) {
-    if (metric === 'errors') {
-      if (!this.state.exceptionsScene) {
-        const exceptionsScene = new ExceptionsScene({});
-        this.setState({
-          exceptionsScene,
-        });
-
-        // Activate the scene after it's been set in state to ensure it starts fetching data
-        setTimeout(() => {
-          exceptionsScene.activate();
-        }, 0);
-      }
-    } else {
-      // Remove exceptions scene if metric is not errors
+    if (metric !== 'errors') {
+      this.stopExceptionsScene();
       if (this.state.exceptionsScene) {
-        this.setState({
-          exceptionsScene: undefined,
-        });
+        this.setState({ exceptionsScene: undefined });
       }
+      return;
+    }
+
+    const exceptionsScene = this.state.exceptionsScene ?? new ExceptionsScene({});
+    if (!this.state.exceptionsScene) {
+      this.setState({ exceptionsScene });
+    }
+    // Kept here so the query stops when this service does. The tab renderer's own activate does not.
+    if (!exceptionsScene.isActive) {
+      this._stopExceptionsScene = exceptionsScene.activate();
     }
   }
 
+  private stopExceptionsScene() {
+    const stop = this._stopExceptionsScene;
+    this._stopExceptionsScene = undefined;
+    stop?.();
+  }
+
   private async updateAttributes() {
+    // The exceptions embed hides the attribute sidebar, so it does not need the tag-key list.
+    if (isExceptionsEmbed(getTraceExplorationScene(this).state)) {
+      return;
+    }
+
     const ds = await getDataSourceInstance(sceneGraph.interpolate(this, VAR_DATASOURCE_EXPR));
 
     if (!ds) {
@@ -252,9 +261,13 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   }
 
   public setActionView(actionView?: ActionViewType) {
+    const traceExploration = getTraceExplorationScene(this);
+    if (actionView && !isAllowedActionView(actionView, traceExploration.state.allowedActionViews)) {
+      return;
+    }
+
     const { body } = this.state;
     const actionViewDef = actionViewsDefinitions.find((v) => v.value === actionView);
-    const traceExploration = getTraceExplorationScene(this);
     const metric = traceExploration.getMetricVariable().getValue();
     const prefixLen = getActionViewPrefixLen(traceExploration.state.hideRedPanels);
 
@@ -283,6 +296,11 @@ export class TracesByServiceScene extends SceneObjectBase<TraceSceneState> {
   }
 
   private updateQueryRunner(metric: MetricFunction) {
+    // The exceptions embed renders the exceptions scene directly and never shows the RED panels.
+    if (isExceptionsEmbed(getTraceExplorationScene(this).state)) {
+      return;
+    }
+
     const selection = this.state.selection;
     const columns = getSpanListColumnsVariable(this).getValue()?.toString() ?? '';
     const latency = getLatencyThresholdVariable(this).getValue()?.toString() ?? '';
@@ -478,6 +496,15 @@ function timeRangeFromSelection(selection?: ComparisonSelection) {
         },
       })
     : undefined;
+}
+
+/** Bookmarks open a tab through the URL. An empty allow-list means every known tab. */
+function isAllowedActionView(
+  actionView: string | null | undefined,
+  allowed?: ActionViewType[]
+): actionView is ActionViewType {
+  const known = actionViewsDefinitions.find((view) => view.value === actionView);
+  return Boolean(known && (!allowed?.length || allowed.includes(known.value)));
 }
 
 /** Body.children indices before the active tab scene: RED row + tabs wrapper, or tabs wrapper only when RED is hidden. */

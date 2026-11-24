@@ -87,8 +87,8 @@ describe('ExceptionsTable', () => {
     expect(screen.getByText('1h ago')).toBeInTheDocument();
 
     // Check occurrences
-    expect(screen.getByText('42')).toBeInTheDocument();
-    expect(screen.getByText('15')).toBeInTheDocument();
+    expect(screen.getAllByText('42').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('15').length).toBeGreaterThan(0);
   });
 
   it('should render sparkline cells for each row', () => {
@@ -128,12 +128,20 @@ describe('ExceptionsTable', () => {
     expect(mockOnFilterClick).toHaveBeenCalledWith('event.exception.message', 'Database connection failed', '!=', true);
   });
 
-  it('should not call onFilterClick when onFilterClick prop is not provided', () => {
+  it('does not render include/exclude buttons when onFilterClick is not provided', () => {
     render(<ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} />);
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'Include exception message' })[0]);
+    expect(screen.queryByRole('button', { name: 'Include exception message' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Exclude exception message' })).not.toBeInTheDocument();
+  });
 
-    expect(mockOnFilterClick).not.toHaveBeenCalled();
+  it('does not render include/exclude buttons when embedded', () => {
+    render(
+      <ExceptionsTable rows={mockRows} theme={mockTheme} scene={mockScene} embedded onFilterClick={mockOnFilterClick} />
+    );
+
+    expect(screen.queryByRole('button', { name: 'Include exception message' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Exclude exception message' })).not.toBeInTheDocument();
   });
 
   it('should render empty table when rows array is empty', () => {

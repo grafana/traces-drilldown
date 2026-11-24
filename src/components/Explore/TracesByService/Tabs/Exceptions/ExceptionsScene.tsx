@@ -27,7 +27,7 @@ import {
 import { buildExceptionsQuery } from 'components/Explore/queries/exceptions';
 import { aggregateExceptions, ExceptionMessageFilterOperator } from './ExceptionUtils';
 import { ExceptionsTable, ExceptionRow } from './ExceptionsTable';
-import { getFiltersVariable, getTraceByServiceScene } from 'utils/utils';
+import { getFiltersVariable, getTraceByServiceScene, getTraceExplorationScene, isExceptionsEmbed } from 'utils/utils';
 import { addToFilters } from 'components/Explore/actions/AddToFiltersAction';
 import { useFlagUseValueTypeFiltering } from 'featureFlags/featureFlags';
 import { addToVariableFilters, toVariableFilter } from 'utils/filters';
@@ -176,7 +176,9 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
   };
 
   public static Component = ({ model }: SceneComponentProps<ExceptionsScene>) => {
-    const styles = useStyles2(getStyles);
+    // Do not subscribe to the exploration. A trace click must not re-render this view.
+    const embedded = isExceptionsEmbed(getTraceExplorationScene(model).state);
+    const styles = useStyles2(getStyles, embedded);
     const theme = useTheme2();
     const { dataState, exceptionRows } = model.useState();
     const useValueFiltering = useFlagUseValueTypeFiltering();
@@ -194,16 +196,19 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
       const traceByServiceScene = getTraceByServiceScene(model);
       traceByServiceScene.setActionView('traceList');
     };
+    const filterClick = useValueFiltering ? model.newHandleFilterClick : handleFilterClick;
 
     return (
       <div className={styles.container}>
-        <div className={styles.header}>
-          <div className={styles.description}>
-            <Trans i18nKey="exceptions-scene.description">
-              View exception details from errored traces for the current set of filters.
-            </Trans>
+        {!embedded && (
+          <div className={styles.header}>
+            <div className={styles.description}>
+              <Trans i18nKey="exceptions-scene.description">
+                View exception details from errored traces for the current set of filters.
+              </Trans>
+            </div>
           </div>
-        </div>
+        )}
         <div className={styles.content}>
           {dataState === 'loading' && (
             <div className={styles.loadingContainer}>
@@ -221,7 +226,8 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
                 rows={exceptionRows}
                 theme={theme}
                 scene={model}
-                onFilterClick={useValueFiltering ? model.newHandleFilterClick : handleFilterClick}
+                embedded={embedded}
+                onFilterClick={filterClick}
               />
             </div>
           )}
@@ -240,7 +246,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
   };
 }
 
-const getStyles = (theme: GrafanaTheme2) => {
+const getStyles = (theme: GrafanaTheme2, embedded?: boolean) => {
   return {
     container: css({
       display: 'flex',
@@ -261,7 +267,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       display: 'flex',
       flexDirection: 'column',
       minHeight: 0,
-      height: 'calc(100vh - 550px)',
+      height: embedded ? '480px' : 'calc(100vh - 550px)',
       border: `1px solid ${theme.colors.border.weak}`,
       borderRadius: theme.shape.radius.lg ?? theme.shape.radius.default,
       background: theme.colors.background.primary,

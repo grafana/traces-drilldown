@@ -22,6 +22,16 @@ export interface EmbeddedTraceExplorationState extends SharedExplorationState {
   urlSync?: boolean;
 }
 
+/** Exceptions tab, embedded for Grafana Assistant and other plugins. */
+export interface EmbeddedTraceExceptionsState
+  extends Pick<
+    SharedExplorationState,
+    'embedderName' | 'returnToPreviousSource' | 'initialDS' | 'initialFilters'
+  > {
+  initialTimeRange: TimeRange;
+  onTimeRangeChange?: (timeRange: TimeRange) => void;
+}
+
 export interface SharedExplorationState {
   embedded?: boolean;
   embeddedMini?: boolean;
