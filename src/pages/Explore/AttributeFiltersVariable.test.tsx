@@ -10,6 +10,7 @@ import { AdHocFiltersVariable } from '@grafana/scenes';
 import { DataSourceApi, MetricFindValue } from '@grafana/data';
 import { getDataSourceInstance } from '@grafana/plugin-compat/datasources';
 import { isUseValueTypeFilteringEnabled } from '../../featureFlags/featureFlags';
+import { renderTraceQLLabelFilters } from 'utils/filters-renderer';
 
 jest.mock('../../featureFlags/featureFlags', () => ({
   isUseValueTypeFilteringEnabled: jest.fn(),
@@ -309,6 +310,30 @@ describe('AttributeFiltersVariable', () => {
   describe('normalizeFilter', () => {
     beforeEach(() => {
       mockedIsUseValueTypeFilteringEnabled.mockReturnValue(true);
+    });
+
+    it('should preserve a quoted app ID after repeated normalization', () => {
+      const variable = new AttributeFiltersVariable({
+        initialFilters: [{ key: 'resource.gf.feo11y.app.id', operator: '=', value: '"67"' }],
+      });
+      const normalized = new AttributeFiltersVariable({ initialFilters: variable.state.filters });
+
+      expect(normalized.state.filters).toEqual([
+        { key: 'resource.gf.feo11y.app.id', operator: '=', value: '"67"', valueLabels: ['67'] },
+      ]);
+      expect(renderTraceQLLabelFilters(normalized.state.filters)).toBe('resource.gf.feo11y.app.id="67"');
+    });
+
+    it('should preserve a quoted boolean string after repeated normalization', () => {
+      const variable = new AttributeFiltersVariable({
+        initialFilters: [{ key: 'span.foo', operator: '=', value: '"true"' }],
+      });
+      const normalized = new AttributeFiltersVariable({ initialFilters: variable.state.filters });
+
+      expect(normalized.state.filters).toEqual([
+        { key: 'span.foo', operator: '=', value: '"true"', valueLabels: ['true'] },
+      ]);
+      expect(renderTraceQLLabelFilters(normalized.state.filters)).toBe('span.foo="true"');
     });
 
     it('should leave filters unchanged when value type filtering is disabled', () => {
