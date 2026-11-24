@@ -1,7 +1,10 @@
-import type { Faro, TransportItem } from '@grafana/faro-web-sdk';
+import { locationUtil } from '@grafana/data';
+import type { EventEvent, Faro, MetaPage, TraceEvent, TransportItem } from '@grafana/faro-web-sdk';
+import { escapeRegExp } from 'lodash';
 
 import packageJson from '../../package.json';
 import { PLUGIN_BASE_URL, PLUGIN_ID } from '../utils/shared';
+import { tryParseUrl } from '../utils/utils';
 import { getFaroEnvironment } from './environments';
 
 let faro: Faro | null = null;
@@ -32,20 +35,122 @@ export function scrubPageUrl(url: string): string {
   }
 }
 
-function beforeSend(event: TransportItem): TransportItem | null {
-  const pageUrl = event.meta.page?.url ?? '';
-  if (!pageUrl.includes(PLUGIN_BASE_URL)) {
+function isRequestUrlAttribute(key: string): boolean {
+  return key === 'http.url' || key === 'url.full' || key === 'http.target';
+}
+
+function isUrlQueryOrFragment(key: string): boolean {
+  return key === 'url.query' || key === 'url.fragment';
+}
+
+function scrubRequestAttribute(key: string, value: string): string | undefined {
+  if (isUrlQueryOrFragment(key)) {
+    return undefined;
+  }
+
+  return isRequestUrlAttribute(key) ? scrubPageUrl(value) : value;
+}
+
+type TraceScope = NonNullable<TraceEvent['resourceSpans']>[number]['scopeSpans'][number];
+type TraceSpan = NonNullable<TraceScope['spans']>[number];
+
+function scrubTraceSpan(span: TraceSpan): TraceSpan {
+  const attributes = span.attributes?.flatMap((attribute) => {
+    const { key, value } = attribute;
+    if (isUrlQueryOrFragment(key)) {
+      return [];
+    }
+
+    if (!isRequestUrlAttribute(key) || typeof value.stringValue !== 'string') {
+      return [attribute];
+    }
+
+    const scrubbedValue = { ...value, stringValue: scrubPageUrl(value.stringValue) };
+    return [{ ...attribute, value: scrubbedValue }];
+  });
+
+  return { ...span, attributes };
+}
+
+function scrubTraceUrls(payload: TraceEvent): TraceEvent {
+  if (!payload.resourceSpans) {
+    return payload;
+  }
+
+  return {
+    ...payload,
+    resourceSpans: payload.resourceSpans.map((resource) => ({
+      ...resource,
+      scopeSpans: resource.scopeSpans?.map((scope) => ({
+        ...scope,
+        spans: scope.spans?.map(scrubTraceSpan),
+      })),
+    })),
+  };
+}
+
+function scrubEventUrls(payload: EventEvent): EventEvent {
+  const { name, attributes } = payload;
+  if (!attributes) {
+    return payload;
+  }
+
+  if (
+    (name === 'faro.performance.resource' || name === 'faro.performance.navigation') &&
+    typeof attributes.name === 'string'
+  ) {
+    return { ...payload, attributes: { ...attributes, name: scrubPageUrl(attributes.name) } };
+  }
+
+  if (!name.startsWith('faro.tracing.')) {
+    return payload;
+  }
+
+  const scrubbedAttributes: Record<string, string> = {};
+
+  for (const [key, value] of Object.entries(attributes)) {
+    const scrubbed = scrubRequestAttribute(key, value);
+    if (scrubbed !== undefined) {
+      scrubbedAttributes[key] = scrubbed;
+    }
+  }
+
+  return { ...payload, attributes: scrubbedAttributes };
+}
+
+function getPluginPageRoutePattern(): RegExp {
+  const pluginPath = locationUtil.assureBaseUrl(PLUGIN_BASE_URL);
+  return new RegExp(`^${escapeRegExp(pluginPath)}(?:/|$)`);
+}
+
+function getMetaPageUrl(page?: MetaPage): URL | null {
+  if (!page?.url) {
     return null;
   }
 
-  if (event.meta.page) {
-    event.meta.page = {
-      ...event.meta.page,
-      url: scrubPageUrl(pageUrl),
-    };
+  return tryParseUrl(page.url);
+}
+
+function beforeSend(event: TransportItem): TransportItem | null {
+  const { page } = event.meta;
+  const metaPageUrl = getMetaPageUrl(page);
+  if (!metaPageUrl || !getPluginPageRoutePattern().test(metaPageUrl.pathname)) {
+    return null;
   }
 
-  return event;
+  const scrubbed = {
+    ...event,
+    meta: { ...event.meta, page: { ...page, url: scrubPageUrl(metaPageUrl.href) } },
+  };
+
+  switch (event.type) {
+    case 'trace':
+      return { ...scrubbed, payload: scrubTraceUrls(event.payload as TraceEvent) };
+    case 'event':
+      return { ...scrubbed, payload: scrubEventUrls(event.payload as EventEvent) };
+    default:
+      return scrubbed;
+  }
 }
 
 /**
@@ -64,9 +169,11 @@ export async function initFaro() {
 
   try {
     const { getWebInstrumentations, initializeFaro, LogLevel } = await import('@grafana/faro-web-sdk');
+    const { TracingInstrumentation } = await import('@grafana/faro-web-tracing');
 
     const { environment, faroUrl, appName } = faroEnvironment;
     const pluginVersion = packageJson.version;
+    const pageRoutePattern = getPluginPageRoutePattern();
 
     setFaro(
       initializeFaro({
@@ -80,6 +187,10 @@ export async function initFaro() {
         instrumentations: [
           ...getWebInstrumentations({
             captureConsole: false,
+          }),
+          new TracingInstrumentation({
+            mode: 'routing',
+            pageRouteMatchers: [{ pattern: pageRoutePattern, target: 'pathname' }],
           }),
         ],
         isolate: true,
