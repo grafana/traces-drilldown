@@ -13,21 +13,31 @@ interface EmptyStateSceneState extends SceneObjectState {
   layout?: 'shared';
 }
 
+export const SharedQueryEmptyState = ({
+  message,
+  remedyMessage,
+  imgWidth = 300,
+}: {
+  message: string;
+  remedyMessage?: string;
+  imgWidth?: number;
+}) => (
+  <Box width="100%" data-testid={testIds.emptyState}>
+    <SharedEmptyState message={message} image={<GrotNotFound width={imgWidth} />} variant="not-found">
+      {remedyMessage && (
+        <>
+          <Icon name="info-circle" /> {remedyMessage}
+        </>
+      )}
+    </SharedEmptyState>
+  </Box>
+);
+
 export class EmptyStateScene extends SceneObjectBase<EmptyStateSceneState> {
   public static Component = ({ model }: SceneComponentProps<EmptyStateScene>) => {
     const { message, remedyMessage, imgWidth, padding, layout } = model.useState();
     if (layout === 'shared' && message) {
-      return (
-        <Box width="100%" data-testid={testIds.emptyState}>
-          <SharedEmptyState message={message} image={<GrotNotFound width={imgWidth ?? 300} />} variant="not-found">
-            {remedyMessage && (
-              <>
-                <Icon name="info-circle" /> {remedyMessage}
-              </>
-            )}
-          </SharedEmptyState>
-        </Box>
-      );
+      return <SharedQueryEmptyState message={message} remedyMessage={remedyMessage} imgWidth={imgWidth} />;
     }
 
     return <EmptyState message={message} remedyMessage={remedyMessage} imgWidth={imgWidth} padding={padding} />;

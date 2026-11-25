@@ -162,7 +162,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
         new SceneFlexItem({
           body: new EmptyStateScene({
             message: t('by-frame-repeater.no-data-for-search', 'No data for search term'),
-            padding: '32px',
+            layout: 'shared',
           }),
         }),
       ]);
