@@ -61,7 +61,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
                   body: new EmptyStateScene({
                     message: EMPTY_STATE_ERROR_MESSAGE,
                     remedyMessage: EMPTY_STATE_ERROR_REMEDY_MESSAGE,
-                    padding: '32px',
+                    layout: 'shared',
                   }),
                 }),
               ]);
