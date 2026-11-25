@@ -7,6 +7,11 @@ jest.mock('./GrotNotFound', () => ({
   GrotNotFound: ({ width }: { width: number }) => <svg width={width} />,
 }));
 
+jest.mock('@grafana/ui', () => ({
+  ...jest.requireActual('@grafana/ui'),
+  Icon: ({ name }: { name: string }) => <span data-testid={name} />,
+}));
+
 describe('EmptyStateScene', () => {
   it('keeps the illustration, message, and remedy in the shared layout', () => {
     const model = new EmptyStateScene({
@@ -20,7 +25,17 @@ describe('EmptyStateScene', () => {
     const emptyState = screen.getByTestId(testIds.emptyState);
     expect(emptyState.querySelector('svg[width="300"]')).toBeInTheDocument();
     expect(emptyState).toContainElement(screen.getByText('No data for selected query'));
-    expect(screen.getByText('Try a different query.').querySelector('svg')).toBeInTheDocument();
+    expect(emptyState).toContainElement(screen.getByText('Try a different query.'));
+    expect(emptyState).toContainElement(screen.getByTestId('info-circle'));
+  });
+
+  it('renders a shared search message without a remedy icon', () => {
+    const model = new EmptyStateScene({ message: 'No data for search term', layout: 'shared' });
+
+    render(<model.Component model={model} />);
+
+    expect(screen.getByText('No data for search term')).toBeInTheDocument();
+    expect(screen.queryByTestId('info-circle')).not.toBeInTheDocument();
   });
 
   it('keeps the compact image-only state in the local layout', () => {

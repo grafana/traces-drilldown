@@ -5,13 +5,10 @@ import { testIds } from 'utils/testIds';
 import { EmptyState } from './EmptyState';
 import { GrotNotFound } from './GrotNotFound';
 
-interface EmptyStateSceneState extends SceneObjectState {
-  message?: string;
+type EmptyStateSceneState = SceneObjectState & {
   remedyMessage?: string;
   imgWidth?: number;
-  padding?: string;
-  layout?: 'shared';
-}
+} & ({ layout: 'shared'; message: string; padding?: never } | { layout?: never; message?: string; padding?: string });
 
 export const SharedQueryEmptyState = ({
   message,
@@ -36,7 +33,7 @@ export const SharedQueryEmptyState = ({
 export class EmptyStateScene extends SceneObjectBase<EmptyStateSceneState> {
   public static Component = ({ model }: SceneComponentProps<EmptyStateScene>) => {
     const { message, remedyMessage, imgWidth, padding, layout } = model.useState();
-    if (layout === 'shared' && message) {
+    if (layout === 'shared') {
       return <SharedQueryEmptyState message={message} remedyMessage={remedyMessage} imgWidth={imgWidth} />;
     }
 
