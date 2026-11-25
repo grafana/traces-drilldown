@@ -449,7 +449,7 @@ export function AttributesSidebar({
                       name={isFavorites ? 'favorite' : 'star'}
                       variant="secondary"
                       size="sm"
-                      className={`${styles.starButton} ${isFavorites ? styles.starButtonActive : ''}`}
+                      className={styles.starButton}
                       tooltip={
                         isFavorites
                           ? t('attributes-sidebar.remove-from-favorites', 'Remove from favorites')
@@ -604,12 +604,6 @@ function getStyles(theme: GrafanaTheme2) {
     }),
     starButton: css({
       marginLeft: 'auto',
-      '&:hover': {
-        color: theme.colors.text.primary,
-      },
-    }),
-    starButtonActive: css({
-      color: theme.colors.text.primary,
     }),
     dragging: css({
       opacity: 0.5,
