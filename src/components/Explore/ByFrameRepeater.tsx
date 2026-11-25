@@ -61,7 +61,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
                   body: new EmptyStateScene({
                     message: EMPTY_STATE_ERROR_MESSAGE,
                     remedyMessage: EMPTY_STATE_ERROR_REMEDY_MESSAGE,
-                    padding: '32px',
+                    layout: 'shared',
                   }),
                 }),
               ]);
@@ -162,7 +162,7 @@ export class ByFrameRepeater extends SceneObjectBase<ByFrameRepeaterState> {
         new SceneFlexItem({
           body: new EmptyStateScene({
             message: t('by-frame-repeater.no-data-for-search', 'No data for search term'),
-            padding: '32px',
+            layout: 'shared',
           }),
         }),
       ]);

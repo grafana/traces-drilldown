@@ -12,8 +12,7 @@ import {
 import { GrafanaTheme2, LoadingState, PanelData } from '@grafana/data';
 import { Trans } from '@grafana/i18n';
 import { LoadingStateScene } from 'components/states/LoadingState/LoadingStateScene';
-import { EmptyStateScene } from 'components/states/EmptyState/EmptyStateScene';
-import { EmptyState } from 'components/states/EmptyState/EmptyState';
+import { EmptyStateScene, SharedQueryEmptyState } from 'components/states/EmptyState/EmptyStateScene';
 import { css } from '@emotion/css';
 import Skeleton from 'react-loading-skeleton';
 import { useStyles2, useTheme2 } from '@grafana/ui';
@@ -227,11 +226,7 @@ export class ExceptionsScene extends SceneObjectBase<ExceptionsSceneState> {
           )}
           {dataState === 'empty' && (
             <div className={styles.emptyContainer}>
-              <EmptyState
-                message="No exceptions found"
-                remedyMessage={EMPTY_STATE_ERROR_REMEDY_MESSAGE}
-                padding={theme.spacing(4)}
-              />
+              <SharedQueryEmptyState message="No exceptions found" remedyMessage={EMPTY_STATE_ERROR_REMEDY_MESSAGE} />
             </div>
           )}
         </div>
