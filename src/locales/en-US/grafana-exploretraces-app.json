@@ -123,15 +123,15 @@
     "view-label": "View"
   },
   "load-search-modal": {
-    "no-saved-searches": "No saved searches to display.",
+    "no-saved-searches": "No saved queries to display.",
     "remove-tooltip": "Remove",
     "select-button": "Select",
-    "title": "Load a previously saved search"
+    "title": "Saved queries"
   },
   "load-search-scene": {
-    "load-saved-query": "Load Saved query",
-    "load-saved-search": "Load saved search",
-    "no-saved-searches": "No saved searches to load"
+    "load-saved-query": "Use saved query",
+    "load-saved-search": "Use saved query",
+    "no-saved-searches": "No saved queries"
   },
   "open-in-explore-traces-button": {
     "label": "Open in Traces Drilldown"
@@ -178,22 +178,22 @@
     "comparison-selection": "Comparison selection"
   },
   "save-search-button": {
-    "save-in-saved-queries": "Save in Saved queries Queries",
-    "save-search": "Save search"
+    "save-in-saved-queries": "Save query",
+    "save-search": "Save query"
   },
   "save-search-modal": {
     "cancel": "Cancel",
     "close": "Close",
-    "existing-search-warning": "There is a previously saved search with the same query: {{title}}",
+    "existing-search-warning": "There is a previously saved query with the same expression: {{title}}",
     "field": {
       "description": "Description",
       "title": "Title"
     },
-    "info-alert": "Saved searches are stored locally in your browser and will only be available on this device.",
+    "info-alert": "Saved queries are stored locally in your browser and will only be available on this device.",
     "save": "Save",
-    "success-message": "Search successfully saved.",
+    "success-message": "Query successfully saved.",
     "success-title": "Success",
-    "title": "Save current search"
+    "title": "Save query"
   },
   "search": {
     "placeholder": "Search"
