@@ -424,10 +424,10 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
         </Stack>
         <div data-testid={testIds.controlsRegion} className={styles.controls}>
           <EntityAssertionsWidget serviceName={serviceName || ''} model={model} />
-          <SaveSearchButton sceneRef={model} />
           {traceExploration.state.loadSearchScene && (
             <traceExploration.state.loadSearchScene.Component model={traceExploration.state.loadSearchScene} />
           )}
+          <SaveSearchButton sceneRef={model} />
           {controls.map((control) => (
             <control.Component key={control.state.key} model={control} />
           ))}
