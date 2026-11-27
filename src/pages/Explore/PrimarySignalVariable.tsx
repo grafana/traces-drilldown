@@ -1,3 +1,4 @@
+import { testIds } from 'utils/testIds';
 import React, { useEffect } from 'react';
 import { CustomVariable, MultiValueVariable, MultiValueVariableState, SceneComponentProps } from '@grafana/scenes';
 import { primarySignalOptions } from './primary-signals';
@@ -17,7 +18,7 @@ export function DropdownIndicator({ selectProps }: DropdownIndicatorProps) {
   const isOpen = selectProps.menuIsOpen;
   const icon = isOpen ? 'angle-up' : 'angle-down';
   const size = 'md';
-  return <Icon name={icon} size={size} />;
+  return <Icon data-testid={testIds.primarySignalSelect} name={icon} size={size} />;
 }
 
 const GroupHeading = () => {

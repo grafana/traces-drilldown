@@ -1,280 +1,280 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Carregando rastros adaptativos…"
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Excluir",
+    "include": "Incluir"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Detalhamento de rastros"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Desativar plug-in",
+    "enable-plugin": "Ativar plug-in",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Intervalo de consultas",
+      "query-range-description": "O intervalo de tempo para cada lote armazenado em cache no Seletor de Tempo. Valores maiores significam menos consultas, mas mais dados por consulta."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Ativar/desativar",
+      "time-seeker-settings": "Configurações do Seletor de Tempo"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "O plug-in está ativado no momento.",
+    "plugin-not-enabled": "O plug-in não está ativado no momento.",
+    "save-settings": "Salvar configurações"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Grade",
+    "layout-rows": "Linhas",
+    "layout-single": "Único"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Erro",
+    "rate-label": "Taxa"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Referência",
+    "description": "Os atributos são ordenados pela diferença entre os valores de referência e de seleção para cada valor.",
+    "hide-baseline-only-label": "Ocultar apenas valores de referência",
+    "hide-baseline-only-tooltip": "Ocultar painéis que têm apenas a porcentagem de referência e nenhuma seleção",
+    "selection-label": "Seleção"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Adicionar aos favoritos",
+    "all-button": "Todos",
+    "clear-search": "Limpar busca",
+    "drop-here": "Soltar aqui",
+    "drop-here-below": "Soltar aqui",
+    "no-available": "Nenhum atributo disponível",
+    "no-match": "Nenhum atributo corresponde aos seus critérios",
+    "none": "Nenhum",
+    "remove-from-favorites": "Remover dos favoritos",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Todos",
+      "favorites": "Favoritos",
+      "resource": "Recurso",
+      "span": "Intervalo"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_one": "",
-    "selected-count_other": ""
+    "search-placeholder": "Buscar atributos…",
+    "selected": "Selecionado:",
+    "selected-count_one": "Selecionado ({{count}}):",
+    "selected-count_other": "Selecionados ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "",
-    "partial-results-hint": ""
+    "no-data-for-search": "Sem dados para o termo de busca",
+    "partial-results-hint": "Mostrando {{shown}} de {{total}}. Role para carregar mais ou pesquise para restringir."
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "Selecionar os rastros mais lentos",
+    "slowest-traces-selected": "Rastros mais lentos selecionados"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Erro de consulta"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Erro:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}}%"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Veja os detalhes das exceções dos rastros com erros para o conjunto atual de filtros."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "Excluir mensagem de exceção",
+    "grouped-messages-aria-label": "Mostrar mensagens de exceção agrupadas",
+    "grouped-messages-common-prefix": "Comum",
+    "grouped-messages-title": "Mensagens agrupadas",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "Detalhes da exceção",
+      "exception-details-tooltip": "Tipo de exceção, mensagem, serviço e carimbo de data/hora da última visualização. Use os botões Incluir/Excluir para incluir ou excluir mensagens de exceção ou clique em Tipo ou Mensagem para filtrar.",
+      "frequency": "Frequência",
+      "frequency-tooltip": "Representação visual da frequência de exceções ao longo do tempo",
+      "occurrences": "Ocorrências",
+      "occurrences-tooltip": "Número total de vezes que esta exceção ocorreu"
     },
-    "include-aria-label": ""
+    "include-aria-label": "Incluir mensagem de exceção"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "Visualizar rastro"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "Carregando…",
+    "open-in-traces-drilldown": "Abrir no Detalhamento de rastros"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Fechar"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "Diferença mais alta"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "Inspecionar"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "Insights",
+    "description": "Sobreponha os níveis de integridade (crítico, aviso, informação) do Grafo de Conhecimento nos painéis de séries temporais",
+    "label": "Insights"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Visualizar"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Nenhuma busca salva para exibir.",
+    "remove-tooltip": "Remover",
+    "select-button": "Selecionar",
+    "title": "Carregar uma busca salva anteriormente"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Carregar consulta salva",
+    "load-saved-search": "Carregar busca salva",
+    "no-saved-searches": "Nenhuma busca salva para carregar"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "Abrir no Detalhamento de rastros"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Adicionar ao painel",
+    "create-alert": "Criar alerta",
+    "explore": "Conferir",
+    "navigation": "Navegação"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "Padrão",
+    "label": "Percentis",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "Informações do plug-in",
+      "tooltip": "Informações do plug-in"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Última atualização: {{updated}}",
+      "title": "Detalhamento de rastros do Grafana v{{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Log de alterações",
+      "commit-sha": "Commit SHA: {{sha}}",
+      "contribute": "Contribuir",
+      "documentation": "Documentação",
+      "give-feedback": "Enviar feedback",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "Comunicar um problema"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Sinal principal",
+    "primary-signal-label": "Sinal principal"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Seleção de comparação"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "Salvar em Consultas salvas",
+    "save-search": "Salvar busca"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "existing-search-warning": "Há uma busca salva anteriormente com a mesma consulta: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Descrição",
+      "title": "Título"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "As buscas salvas são armazenadas localmente no seu navegador e só estarão disponíveis neste dispositivo.",
+    "save": "Salvar",
+    "success-message": "Busca salva com sucesso.",
+    "success-title": "Sucesso",
+    "title": "Salvar busca atual"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Buscar"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Voltar para todos os rastros"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Veja uma lista de intervalos referente ao conjunto atual de filtros.",
+    "open-in-new-tab": "Abrir em nova aba"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Sem dados",
+    "not-enough-data": "Dados insuficientes"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Streaming"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Analise a estrutura de intervalos lentos dos rastros que correspondem aos filtros atuais.",
+    "duration-panel-info": "Cada painel representa uma visão agregada compilada usando intervalos de vários rastros.",
+    "errors-description": "Analise a estrutura de erros dos rastros que correspondem aos filtros atuais.",
+    "errors-panel-info": "Cada painel representa uma visão agregada compilada usando intervalos de vários rastros.",
+    "no-data-message": "A aba de estrutura mostra {{emptyMsg}} intervalos abaixo do que você está investigando no momento. No momento, não há {{emptyMsg}} intervalos descendentes abaixo dos intervalos que você está investigando.",
+    "open-trace": "Abrir rastro",
+    "rate-description": "Analise a estrutura de serviços dos rastros que correspondem aos filtros atuais.",
+    "rate-panel-info": "Cada painel representa uma visão agregada compilada usando intervalos de vários rastros.",
+    "read-more": "Saiba mais",
+    "works-best": "A aba de estrutura funciona melhor com rastros completos."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Seleção de foco",
+    "large-batch-warning": "O Seletor de Tempo precisa carregar uma grande quantidade de dados. O desempenho pode ser afetado.",
+    "pan-left": "Navegar para a esquerda",
+    "pan-right": "Navegar para a direita",
+    "set-range": "Definir intervalo",
+    "zoom-in": "Ampliar zoom no contexto",
+    "zoom-out": "Reduzir zoom no contexto"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "Carregando o Seletor de Tempo…",
+    "seeker-label": "Seletor"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "Nenhum rastro selecionado"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "Visualizar rastro {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Detalhamento de rastros"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Fonte de dados",
+      "filters": "Filtros",
+      "trace-id": "ID do rastro",
+      "trace-id-placeholder": "Insira um ID e pressione Enter"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Fonte de dados",
+      "duration-percentiles": "Percentis de duração"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Leia a documentação",
+    "warning-message": "Encontramos um erro ao executar uma consulta de métricas TraceQL: \"processador localblocks não encontrado\". Isso normalmente significa que o processador \"local-blocks\" não está configurado no Tempo, o que é necessário para que o Detalhamento de rastros do Grafana funcione.",
+    "warning-title": "Métricas do TraceQL não configuradas"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Selecionar tipo de métrica",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "– Quantidade de tempo que esses intervalos levam, representada como um mapa de calor (tempo de resposta, latência)",
+      "duration-label": "Duração",
+      "errors-description": "– Intervalos com falha, problemas gerais no ecossistema de rastros",
+      "errors-label": "Erros",
+      "rate-description": "– Intervalos por segundo que correspondem ao seu filtro, útil para encontrar picos incomuns de atividade",
+      "rate-label": "Taxa",
+      "read-documentation": "Leia a documentação",
+      "subtitle": "Confira as métricas de taxa, erros e duração (RED) geradas a partir de rastros pelo Tempo.",
+      "title": "Métricas RED para rastros"
     }
   }
 }

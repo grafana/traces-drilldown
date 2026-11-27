@@ -62,7 +62,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "沒有搜尋內容說明的資料",
-    "partial-results-hint": ""
+    "partial-results-hint": "正在顯示 {{shown}} 個，共 {{total}} 個。滾動以載入更多內容，或搜尋以縮小範圍。"
   },
   "duration-comparison-control": {
     "select-slowest-traces": "選取最慢的追蹤",

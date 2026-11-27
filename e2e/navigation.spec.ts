@@ -38,19 +38,19 @@ test.describe('ensure back button works for main actions', () => {
   test('clicking on the "Service structure" tab, browser back and browser forward should work as expected', async ({
     tracesExplorePage,
   }) => {
-    await assertBackAndForwardNavigationWorksForTabs(tracesExplorePage, 'Service structure');
+    await assertBackAndForwardNavigationWorksForTabs(tracesExplorePage, 'structure');
   });
 
   test('clicking on the "Comparison" tab, browser back and browser forward should work as expected', async ({
     tracesExplorePage,
   }) => {
-    await assertBackAndForwardNavigationWorksForTabs(tracesExplorePage, 'Comparison');
+    await assertBackAndForwardNavigationWorksForTabs(tracesExplorePage, 'comparison');
   });
 
   test('clicking on the "Traces" tab, browser back and browser forward should work as expected', async ({
     tracesExplorePage,
   }) => {
-    await assertBackAndForwardNavigationWorksForTabs(tracesExplorePage, 'Traces');
+    await assertBackAndForwardNavigationWorksForTabs(tracesExplorePage, 'traceList');
   });
 });
 
@@ -161,10 +161,10 @@ async function assertBackAndForwardNavigationWorksForTabs(tracesExplorePage: Tra
 }
 
 async function assertBackAndForwardNavigationWorksForTabsInitialState(tracesExplorePage: TracesExplorePage) {
-  await tracesExplorePage.assertTabSelected('Breakdown');
-  await tracesExplorePage.assertTabNotSelected('Service structure');
-  await tracesExplorePage.assertTabNotSelected('Comparison');
-  await tracesExplorePage.assertTabNotSelected('Traces');
+  await tracesExplorePage.assertTabSelected('breakdown');
+  await tracesExplorePage.assertTabNotSelected('structure');
+  await tracesExplorePage.assertTabNotSelected('comparison');
+  await tracesExplorePage.assertTabNotSelected('traceList');
 
   await expect(tracesExplorePage.page.getByTestId(testIds.breakdownContainer)).toBeVisible();
   await expect(tracesExplorePage.page.getByTestId(testIds.serviceStructureContainer)).not.toBeVisible();
@@ -177,19 +177,19 @@ async function assertBackAndForwardNavigationWorksForTabsClickedState(
   tabToClick: RateTabs
 ) {
   await tracesExplorePage.assertTabSelected(tabToClick);
-  await tracesExplorePage.assertTabNotSelected('Breakdown');
+  await tracesExplorePage.assertTabNotSelected('breakdown');
 
   await expect(tracesExplorePage.page.getByTestId(testIds.breakdownContainer)).not.toBeVisible();
 
-  if (tabToClick === 'Service structure') {
+  if (tabToClick === 'structure') {
     await expect(tracesExplorePage.page.getByTestId(testIds.serviceStructureContainer)).toBeVisible();
   }
 
-  if (tabToClick === 'Comparison') {
+  if (tabToClick === 'comparison') {
     await expect(tracesExplorePage.page.getByTestId(testIds.comparisonContainer)).toBeVisible();
   }
 
-  if (tabToClick === 'Traces') {
+  if (tabToClick === 'traceList') {
     await expect(tracesExplorePage.page.getByTestId(testIds.tracesContainer)).toBeVisible();
   }
 }

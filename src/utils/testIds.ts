@@ -3,6 +3,14 @@ import { AttributeItem } from '../types';
 import pluginJson from '../plugin.json';
 
 export const testIds = {
+  datasourceRegion: `${pluginJson.id} datasource-region`,
+  controlsRegion: `${pluginJson.id} controls-region`,
+  filtersRegion: `${pluginJson.id} filters-region`,
+  traceIdInput: `${pluginJson.id} trace-id-input`,
+  traceIdSubmit: `${pluginJson.id} trace-id-submit`,
+  traceIdClear: `${pluginJson.id} trace-id-clear`,
+  shareExploration: `${pluginJson.id} share-exploration`,
+  traceDrawer: `${pluginJson.id} trace-drawer`,
   emptyState: `${pluginJson.id} empty-state`,
   errorState: `${pluginJson.id} error-state`,
   loadingState: `${pluginJson.id} loading-state`,
@@ -40,4 +48,18 @@ export function getTestIdFromAttribute(attribute: AttributeItem): string {
     return `${pluginJson.id} unknown-attribute-item`;
   }
   return `${pluginJson.id} ${attribute.value}-attribute-item`;
+}
+
+// Values, rather than translated labels, keep tab anchors stable across metrics and locales.
+export const actionViewTestIds = {
+  breakdown: `${pluginJson.id} tab-breakdown`,
+  structure: `${pluginJson.id} tab-structure`,
+  comparison: `${pluginJson.id} tab-comparison`,
+  exceptions: `${pluginJson.id} tab-exceptions`,
+  traceList: `${pluginJson.id} tab-trace-list`,
+  adaptiveTraces: `${pluginJson.id} tab-adaptive-traces`,
+};
+
+export function getTraceOpenTestId(traceId: string, spanId?: string): string {
+  return `${pluginJson.id} open-trace-${traceId}${spanId ? `-span-${spanId}` : ''}`;
 }

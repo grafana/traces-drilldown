@@ -62,7 +62,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "검색어에 대한 데이터가 없습니다.",
-    "partial-results-hint": ""
+    "partial-results-hint": "전체 {{total}}개 중 {{shown}}개 표시.스크롤하여 더 불러오거나 검색하여 결과를 좁히세요."
   },
   "duration-comparison-control": {
     "select-slowest-traces": "가장 느린 트레이스 선택",

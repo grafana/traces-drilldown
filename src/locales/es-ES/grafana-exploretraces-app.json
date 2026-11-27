@@ -63,7 +63,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "No hay datos para el término de búsqueda",
-    "partial-results-hint": ""
+    "partial-results-hint": "Mostrando {{shown}} de {{total}}. Desplázate para cargar más resultados o haz una búsqueda para acotarlos."
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Seleccionar las trazas más lentas",

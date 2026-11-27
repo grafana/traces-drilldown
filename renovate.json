@@ -46,7 +46,7 @@
       "matchPackageNames": ["prettier"]
     },
     {
-      "description": "Group ESLint core and plugins (not eslint-webpack-plugin; see Webpack group)",
+      "description": "Group ESLint core and plugins",
       "groupName": "ESLint",
       "matchPackageNames": [
         "eslint",
@@ -58,31 +58,26 @@
       ]
     },
     {
-      "description": "Group webpack, CLI, loaders, and webpack plugins",
-      "groupName": "Webpack",
+      "description": "Group Rspack, loaders, and build plugins",
+      "groupName": "Rspack",
       "matchPackageNames": [
-        "webpack",
-        "webpack-cli",
-        "webpack-merge",
-        "copy-webpack-plugin",
-        "css-loader",
-        "style-loader",
+        "/^@rspack\\//",
+        "rspack-merge",
+        "rspack-plugin-virtual-module",
+        "ts-checker-rspack-plugin",
+        "diagnostics-webpack-plugin",
+        "replace-in-file-webpack-plugin",
         "sass",
         "sass-loader",
-        "imports-loader",
-        "terser-webpack-plugin",
-        "eslint-webpack-plugin",
-        "fork-ts-checker-webpack-plugin",
-        "replace-in-file-webpack-plugin",
-        "webpack-livereload-plugin",
-        "webpack-subresource-integrity",
-        "webpack-virtual-modules"
+        "webpack",
+        "ws",
+        "@types/ws"
       ]
     },
     {
       "description": "Group SWC toolchain",
       "groupName": "SWC",
-      "matchPackageNames": ["@swc/core", "@swc/jest", "swc-loader"]
+      "matchPackageNames": ["@swc/core", "@swc/jest"]
     },
     {
       "description": "Group OpenFeature packages",

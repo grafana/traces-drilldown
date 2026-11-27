@@ -62,7 +62,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "Tidak ada data untuk kata kunci",
-    "partial-results-hint": ""
+    "partial-results-hint": "Menampilkan {{shown}} dari {{total}}. Gulir untuk memuat lebih banyak atau cari untuk mempersempit."
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Pilih trace paling lambat",

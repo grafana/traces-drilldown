@@ -63,6 +63,13 @@ function normalizeFilter(filter: AdHocFilterWithLabels): AdHocFilterWithLabels {
     return filter;
   }
 
+  const value = filter.valueLabels?.[0];
+  const type = getLabelValueType(filter.value, filter.key);
+  if (value !== undefined && toEscapedValue(type, value) === filter.value) {
+    // keep the value as-is so a string already escaped like "67" doesn't turn into a number
+    return filter;
+  }
+
   return {
     ...filter,
     ...toVariableFilter({

@@ -6,7 +6,7 @@ import {
   TimeRange,
   useDataLinksContext,
 } from '@grafana/data';
-import { usePluginFunctions } from '@grafana/runtime';
+import { locationService, usePluginFunctions } from '@grafana/runtime';
 import { type GetDataSourceInstanceListFilters } from '@grafana/runtime/unstable';
 import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 import { DataQuery } from '@grafana/schema';
@@ -100,8 +100,10 @@ export function DataLinksCustomContext(props: Props) {
         timeRange,
       });
 
-      if (extensionLink?.path) {
-        linkModel.href = locationUtil.assureBaseUrl(extensionLink.path);
+      const path = extensionLink?.path;
+      if (path) {
+        linkModel.href = locationUtil.assureBaseUrl(path);
+        linkModel.onClick = () => locationService.push(locationUtil.stripBaseFromUrl(path));
       }
 
       return linkModel;

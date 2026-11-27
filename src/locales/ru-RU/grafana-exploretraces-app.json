@@ -65,7 +65,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "Нет данных по поисковому запросу",
-    "partial-results-hint": ""
+    "partial-results-hint": "Отображается {{shown}} из {{total}}. Прокрутите, чтобы загрузить больше, или используйте поиск, чтобы сузить результаты."
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Выбрать самые медленные трассировки",

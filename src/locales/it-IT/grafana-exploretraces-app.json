@@ -1,280 +1,280 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Caricamento delle Adaptive Traces..."
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Escludi",
+    "include": "Includi"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Traces Drilldown"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Disabilita plugin",
+    "enable-plugin": "Abilita plugin",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Intervallo della query",
+      "query-range-description": "L'intervallo di tempo per ogni batch memorizzato nella cache nel Time Seeker. Valori più alti corrispondono a un numero inferiore di query, ma una maggiore quantità di dati per query."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Abilita/Disabilita",
+      "time-seeker-settings": "Impostazioni di Time Seeker"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "Il plugin è attualmente abilitato.",
+    "plugin-not-enabled": "Il plugin non è attualmente abilitato.",
+    "save-settings": "Salva impostazioni"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Griglia",
+    "layout-rows": "Righe",
+    "layout-single": "Singolo"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Errore",
+    "rate-label": "Frequenza"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Valori di riferimento",
+    "description": "Gli attributi sono ordinati in base alla differenza tra il valore di riferimento e il valore di selezione per ciascun valore.",
+    "hide-baseline-only-label": "Nascondi solo i valori di riferimento",
+    "hide-baseline-only-tooltip": "Nascondi i pannelli che hanno solo la percentuale di riferimento e nessuna selezione",
+    "selection-label": "Selezione"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Aggiungi a Preferiti",
+    "all-button": "Tutti",
+    "clear-search": "Azzera ricerca",
+    "drop-here": "Trascina qui",
+    "drop-here-below": "Trascina qui",
+    "no-available": "Nessun attributo disponibile",
+    "no-match": "Nessun attributo corrisponde ai tuoi criteri",
+    "none": "Nessuno",
+    "remove-from-favorites": "Rimuovi da Preferiti",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Tutti",
+      "favorites": "Preferiti",
+      "resource": "Risorsa",
+      "span": "Intervallo"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_one": "",
-    "selected-count_other": ""
+    "search-placeholder": "Cerca attributi...",
+    "selected": "Selezionati:",
+    "selected-count_one": "Selezionato ({{count}}):",
+    "selected-count_other": "Selezionati ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "",
-    "partial-results-hint": ""
+    "no-data-for-search": "Nessun dato per il termine di ricerca",
+    "partial-results-hint": "Visualizzazione di {{shown}} su {{total}}. Scorri per caricare altro o cerca per restringere i risultati."
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "Seleziona le tracce più lente",
+    "slowest-traces-selected": "Tracce più lente selezionate"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Errore di query"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Errore:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}}%"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Visualizza i dettagli delle eccezioni dalle tracce con errori relative al set di filtri corrente."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "Escludi messaggio di eccezione",
+    "grouped-messages-aria-label": "Mostra messaggi di eccezione raggruppati",
+    "grouped-messages-common-prefix": "Comune",
+    "grouped-messages-title": "Messaggi raggruppati",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "Dettagli eccezione",
+      "exception-details-tooltip": "Tipo di eccezione, messaggio, servizio, data e ora dell'ultima visualizzazione. Utilizza i pulsanti Includi/Escludi per includere o escludere i messaggi di eccezione oppure fai clic su Tipo o Messaggio per filtrare.",
+      "frequency": "Frequenza",
+      "frequency-tooltip": "Rappresentazione visiva della frequenza delle eccezioni nel tempo",
+      "occurrences": "Occorrenze",
+      "occurrences-tooltip": "Numero totale di volte in cui si è verificata questa eccezione"
     },
-    "include-aria-label": ""
+    "include-aria-label": "Includi messaggio di eccezione"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "Visualizza traccia"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "Caricamento in corso...",
+    "open-in-traces-drilldown": "Apri in Traces Drilldown"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Chiudi"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "Differenza più elevata"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "Ispeziona"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "Approfondimenti",
+    "description": "Sovrapponi gli stati di integrità (critico, avviso, informativo) del grafico della conoscenza sui pannelli delle serie temporali",
+    "label": "Approfondimenti"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Visualizza"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Nessuna ricerca salvata da visualizzare.",
+    "remove-tooltip": "Rimuovi",
+    "select-button": "Seleziona",
+    "title": "Carica una ricerca salvata in precedenza"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Carica query salvata",
+    "load-saved-search": "Carica ricerca salvata",
+    "no-saved-searches": "Nessuna ricerca salvata da caricare"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "Apri in Traces Drilldown"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Aggiungi alla dashboard",
+    "create-alert": "Crea avviso",
+    "explore": "Esplora",
+    "navigation": "Navigazione"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "Predefinito",
+    "label": "Percentili",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "Informazioni sul plugin",
+      "tooltip": "Informazioni sul plugin"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Ultimo aggiornamento: {{updated}}",
+      "title": "Grafana Traces Drilldown v{{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Registro delle modifiche",
+      "commit-sha": "Commit SHA: {{sha}}",
+      "contribute": "Contribuisci",
+      "documentation": "Documentazione",
+      "give-feedback": "Lascia un feedback",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "Segnala un problema"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Segnale principale",
+    "primary-signal-label": "Segnale principale"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Selezione comparativa"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "Salva in Query salvate",
+    "save-search": "Salva ricerca"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "existing-search-warning": "È presente una ricerca salvata in precedenza con la stessa query: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Descrizione",
+      "title": "Titolo"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "Le ricerche salvate vengono archiviate localmente nel browser e saranno disponibili solo su questo dispositivo.",
+    "save": "Salva",
+    "success-message": "Ricerca salvata correttamente.",
+    "success-title": "Operazione riuscita",
+    "title": "Salva ricerca corrente"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Cerca"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Torna a tutte le tracce"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Visualizza un elenco di intervalli per il set di filtri corrente.",
+    "open-in-new-tab": "Apri in una nuova scheda"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Nessun dato",
+    "not-enough-data": "Dati insufficienti"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Streaming"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Analizza la struttura degli intervalli lenti dalle tracce che corrispondono ai filtri correnti.",
+    "duration-panel-info": "Ogni pannello rappresenta una vista aggregata ottenuta combinando intervalli provenienti da più tracce.",
+    "errors-description": "Analizza la struttura degli errori delle tracce che corrispondono ai filtri correnti.",
+    "errors-panel-info": "Ogni pannello rappresenta una vista aggregata ottenuta combinando intervalli provenienti da più tracce.",
+    "no-data-message": "La scheda Struttura mostra {{emptyMsg}} intervalli al di sotto di quelli che stai esaminando al momento. Al momento, non ci sono intervalli {{emptyMsg}} discendenti al di sotto di quelli che stai esaminando.",
+    "open-trace": "Apri traccia",
+    "rate-description": "Analizza la struttura del servizio delle tracce che corrispondono ai filtri correnti.",
+    "rate-panel-info": "Ogni pannello rappresenta una vista aggregata ottenuta combinando intervalli provenienti da più tracce.",
+    "read-more": "Ulteriori informazioni",
+    "works-best": "La scheda Struttura funziona meglio con le tracce complete."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Selezione del focus",
+    "large-batch-warning": "Il Time Seeker deve caricare una grande quantità di dati. Le prestazioni potrebbero risentirne.",
+    "pan-left": "Pannello a sinistra",
+    "pan-right": "Pannello a destra",
+    "set-range": "Imposta intervallo",
+    "zoom-in": "Ingrandisci contesto",
+    "zoom-out": "Rimpicciolisci contesto"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "Caricamento del selettore temporale in corso...",
+    "seeker-label": "Selettore"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "Nessuna traccia selezionata"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "Visualizza traccia {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Traces Drilldown"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Origine dei dati",
+      "filters": "Filtri",
+      "trace-id": "ID traccia",
+      "trace-id-placeholder": "Inserisci un ID e premi Invio"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Origine dei dati",
+      "duration-percentiles": "Percentili di durata"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Leggi documentazione",
+    "warning-message": "Abbiamo riscontrato un errore durante l'esecuzione di una query sulle metriche TraceQL: \"processore localblocks non trovato\". In genere, ciò significa che il processore \"local-blocks\" non è configurato in Tempo, mentre è necessario affinché Grafana Traces Drilldown funzioni.",
+    "warning-title": "Metriche TraceQL non configurate"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Seleziona tipo di metrica",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "- Tempo impiegato da questi intervalli, rappresentato tramite una mappa termica (tempo di risposta, latenza)",
+      "duration-label": "Durata",
+      "errors-description": "- Intervalli non riusciti, problemi generali nell'ecosistema di tracciamento",
+      "errors-label": "Errori",
+      "rate-description": "- Intervalli al secondo che corrispondono al tuo filtro, utili per individuare picchi di attività insoliti",
+      "rate-label": "Frequenza",
+      "read-documentation": "Leggi documentazione",
+      "subtitle": "Scopri le metriche relative a frequenza, errori e durata (RED) generate da Tempo a partire dalle tracce.",
+      "title": "Metriche RED per le tracce"
     }
   }
 }

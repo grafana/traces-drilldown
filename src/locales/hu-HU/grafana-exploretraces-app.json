@@ -1,280 +1,280 @@
 {
   "adaptive-traces-scene": {
-    "loading": ""
+    "loading": "Adaptív nyomkövetések betöltése…"
   },
   "add-to-filters-action": {
-    "exclude": "",
-    "include": ""
+    "exclude": "Kizárás",
+    "include": "Belefoglalás"
   },
   "app": {
-    "page-title": ""
+    "page-title": "Traces Drilldown"
   },
   "app-config": {
-    "disable-plugin": "",
-    "enable-plugin": "",
+    "disable-plugin": "Bővítmény letiltása",
+    "enable-plugin": "Bővítmény engedélyezése",
     "field": {
-      "query-range": "",
-      "query-range-description": ""
+      "query-range": "Lekérdezési tartomány",
+      "query-range-description": "A gyorsítótárban tárolt egyes kötegek időtartománya az Időkeresőben. A nagyobb értékek kevesebb lekérdezést, de lekérdezésenként több adatot jelentenek."
     },
     "fieldset": {
-      "enable-disable": "",
-      "time-seeker-settings": ""
+      "enable-disable": "Engedélyezés/letiltás",
+      "time-seeker-settings": "Időkereső beállításai"
     },
-    "plugin-enabled": "",
-    "plugin-not-enabled": "",
-    "save-settings": ""
+    "plugin-enabled": "A bővítmény jelenleg engedélyezett.",
+    "plugin-not-enabled": "A bővítmény jelenleg nem engedélyezett.",
+    "save-settings": "Beállítások mentése"
   },
   "attribute-breakdown": {
-    "layout-grid": "",
-    "layout-rows": "",
-    "layout-single": ""
+    "layout-grid": "Rács",
+    "layout-rows": "Sorok",
+    "layout-single": "Különálló"
   },
   "attributes-breakdown-scene": {
-    "error-label": "",
-    "rate-label": ""
+    "error-label": "Hiba",
+    "rate-label": "Értékelés"
   },
   "attributes-comparison-scene": {
-    "baseline-label": "",
-    "description": "",
-    "hide-baseline-only-label": "",
-    "hide-baseline-only-tooltip": "",
-    "selection-label": ""
+    "baseline-label": "Kiindulás",
+    "description": "Az attribútumok az egyes értékek kiindulási és kiválasztási értékei közötti különbség szerint vannak rendezve.",
+    "hide-baseline-only-label": "Csak a kiindulási érték elrejtése",
+    "hide-baseline-only-tooltip": "Azoknak a paneleknek az elrejtése, amelyek csak kiindulási százalékkal rendelkeznek, és nincs rajtuk kiválasztás",
+    "selection-label": "Kiválasztás"
   },
   "attributes-sidebar": {
-    "add-to-favorites": "",
-    "all-button": "",
-    "clear-search": "",
-    "drop-here": "",
-    "drop-here-below": "",
-    "no-available": "",
-    "no-match": "",
-    "none": "",
-    "remove-from-favorites": "",
+    "add-to-favorites": "Hozzáadás a kedvencekhez",
+    "all-button": "Az összes",
+    "clear-search": "Keresés törlése",
+    "drop-here": "Húzza ide",
+    "drop-here-below": "Húzza ide",
+    "no-available": "Nincsenek elérhető attribútumok",
+    "no-match": "Egyetlen attribútum sem felel meg a feltételeinek",
+    "none": "Nincs",
+    "remove-from-favorites": "Eltávolítás a kedvencek közül",
     "scope": {
-      "all": "",
-      "favorites": "",
-      "resource": "",
-      "span": ""
+      "all": "Az összes",
+      "favorites": "Kedvencek",
+      "resource": "Erőforrás",
+      "span": "Terjedelem"
     },
-    "search-placeholder": "",
-    "selected": "",
-    "selected-count_one": "",
-    "selected-count_other": ""
+    "search-placeholder": "Attribútumok keresése…",
+    "selected": "Kiválasztott:",
+    "selected-count_one": "Kiválasztott ({{count}}):",
+    "selected-count_other": "Kiválasztott ({{count}}):"
   },
   "by-frame-repeater": {
-    "no-data-for-search": "",
-    "partial-results-hint": ""
+    "no-data-for-search": "Nincs adat a keresési kifejezéshez",
+    "partial-results-hint": "{{shown}}/{{total}} megjelenítése Továbbiak betöltéséhez görgessen le, vagy szűkítse a találatokat kereséssel."
   },
   "duration-comparison-control": {
-    "select-slowest-traces": "",
-    "slowest-traces-selected": ""
+    "select-slowest-traces": "Leglassabb nyomkövetések kiválasztása",
+    "slowest-traces-selected": "Leglassabb nyomkövetések kiválasztva"
   },
   "error-state-scene": {
-    "query-error": ""
+    "query-error": "Lekérdezési hiba"
   },
   "exception-accordion": {
-    "error-label": ""
+    "error-label": "Hiba:"
   },
   "exception-comparison": {
-    "percent-title": ""
+    "percent-title": "{{percent}}%"
   },
   "exceptions-scene": {
-    "description": ""
+    "description": "Megtekintheti a kivétel részleteit a hibás nyomkövetésekből az aktuális szűrőkészlethez."
   },
   "exceptions-table": {
-    "exclude-aria-label": "",
-    "grouped-messages-aria-label": "",
-    "grouped-messages-common-prefix": "",
-    "grouped-messages-title": "",
+    "exclude-aria-label": "Kivételüzenet kizárása",
+    "grouped-messages-aria-label": "Csoportosított kivételüzenetek megjelenítése",
+    "grouped-messages-common-prefix": "Gyakori",
+    "grouped-messages-title": "Csoportosított üzenetek",
     "header": {
-      "exception-details": "",
-      "exception-details-tooltip": "",
-      "frequency": "",
-      "frequency-tooltip": "",
-      "occurrences": "",
-      "occurrences-tooltip": ""
+      "exception-details": "Kivétel részletei",
+      "exception-details-tooltip": "Kivételtípus, üzenet, szolgáltatás és az utolsó megjelenés időbélyege. A kivételüzenetek belefoglalásához vagy kizárásához használja a Belefoglalás/Kizárás gombot, vagy a szűréshez kattintson a típusra vagy az üzenetre.",
+      "frequency": "Gyakoriság",
+      "frequency-tooltip": "A kivételek gyakoriságának vizuális ábrázolása az idő függvényében",
+      "occurrences": "Előfordulások",
+      "occurrences-tooltip": "A kivétel előfordulásainak száma összesen"
     },
-    "include-aria-label": ""
+    "include-aria-label": "Kivételüzenet belefoglalása"
   },
   "exemplars": {
-    "view-trace": ""
+    "view-trace": "Nyomvonal megtekintése"
   },
   "exposed-components": {
-    "loading": "",
-    "open-in-traces-drilldown": ""
+    "loading": "Betöltés…",
+    "open-in-traces-drilldown": "Megnyitás a Traces Drilldownban"
   },
   "grafana-ui": {
     "drawer": {
-      "close": ""
+      "close": "Bezárás"
     }
   },
   "highest-difference-panel": {
-    "title": ""
+    "title": "Legnagyobb különbség"
   },
   "inspect-attribute-action": {
-    "inspect": ""
+    "inspect": "Ellenőrzés"
   },
   "kg-annotation-toggle": {
-    "aria-label": "",
-    "description": "",
-    "label": ""
+    "aria-label": "Adatok",
+    "description": "A Knowledge Graphból származó állapotok (kritikus, figyelmeztetés, tájékoztatás) megjelenítése az idősoros paneleken",
+    "label": "Adatok"
   },
   "layout-switcher": {
-    "view-label": ""
+    "view-label": "Nézet"
   },
   "load-search-modal": {
-    "no-saved-searches": "",
-    "remove-tooltip": "",
-    "select-button": "",
-    "title": ""
+    "no-saved-searches": "Nincsenek megjeleníthető mentett keresések.",
+    "remove-tooltip": "Eltávolítás",
+    "select-button": "Kiválasztás",
+    "title": "Korábban mentett keresés betöltése"
   },
   "load-search-scene": {
-    "load-saved-query": "",
-    "load-saved-search": "",
-    "no-saved-searches": ""
+    "load-saved-query": "Mentett lekérdezés betöltése",
+    "load-saved-search": "Mentett keresés betöltése",
+    "no-saved-searches": "Nincsenek betölthető mentett keresések"
   },
   "open-in-explore-traces-button": {
-    "label": ""
+    "label": "Megnyitás a Traces Drilldownban"
   },
   "panel-menu": {
-    "add-to-dashboard": "",
-    "create-alert": "",
-    "explore": "",
-    "navigation": ""
+    "add-to-dashboard": "Hozzáadás az irányítópulthoz",
+    "create-alert": "Riasztás létrehozása",
+    "explore": "Explore",
+    "navigation": "Navigáció"
   },
   "percentiles-select": {
-    "default": "",
-    "label": "",
-    "p50": "",
-    "p75": "",
-    "p90": "",
-    "p95": "",
-    "p99": ""
+    "default": "Alapértelmezett",
+    "label": "Percentilisek",
+    "p50": "p50",
+    "p75": "p75",
+    "p90": "p90",
+    "p95": "p95",
+    "p99": "p99"
   },
   "plugin-info": {
     "button": {
-      "title": "",
-      "tooltip": ""
+      "title": "Bővítményinformáció",
+      "tooltip": "Bővítményinformáció"
     },
     "header": {
-      "last-update": "",
-      "title": ""
+      "last-update": "Legutóbbi frissítés: {{updated}}",
+      "title": "Grafana Traces Drilldown v{{version}}"
     },
     "menu": {
-      "changelog": "",
-      "commit-sha": "",
-      "contribute": "",
-      "documentation": "",
-      "give-feedback": "",
-      "grafana-version": "",
-      "report-issue": ""
+      "changelog": "Változásnapló",
+      "commit-sha": "SHA-azonosító: {{sha}}",
+      "contribute": "Hozzájárulás",
+      "documentation": "Dokumentáció",
+      "give-feedback": "Visszajelzés küldése",
+      "grafana-version": "Grafana {{edition}} ({{env}})",
+      "report-issue": "Probléma bejelentése"
     }
   },
   "primary-signal-variable": {
-    "primary-signal": "",
-    "primary-signal-label": ""
+    "primary-signal": "Elsődleges jel",
+    "primary-signal-label": "Elsődleges jel"
   },
   "red-panel": {
-    "comparison-selection": ""
+    "comparison-selection": "Összehasonlítás kiválasztása"
   },
   "save-search-button": {
-    "save-in-saved-queries": "",
-    "save-search": ""
+    "save-in-saved-queries": "Mentés a mentett lekérdezések közé",
+    "save-search": "Keresés mentése"
   },
   "save-search-modal": {
-    "cancel": "",
-    "close": "",
-    "existing-search-warning": "",
+    "cancel": "Mégse",
+    "close": "Bezárás",
+    "existing-search-warning": "Már létezik egy korábban mentett keresés ugyanezzel a lekérdezéssel: {{title}}",
     "field": {
-      "description": "",
-      "title": ""
+      "description": "Leírás",
+      "title": "Cím"
     },
-    "info-alert": "",
-    "save": "",
-    "success-message": "",
-    "success-title": "",
-    "title": ""
+    "info-alert": "A mentett kereséseket a böngésző helyileg tárolja, így azok csak ezen az eszközön lesznek elérhetőek.",
+    "save": "Mentés",
+    "success-message": "Keresés sikeresen mentve.",
+    "success-title": "Sikerült",
+    "title": "Aktuális keresés mentése"
   },
   "search": {
-    "placeholder": ""
+    "placeholder": "Keresés"
   },
   "smart-drawer": {
-    "back-to-all-traces": ""
+    "back-to-all-traces": "Vissza az összes nyomkövetéshez"
   },
   "span-list-scene": {
-    "description": "",
-    "open-in-new-tab": ""
+    "description": "Megtekintheti az aktuális szűrőkészlethez tartozó terjedelmek listáját.",
+    "open-in-new-tab": "Megnyitás új lapon"
   },
   "sparkline-cell": {
-    "no-data": "",
-    "not-enough-data": ""
+    "no-data": "Nincs adat",
+    "not-enough-data": "Nincs elég adat"
   },
   "streaming-indicator": {
-    "tooltip": ""
+    "tooltip": "Adatfolyam"
   },
   "structure-scene": {
-    "duration-description": "",
-    "duration-panel-info": "",
-    "errors-description": "",
-    "errors-panel-info": "",
-    "no-data-message": "",
-    "open-trace": "",
-    "rate-description": "",
-    "rate-panel-info": "",
-    "read-more": "",
-    "works-best": ""
+    "duration-description": "Elemezheti a lassú terjedelmek szerkezetét az aktuális szűrőknek megfelelő nyomkövetésekből.",
+    "duration-panel-info": "Minden panel egy összesített nézetet jelenít meg, amely több nyomkövetésből származó terjedelmek felhasználásával készült.",
+    "errors-description": "Elemezheti az aktuális szűrőknek megfelelő nyomkövetések hibastruktúráját.",
+    "errors-panel-info": "Minden panel egy összesített nézetet jelenít meg, amely több nyomkövetésből származó terjedelmek felhasználásával készült.",
+    "no-data-message": "A Struktúra lap az éppen vizsgált elem alatti {{emptyMsg}} terjedelmeket jeleníti meg. Jelenleg nincsenek származtatott {{emptyMsg}} terjedelmek az Ön által vizsgált terjedelmek alatt.",
+    "open-trace": "Nyomkövetés megnyitása",
+    "rate-description": "Elemezheti az aktuális szűrőknek megfelelő nyomkövetések szolgáltatásszerkezetét.",
+    "rate-panel-info": "Minden panel egy összesített nézetet jelenít meg, amely több nyomkövetésből származó terjedelmek felhasználásával készült.",
+    "read-more": "További információk",
+    "works-best": "A Struktúra lap teljes nyomkövetésekkel működik a legjobban."
   },
   "time-seeker-controls": {
-    "focus-selection": "",
-    "large-batch-warning": "",
-    "pan-left": "",
-    "pan-right": "",
-    "set-range": "",
-    "zoom-in": "",
-    "zoom-out": ""
+    "focus-selection": "Fókuszkijelölés",
+    "large-batch-warning": "Az Időkeresőnek nagy mennyiségű adatot kell betöltenie. Ez hatással lehet a teljesítményre.",
+    "pan-left": "Pásztázás balra",
+    "pan-right": "Pásztázás jobbra",
+    "set-range": "Tartomány beállítása",
+    "zoom-in": "Kontextus nagyítása",
+    "zoom-out": "Kontextus kicsinyítése"
   },
   "time-seeker-scene": {
-    "loading": "",
-    "seeker-label": ""
+    "loading": "Időkereső betöltése…",
+    "seeker-label": "Kereső"
   },
   "trace-drawer-scene": {
-    "no-trace-selected": ""
+    "no-trace-selected": "Nincs kiválasztva nyomkövetés"
   },
   "trace-exploration": {
     "drawer": {
-      "view-trace": ""
+      "view-trace": "Nyomkövetés megtekintése: {{traceId}}"
     },
     "embedded-header": {
-      "traces-drilldown": ""
+      "traces-drilldown": "Traces Drilldown"
     },
     "header": {
-      "data-source": "",
-      "filters": "",
-      "trace-id": "",
-      "trace-id-placeholder": ""
+      "data-source": "Adatforrás",
+      "filters": "Szűrők",
+      "trace-id": "Nyomkövetési azonosító",
+      "trace-id-placeholder": "Adjon meg egy azonosítót, majd nyomja le az Enter billentyűt"
     },
     "variable": {
-      "data-source": "",
-      "duration-percentiles": ""
+      "data-source": "Adatforrás",
+      "duration-percentiles": "Időtartam-percentilisek"
     }
   },
   "traceql-issue-detector": {
-    "read-documentation": "",
-    "warning-message": "",
-    "warning-title": ""
+    "read-documentation": "Dokumentáció elolvasása",
+    "warning-message": "Hibát észleltünk egy TraceQL-metrikalekérdezés futtatása közben: „A localblocks feldolgozó nem található”. Ez általában azt jelenti, hogy a „local-blocks” feldolgozó nincs konfigurálva a Tempóban, ami a Grafana Traces Drilldown működéséhez szükséges.",
+    "warning-title": "A TraceQL-metrikák nincsenek konfigurálva"
   },
   "traces-by-service": {
-    "select-metric-type": "",
+    "select-metric-type": "Metrikatípus kiválasztása",
     "tooltip": {
-      "duration-description": "",
-      "duration-label": "",
-      "errors-description": "",
-      "errors-label": "",
-      "rate-description": "",
-      "rate-label": "",
-      "read-documentation": "",
-      "subtitle": "",
-      "title": ""
+      "duration-description": "– Az ezen terjedelmek által igénybe vett időtartam hőtérképen ábrázolva (válaszidő, késleltetés)",
+      "duration-label": "Időtartam",
+      "errors-description": "– Sikertelen terjedelmek, általános problémák a nyomkövetési ökoszisztémában",
+      "errors-label": "Hibák",
+      "rate-description": "– A szűrőjének megfelelő terjedelmek száma másodpercenként, ami hasznos lehet a tevékenység szokatlan kiugrásainak azonosításához",
+      "rate-label": "Értékelés",
+      "read-documentation": "Dokumentáció elolvasása",
+      "subtitle": "Megismerheti a Tempo által a nyomkövetésekből generált gyakorisági, hibaszám- és időtartam-metrikákat (RED).",
+      "title": "RED-metrikák a nyomkövetésekhez"
     }
   }
 }

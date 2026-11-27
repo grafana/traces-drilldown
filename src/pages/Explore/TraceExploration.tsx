@@ -1,3 +1,4 @@
+import { testIds } from 'utils/testIds';
 import { css } from '@emotion/css';
 import React, { useCallback, useEffect } from 'react';
 
@@ -413,7 +414,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
       <Stack gap={1} justifyContent={'space-between'} wrap={'wrap'}>
         <Stack gap={1} alignItems={'center'} wrap={'wrap'}>
           {dsVariable && (
-            <Stack gap={0} alignItems={'center'}>
+            <Stack data-testid={testIds.datasourceRegion} gap={0} alignItems={'center'}>
               <div className={styles.datasourceLabel}>
                 <Trans i18nKey="trace-exploration.header.data-source">Data source</Trans>
               </div>
@@ -421,7 +422,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
             </Stack>
           )}
         </Stack>
-        <div className={styles.controls}>
+        <div data-testid={testIds.controlsRegion} className={styles.controls}>
           <EntityAssertionsWidget serviceName={serviceName || ''} model={model} />
           <SaveSearchButton sceneRef={model} />
           {traceExploration.state.loadSearchScene && (
@@ -442,7 +443,7 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
             {primarySignalVariable && <primarySignalVariable.Component model={primarySignalVariable} />}
           </Stack>
           {filtersVariable && (
-            <div>
+            <div data-testid={testIds.filtersRegion}>
               <filtersVariable.Component model={filtersVariable} />
             </div>
           )}
@@ -452,14 +453,20 @@ const TraceExplorationHeader = ({ controls, model }: TraceExplorationHeaderProps
             <Trans i18nKey="trace-exploration.header.trace-id">Trace ID</Trans>
           </div>
           <Input
+            data-testid={testIds.traceIdInput}
             placeholder={t('trace-exploration.header.trace-id-placeholder', 'Enter an ID and press Enter')}
             value={localTraceId ?? ''}
             suffix={
               <Stack direction="row" alignItems="center" gap={1} width="40px">
                 {localTraceId && (
                   <>
-                    <Icon name="times" onClick={() => setLocalTraceId('')} cursor="pointer" />
-                    <Icon name="enter" onClick={onTraceIdSubmit} cursor="pointer" />
+                    <Icon
+                      data-testid={testIds.traceIdClear}
+                      name="times"
+                      onClick={() => setLocalTraceId('')}
+                      cursor="pointer"
+                    />
+                    <Icon data-testid={testIds.traceIdSubmit} name="enter" onClick={onTraceIdSubmit} cursor="pointer" />
                   </>
                 )}
               </Stack>

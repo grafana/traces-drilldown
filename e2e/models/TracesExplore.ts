@@ -2,11 +2,11 @@ import { Locator, Page, expect } from '@playwright/test';
 import { GrafanaPage, NavigateOptions, PluginTestCtx } from '@grafana/plugin-e2e';
 
 import pluginJson from '../../src/plugin.json';
-import { getTestIdFromMetric, testIds } from '../../src/utils/testIds';
+import { actionViewTestIds, getTestIdFromMetric, testIds } from '../../src/utils/testIds';
 import { MetricFunction } from '../../src/utils/shared';
 import { AttributeItem } from '../../src/types';
 
-export type RateTabs = 'Service structure' | 'Comparison' | 'Traces' | 'Breakdown';
+export type RateTabs = keyof Pick<typeof actionViewTestIds, 'structure' | 'comparison' | 'traceList' | 'breakdown'>;
 
 export class TracesExplorePage extends GrafanaPage {
   constructor(readonly ctx: PluginTestCtx) {
@@ -99,7 +99,7 @@ export class TracesExplorePage extends GrafanaPage {
   }
 
   getTab(tab: RateTabs): Locator {
-    return this.getByGrafanaSelector(this.ctx.selectors.components.Tab.title(tab));
+    return this.page.getByTestId(actionViewTestIds[tab]);
   }
 
   async assertTabSelected(tab: RateTabs) {

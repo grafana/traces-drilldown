@@ -63,7 +63,7 @@
   },
   "by-frame-repeater": {
     "no-data-for-search": "Inga data för söktermen",
-    "partial-results-hint": ""
+    "partial-results-hint": "Visar {{shown}} av {{total}}. Skrolla för att ladda mer eller sök för att begränsa resultaten."
   },
   "duration-comparison-control": {
     "select-slowest-traces": "Välj de långsammaste spåren",
