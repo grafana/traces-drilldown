@@ -19,6 +19,13 @@ import type { AlertPanelTarget } from '../actions/createAlert/getPanelDataForAle
 import { getCurrentStep, getDataSource, getTraceExplorationScene } from 'utils/utils';
 
 import { EventOpenAddToDashboard, getPanelData } from '../actions/addToDashboard';
+import {
+  EventOpenAddToNotebook,
+  captureNotebookTile,
+  isNotebookTile,
+  canAddToNotebook,
+} from '../actions/addToNotebook';
+import { useNotebookForm } from '../actions/AddToNotebookModal';
 
 const CREATE_ALERT_FROM_PANEL_PLUGIN_ID = 'grafana/alerting/create-alert-from-panel/v1';
 
@@ -71,7 +78,8 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
   }
 
   public static readonly Component = ({ model }: SceneComponentProps<PanelMenu>) => {
-    const { body } = model.useState();
+    const { body, query, alertTargets, onBreakdownCreateAlert } = model.useState();
+    const NotebookForm = useNotebookForm();
     const { component: CreateAlertModal } = usePluginComponent(CREATE_ALERT_FROM_PANEL_PLUGIN_ID);
     const isTempoAlertingEnabled = useFlagTempoAlerting();
     const styles = useStyles2(getStyles);
@@ -87,8 +95,17 @@ export class PanelMenu extends SceneObjectBase<PanelMenuState> implements VizPan
         model.setState({ isCreateAlertAvailable });
       }
 
-      model.setItems(buildPanelMenuItems(model, isCreateAlertAvailable));
-    }, [model, body, CreateAlertModal, isTempoAlertingEnabled]);
+      model.setItems(buildPanelMenuItems(model, isCreateAlertAvailable, Boolean(NotebookForm)));
+    }, [
+      model,
+      body,
+      query,
+      alertTargets,
+      onBreakdownCreateAlert,
+      CreateAlertModal,
+      isTempoAlertingEnabled,
+      NotebookForm,
+    ]);
 
     if (!body) {
       return null;
@@ -125,7 +142,11 @@ const onExploreClick = () => {
   reportAppInteraction(USER_EVENTS_PAGES.analyse_traces, USER_EVENTS_ACTIONS.analyse_traces.open_in_explore_clicked);
 };
 
-function buildPanelMenuItems(model: SceneObject<PanelMenuState>, isCreateAlertAvailable: boolean): PanelMenuItem[] {
+export function buildPanelMenuItems(
+  model: SceneObject<PanelMenuState>,
+  isCreateAlertAvailable: boolean,
+  isNotebookAvailable = false
+): PanelMenuItem[] {
   const items: PanelMenuItem[] = [
     {
       text: t('panel-menu.navigation', 'Navigation'),
@@ -143,6 +164,28 @@ function buildPanelMenuItems(model: SceneObject<PanelMenuState>, isCreateAlertAv
       onClick: () => addToDashboardFromPanelMenu(model),
     },
   ];
+
+  const vizPanel = sceneGraph.findObject(model, (object) => object instanceof VizPanel);
+  if (
+    isNotebookAvailable &&
+    canAddToNotebook() &&
+    vizPanel instanceof VizPanel &&
+    isNotebookTile(vizPanel, model.state.alertTargets)
+  ) {
+    items.push({
+      text: t('panel-menu.add-to-notebook', 'Add to notebook'),
+      iconClassName: 'book',
+      onClick: () => {
+        if (!canAddToNotebook()) {
+          return;
+        }
+        const capture = captureNotebookTile(vizPanel, model.state.alertTargets);
+        if (capture) {
+          model.publishEvent(new EventOpenAddToNotebook(capture), true);
+        }
+      },
+    });
+  }
 
   if (isCreateAlertAvailable && model.state.alertTargets?.length && model.state.onBreakdownCreateAlert) {
     items.push({

@@ -69,7 +69,7 @@ describe('generateMetricsQueryForBreakdownTile', () => {
         name: 'Value',
         type: FieldType.number,
         values: [1],
-        labels: { 'resource.service.name': 'checkout' },
+        labels: { 'resource.service.name': '"checkout"' },
         config: {},
       },
     ],
@@ -91,6 +91,54 @@ describe('generateMetricsQueryForBreakdownTile', () => {
     expect(generateMetricsQueryForBreakdownTile('rate', 'resource.service.name', frameWithServiceLabel)).toEqual(
       '{${primarySignal} && ${filters} && resource.service.name="checkout"} | rate() by(resource.service.name)'
     );
+  });
+
+  it.each([
+    ['status', 'error', 'error'],
+    ['span:status', '"ok"', 'ok'],
+    ['kind', '"server"', 'server'],
+    ['span:kind', 'client', 'client'],
+    ['span.foo', '"123"', '"123"'],
+    ['span.foo', '"true"', '"true"'],
+    ['span.foo', '""', '""'],
+    ['span.network.protocol.version', '123', '"123"'],
+    ['duration', '100ms', '100ms'],
+    ['span.foo', JSON.stringify('say "hi"\\there\n\t\r'), JSON.stringify('say "hi"\\there\n\t\r')],
+  ])('preserves the typed tile predicate %s=%s', (attribute, rawValue, expectedValue) => {
+    const frame: DataFrame = {
+      ...frameWithServiceLabel,
+      fields: [{ ...frameWithServiceLabel.fields[0], labels: { [attribute]: rawValue } }],
+    };
+
+    expect(generateMetricsQueryForBreakdownTile('rate', attribute, frame)).toBe(
+      `{\${primarySignal} && \${filters} && ${attribute}=${expectedValue}} | rate() by(${attribute})`
+    );
+  });
+
+  it.each([
+    ['span.foo', '123'],
+    ['span.foo', 'true'],
+    ['span.foo', 'error'],
+    ['span.foo', 'checkout'],
+    ['span.foo', '"unterminated'],
+    ['span.foo', '"bad\\q"'],
+    ['span.foo', '"${service}"'],
+    ['status', '"server"'],
+    ['status', 'unknown'],
+    ['kind', '"error"'],
+    ['duration', '123'],
+    ['duration', 'not-a-duration'],
+  ])('excludes an ambiguous or unsafe tile predicate %s=%s', (attribute, rawValue) => {
+    const frame: DataFrame = {
+      ...frameWithServiceLabel,
+      fields: [{ ...frameWithServiceLabel.fields[0], labels: { [attribute]: rawValue } }],
+    };
+
+    expect(generateMetricsQueryForBreakdownTile('rate', attribute, frame)).toBeUndefined();
+  });
+
+  it('excludes a tile with missing label metadata rather than substituting No labels', () => {
+    expect(generateMetricsQueryForBreakdownTile('rate', 'span.missing', frameWithServiceLabel)).toBeUndefined();
   });
 });
 

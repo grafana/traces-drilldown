@@ -1,7 +1,16 @@
 import type { DataFrame } from '@grafana/data';
 
-import { ALL, MetricFunction, VAR_FILTERS_EXPR, VAR_DURATION_PERCENTILES_EXPR } from '../../../utils/shared';
-import { formatLabelValue, getLabelValue } from '../../../utils/utils';
+import {
+  ALL,
+  ALWAYS_DURATION_KEYS,
+  ALWAYS_QUOTED_KEYS,
+  KEYWORD_KIND_VALUES,
+  KEYWORD_STATUS_VALUES,
+  MetricFunction,
+  VAR_FILTERS_EXPR,
+  VAR_DURATION_PERCENTILES_EXPR,
+} from '../../../utils/shared';
+import { getRawLabelValue, toEscapedValue, toLabelValueType } from '../../../utils/utils';
 
 interface QueryOptions {
   metric: MetricFunction;
@@ -66,16 +75,58 @@ export function generateMetricsQueryForBreakdownTile(
   metric: MetricFunction,
   groupByAttribute: string,
   frame: DataFrame
-): string {
+): string | undefined {
   if (groupByAttribute && groupByAttribute !== ALL) {
+    const value = getBreakdownTileValue(frame, groupByAttribute);
+    if (value === undefined) {
+      return undefined;
+    }
     return generateMetricsQuery({
       metric,
       groupByKey: groupByAttribute,
-      extraFilters: `${groupByAttribute}=${formatLabelValue(getLabelValue(frame, groupByAttribute))}`,
+      extraFilters: `${groupByAttribute}=${value}`,
       appendGroupByNilGuard: false,
     });
   }
   return generateMetricsQuery({ metric });
+}
+
+function getBreakdownTileValue(frame: DataFrame, attribute: string): string | undefined {
+  const rawValue = getRawLabelValue(frame, attribute);
+  if (rawValue == null) {
+    return undefined;
+  }
+
+  const quoted = rawValue.startsWith('"');
+  let value = rawValue;
+  if (quoted) {
+    try {
+      const decoded: unknown = JSON.parse(rawValue);
+      if (typeof decoded !== 'string') {
+        return undefined;
+      }
+      value = decoded;
+    } catch {
+      return undefined;
+    }
+  }
+
+  const keywords =
+    attribute === 'status' || attribute === 'span:status'
+      ? KEYWORD_STATUS_VALUES
+      : attribute === 'kind' || attribute === 'span:kind'
+        ? KEYWORD_KIND_VALUES
+        : undefined;
+  if (keywords) {
+    return keywords.has(value) ? toEscapedValue(toLabelValueType('keyword', value), value) : undefined;
+  }
+  if (ALWAYS_DURATION_KEYS.has(attribute)) {
+    return /[a-zµ]/.test(value) && toLabelValueType('duration', value) === 'bare' ? value : undefined;
+  }
+  if ((quoted || ALWAYS_QUOTED_KEYS.has(attribute)) && !value.includes('$')) {
+    return toEscapedValue(toLabelValueType('string', value), value);
+  }
+  return undefined;
 }
 
 export function getMetricsTempoQuery(options: QueryOptions) {
