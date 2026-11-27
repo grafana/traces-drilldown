@@ -101,7 +101,12 @@
       {
         "id": "grafana-exploretraces-app/embedded-trace-exceptions/v1",
         "title": "Embedded Trace Exceptions",
-        "description": "The Exceptions tab from Traces Drilldown, for the Assistant and other plugins to embed."
+        "description": "The Exceptions tab from Traces Drilldown, for the Assistant and other plugins to embed.",
+        "discovery": {
+          "version": "v1",
+          "datasource": "tempo",
+          "prompt": "Use this component when the user wants to inspect exceptions recorded in Tempo traces."
+        }
       }
     ],
     "addedComponents": [

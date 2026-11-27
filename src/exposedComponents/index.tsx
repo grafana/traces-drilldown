@@ -5,6 +5,7 @@ import {
   OpenInExploreTracesButtonProps,
   EmbeddedTraceExplorationState,
   EmbeddedTraceExceptionsState,
+  TraceExceptionsPreviewProps,
 } from 'exposedComponents/types';
 import { initPluginI18n } from 'i18n/initPluginI18n';
 import React, { lazy, Suspense } from 'react';
@@ -34,6 +35,20 @@ export function SuspendedOpenInExploreTracesButton(props: OpenInExploreTracesBut
       <OpenInExploreTracesButton {...props} />
     </Suspense>
   );
+}
+
+export function ExposedTraceExceptions(props: TraceExceptionsPreviewProps | EmbeddedTraceExceptionsState) {
+  if ('timeRange' in props) {
+    return (
+      <SuspendedEmbeddedTraceExceptions
+        initialDS={props.datasource.uid}
+        initialTimeRange={props.timeRange}
+        initialFilters={props.filters}
+      />
+    );
+  }
+
+  return <SuspendedEmbeddedTraceExceptions {...props} />;
 }
 
 export function SuspendedEmbeddedTraceExceptions(props: EmbeddedTraceExceptionsState) {
