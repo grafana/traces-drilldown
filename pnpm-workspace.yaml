@@ -34,6 +34,8 @@ overrides:
   # v6.30.6 has no package fix for GHSA-wrjc-x8rr-h8h6; this browser plugin only uses static internal routes.
   # GHSA-337j-9hxr-rhxg affects SSR hydration, which this browser plugin does not use.
   'react-router@^6': ^6.30.6
+  # i18next-pseudo imports only i18next types; reuse @grafana/i18n's patched version.
+  'i18next@^19': '26.5.10'
 
 minimumReleaseAgeExclude:
   - '@grafana/scenes@9.2.2'
