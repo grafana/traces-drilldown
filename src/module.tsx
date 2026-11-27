@@ -1,13 +1,9 @@
 import { lazy } from 'react';
 import { AppPlugin } from '@grafana/data';
 
+import { EmbeddedTraceExplorationState, OpenInExploreTracesButtonProps } from 'exposedComponents/types';
 import {
-  EmbeddedTraceExceptionsState,
-  EmbeddedTraceExplorationState,
-  OpenInExploreTracesButtonProps,
-} from 'exposedComponents/types';
-import {
-  SuspendedEmbeddedTraceExceptions,
+  ExposedTraceExceptions,
   SuspendedEmbeddedTraceExploration,
   SuspendedOpenInExploreTracesButton,
 } from 'exposedComponents';
@@ -50,7 +46,7 @@ export const plugin = new AppPlugin<JsonData>()
     id: 'grafana-exploretraces-app/embedded-trace-exceptions/v1',
     title: 'Embedded Trace Exceptions',
     description: 'The Exceptions tab from Traces Drilldown, for the Assistant and other plugins to embed.',
-    component: SuspendedEmbeddedTraceExceptions as React.ComponentType<EmbeddedTraceExceptionsState>,
+    component: ExposedTraceExceptions,
   })
   .addFunction(getAssistantExtensionConfig(assistantExtensionManifest));
 
